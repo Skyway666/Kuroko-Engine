@@ -10,6 +10,23 @@
 
 using namespace math;
 
+float RNG() // returns a random float between 0 and 1
+{
+	math::LCG lcg;
+	return lcg.Float();
+}
+
+float RNG_Range(float min, float max) //  returns a random float between min and max
+{
+	math::LCG lcg;
+	return lcg.Float(min, max);
+}
+
+float RNG_RangeInt(int min, int max) //  returns a random int between min and max
+{
+	math::LCG lcg;
+	return lcg.Int(min, max);
+}
 
 class Vector3
 {
