@@ -28,6 +28,9 @@
     <Filter Include="Sources\ImGui\cpps">
       <UniqueIdentifier>{d01ae8d1-4700-4636-81a4-82d58d8399b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Helpers\MathGeoLib">
+      <UniqueIdentifier>{d1371451-c646-4169-a257-b0aee406e757}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -117,6 +120,18 @@
     <ClInclude Include="imgui_impl_sdl.h">
       <Filter>Sources\ImGui\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="MathGeoLib\MathBuildConfig.h">
+      <Filter>Sources\Helpers\MathGeoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\MathGeoLib.h">
+      <Filter>Sources\Helpers\MathGeoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="MathGeoLib\MathGeoLibFwd.h">
+      <Filter>Sources\Helpers\MathGeoLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -187,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="imgui_impl_sdl.cpp">
       <Filter>Sources\ImGui\cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
