@@ -85,6 +85,11 @@ update_status ModuleImGUI::Update(float dt) {
 	// 1. Show a simple window.
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	{
+		// features functionality
+
+		ImGui::Checkbox("Graphic tab", &show_graphic_tab);
+
+		// test functionality
 		static float f = 0.0f;
 		static int counter = 0;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
@@ -92,10 +97,10 @@ update_status ModuleImGUI::Update(float dt) {
 		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
 			counter++;
+
 		ImGui::SameLine();
 		ImGui::Text("counter = %d", counter);
 
@@ -103,11 +108,48 @@ update_status ModuleImGUI::Update(float dt) {
 	}
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-	if (show_another_window) {
-		ImGui::Begin("Another Window", &show_another_window);
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
+
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) 
+		show_graphic_tab = !show_graphic_tab;
+
+	if (show_graphic_tab) {
+		ImGui::Begin("Graphics Tab", &show_graphic_tab);
+		ImGui::Text("Use this tab to enable/disable openGL characteristics");
+		if (ImGui::Button("Depth test"))
+		{
+			if (glIsEnabled(GL_DEPTH_TEST))		glDisable(GL_DEPTH_TEST);
+			else								glEnable(GL_DEPTH_TEST);
+		}
+		if (ImGui::Button("Face culling"))
+		{
+			if (glIsEnabled(GL_CULL_FACE))		glDisable(GL_CULL_FACE);
+			else								glEnable(GL_CULL_FACE);
+		}
+		if (ImGui::Button("Lighting"))
+		{
+			if (glIsEnabled(GL_LIGHTING))		glDisable(GL_LIGHTING);
+			else								glEnable(GL_LIGHTING);
+		}
+		if (ImGui::Button("Material color"))
+		{
+			if (glIsEnabled(GL_COLOR_MATERIAL))	glDisable(GL_COLOR_MATERIAL);
+			else								glEnable(GL_COLOR_MATERIAL);
+		}
+		if (ImGui::Button("Textures"))
+		{
+			if (glIsEnabled(GL_TEXTURE_2D))		glDisable(GL_TEXTURE_2D);
+			else								glEnable(GL_TEXTURE_2D);
+		}
+		if (ImGui::Button("Fog"))
+		{
+			if (glIsEnabled(GL_FOG))			glDisable(GL_FOG);
+			else								glEnable(GL_FOG);
+		}
+		if (ImGui::Button("Antialias"))
+		{
+			if (glIsEnabled(GL_LINE_SMOOTH))	glDisable(GL_LINE_SMOOTH);
+			else								glEnable(GL_LINE_SMOOTH);
+		}
 		ImGui::End();
 	}
 

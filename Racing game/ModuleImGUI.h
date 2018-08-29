@@ -20,7 +20,7 @@ public:
 
 private:
 	bool show_demo_window = true;
-	bool show_another_window = false;
+	bool show_graphic_tab = true;
 	ImVec4 clear_color;
 	ImGuiIO io;
 };
