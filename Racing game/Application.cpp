@@ -40,8 +40,8 @@ Application::Application()
 
 	// Renderer last!
 	//AddModule(renderer2D);
-	AddModule(renderer3D);
 	AddModule(gui);
+	AddModule(renderer3D);
 }
 
 Application::~Application()

@@ -16,9 +16,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
-#pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
-#pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
-
 
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled) {
@@ -133,7 +130,7 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 	//glClear(GL_COLOR_BUFFER_BIT);
 /*	glUseProgram(0);*/ // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	SDL_GL_SwapWindow(App->window->window);
+	//SDL_GL_SwapWindow(App->window->window);
 
 	return UPDATE_CONTINUE;
 }

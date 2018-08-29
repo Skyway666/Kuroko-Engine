@@ -31,6 +31,9 @@
     <Filter Include="Sources\Helpers\MathGeoLib">
       <UniqueIdentifier>{d1371451-c646-4169-a257-b0aee406e757}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\GL">
+      <UniqueIdentifier>{a2fe2577-4277-4d54-9a3e-03a3c12cb364}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -131,6 +134,18 @@
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="glew-2.1.0\include\GL\eglew.h">
+      <Filter>Sources\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="glew-2.1.0\include\GL\glew.h">
+      <Filter>Sources\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="glew-2.1.0\include\GL\glxew.h">
+      <Filter>Sources\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="glew-2.1.0\include\GL\wglew.h">
+      <Filter>Sources\GL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

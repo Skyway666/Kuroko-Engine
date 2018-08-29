@@ -1,7 +1,6 @@
 #ifndef __P2POINT_H__
 #define __P2POINT_H__
 
-#include "p2Defs.h"
 #include <math.h>
 
 template<class TYPE>

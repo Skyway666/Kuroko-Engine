@@ -76,6 +76,10 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="glew-2.1.0\include\GL\eglew.h" />
+    <ClInclude Include="glew-2.1.0\include\GL\glew.h" />
+    <ClInclude Include="glew-2.1.0\include\GL\glxew.h" />
+    <ClInclude Include="glew-2.1.0\include\GL\wglew.h" />
     <ClInclude Include="glmath.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="imconfig.h" />

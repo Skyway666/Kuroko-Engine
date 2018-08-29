@@ -10,23 +10,23 @@
 
 using namespace math;
 
-float RNG() // returns a random float between 0 and 1
+class RNG
 {
-	math::LCG lcg;
-	return lcg.Float();
-}
+private:
+	LCG* lcg = nullptr;
 
-float RNG_Range(float min, float max) //  returns a random float between min and max
-{
-	math::LCG lcg;
-	return lcg.Float(min, max);
-}
+public:
 
-float RNG_RangeInt(int min, int max) //  returns a random int between min and max
-{
-	math::LCG lcg;
-	return lcg.Int(min, max);
-}
+	RNG() { lcg = new LCG(); };
+	~RNG() { delete lcg; }
+
+	float Zero_to_One()					{ return lcg->Float(); }			// returns a random float between 0 and 1
+	float Range(float min, float max)	{ return lcg->Float(min, max); }	// returns a random float between min and max
+	float RangeInt(int min, int max)	{ return lcg->Int(min, max); }		// returns a random int between min and max
+
+};
+
+
 
 class Vector3
 {
