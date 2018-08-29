@@ -36,7 +36,7 @@ bool ModuleImGUI::Init() {
 	io = ImGui::GetIO();
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
-	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
+	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->getContext());
 	ImGui_ImplOpenGL2_Init();
 
 	// Setup style
@@ -112,46 +112,7 @@ update_status ModuleImGUI::Update(float dt) {
 	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) 
 		show_graphic_tab = !show_graphic_tab;
 
-	if (show_graphic_tab) {
-		ImGui::Begin("Graphics Tab", &show_graphic_tab);
-		ImGui::Text("Use this tab to enable/disable openGL characteristics");
-		if (ImGui::Button("Depth test"))
-		{
-			if (glIsEnabled(GL_DEPTH_TEST))		glDisable(GL_DEPTH_TEST);
-			else								glEnable(GL_DEPTH_TEST);
-		}
-		if (ImGui::Button("Face culling"))
-		{
-			if (glIsEnabled(GL_CULL_FACE))		glDisable(GL_CULL_FACE);
-			else								glEnable(GL_CULL_FACE);
-		}
-		if (ImGui::Button("Lighting"))
-		{
-			if (glIsEnabled(GL_LIGHTING))		glDisable(GL_LIGHTING);
-			else								glEnable(GL_LIGHTING);
-		}
-		if (ImGui::Button("Material color"))
-		{
-			if (glIsEnabled(GL_COLOR_MATERIAL))	glDisable(GL_COLOR_MATERIAL);
-			else								glEnable(GL_COLOR_MATERIAL);
-		}
-		if (ImGui::Button("Textures"))
-		{
-			if (glIsEnabled(GL_TEXTURE_2D))		glDisable(GL_TEXTURE_2D);
-			else								glEnable(GL_TEXTURE_2D);
-		}
-		if (ImGui::Button("Fog"))
-		{
-			if (glIsEnabled(GL_FOG))			glDisable(GL_FOG);
-			else								glEnable(GL_FOG);
-		}
-		if (ImGui::Button("Antialias"))
-		{
-			if (glIsEnabled(GL_LINE_SMOOTH))	glDisable(GL_LINE_SMOOTH);
-			else								glEnable(GL_LINE_SMOOTH);
-		}
-		ImGui::End();
-	}
+	if (show_graphic_tab) DrawGraphicsTab();
 
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (show_demo_window) {
@@ -183,5 +144,70 @@ bool ModuleImGUI::CleanUp() {
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 	return true;
+}
+
+void ModuleImGUI::DrawGraphicsTab()
+{
+	//starting values
+
+	static bool wireframe_enabled	= App->renderer3D->getWireframe();
+	static bool depth_test			= glIsEnabled(GL_DEPTH_TEST);
+	static bool face_culling		= glIsEnabled(GL_CULL_FACE);
+	static bool lighting			= glIsEnabled(GL_LIGHTING);
+	static bool material_color		= glIsEnabled(GL_COLOR_MATERIAL);
+	static bool textures			= glIsEnabled(GL_TEXTURE_2D);
+	static bool fog					= glIsEnabled(GL_FOG);
+	static bool antialias			= glIsEnabled(GL_LINE_SMOOTH);
+
+
+	ImGui::Begin("Graphics Tab", &show_graphic_tab);
+	ImGui::Text("Use this tab to enable/disable openGL characteristics");
+
+	if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
+		App->renderer3D->Wireframe();
+
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Depth test", &depth_test))
+	{
+		if (depth_test)			glEnable(GL_DEPTH_TEST);
+		else					glDisable(GL_DEPTH_TEST);
+	}
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Face culling", &face_culling))
+	{
+		if (face_culling)		glEnable(GL_CULL_FACE);
+		else					glDisable(GL_CULL_FACE);
+	}
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Lighting", &lighting))
+	{
+		if (lighting)			glEnable(GL_LIGHTING);
+		else					glDisable(GL_LIGHTING);
+	}
+	if (ImGui::Checkbox("Material color", &material_color))
+	{
+		if (material_color)		glEnable(GL_COLOR_MATERIAL);
+		else					glDisable(GL_COLOR_MATERIAL);
+	}
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Textures", &textures))
+	{
+		if (textures)			glEnable(GL_TEXTURE_2D);
+		else					glDisable(GL_TEXTURE_2D);
+	}
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Fog", &fog))
+	{
+		if (fog)				glEnable(GL_FOG);
+		else					glDisable(GL_FOG);
+	}
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Antialias", &antialias))
+	{
+		if (antialias)			glEnable(GL_LINE_SMOOTH);
+		else					glDisable(GL_LINE_SMOOTH);
+	}
+
+	ImGui::End();
 }
 

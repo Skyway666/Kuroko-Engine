@@ -18,6 +18,8 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
+	void DrawGraphicsTab();
+
 private:
 	bool show_demo_window = true;
 	bool show_graphic_tab = true;

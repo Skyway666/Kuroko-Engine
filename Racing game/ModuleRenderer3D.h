@@ -18,11 +18,16 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
+	void Wireframe(); 
 
-public:
+	SDL_GLContext getContext()	{ return context; }
+	bool getWireframe()			{ return wireframe; }
 
+private:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	mat3x3 NormalMatrix;
 	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+
+	bool wireframe = false;
 };
