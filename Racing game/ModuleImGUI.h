@@ -21,8 +21,9 @@ public:
 	void DrawGraphicsTab();
 
 private:
-	bool show_demo_window = true;
+	bool show_demo_window = false;
 	bool show_graphic_tab = true;
+	bool show_test_tab = true;
 	ImVec4 clear_color;
 	ImGuiIO io;
 };

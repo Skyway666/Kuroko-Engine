@@ -147,6 +147,9 @@
     <ClInclude Include="glew-2.1.0\include\GL\wglew.h">
       <Filter>Sources\GL</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -219,6 +222,9 @@
       <Filter>Sources\ImGui\cpps</Filter>
     </ClCompile>
     <ClCompile Include="Math.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>

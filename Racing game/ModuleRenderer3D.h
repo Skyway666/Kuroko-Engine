@@ -23,6 +23,8 @@ public:
 	SDL_GLContext getContext()	{ return context; }
 	bool getWireframe()			{ return wireframe; }
 
+	void DirectDrawCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
+
 private:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;

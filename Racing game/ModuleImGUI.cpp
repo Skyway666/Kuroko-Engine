@@ -71,6 +71,10 @@ update_status ModuleImGUI::PreUpdate(float dt) {
 			return UPDATE_STOP;
 	}
 
+	show_demo_window = false;
+	show_graphic_tab = true;
+	show_test_tab = true;
+
 	// Start the ImGui frame
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
@@ -84,6 +88,7 @@ update_status ModuleImGUI::Update(float dt) {
 
 	// 1. Show a simple window.
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
+	if(show_test_tab)
 	{
 		// features functionality
 
@@ -163,49 +168,77 @@ void ModuleImGUI::DrawGraphicsTab()
 	ImGui::Begin("Graphics Tab", &show_graphic_tab);
 	ImGui::Text("Use this tab to enable/disable openGL characteristics");
 
-	if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
-		App->renderer3D->Wireframe();
+	if (ImGui::CollapsingHeader("Wireframe"))
+	{
+		if (ImGui::Checkbox("Enabled", &wireframe_enabled))
+			App->renderer3D->Wireframe();
+	}
+	if (ImGui::CollapsingHeader("Depth test"))
+	{
+		if (ImGui::Checkbox("Enabled", &depth_test))
+		{
+			if (depth_test)			glEnable(GL_DEPTH_TEST);
+			else					glDisable(GL_DEPTH_TEST);
+		}
+	}
+	if (ImGui::CollapsingHeader("Face culling"))
+	{
+		if (ImGui::Checkbox("Enabled", &face_culling))
+		{
+			if (face_culling)		glEnable(GL_CULL_FACE);
+			else					glDisable(GL_CULL_FACE);
+		}
+	}
+	if (ImGui::CollapsingHeader("Lighting"))
+	{
+		if (ImGui::Checkbox("Enabled", &lighting))
+		{
+			if (lighting)			glEnable(GL_LIGHTING);
+			else					glDisable(GL_LIGHTING);
+		}
+	}
+	if (ImGui::CollapsingHeader("Material color"))
+	{
+		if (ImGui::Checkbox("Enabled", &material_color))
+		{
+			if (material_color)		glEnable(GL_COLOR_MATERIAL);
+			else					glDisable(GL_COLOR_MATERIAL);
+		}
+	}
+	if (ImGui::CollapsingHeader("Textures"))
+	{
+		if (ImGui::Checkbox("Enabled", &textures))
+		{
+			if (textures)			glEnable(GL_TEXTURE_2D);
+			else					glDisable(GL_TEXTURE_2D);
+		}
+	}
+	if (ImGui::CollapsingHeader("Fog"))
+	{
+		static float fog_distance = 0.5f;
+		if (ImGui::Checkbox("Enabled", &fog))
+		{
+			if (fog)				glEnable(GL_FOG);
+			else					glDisable(GL_FOG);
 
-	ImGui::SameLine();
-	if (ImGui::Checkbox("Depth test", &depth_test))
-	{
-		if (depth_test)			glEnable(GL_DEPTH_TEST);
-		else					glDisable(GL_DEPTH_TEST);
+			if (fog)
+			{
+				GLfloat fog_color[4] = { 0.8f, 0.8f, 0.8f, 0.0f };
+				glFogfv(GL_FOG_COLOR, fog_color);
+				glFogf(GL_FOG_DENSITY, fog_distance);
+			}
+		}
+
+		if (ImGui::SliderFloat("Fog density", &fog_distance, 0.0f, 1.0f))
+			glFogf(GL_FOG_DENSITY, fog_distance);
 	}
-	ImGui::SameLine();
-	if (ImGui::Checkbox("Face culling", &face_culling))
+	if (ImGui::CollapsingHeader("Antialias"))
 	{
-		if (face_culling)		glEnable(GL_CULL_FACE);
-		else					glDisable(GL_CULL_FACE);
-	}
-	ImGui::SameLine();
-	if (ImGui::Checkbox("Lighting", &lighting))
-	{
-		if (lighting)			glEnable(GL_LIGHTING);
-		else					glDisable(GL_LIGHTING);
-	}
-	if (ImGui::Checkbox("Material color", &material_color))
-	{
-		if (material_color)		glEnable(GL_COLOR_MATERIAL);
-		else					glDisable(GL_COLOR_MATERIAL);
-	}
-	ImGui::SameLine();
-	if (ImGui::Checkbox("Textures", &textures))
-	{
-		if (textures)			glEnable(GL_TEXTURE_2D);
-		else					glDisable(GL_TEXTURE_2D);
-	}
-	ImGui::SameLine();
-	if (ImGui::Checkbox("Fog", &fog))
-	{
-		if (fog)				glEnable(GL_FOG);
-		else					glDisable(GL_FOG);
-	}
-	ImGui::SameLine();
-	if (ImGui::Checkbox("Antialias", &antialias))
-	{
-		if (antialias)			glEnable(GL_LINE_SMOOTH);
-		else					glDisable(GL_LINE_SMOOTH);
+		if (ImGui::Checkbox("Enabled", &antialias))
+		{
+			if (antialias)			glEnable(GL_LINE_SMOOTH);
+			else					glDisable(GL_LINE_SMOOTH);
+		}
 	}
 
 	ImGui::End();

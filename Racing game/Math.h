@@ -27,32 +27,32 @@ public:
 };
 
 
-
+template <class TYPE>
 class Vector3
 {
 private:
-	float x = 0.0f;
-	float y = 0.0f;
-	float z = 0.0f;
+	TYPE x = 0.0f;
+	TYPE y = 0.0f;
+	TYPE z = 0.0f;
 
 public:
 
 	Vector3() {};
-	Vector3(float x, float y, float z) : x(x), y(y), z(z) {};
+	Vector3(TYPE x, TYPE y, TYPE z) : x(x), y(y), z(z) {};
 
-	float3	  toMathVec()   { return float3(x, y, z); };
-	btVector3 toBtVec()		{ return btVector3(x, y, z); };
-	vec3	  toGlVec()		{ return vec3(x, y, z); };
+	float3	  toMathVec()   { return float3((float) x, (float) y, (float) z); };
+	btVector3 toBtVec()		{ return btVector3((float) x, (float) y, (float) z); };
+	vec3	  toGlVec()		{ return vec3((float) x, (float) y, (float) z); };
 
-	void setX(float new_x) { x = new_x; };
-	void setY(float new_y) { y = new_y; };
-	void setZ(float new_z) { z = new_z; };
+	void setX(TYPE new_x) { x = new_x; };
+	void setY(TYPE new_y) { y = new_y; };
+	void setZ(TYPE new_z) { z = new_z; };
 
-	void set(float new_x, float new_y, float new_z)		{ x = new_x; y = new_y; z = new_z; };
+	void set(TYPE new_x, TYPE new_y, TYPE new_z)		{ x = new_x; y = new_y; z = new_z; };
 
 	Vector3 operator -(const Vector3 &v)   const { return(Vector3(x - v.x, y - v.y, z - v.z)); };
 	Vector3 operator +(const Vector3 &v)   const { return(Vector3(x + v.x, y + v.y, z + v.z)); };
-	Vector3 operator *(const float scalar) const { return(Vector3(x * scalar, y * scalar, z * scalar)); };
+	Vector3 operator *(const TYPE scalar) const { return(Vector3(x * scalar, y * scalar, z * scalar)); };
 
 	bool operator ==(const Vector3& v) const { return (x == v.x && y == v.y && z == v.z); };
 	bool operator !=(const Vector3& v) const { return (x != v.x || y != v.y || z != v.z); };
@@ -82,7 +82,7 @@ public:
 
 	Vector3& SetToZero()
 	{
-		x = y = z = 0;
+		x = y = z = 0.0f;
 		return(*this);
 	}
 
@@ -133,7 +133,10 @@ public:
 
 };
 
-typedef Vector3 Point3;
+typedef Vector3<float> Vector3f;
+typedef Vector3<float> Point3f;
+typedef Vector3<int> Vector3i;
+typedef Vector3<int> Point3i;
 
 
 

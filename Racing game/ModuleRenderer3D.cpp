@@ -105,7 +105,7 @@ bool ModuleRenderer3D::Init()
 		
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearDepth(1.0f);
-		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClearColor(0.8f, 0.8f, 0.8f, 1.f);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -115,6 +115,7 @@ bool ModuleRenderer3D::Init()
 		glEnable(GL_TEXTURE_2D);
 
 		if (wireframe) Wireframe();
+		
 	}
 
 	// Projection matrix for
@@ -178,4 +179,52 @@ void ModuleRenderer3D::Wireframe()
 
 	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void ModuleRenderer3D::DirectDrawCube(float sx, float sy, float sz)
+{
+	glLineWidth(2.0f);
+
+	sx *= 0.5f; sy *= 0.5f; sz *= 0.5f;
+
+	glBegin(GL_TRIANGLES);
+
+	glNormal3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-sx, -sy, sz);
+	glVertex3f(sx, -sy, sz);
+	glVertex3f(sx, sy, sz);
+	glVertex3f(-sx, sy, sz);
+
+	glNormal3f(0.0f, 0.0f, -1.0f);
+	glVertex3f(sx, -sy, -sz);
+	glVertex3f(-sx, -sy, -sz);
+	glVertex3f(-sx, sy, -sz);
+	glVertex3f(sx, sy, -sz);
+
+	glNormal3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(sx, -sy, sz);
+	glVertex3f(sx, -sy, -sz);
+	glVertex3f(sx, sy, -sz);
+	glVertex3f(sx, sy, sz);
+
+	glNormal3f(-1.0f, 0.0f, 0.0f);
+	glVertex3f(-sx, -sy, -sz);
+	glVertex3f(-sx, -sy, sz);
+	glVertex3f(-sx, sy, sz);
+	glVertex3f(-sx, sy, -sz);
+
+	glNormal3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-sx, sy, sz);
+	glVertex3f(sx, sy, sz);
+	glVertex3f(sx, sy, -sz);
+	glVertex3f(-sx, sy, -sz);
+
+	glNormal3f(0.0f, -1.0f, 0.0f);
+	glVertex3f(-sx, -sy, -sz);
+	glVertex3f(sx, -sy, -sz);
+	glVertex3f(sx, -sy, sz);
+	glVertex3f(-sx, -sy, sz);
+
+	glEnd();
+
 }
