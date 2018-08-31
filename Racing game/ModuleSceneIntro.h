@@ -32,8 +32,8 @@ public:
 	PhysBody3D* Hammer;
 	PhysBody3D* Sstart;
 	PhysBody3D* Sfinish;
-	Cube startcube;
-	Cube finishcube;
+	Primitives::Cube startcube;
+	Primitives::Cube finishcube;
 	int laps = 0;
 	float last_lap_time = 0;
 	float best_lap_time = 0;

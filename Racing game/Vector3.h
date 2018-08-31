@@ -1,5 +1,8 @@
 #pragma once
 
+#include "MathGeoLib\MathBuildConfig.h"
+#include "MathGeoLib\MathGeoLib.h"
+#include "MathGeoLib\MathGeoLibFwd.h"
 
 #include "glmath.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
@@ -16,8 +19,8 @@ public:
 
 	Vector3() {};
 	Vector3(TYPE x, TYPE y, TYPE z) : x(x), y(y), z(z) {};
-/*
-	float3	  toMathVec() { return float3((float)x, (float)y, (float)z); };*/
+
+	float3	  toMathVec() { return float3((float)x, (float)y, (float)z); };
 	btVector3 toBtVec() { return btVector3((float)x, (float)y, (float)z); };
 	vec3	  toGlVec() { return vec3((float)x, (float)y, (float)z); };
 

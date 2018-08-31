@@ -24,7 +24,7 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	PhysBody3D* AddBody(const Sphere& sphere, float mass = 1.0f);
+	PhysBody3D* AddBody(const Primitives::Sphere& sphere, float mass = 1.0f);
 
 private:
 
@@ -45,8 +45,7 @@ private:
 
 class DebugDrawer : public btIDebugDraw {
 public:
-	DebugDrawer() : line(0, 0, 0) {
-	}
+	DebugDrawer() : line(0, 0, 0) {}
 
 	void drawLine(const btVector3& from, const btVector3& to, const btVector3& color);
 	void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color);
@@ -56,6 +55,6 @@ public:
 	int	 getDebugMode() const;
 
 	DebugDrawModes mode;
-	Line line;
-	Primitive point;
+	Primitives::Line line;
+	Primitives::Primitive point;
 };

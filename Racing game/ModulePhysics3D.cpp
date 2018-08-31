@@ -114,7 +114,7 @@ update_status ModulePhysics3D::Update(float dt) {
 		ImGui::Begin("Ball Thrower");
 
 		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN || ImGui::Button("Toss Ball")) {
-			Sphere s(1);
+			Primitives::Sphere s(1);
 			s.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 			float force = 30.0f;
 			AddBody(s)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
@@ -177,7 +177,7 @@ bool ModulePhysics3D::CleanUp() {
 }
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass) {
+PhysBody3D* ModulePhysics3D::AddBody(const Primitives::Sphere& sphere, float mass) {
 	btCollisionShape* colShape = new btSphereShape(sphere.radius);
 	shapes.add(colShape);
 
