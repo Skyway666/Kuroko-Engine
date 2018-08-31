@@ -3,6 +3,10 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 
+#include "Assimp\include\scene.h"
+
+
+
 Mesh::Mesh(PrimitiveTypes primitive)
 {
 	switch (primitive)
@@ -17,6 +21,32 @@ Mesh::Mesh(PrimitiveTypes primitive)
 	LoadDataToVRAM();
 }
 
+Mesh::Mesh(aiMesh* imported_mesh)
+{
+	if (imported_mesh->mNumVertices)
+	{
+		num_vertices = imported_mesh->mNumVertices;
+		vertices = new Point3f[num_vertices];
+		memcpy(vertices, imported_mesh->mVertices, sizeof(Point3f) * num_vertices);
+	}
+
+	if (imported_mesh->HasFaces())
+	{
+		num_tris = imported_mesh->mNumFaces;
+		tris = new Point3ui[num_tris]; // assume each face is a triangle
+		for (uint i = 0; i < num_tris; ++i)
+		{
+			if (imported_mesh->mFaces[i].mNumIndices == 3)
+				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
+			else
+				APPLOG("WARNING, geometry face with != 3 indices!");
+		}
+	}
+
+	LoadDataToVRAM();
+}
+
+
 Mesh::~Mesh()
 {
 	if (vertices) delete vertices;
@@ -26,11 +56,12 @@ Mesh::~Mesh()
 
 void Mesh::LoadDataToVRAM()
 {
+
 	if (num_tris > 0)
 	{
 		glGenBuffers(1, (GLuint*) &(id_tris));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_tris);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point3i) * num_tris, tris, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point3ui) * num_tris, tris, GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	}
@@ -72,12 +103,10 @@ void Mesh::Draw() {
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 	glNormalPointer(GL_FLOAT, 0, NULL);
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
 	glBindBuffer(GL_NORMAL_ARRAY, 0);
-	glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -106,7 +135,7 @@ void Mesh::BuildCube(float sx, float sy, float sz)
 	vertices[7].set(sx, sy, sz);
 
 	num_tris = 12;
-	tris = new Point3i[num_tris];
+	tris = new Point3ui[num_tris];
 
 	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);	//front
 	tris[2].set(6, 5, 4);	tris[3].set(5, 6, 7);	//back
@@ -115,4 +144,3 @@ void Mesh::BuildCube(float sx, float sy, float sz)
 	tris[8].set(4, 1, 0);	tris[9].set(1, 4, 5);	//left
 	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
 }
-

@@ -3,9 +3,12 @@
 #include "Vector3.h"
 #include "Primitive.h"
 
+class aiMesh;
+
 class Mesh{
 public:
 
+	Mesh(aiMesh* mesh);
 	Mesh(PrimitiveTypes primitive);
 	~Mesh();
 	void LoadDataToVRAM();
@@ -18,7 +21,7 @@ private:
 private:
 	uint id_tris = 0;
 	uint num_tris = 0;
-	Point3i* tris = nullptr;
+	Point3ui* tris = nullptr;
 
 	uint id_vertices = 0;
 	uint num_vertices = 0;

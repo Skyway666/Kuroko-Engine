@@ -55,10 +55,4 @@ update_status ModuleSceneIntro::Update(float dt)
 		return UPDATE_STOP;
 }
 
-void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{
-	
-}
-
-
 

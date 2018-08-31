@@ -8,7 +8,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
-#pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 #pragma comment( lib, "glew-2.1.0/lib/Release/Win32/glew32.lib")
@@ -25,30 +24,30 @@ ModuleRenderer3D::~ModuleRenderer3D()
 // Called before render is available
 bool ModuleRenderer3D::Init()
 {
-	LOG("Creating 3D Renderer context");
+	APPLOG("Creating 3D Renderer context");
 	bool ret = true;
 	
 	//Create context
 	context = SDL_GL_CreateContext(App->window->window);
 	if(context == NULL)
 	{
-		LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		APPLOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
 	if(ret == true)
 	{
 		GLenum err = glewInit();
-		LOG("Using Glew %s", glewGetString(GLEW_VERSION));
+		APPLOG("Using Glew %s", glewGetString(GLEW_VERSION));
 
-		LOG("Vendor: %s", glGetString(GL_VENDOR));
-		LOG("Renderer: %s", glGetString(GL_RENDERER));
-		LOG("OpenGL version supported %s", glGetString(GL_VERSION));
-		LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+		APPLOG("Vendor: %s", glGetString(GL_VENDOR));
+		APPLOG("Renderer: %s", glGetString(GL_RENDERER));
+		APPLOG("OpenGL version supported %s", glGetString(GL_VERSION));
+		APPLOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 		//Use Vsync
 		if(VSYNC && SDL_GL_SetSwapInterval(1) < 0)
-			LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			APPLOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -58,7 +57,7 @@ bool ModuleRenderer3D::Init()
 		GLenum error = glGetError();
 		if(error != GL_NO_ERROR)
 		{
-			LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			APPLOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 
@@ -70,7 +69,7 @@ bool ModuleRenderer3D::Init()
 		error = glGetError();
 		if(error != GL_NO_ERROR)
 		{
-			LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			APPLOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 		
@@ -84,7 +83,7 @@ bool ModuleRenderer3D::Init()
 		error = glGetError();
 		if(error != GL_NO_ERROR)
 		{
-			LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
+			APPLOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
 		
@@ -117,7 +116,6 @@ bool ModuleRenderer3D::Init()
 		if (wireframe) Wireframe();
 		
 	}
-
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -152,7 +150,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 // Called before quitting
 bool ModuleRenderer3D::CleanUp()
 {
-	LOG("Destroying 3D Renderer");
+	APPLOG("Destroying 3D Renderer");
 
 	SDL_GL_DeleteContext(context);
 

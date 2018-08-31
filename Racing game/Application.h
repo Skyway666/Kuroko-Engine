@@ -14,6 +14,7 @@ class ModuleRenderer2D;
 class ModuleCamera3D;
 class ModulePhysics3D;
 class ModuleImGUI;
+class ModuleFBXimporter;
 
 class Application
 {
@@ -27,6 +28,7 @@ public:
 	ModuleCamera3D* camera;
 	ModulePhysics3D* physics;
 	ModuleImGUI* gui;
+	ModuleFBXimporter* fbx_importer;
 
 private:
 

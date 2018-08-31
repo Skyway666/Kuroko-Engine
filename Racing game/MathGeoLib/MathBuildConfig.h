@@ -97,10 +97,10 @@
 //#define MATH_GRAPHICSENGINE_INTEROP
 #endif
 
-// If KNET_LOGGING_SUPPORT_ENABLED is defined, MathGeoLib utilizes logging functions
+// If KNET_APPLOGGING_SUPPORT_ENABLED is defined, MathGeoLib utilizes logging functions
 // from the kNet library.
-#ifndef KNET_LOGGING_SUPPORT_ENABLED
-//#define KNET_LOGGING_SUPPORT_ENABLED
+#ifndef KNET_APPLOGGING_SUPPORT_ENABLED
+//#define KNET_APPLOGGING_SUPPORT_ENABLED
 #endif
 
 // Uncomment to specify the SIMD instruction set level in use.

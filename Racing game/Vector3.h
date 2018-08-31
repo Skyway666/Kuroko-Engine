@@ -117,3 +117,5 @@ typedef Vector3<float> Vector3f;
 typedef Vector3<float> Point3f;
 typedef Vector3<int> Vector3i;
 typedef Vector3<int> Point3i;
+typedef Vector3<unsigned int> Vector3ui;
+typedef Vector3<unsigned int> Point3ui;

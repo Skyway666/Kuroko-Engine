@@ -10,6 +10,7 @@
 #include "ModuleCamera3D.h"
 #include "ModulePhysics3D.h"
 #include "ModuleImGUI.h"
+#include "ModuleFBXimporter.h"
 
 Application::Application()
 {
@@ -19,6 +20,7 @@ Application::Application()
 	scene_intro = new ModuleSceneIntro(this);
 	renderer3D = new ModuleRenderer3D(this);
 	renderer2D = new ModuleRenderer2D(this);
+	fbx_importer = new ModuleFBXimporter(this);
 	camera = new ModuleCamera3D(this);
 	physics = new ModulePhysics3D(this);
 	gui = new ModuleImGUI(this);
@@ -32,6 +34,7 @@ Application::Application()
 	AddModule(camera);
 	AddModule(input);
 	AddModule(audio);
+	AddModule(fbx_importer);
 	AddModule(physics);
 	
 	
@@ -69,7 +72,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	LOG("Application Start --------------");
+	APPLOG("Application Start --------------");
 	item = list_modules.getFirst();
 
 	while(item != NULL && ret == true)

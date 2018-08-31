@@ -175,7 +175,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 	if (ImGui::CollapsingHeader("Depth test"))
 	{
-		if (ImGui::Checkbox("Enabled", &depth_test))
+		if (ImGui::Checkbox("DT Enabled", &depth_test))
 		{
 			if (depth_test)			glEnable(GL_DEPTH_TEST);
 			else					glDisable(GL_DEPTH_TEST);
@@ -183,7 +183,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 	if (ImGui::CollapsingHeader("Face culling"))
 	{
-		if (ImGui::Checkbox("Enabled", &face_culling))
+		if (ImGui::Checkbox("FC Enabled", &face_culling))
 		{
 			if (face_culling)		glEnable(GL_CULL_FACE);
 			else					glDisable(GL_CULL_FACE);
@@ -191,7 +191,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 	if (ImGui::CollapsingHeader("Lighting"))
 	{
-		if (ImGui::Checkbox("Enabled", &lighting))
+		if (ImGui::Checkbox("L Enabled", &lighting))
 		{
 			if (lighting)			glEnable(GL_LIGHTING);
 			else					glDisable(GL_LIGHTING);
@@ -199,7 +199,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 	if (ImGui::CollapsingHeader("Material color"))
 	{
-		if (ImGui::Checkbox("Enabled", &material_color))
+		if (ImGui::Checkbox("M Enabled", &material_color))
 		{
 			if (material_color)		glEnable(GL_COLOR_MATERIAL);
 			else					glDisable(GL_COLOR_MATERIAL);
@@ -207,7 +207,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 	if (ImGui::CollapsingHeader("Textures"))
 	{
-		if (ImGui::Checkbox("Enabled", &textures))
+		if (ImGui::Checkbox("T Enabled", &textures))
 		{
 			if (textures)			glEnable(GL_TEXTURE_2D);
 			else					glDisable(GL_TEXTURE_2D);
@@ -216,7 +216,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	if (ImGui::CollapsingHeader("Fog"))
 	{
 		static float fog_distance = 0.5f;
-		if (ImGui::Checkbox("Enabled", &fog))
+		if (ImGui::Checkbox("F Enabled", &fog))
 		{
 			if (fog)				glEnable(GL_FOG);
 			else					glDisable(GL_FOG);
@@ -234,7 +234,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 	if (ImGui::CollapsingHeader("Antialias"))
 	{
-		if (ImGui::Checkbox("Enabled", &antialias))
+		if (ImGui::Checkbox("A Enabled", &antialias))
 		{
 			if (antialias)			glEnable(GL_LINE_SMOOTH);
 			else					glDisable(GL_LINE_SMOOTH);

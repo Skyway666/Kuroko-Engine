@@ -12,7 +12,7 @@
 // confuse your GPU driver. 
 // The GL2 code is unable to reset attributes or even call e.g. "glUseProgram(0)" because they don't exist in that API.
 
-// CHANGELOG 
+// CHANGEAPPLOG 
 // (minor and older changes stripped away, please see git history for details)
 //  2018-06-08: Misc: Extracted imgui_impl_opengl2.cpp/.h away from the old combined GLFW/SDL+OpenGL2 examples.
 //  2018-06-08: OpenGL: Use draw_data->DisplayPos and draw_data->DisplaySize to setup projection matrix and clipping rectangle.
