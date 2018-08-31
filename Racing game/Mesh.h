@@ -1,15 +1,19 @@
 #pragma once
 #include "Globals.h"
-#include "Math.h"
+#include "Vector3.h"
+#include "Primitive.h"
 
 class Mesh{
 public:
 
-	Mesh();
+	Mesh(PrimitiveTypes primitive);
+	~Mesh();
 	void LoadDataToVRAM();
 
 	void Draw();
+private:
 
+	void BuildCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
 
 private:
 	uint id_tris = 0;

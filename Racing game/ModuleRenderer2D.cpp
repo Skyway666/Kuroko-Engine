@@ -31,7 +31,6 @@ bool ModuleRenderer2D::Init() {
 	}
 
 	return ret;
-	return true;
 }
 
 update_status ModuleRenderer2D::PreUpdate(float dt) {

@@ -150,6 +150,9 @@
     <ClInclude Include="Mesh.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">

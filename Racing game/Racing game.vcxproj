@@ -112,6 +112,7 @@
     <ClInclude Include="stb_textedit.h" />
     <ClInclude Include="stb_truetype.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
