@@ -60,6 +60,11 @@ bool ModuleImGUI::Init() {
 
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+
+	show_demo_window = false;
+	show_graphic_tab = true;
+	show_test_tab = true;
+
 	return true;
 }
 
@@ -70,10 +75,6 @@ update_status ModuleImGUI::PreUpdate(float dt) {
 		if (event.type == SDL_QUIT)
 			return UPDATE_STOP;
 	}
-
-	show_demo_window = false;
-	show_graphic_tab = true;
-	show_test_tab = true;
 
 	// Start the ImGui frame
 	ImGui_ImplOpenGL2_NewFrame();
@@ -94,6 +95,8 @@ update_status ModuleImGUI::Update(float dt) {
 
 		ImGui::Checkbox("Graphic tab", &show_graphic_tab);
 
+		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
+
 		// test functionality
 		static float f = 0.0f;
 		static int counter = 0;
@@ -101,7 +104,6 @@ update_status ModuleImGUI::Update(float dt) {
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
 		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
 			counter++;
@@ -155,7 +157,6 @@ void ModuleImGUI::DrawGraphicsTab()
 {
 	//starting values
 
-	static bool wireframe_enabled	= App->renderer3D->getWireframe();
 	static bool depth_test			= glIsEnabled(GL_DEPTH_TEST);
 	static bool face_culling		= glIsEnabled(GL_CULL_FACE);
 	static bool lighting			= glIsEnabled(GL_LIGHTING);
@@ -168,11 +169,6 @@ void ModuleImGUI::DrawGraphicsTab()
 	ImGui::Begin("Graphics Tab", &show_graphic_tab);
 	ImGui::Text("Use this tab to enable/disable openGL characteristics");
 
-	if (ImGui::CollapsingHeader("Wireframe"))
-	{
-		if (ImGui::Checkbox("Enabled", &wireframe_enabled))
-			App->renderer3D->Wireframe();
-	}
 	if (ImGui::CollapsingHeader("Depth test"))
 	{
 		if (ImGui::Checkbox("DT Enabled", &depth_test))

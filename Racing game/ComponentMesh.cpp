@@ -86,6 +86,9 @@ void ComponentMesh::Draw() {
 	glBindBuffer(GL_ARRAY_BUFFER, id_vertices);
 	glBindBuffer(GL_NORMAL_ARRAY, id_normals);
 
+	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glVertexPointer(3, GL_FLOAT, 0, NULL);

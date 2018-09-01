@@ -113,8 +113,6 @@ bool ModuleRenderer3D::Init()
 		glEnable(GL_COLOR_MATERIAL);
 		glEnable(GL_TEXTURE_2D);
 
-		if (wireframe) Wireframe();
-		
 	}
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -169,14 +167,6 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-}
-
-void ModuleRenderer3D::Wireframe()
-{
-	wireframe = !wireframe;
-
-	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	else			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void ModuleRenderer3D::DirectDrawCube(float sx, float sy, float sz)

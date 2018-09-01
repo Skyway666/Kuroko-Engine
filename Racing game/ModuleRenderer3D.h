@@ -18,10 +18,8 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
-	void Wireframe(); 
 
 	SDL_GLContext getContext()	{ return context; }
-	bool getWireframe()			{ return wireframe; }
 
 	void DirectDrawCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
 
@@ -30,6 +28,4 @@ private:
 	SDL_GLContext context;
 	mat3x3 NormalMatrix;
 	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
-
-	bool wireframe = false;
 };

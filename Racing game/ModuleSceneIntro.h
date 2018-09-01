@@ -1,7 +1,7 @@
 #pragma once
 #include "Module.h"
 
-class GameObject;
+class GameObject;  // <--  testing purposes
 
 class ModuleSceneIntro : public Module
 {

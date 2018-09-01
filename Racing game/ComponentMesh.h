@@ -21,6 +21,8 @@ public:
 
 	bool Update(float dt) { if (loaded) Draw(); return true; };
 	void Draw();
+	void setWireframe(bool state) { wireframe = state; };
+
 private:
 
 	void BuildCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
@@ -28,6 +30,7 @@ private:
 
 private:
 	bool loaded = false;
+	bool wireframe = false;
 
 	uint id_tris = 0;
 	uint num_tris = 0;

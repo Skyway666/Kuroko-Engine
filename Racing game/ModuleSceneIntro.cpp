@@ -4,8 +4,8 @@
 #include "ModuleCamera3D.h"
 #include "imgui.h"
 
-#include "GameObject.h"
-#include "ModuleFBXimporter.h"
+#include "GameObject.h"			// <--  testing purposes
+#include "ModuleFBXimporter.h"	// <--  testing purposes
 
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
