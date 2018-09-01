@@ -8,7 +8,7 @@ class Component
 {
 public:
 
-	Component(GameObject* gameobject) : parent(gameobject) {};
+	Component(GameObject* gameobject, Component_type type) : parent(gameobject), type(type) {};
 
 	virtual bool Update(float dt) { return false; };
 

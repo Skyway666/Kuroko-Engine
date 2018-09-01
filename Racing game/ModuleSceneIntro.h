@@ -3,7 +3,7 @@
 #include "p2DynArray.h"
 #include "Globals.h"
 #include "Primitive.h"
-#include "Mesh.h"
+#include "ComponentMesh.h"
 
 struct PhysBody3D;
 struct PhysMotor3D;

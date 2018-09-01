@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "ComponentMesh.h"
 
 bool GameObject::Update(float dt)
 {
@@ -45,4 +46,20 @@ GameObject* GameObject::getChild(const char* name)
 	}
 
 	return nullptr;
+}
+
+Component* GameObject::addComponent(Component_type type)
+{
+	Component* new_component = nullptr;
+
+	switch (type)
+	{
+	case MESH:
+		components.push_back(new ComponentMesh(this));
+		break;
+	default:
+		break;
+	}
+
+	return new_component;
 }

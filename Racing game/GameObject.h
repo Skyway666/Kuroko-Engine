@@ -16,14 +16,16 @@ private:
 	bool is_active = true;
 	bool is_static = false;
 
+public:
+
 	GameObject* parent = nullptr;
 	GameObject(const char* name, GameObject* parent = nullptr) : name(name), parent(parent) {};
 
-public:
 	bool Update(float dt);
 
 	void addComponent(Component* component) { components.push_back(component); };
-	void addComponent(Component_type type);
+	Component* addComponent(Component_type type);
+
 	Component* getComponent(Component_type type);
 	bool getComponents(Component_type type, std::list<Component*>& list_to_fill);
 	void getComponents(std::list<Component*>& list_to_fill) { list_to_fill = components; };

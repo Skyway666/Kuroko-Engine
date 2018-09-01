@@ -929,8 +929,8 @@ GLAPI void GLAPIENTRY glEvalCoord2d (GLdouble u, GLdouble v);
 GLAPI void GLAPIENTRY glEvalCoord2dv (const GLdouble *u);
 GLAPI void GLAPIENTRY glEvalCoord2f (GLfloat u, GLfloat v);
 GLAPI void GLAPIENTRY glEvalCoord2fv (const GLfloat *u);
-GLAPI void GLAPIENTRY glEvalMesh1 (GLenum mode, GLint i1, GLint i2);
-GLAPI void GLAPIENTRY glEvalMesh2 (GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2);
+GLAPI void GLAPIENTRY glEvalComponentMesh1 (GLenum mode, GLint i1, GLint i2);
+GLAPI void GLAPIENTRY glEvalComponentMesh2 (GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2);
 GLAPI void GLAPIENTRY glEvalPoint1 (GLint i);
 GLAPI void GLAPIENTRY glEvalPoint2 (GLint i, GLint j);
 GLAPI void GLAPIENTRY glFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer);
@@ -19079,8 +19079,8 @@ typedef void (GLAPIENTRY * PFNGLLOADIDENTITYDEFORMATIONMAPSGIXPROC) (GLbitfield 
 typedef void (GLAPIENTRY * PFNGLMESHBREADTHSGIXPROC) (GLint breadth);
 typedef void (GLAPIENTRY * PFNGLMESHSTRIDESGIXPROC) (GLint stride);
 
-#define glMeshBreadthSGIX GLEW_GET_FUN(__glewMeshBreadthSGIX)
-#define glMeshStrideSGIX GLEW_GET_FUN(__glewMeshStrideSGIX)
+#define glComponentMeshBreadthSGIX GLEW_GET_FUN(__glewComponentMeshBreadthSGIX)
+#define glComponentMeshStrideSGIX GLEW_GET_FUN(__glewComponentMeshStrideSGIX)
 
 #define GLEW_SGIX_quad_mesh GLEW_GET_VAR(__GLEW_SGIX_quad_mesh)
 
@@ -22713,8 +22713,8 @@ GLEW_FUN_EXPORT PFNGLPIXELTEXGENSGIXPROC __glewPixelTexGenSGIX;
 GLEW_FUN_EXPORT PFNGLDEFORMSGIXPROC __glewDeformSGIX;
 GLEW_FUN_EXPORT PFNGLLOADIDENTITYDEFORMATIONMAPSGIXPROC __glewLoadIdentityDeformationMapSGIX;
 
-GLEW_FUN_EXPORT PFNGLMESHBREADTHSGIXPROC __glewMeshBreadthSGIX;
-GLEW_FUN_EXPORT PFNGLMESHSTRIDESGIXPROC __glewMeshStrideSGIX;
+GLEW_FUN_EXPORT PFNGLMESHBREADTHSGIXPROC __glewComponentMeshBreadthSGIX;
+GLEW_FUN_EXPORT PFNGLMESHSTRIDESGIXPROC __glewComponentMeshStrideSGIX;
 
 GLEW_FUN_EXPORT PFNGLREFERENCEPLANESGIXPROC __glewReferencePlaneSGIX;
 

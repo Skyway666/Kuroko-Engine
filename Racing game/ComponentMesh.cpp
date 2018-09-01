@@ -1,4 +1,4 @@
-#include "Mesh.h"
+#include "ComponentMesh.h"
 #include "Globals.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
@@ -7,7 +7,7 @@
 
 
 
-Mesh::Mesh(PrimitiveTypes primitive)
+ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) : Component(gameobject, MESH)
 {
 	switch (primitive)
 	{
@@ -19,44 +19,30 @@ Mesh::Mesh(PrimitiveTypes primitive)
 	}
 
 	LoadDataToVRAM();
+	loaded = true;
 }
 
-Mesh::Mesh(aiMesh* imported_mesh)
+ComponentMesh::ComponentMesh(GameObject* gameobject, aiMesh* imported_mesh) : Component(gameobject, MESH)
 {
-	if (imported_mesh->mNumVertices)
+	if (LoadFromAssimpMesh(imported_mesh))
 	{
-		num_vertices = imported_mesh->mNumVertices;
-		vertices = new Point3f[num_vertices];
-		memcpy(vertices, imported_mesh->mVertices, sizeof(Point3f) * num_vertices);
+		LoadDataToVRAM();
+		loaded = true;
 	}
-
-	if (imported_mesh->HasFaces())
-	{
-		num_tris = imported_mesh->mNumFaces;
-		tris = new Point3ui[num_tris]; // assume each face is a triangle
-		for (uint i = 0; i < num_tris; ++i)
-		{
-			if (imported_mesh->mFaces[i].mNumIndices == 3)
-				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
-			else
-				APPLOG("WARNING, geometry face with != 3 indices!");
-		}
-	}
-
-	LoadDataToVRAM();
+	else
+		APPLOG("error loading mesh for the component %s", imported_mesh->mName.C_Str());
 }
 
 
-Mesh::~Mesh()
+ComponentMesh::~ComponentMesh()
 {
 	if (vertices) delete vertices;
 	if (tris) delete tris;
 	if (normals) delete normals;
 }
 
-void Mesh::LoadDataToVRAM()
+void ComponentMesh::LoadDataToVRAM()
 {
-
 	if (num_tris > 0)
 	{
 		glGenBuffers(1, (GLuint*) &(id_tris));
@@ -86,7 +72,7 @@ void Mesh::LoadDataToVRAM()
 
 
 
-void Mesh::Draw() {
+void ComponentMesh::Draw() {
 
 	// early exit if empty mesh
 	if (num_tris == 0 || num_vertices == 0)
@@ -117,7 +103,7 @@ void Mesh::Draw() {
 }
 
 
-void Mesh::BuildCube(float sx, float sy, float sz)
+void ComponentMesh::BuildCube(float sx, float sy, float sz)
 {
 	sx *= 0.5f, sy *= 0.5f, sz *= 0.5f;
 
@@ -143,4 +129,32 @@ void Mesh::BuildCube(float sx, float sy, float sz)
 	tris[6].set(0, 2, 4);	tris[7].set(6, 4, 2);	//down
 	tris[8].set(4, 1, 0);	tris[9].set(1, 4, 5);	//left
 	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
+}
+
+
+bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
+{
+	if (imported_mesh->mNumVertices)
+	{
+		num_vertices = imported_mesh->mNumVertices;
+		vertices = new Point3f[num_vertices];
+		memcpy(vertices, imported_mesh->mVertices, sizeof(Point3f) * num_vertices);
+
+
+		if (imported_mesh->HasFaces())
+		{
+			num_tris = imported_mesh->mNumFaces;
+			tris = new Point3ui[num_tris]; // assume each face is a triangle
+			for (uint i = 0; i < num_tris; ++i)
+			{
+				if (imported_mesh->mFaces[i].mNumIndices == 3)
+					memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
+				else
+					APPLOG("WARNING, geometry face with != 3 indices!");
+			}
+
+			return true;
+		}
+	}
+	return false;
 }
