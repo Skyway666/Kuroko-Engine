@@ -1,12 +1,11 @@
-#include "Globals.h"
 #include "Application.h"
 #include "ModuleSceneIntro.h"
 #include "Primitive.h"
-#include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
-#include "ModuleRenderer2D.h"
-#include "ModuleInput.h"
 #include "imgui.h"
+
+#include "GameObject.h"
+#include "ModuleFBXimporter.h"
 
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -23,7 +22,7 @@ ModuleSceneIntro::~ModuleSceneIntro()
 // Load assets
 bool ModuleSceneIntro::Start()
 {
-	
+	test = App->fbx_importer->LoadFBX("BakerHouse.fbx");
 	return true;
 }
 
@@ -38,6 +37,8 @@ update_status ModuleSceneIntro::Update(float dt)
 	Primitives::Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
+
+	test->Update(dt);
 
 	//Little menu to close app
 	bool close_app = false;

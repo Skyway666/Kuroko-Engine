@@ -11,6 +11,9 @@ bool GameObject::Update(float dt)
 	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end() && ret; it++)
 		ret = (*it)->Update(dt);
 
+	if (!ret)
+		APPLOG("error in gameobject %s", name.c_str());
+
 	return ret;
 }
 

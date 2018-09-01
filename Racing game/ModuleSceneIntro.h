@@ -1,14 +1,7 @@
 #pragma once
 #include "Module.h"
-#include "p2DynArray.h"
-#include "Globals.h"
-#include "Primitive.h"
-#include "ComponentMesh.h"
 
-struct PhysBody3D;
-struct PhysMotor3D;
-struct ImDrawData;
-
+class GameObject;
 
 class ModuleSceneIntro : public Module
 {
@@ -23,4 +16,5 @@ public:
 
 public:
 
+	GameObject* test;
 };

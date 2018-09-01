@@ -19,7 +19,7 @@ public:
 
 	void LoadDataToVRAM();
 
-	bool Update() { if (loaded) Draw(); };
+	bool Update(float dt) { if (loaded) Draw(); return true; };
 	void Draw();
 private:
 
