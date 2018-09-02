@@ -8,7 +8,7 @@
 class ModuleWindow;
 class ModuleInput;
 class ModuleAudio;
-class ModuleSceneIntro;
+class ModuleScene;
 class ModuleRenderer3D;
 class ModuleRenderer2D;
 class ModuleCamera3D;
@@ -22,7 +22,7 @@ public:
 	ModuleWindow* window;
 	ModuleInput* input;
 	ModuleAudio* audio;
-	ModuleSceneIntro* scene_intro;
+	ModuleScene* scene_intro;
 	ModuleRenderer3D* renderer3D;
 	ModuleRenderer2D* renderer2D;
 	ModuleCamera3D* camera;

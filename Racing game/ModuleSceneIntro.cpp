@@ -8,11 +8,11 @@
 #include "ModuleFBXimporter.h"	// <--  testing purposes
 
 
-ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
 
-ModuleSceneIntro::~ModuleSceneIntro()
+ModuleScene::~ModuleScene()
 {
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -20,25 +20,26 @@ ModuleSceneIntro::~ModuleSceneIntro()
 }
 
 // Load assets
-bool ModuleSceneIntro::Start()
+bool ModuleScene::Start()
 {
-	test = App->fbx_importer->LoadFBX("BakerHouse.fbx");
+	game_objects.push_back(App->fbx_importer->LoadFBX("BakerHouse.fbx"));
 	return true;
 }
 
 // Load assets
-bool ModuleSceneIntro::CleanUp(){
+bool ModuleScene::CleanUp(){
 	return true;
 }
 
 // Update
-update_status ModuleSceneIntro::Update(float dt)
+update_status ModuleScene::Update(float dt)
 {
 	Primitives::Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
 
-	test->Update(dt);
+	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
+		(*it)->Update(dt);
 
 	//Little menu to close app
 	bool close_app = false;
@@ -48,7 +49,6 @@ update_status ModuleSceneIntro::Update(float dt)
 		close_app = true;
 
 	ImGui::End();
-
 
 	if (!close_app)
 		return UPDATE_CONTINUE;

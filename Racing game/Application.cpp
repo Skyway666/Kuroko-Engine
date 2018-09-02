@@ -17,7 +17,7 @@ Application::Application()
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
-	scene_intro = new ModuleSceneIntro(this);
+	scene_intro = new ModuleScene(this);
 	renderer3D = new ModuleRenderer3D(this);
 	renderer2D = new ModuleRenderer2D(this);
 	fbx_importer = new ModuleFBXimporter(this);

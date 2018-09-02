@@ -1,13 +1,14 @@
 #pragma once
 #include "Module.h"
+#include <list>
 
 class GameObject;  // <--  testing purposes
 
-class ModuleSceneIntro : public Module
+class ModuleScene : public Module
 {
 public:
-	ModuleSceneIntro(Application* app, bool start_enabled = true);
-	~ModuleSceneIntro();
+	ModuleScene(Application* app, bool start_enabled = true);
+	~ModuleScene();
 
 	bool Start();
 	update_status Update(float dt);
@@ -16,5 +17,6 @@ public:
 
 public:
 
-	GameObject* test;
+	std::list<GameObject*> game_objects;
+	GameObject* selected_obj = nullptr;
 };

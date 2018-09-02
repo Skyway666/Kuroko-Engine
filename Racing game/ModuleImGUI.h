@@ -4,7 +4,7 @@
 #include "imgui.h"
 
 struct ImGuiIO;
-struct ImVec4;
+class GameObject;
 
 class ModuleImGUI :
 	public Module {
@@ -19,12 +19,14 @@ public:
 	bool CleanUp();
 
 	void DrawGraphicsTab();
+	void DrawHierarchyTab();
+	void DrawHierarchyNode(GameObject* game_object, int& id);
 
 private:
-	bool show_demo_window = false;
-	bool show_graphic_tab = true;
-	bool show_test_tab = true;
-	ImVec4 clear_color;
+	bool show_demo_window	= true;
+	bool show_graphic_tab	= true;
+	bool show_test_tab		= true;
+	bool show_hierarchy_tab = true;
 	ImGuiIO io;
 };
 

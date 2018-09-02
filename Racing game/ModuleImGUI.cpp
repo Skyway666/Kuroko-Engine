@@ -11,6 +11,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl2.h"
+#include "GameObject.h"
 
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
@@ -58,12 +59,10 @@ bool ModuleImGUI::Init() {
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
-	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
-	show_demo_window = false;
+	show_demo_window = true;
 	show_graphic_tab = true;
 	show_test_tab = true;
+	show_hierarchy_tab = true;
 
 	return true;
 }
@@ -102,7 +101,6 @@ update_status ModuleImGUI::Update(float dt) {
 		static int counter = 0;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
@@ -125,6 +123,12 @@ update_status ModuleImGUI::Update(float dt) {
 	if (show_demo_window) {
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
 		ImGui::ShowDemoWindow(&show_demo_window);
+	}
+
+	if (show_hierarchy_tab)
+	{
+		ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+		DrawHierarchyTab();
 	}
 
 	return UPDATE_CONTINUE;
@@ -238,5 +242,52 @@ void ModuleImGUI::DrawGraphicsTab()
 	}
 
 	ImGui::End();
+}
+
+
+void ModuleImGUI::DrawHierarchyTab()
+{
+	ImGui::Begin("Hierarchy Tab", &show_graphic_tab);
+	ImGui::Text("Use this tab to set the hierarchy of the scene objects");
+	int id = 0;
+
+	for (std::list<GameObject*>::iterator it = App->scene_intro->game_objects.begin(); it != App->scene_intro->game_objects.end(); it++)
+		DrawHierarchyNode(*it, id);
+
+	ImGui::End();
+}
+
+void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id)
+{
+	id++;
+	static int selection_mask = (1 << 2);
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask & (1 << id)) ? ImGuiTreeNodeFlags_Selected : 0);
+
+	std::list<GameObject*> children;
+	game_object->getChildren(children);
+
+	if(children.empty())
+		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
+
+	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object->getName().c_str(), id) && !children.empty();
+
+	if (ImGui::IsItemClicked())
+	{
+		selection_mask = (1 << id);
+		App->scene_intro->selected_obj = game_object;
+	}
+
+	if (node_open)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
+
+		for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
+				DrawHierarchyNode(*it, id);
+
+		ImGui::PopStyleVar();
+		ImGui::TreePop();
+	}
+
+
 }
 

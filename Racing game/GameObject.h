@@ -13,6 +13,9 @@ private:
 	std::list<GameObject*> children;
 	std::string name;
 
+
+public:
+
 	bool is_active = true;
 	bool is_static = false;
 
