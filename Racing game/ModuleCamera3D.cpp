@@ -94,6 +94,12 @@ update_status ModuleCamera3D::Update(float dt)
 		Position = Reference + Z * length(Position);
 	}
 
+	if (int mouse_z = App->input->GetMouseZ())
+	{
+		if (mouse_z > 0 && length(Position) > 0.5f)		Position *= 0.9f;
+		else											Position *= 1.1f;
+	}
+
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
 
