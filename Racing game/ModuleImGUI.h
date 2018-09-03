@@ -5,6 +5,7 @@
 
 struct ImGuiIO;
 class GameObject;
+class Component;
 
 class ModuleImGUI :
 	public Module {
@@ -21,12 +22,16 @@ public:
 	void DrawGraphicsTab();
 	void DrawHierarchyTab();
 	void DrawHierarchyNode(GameObject* game_object, int& id);
+	void DrawObjectInspectorTab();
+	void DrawComponent(Component* component);
 
 private:
-	bool show_demo_window	= true;
-	bool show_graphic_tab	= true;
-	bool show_test_tab		= true;
-	bool show_hierarchy_tab = true;
+
+	bool show_demo_window		= false;
+	bool show_graphic_tab		= true;
+	bool show_test_tab			= true;
+	bool show_hierarchy_tab		= true;
+	bool show_object_inspector	= true;
 	ImGuiIO io;
 };
 

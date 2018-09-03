@@ -161,3 +161,10 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	}
 	return false;
 }
+
+void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals)
+{
+	vert_num = num_vertices;
+	poly_count = num_tris;
+	has_normals = (num_normals > 0);
+}

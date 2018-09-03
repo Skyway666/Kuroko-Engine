@@ -8,10 +8,13 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleInput.h"
 #include "ModuleWindow.h"
+
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl2.h"
+
 #include "GameObject.h"
+#include "ComponentMesh.h"
 
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
@@ -59,21 +62,17 @@ bool ModuleImGUI::Init() {
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
-	show_demo_window = true;
+	show_demo_window = false;
 	show_graphic_tab = true;
 	show_test_tab = true;
 	show_hierarchy_tab = true;
+	show_object_inspector = true;
+
 
 	return true;
 }
 
 update_status ModuleImGUI::PreUpdate(float dt) {
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		ImGui_ImplSDL2_ProcessEvent(&event);
-		if (event.type == SDL_QUIT)
-			return UPDATE_STOP;
-	}
 
 	// Start the ImGui frame
 	ImGui_ImplOpenGL2_NewFrame();
@@ -121,14 +120,20 @@ update_status ModuleImGUI::Update(float dt) {
 
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (show_demo_window) {
-		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+		ImGui::SetNextWindowPos(ImVec2(650, 320), ImGuiCond_FirstUseEver); 
 		ImGui::ShowDemoWindow(&show_demo_window);
 	}
 
 	if (show_hierarchy_tab)
 	{
-		ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+		ImGui::SetNextWindowPos(ImVec2(0, 220), ImGuiCond_FirstUseEver); 
 		DrawHierarchyTab();
+	}
+
+	if (show_object_inspector)
+	{
+		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
+		DrawObjectInspectorTab();
 	}
 
 	return UPDATE_CONTINUE;
@@ -287,7 +292,87 @@ void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id)
 		ImGui::PopStyleVar();
 		ImGui::TreePop();
 	}
-
-
 }
 
+void ModuleImGUI::DrawObjectInspectorTab()
+{
+	ImGui::Begin("Object inspector", &show_object_inspector);
+	ImGui::Text("Use this tab to add, edit and remove components of gameobjects");
+
+	static bool show_rename = false;
+	GameObject* selected_obj = App->scene_intro->selected_obj;
+
+	if (selected_obj)
+	{
+		ImGui::Text("Name: %s", selected_obj->getName().c_str());
+
+		ImGui::SameLine();
+		if (ImGui::Button("Rename"))
+			show_rename = true;
+
+		ImGui::Checkbox("Active", &selected_obj->is_active);
+		ImGui::SameLine();
+		ImGui::Checkbox("Static", &selected_obj->is_static);
+
+		std::list<Component*> components;
+		selected_obj->getComponents(components);
+
+		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
+			DrawComponent(*it);
+
+	}
+	else if (show_rename)
+		show_rename = false;
+
+	ImGui::End();
+	
+	if (show_rename)
+	{
+		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
+		ImGui::Begin("Rename object");
+		static char buffer[64];
+		ImGui::InputText("", buffer, 64);
+
+		ImGui::SameLine();
+		if (ImGui::Button("Change"))
+		{
+			selected_obj->Rename(buffer);
+			show_rename = false;
+		}
+
+		ImGui::End();
+	}
+}
+
+void ModuleImGUI::DrawComponent(Component* component)
+{
+	switch (component->getType())
+	{
+	case MESH:
+		if (ImGui::CollapsingHeader("Mesh"))
+		{
+			ComponentMesh* mesh = (ComponentMesh*)component;
+			static bool wireframe_enabled = false;
+			static bool component_active = true;
+
+			if (ImGui::Checkbox("Is active", &component_active))
+				mesh->setActive(component_active);
+
+			if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
+				mesh->setWireframe(wireframe_enabled);
+
+			if (ImGui::CollapsingHeader("Mesh Data"))
+			{
+				uint vert_num = 0; uint poly_count = 0; bool has_normals = false;
+				mesh->getData(vert_num, poly_count, has_normals);
+				ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
+				ImGui::SameLine();
+				ImGui::Text(has_normals ? "normals: Yes" : "normals: No");
+			}
+		}
+		break;
+
+	default:
+		break;
+	}
+}

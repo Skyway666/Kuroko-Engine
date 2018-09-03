@@ -19,9 +19,9 @@ public:
 	GameObject* getParent() { return parent; };
 	void setParent(GameObject* new_parent) { parent = new_parent; }
 
+	bool is_active = true;
 private:
 
 	Component_type type = NONE;
 	GameObject* parent = nullptr;
-	bool is_active = true;
 };

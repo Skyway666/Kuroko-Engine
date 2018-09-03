@@ -19,9 +19,12 @@ public:
 
 	void LoadDataToVRAM();
 
-	bool Update(float dt) { if (loaded) Draw(); return true; };
+	bool Update(float dt) { if (loaded && is_active) Draw(); return true; };
 	void Draw();
+
 	void setWireframe(bool state) { wireframe = state; };
+
+	void getData(uint& vert_num, uint& poly_count, bool& has_normals);
 
 private:
 
