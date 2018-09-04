@@ -162,6 +162,9 @@
     <ClInclude Include="ComponentMesh.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -233,9 +236,6 @@
     <ClCompile Include="imgui_impl_sdl.cpp">
       <Filter>Sources\ImGui\cpps</Filter>
     </ClCompile>
-    <ClCompile Include="Math.cpp">
-      <Filter>Sources\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleFBXimporter.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
@@ -244,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="ComponentMesh.cpp">
       <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

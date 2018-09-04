@@ -361,13 +361,18 @@ void ModuleImGUI::DrawComponent(Component* component)
 			if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
 				mesh->setWireframe(wireframe_enabled);
 
+			if (ImGui::Button("Load checkered texture"))
+				mesh->assignCheckeredMat();
+
 			if (ImGui::CollapsingHeader("Mesh Data"))
 			{
-				uint vert_num = 0; uint poly_count = 0; bool has_normals = false;
-				mesh->getData(vert_num, poly_count, has_normals);
+				uint vert_num = 0; uint poly_count = 0; bool has_normals = false; bool has_texcoords = false;
+				mesh->getData(vert_num, poly_count, has_normals, has_texcoords);
 				ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
 				ImGui::SameLine();
-				ImGui::Text(has_normals ? "normals: Yes" : "normals: No");
+				ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
+				ImGui::SameLine();
+				ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
 			}
 		}
 		break;

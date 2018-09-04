@@ -1,10 +1,9 @@
 #include "ComponentMesh.h"
-#include "Globals.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
 #include "Assimp\include\scene.h"
-
+#include "Material.h"
 
 
 ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) : Component(gameobject, MESH)
@@ -61,11 +60,18 @@ void ComponentMesh::LoadDataToVRAM()
 
 	}
 
-	if (num_normals > 0) {
+	if (normals) {
 
 		glGenBuffers(1, (GLuint*) &(id_normals));
 		glBindBuffer(GL_ARRAY_BUFFER, id_normals);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Point3f) * num_normals, normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Point3f) * num_vertices, normals, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	if (tex_coords) {
+		glGenBuffers(1, (GLuint*) &(id_tex_coords));
+		glBindBuffer(GL_ARRAY_BUFFER, id_tex_coords);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(fPoint) * num_vertices, tex_coords, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 }
@@ -78,12 +84,18 @@ void ComponentMesh::Draw() {
 	if (num_tris == 0 || num_vertices == 0)
 		return;
 
+	bool active_texture = mat ? mat->isLoaded() : false;
+
+	if (active_texture)
+		glEnable(GL_TEXTURE_2D);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_tris);
 	glBindBuffer(GL_ARRAY_BUFFER, id_vertices);
+	glBindBuffer(GL_TEXTURE_COORD_ARRAY, id_tex_coords);
 	glBindBuffer(GL_NORMAL_ARRAY, id_normals);
 
 	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -91,11 +103,19 @@ void ComponentMesh::Draw() {
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 
+	if (active_texture)
+		glBindTexture(GL_TEXTURE_2D, mat->getGLid());
+
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 	glNormalPointer(GL_FLOAT, 0, NULL);
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
+	if (active_texture)
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 	glBindBuffer(GL_NORMAL_ARRAY, 0);
+	glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -103,6 +123,8 @@ void ComponentMesh::Draw() {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
+	if (active_texture)
+		glDisable(GL_TEXTURE_2D);
 }
 
 
@@ -142,29 +164,57 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 		num_vertices = imported_mesh->mNumVertices;
 		vertices = new Point3f[num_vertices];
 		memcpy(vertices, imported_mesh->mVertices, sizeof(Point3f) * num_vertices);
+	}
+	else
+		return false;
 
-
-		if (imported_mesh->HasFaces())
+	if (imported_mesh->HasFaces())
+	{
+		num_tris = imported_mesh->mNumFaces;
+		tris = new Point3ui[num_tris]; // assume each face is a triangle
+		for (uint i = 0; i < num_tris; ++i)
 		{
-			num_tris = imported_mesh->mNumFaces;
-			tris = new Point3ui[num_tris]; // assume each face is a triangle
-			for (uint i = 0; i < num_tris; ++i)
-			{
-				if (imported_mesh->mFaces[i].mNumIndices == 3)
-					memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
-				else
-					APPLOG("WARNING, geometry face with != 3 indices!");
-			}
-
-			return true;
+			if (imported_mesh->mFaces[i].mNumIndices == 3)
+				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
+			else
+				APPLOG("WARNING, geometry face with != 3 indices!");
 		}
 	}
-	return false;
+	else
+		return false;
+
+	if (imported_mesh->HasNormals())
+	{
+		normals = new Point3f[num_vertices];
+		memcpy(normals, imported_mesh->mNormals, sizeof(Point3f) * num_vertices);
+	}
+
+	if (imported_mesh->HasTextureCoords(0))
+	{
+		tex_coords = new fPoint[num_vertices];
+		for (int i = 0; i < num_vertices; i++)
+		{
+			tex_coords[i].x = imported_mesh->mTextureCoords[0][i].x;
+			tex_coords[i].y = imported_mesh->mTextureCoords[0][i].y;
+		}
+	}
+
+	return true;
 }
 
-void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals)
+void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_texcoords)
 {
 	vert_num = num_vertices;
 	poly_count = num_tris;
-	has_normals = (num_normals > 0);
+	has_normals = normals;
+	has_texcoords = tex_coords;
+}
+
+void ComponentMesh::assignCheckeredMat()
+{
+	if (mat)
+		delete mat;
+
+	mat = new Material();
+	mat->LoadCheckered();
 }
