@@ -1,38 +1,51 @@
-#include "ModuleFBXimporter.h"
+#include "ModuleImporter.h"
 #include "GameObject.h"
 #include "Globals.h"
 #include "ComponentMesh.h"
+#include "Material.h"
 
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
 #include "Assimp\include\postprocess.h"
 #include "Assimp\include\cfileio.h"
 
+#include "DevIL/include/IL/il.h"
+#include "DevIL/include/IL/ilu.h"
+#include "DevIL/include/IL/ilut.h"
+
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
+#pragma comment (lib, "DevIL/lib/x86/Release/DevIL.lib")
+#pragma comment (lib, "DevIL/lib/x86/Release/ILU.lib")
+#pragma comment (lib, "DevIL/lib/x86/Release/ILUT.lib")
 
 
-ModuleFBXimporter::ModuleFBXimporter(Application* app, bool start_enabled) : Module(app, start_enabled) {}
+ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {}
 
-ModuleFBXimporter::~ModuleFBXimporter() {}
+ModuleImporter::~ModuleImporter() {}
 
-
-bool ModuleFBXimporter::Init()
+bool ModuleImporter::Init()
 {
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
 	aiAttachLogStream(&stream);
 
+	ilutRenderer(ILUT_OPENGL);
+	ilInit();
+	iluInit();
+	ilutInit();
+	ilutRenderer(ILUT_OPENGL);
+
 	return true;
 }
 
-bool ModuleFBXimporter::CleanUp()
+bool ModuleImporter::CleanUp()
 {
 	aiDetachAllLogStreams();
 	return true;
 }
 
-GameObject* ModuleFBXimporter::LoadFBX(const char* file)
+GameObject* ModuleImporter::LoadFBX(const char* file)
 {
 	GameObject* root_obj = nullptr;
 	const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
@@ -48,7 +61,7 @@ GameObject* ModuleFBXimporter::LoadFBX(const char* file)
 	return root_obj;
 }
 
-GameObject* ModuleFBXimporter::LoadAssimpNode(aiNode* node, const aiScene* scene, GameObject* parent)
+GameObject* ModuleImporter::LoadAssimpNode(aiNode* node, const aiScene* scene, GameObject* parent)
 {
 	GameObject* root_obj = new GameObject(node->mName.C_Str());
 
@@ -64,7 +77,7 @@ GameObject* ModuleFBXimporter::LoadAssimpNode(aiNode* node, const aiScene* scene
 	return root_obj;
 }
 
-bool ModuleFBXimporter::LoadRootMesh(const char* file, ComponentMesh* component_to_load)
+bool ModuleImporter::LoadRootMesh(const char* file, ComponentMesh* component_to_load)
 {
 	const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
 
@@ -78,4 +91,9 @@ bool ModuleFBXimporter::LoadRootMesh(const char* file, ComponentMesh* component_
 		APPLOG("Error loading scene %s", file);
 
 	return false;
+}
+
+Material* ModuleImporter::quickLoadTex(char* file)
+{
+	return new Material(ilutGLLoadImage(file));
 }

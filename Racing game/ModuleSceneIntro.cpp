@@ -5,7 +5,7 @@
 #include "imgui.h"
 
 #include "GameObject.h"			// <--  testing purposes
-#include "ModuleFBXimporter.h"	// <--  testing purposes
+#include "ModuleImporter.h"	// <--  testing purposes
 
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -22,7 +22,7 @@ ModuleScene::~ModuleScene()
 // Load assets
 bool ModuleScene::Start()
 {
-	game_objects.push_back(App->fbx_importer->LoadFBX("BakerHouse.fbx"));
+	game_objects.push_back(App->importer->LoadFBX("BakerHouse.fbx"));
 	return true;
 }
 

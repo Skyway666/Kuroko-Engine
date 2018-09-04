@@ -12,7 +12,9 @@ class Material
 public:
 
 	Material() {};
+	Material(uint GL_id) { id = GL_id; loaded = true; };
 	~Material() {};
+
 	bool setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter);
 	void LoadCheckered();
 	bool isLoaded() { return loaded; };

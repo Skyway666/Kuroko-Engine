@@ -10,7 +10,7 @@
 #include "ModuleCamera3D.h"
 #include "ModulePhysics3D.h"
 #include "ModuleImGUI.h"
-#include "ModuleFBXimporter.h"
+#include "ModuleImporter.h"
 
 Application::Application()
 {
@@ -20,7 +20,7 @@ Application::Application()
 	scene_intro = new ModuleScene(this);
 	renderer3D = new ModuleRenderer3D(this);
 	renderer2D = new ModuleRenderer2D(this);
-	fbx_importer = new ModuleFBXimporter(this);
+	importer = new ModuleImporter(this);
 	camera = new ModuleCamera3D(this);
 	physics = new ModulePhysics3D(this);
 	gui = new ModuleImGUI(this);
@@ -34,7 +34,7 @@ Application::Application()
 	AddModule(camera);
 	AddModule(input);
 	AddModule(audio);
-	AddModule(fbx_importer);
+	AddModule(importer);
 	AddModule(physics);
 	
 	

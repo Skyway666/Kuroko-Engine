@@ -89,14 +89,14 @@ void ComponentMesh::Draw() {
 	if (active_texture)
 		glEnable(GL_TEXTURE_2D);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_tris);
 	glBindBuffer(GL_ARRAY_BUFFER, id_vertices);
 	glBindBuffer(GL_TEXTURE_COORD_ARRAY, id_tex_coords);
 	glBindBuffer(GL_NORMAL_ARRAY, id_normals);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
 
 	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -114,14 +114,14 @@ void ComponentMesh::Draw() {
 	if (active_texture)
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+
 	glBindBuffer(GL_NORMAL_ARRAY, 0);
 	glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
 
 	if (active_texture)
 		glDisable(GL_TEXTURE_2D);

@@ -8,6 +8,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleInput.h"
 #include "ModuleWindow.h"
+#include "ModuleImporter.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -330,13 +331,13 @@ void ModuleImGUI::DrawObjectInspectorTab()
 	{
 		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
 		ImGui::Begin("Rename object");
-		static char buffer[64];
-		ImGui::InputText("", buffer, 64);
+		static char rename_buffer[64];
+		ImGui::InputText("Rename to", rename_buffer, 64);
 
 		ImGui::SameLine();
 		if (ImGui::Button("Change"))
 		{
-			selected_obj->Rename(buffer);
+			selected_obj->Rename(rename_buffer);
 			show_rename = false;
 		}
 
@@ -363,6 +364,13 @@ void ModuleImGUI::DrawComponent(Component* component)
 
 			if (ImGui::Button("Load checkered texture"))
 				mesh->assignCheckeredMat();
+
+			static char texture_name_buffer[64];
+			ImGui::InputText("texture to load", texture_name_buffer, 64);
+
+			ImGui::SameLine();
+			if (ImGui::Button("Load Texture"))
+				mesh->setMaterial(App->importer->quickLoadTex(texture_name_buffer));
 
 			if (ImGui::CollapsingHeader("Mesh Data"))
 			{

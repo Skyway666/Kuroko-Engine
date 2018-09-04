@@ -11,7 +11,7 @@ class Material;
 
 class ComponentMesh : public Component{
 
-	friend class ModuleFBXimporter;
+	friend class ModuleImporter;
 
 public:
 
@@ -24,6 +24,7 @@ public:
 	void Draw();
 
 	void setWireframe(bool state) { wireframe = state; };
+	void setMaterial(Material* new_mat) { mat = new_mat; };
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_texcoords);
 	void assignCheckeredMat();
