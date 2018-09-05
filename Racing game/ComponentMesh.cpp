@@ -1,18 +1,22 @@
 #include "ComponentMesh.h"
+#include "Math.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
 #include "Assimp\include\scene.h"
 #include "Material.h"
 
+#include <cstdlib>
+#include <time.h>
+
+
 
 ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) : Component(gameobject, MESH)
 {
 	switch (primitive)
 	{
-	case Primitive_Cube:	BuildCube();
-		break;
-
+	case Primitive_Cube: BuildCube(); break;
+	case Primitive_Plane: BuildPlane(); break;
 	default:
 		break;
 	}
@@ -42,38 +46,26 @@ ComponentMesh::~ComponentMesh()
 
 void ComponentMesh::LoadDataToVRAM()
 {
-	if (num_tris > 0)
-	{
-		glGenBuffers(1, (GLuint*) &(id_tris));
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_tris);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point3ui) * num_tris, tris, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	// create VBOs
+	glGenBuffers(1, &vboId);    // for vertex buffer
+	glGenBuffers(1, &iboId);    // for index buffer
 
-	}
+	size_t vSize = sizeof(Vector3f) * num_vertices;
+	size_t tSize = sizeof(fPoint) * num_vertices;
 
-	if (num_vertices > 0) 
-	{
-		glGenBuffers(1, (GLuint*) &(id_vertices));
-		glBindBuffer(GL_ARRAY_BUFFER, id_vertices);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Point3f) * num_vertices, vertices, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// copy vertex attribs data to VBO
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBufferData(GL_ARRAY_BUFFER, vSize + vSize + vSize + tSize, 0, GL_STATIC_DRAW); // reserve space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices);                  // copy verts at offset 0
+	glBufferSubData(GL_ARRAY_BUFFER, vSize, vSize, normals);               // copy norms after verts
+	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize, vSize, colors);          // copy cols after norms
+	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize + vSize, tSize, tex_coords); // copy texs after cols
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	}
-
-	if (normals) {
-
-		glGenBuffers(1, (GLuint*) &(id_normals));
-		glBindBuffer(GL_ARRAY_BUFFER, id_normals);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Point3f) * num_vertices, normals, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	if (tex_coords) {
-		glGenBuffers(1, (GLuint*) &(id_tex_coords));
-		glBindBuffer(GL_ARRAY_BUFFER, id_tex_coords);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(fPoint) * num_vertices, tex_coords, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
+	// copy index data to VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Vector3ui) * num_tris, tris, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 
@@ -89,39 +81,43 @@ void ComponentMesh::Draw() {
 	if (active_texture)
 		glEnable(GL_TEXTURE_2D);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_tris);
-	glBindBuffer(GL_ARRAY_BUFFER, id_vertices);
-	glBindBuffer(GL_TEXTURE_COORD_ARRAY, id_tex_coords);
-	glBindBuffer(GL_NORMAL_ARRAY, id_normals);
+	// bind VBOs before drawing
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
 
+	// enable vertex arrays
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	glColor3f(1.0f, 1.0f, 1.0f);
-
 	if (active_texture)
 		glBindTexture(GL_TEXTURE_2D, mat->getGLid());
 
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-	glNormalPointer(GL_FLOAT, 0, NULL);
+	size_t Offset = sizeof(Vector3f) * num_vertices;
+
+	// specify vertex arrays with their offsets
+	glVertexPointer(3, GL_FLOAT, 0, (void*)0);
+	glNormalPointer(GL_FLOAT, 0, (void*)Offset);
+	glColorPointer(3, GL_FLOAT, 0, (void*)(Offset * 2));
+	glTexCoordPointer(2, GL_FLOAT, 0, (void*)(Offset * 3));
+
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
 	if (active_texture)
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glBindBuffer(GL_NORMAL_ARRAY, 0);
-	glBindBuffer(GL_TEXTURE_COORD_ARRAY, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	// unbind VBOs
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	if (active_texture)
 		glDisable(GL_TEXTURE_2D);
@@ -154,6 +150,41 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	tris[6].set(0, 2, 4);	tris[7].set(6, 4, 2);	//down
 	tris[8].set(4, 1, 0);	tris[9].set(1, 4, 5);	//left
 	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
+
+	tex_coords = new fPoint[num_vertices];
+	tex_coords[0].create(0.0f, 0.0f);
+	tex_coords[1].create(0.5f, 0.0f);
+	tex_coords[2].create(0.5f, 0.5f);
+	tex_coords[3].create(0.0f, 0.5f);
+
+	tex_coords[4].create(1.0f, 0.0f);
+	tex_coords[5].create(0.0f, 1.0f);
+	tex_coords[6].create(0.0f, 0.0f);
+	tex_coords[7].create(1.0f, 1.0f);
+}
+
+void ComponentMesh::BuildPlane(float sx, float sy)
+{
+	sx *= 0.5f, sy *= 0.5f;
+
+	num_vertices = 4;
+	vertices = new Point3f[num_vertices];
+
+	vertices[0].set(-sx, -sy, 0);
+	vertices[1].set(sx, -sy, 0);
+	vertices[2].set(-sx, sy, 0);
+	vertices[3].set(sx, sy, 0);
+
+	num_tris = 2;
+	tris = new Point3ui[num_tris];
+
+	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);	
+
+	tex_coords = new fPoint[num_vertices];
+	tex_coords[0].create(0.0f, 0.0f);
+	tex_coords[1].create(1.0f, 0.0f);
+	tex_coords[2].create(0.0f, 1.0f);
+	tex_coords[3].create(1.0f, 1.0f);
 }
 
 
@@ -183,10 +214,23 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	else
 		return false;
 
+	normals = new Point3f[num_vertices];
 	if (imported_mesh->HasNormals())
-	{
-		normals = new Point3f[num_vertices];
 		memcpy(normals, imported_mesh->mNormals, sizeof(Point3f) * num_vertices);
+	
+
+	colors = new Point3f[num_vertices];
+	if (imported_mesh->HasVertexColors(0))
+		memcpy(normals, imported_mesh->mColors[0], sizeof(Point3f) * num_vertices);
+	else
+	{
+		srand(num_vertices + time(NULL));
+		float R = ((float)(rand() % 101)) / 100;
+		float G = ((float)(rand() % 101)) / 100;
+		float B = ((float)(rand() % 101)) / 100;
+
+		for (int i = 0; i < num_vertices; i++)
+			colors[i].set(R, G, B);
 	}
 
 	if (imported_mesh->HasTextureCoords(0))

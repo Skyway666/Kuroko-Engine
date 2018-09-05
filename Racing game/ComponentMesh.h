@@ -33,6 +33,7 @@ private:
 
 	void LoadDataToVRAM();
 	void BuildCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
+	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	bool LoadFromAssimpMesh(aiMesh* mesh);
 
 private:
@@ -42,18 +43,16 @@ private:
 	Material* mat = nullptr;
 
 	//Mesh data
-	uint id_tris = 0;
+	uint iboId = 0;
+	uint vboId = 0;
+
 	uint num_tris = 0;
-	Point3ui* tris = nullptr;
-
-	uint id_vertices = 0;
 	uint num_vertices = 0;
-	Point3f* vertices = nullptr;
 
-	uint id_normals = 0;
-	Point3f* normals = nullptr;
-
-	uint id_tex_coords = 0;
-	fPoint* tex_coords = nullptr;
+	Point3ui* tris		= nullptr;
+	Point3f* vertices	= nullptr;
+	Point3f* normals	= nullptr;
+	Point3f* colors		= nullptr;
+	fPoint* tex_coords	= nullptr;
 
 };

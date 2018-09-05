@@ -3,8 +3,6 @@
 #include "MathGeoLib\MathBuildConfig.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include "MathGeoLib\MathGeoLibFwd.h"
-#include "p2Point.h"
-#include "Globals.h"
 
 using namespace math;
 

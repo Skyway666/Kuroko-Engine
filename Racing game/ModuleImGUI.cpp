@@ -63,11 +63,12 @@ bool ModuleImGUI::Init() {
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
-	show_demo_window = false;
-	show_graphic_tab = true;
-	show_test_tab = true;
-	show_hierarchy_tab = true;
-	show_object_inspector = true;
+	open_tabs[DEMO]				= false;
+	open_tabs[GRAPHIC]			= true;
+	open_tabs[TEST]				= true;
+	open_tabs[HIERARCHY]		= true;
+	open_tabs[OBJ_INSPECTOR]	= true;
+	open_tabs[PRIMITIVE]		= true;
 
 
 	return true;
@@ -88,13 +89,13 @@ update_status ModuleImGUI::Update(float dt) {
 
 	// 1. Show a simple window.
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-	if(show_test_tab)
+	if(open_tabs[TEST])
 	{
 		// features functionality
 
-		ImGui::Checkbox("Graphic tab", &show_graphic_tab);
+		ImGui::Checkbox("Graphic tab", &open_tabs[GRAPHIC]);
 
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
+		ImGui::Checkbox("Demo Window", &open_tabs[DEMO]);      // Edit bools storing our windows open/close state
 
 		// test functionality
 		static float f = 0.0f;
@@ -115,26 +116,32 @@ update_status ModuleImGUI::Update(float dt) {
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
 
 	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) 
-		show_graphic_tab = !show_graphic_tab;
+		open_tabs[GRAPHIC] = !open_tabs[GRAPHIC];
 
-	if (show_graphic_tab) DrawGraphicsTab();
+	if (open_tabs[GRAPHIC]) DrawGraphicsTab();
 
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-	if (show_demo_window) {
+	if (open_tabs[DEMO]) {
 		ImGui::SetNextWindowPos(ImVec2(650, 320), ImGuiCond_FirstUseEver); 
-		ImGui::ShowDemoWindow(&show_demo_window);
+		ImGui::ShowDemoWindow(&open_tabs[DEMO]);
 	}
 
-	if (show_hierarchy_tab)
+	if (open_tabs[HIERARCHY])
 	{
 		ImGui::SetNextWindowPos(ImVec2(0, 220), ImGuiCond_FirstUseEver); 
 		DrawHierarchyTab();
 	}
 
-	if (show_object_inspector)
+	if (open_tabs[OBJ_INSPECTOR])
 	{
 		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
 		DrawObjectInspectorTab();
+	}
+
+	if (open_tabs[PRIMITIVE])
+	{
+		ImGui::SetNextWindowPos(ImVec2(400, 320), ImGuiCond_FirstUseEver);
+		DrawPrimitivesTab();
 	}
 
 	return UPDATE_CONTINUE;
@@ -176,7 +183,7 @@ void ModuleImGUI::DrawGraphicsTab()
 	static bool antialias			= glIsEnabled(GL_LINE_SMOOTH);
 
 
-	ImGui::Begin("Graphics Tab", &show_graphic_tab);
+	ImGui::Begin("Graphics Tab", &open_tabs[GRAPHIC]);
 	ImGui::Text("Use this tab to enable/disable openGL characteristics");
 
 	if (ImGui::CollapsingHeader("Depth test"))
@@ -253,7 +260,7 @@ void ModuleImGUI::DrawGraphicsTab()
 
 void ModuleImGUI::DrawHierarchyTab()
 {
-	ImGui::Begin("Hierarchy Tab", &show_graphic_tab);
+	ImGui::Begin("Hierarchy Tab", &open_tabs[GRAPHIC]);
 	ImGui::Text("Use this tab to set the hierarchy of the scene objects");
 	int id = 0;
 
@@ -297,7 +304,7 @@ void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id)
 
 void ModuleImGUI::DrawObjectInspectorTab()
 {
-	ImGui::Begin("Object inspector", &show_object_inspector);
+	ImGui::Begin("Object inspector", &open_tabs[OBJ_INSPECTOR]);
 	ImGui::Text("Use this tab to add, edit and remove components of gameobjects");
 
 	static bool show_rename = false;
@@ -388,4 +395,25 @@ void ModuleImGUI::DrawComponent(Component* component)
 	default:
 		break;
 	}
+}
+
+void ModuleImGUI::DrawPrimitivesTab()
+{
+	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
+	ImGui::Text("Use this tab to add primitives to the scene");
+
+	if (ImGui::Button("Add cube"))
+	{
+		GameObject* cube = new GameObject("Cube");
+		cube->addComponent(new ComponentMesh(cube, Primitive_Cube));
+		App->scene_intro->game_objects.push_back(cube);
+	}
+	if (ImGui::Button("Add plane"))
+	{
+		GameObject* plane = new GameObject("Plane");
+		plane->addComponent(new ComponentMesh(plane, Primitive_Plane));
+		App->scene_intro->game_objects.push_back(plane);
+	}
+
+	ImGui::End();
 }
