@@ -26,7 +26,7 @@ public:
 	void setWireframe(bool state) { wireframe = state; };
 	void setMaterial(Material* new_mat) { mat = new_mat; };
 
-	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_texcoords);
+	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
 	void assignCheckeredMat();
 
 private:
@@ -35,6 +35,7 @@ private:
 	void BuildCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
 	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	bool LoadFromAssimpMesh(aiMesh* mesh);
+	void ClearData();
 
 private:
 	bool loaded = false;
@@ -48,6 +49,9 @@ private:
 
 	uint num_tris = 0;
 	uint num_vertices = 0;
+	bool imported_normals = false;
+	bool imported_colors = false;
+	bool imported_tex_coords = false;
 
 	Point3ui* tris		= nullptr;
 	Point3f* vertices	= nullptr;

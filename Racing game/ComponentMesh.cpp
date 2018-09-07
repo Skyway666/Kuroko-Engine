@@ -39,9 +39,15 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, aiMesh* imported_mesh) : Co
 
 ComponentMesh::~ComponentMesh()
 {
-	if (vertices) delete vertices;
-	if (tris) delete tris;
-	if (normals) delete normals;
+	glDeleteBuffers(1, &iboId);
+	glDeleteBuffers(1, &vboId);
+
+	if (vertices)	delete vertices;
+	if (tris)		delete tris;
+	if (normals)	delete normals;
+	if (colors)		delete colors;
+	if (tex_coords) delete tex_coords;
+	if (mat)		delete mat;
 }
 
 void ComponentMesh::LoadDataToVRAM()
@@ -80,6 +86,8 @@ void ComponentMesh::Draw() {
 
 	if (active_texture)
 		glEnable(GL_TEXTURE_2D);
+	else
+		glEnableClientState(GL_COLOR_ARRAY);
 
 	// bind VBOs before drawing
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -88,7 +96,6 @@ void ComponentMesh::Draw() {
 	// enable vertex arrays
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -109,10 +116,11 @@ void ComponentMesh::Draw() {
 
 	if (active_texture)
 		glBindTexture(GL_TEXTURE_2D, 0);
+	else
+		glDisableClientState(GL_COLOR_ARRAY);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	// unbind VBOs
@@ -151,11 +159,24 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	tris[8].set(4, 1, 0);	tris[9].set(1, 4, 5);	//left
 	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
 
+	normals = new Point3f[num_vertices];
+	for (int i = 0; i < num_vertices; i++)
+		normals[i].set(0, 0, 0);
+
+	colors = new Point3f[num_vertices];
+	srand(num_vertices + time(NULL));
+	float R = ((float)(rand() % 101)) / 100;
+	float G = ((float)(rand() % 101)) / 100;
+	float B = ((float)(rand() % 101)) / 100;
+
+	for (int i = 0; i < num_vertices; i++)
+		colors[i].set(R, G, B);
+
 	tex_coords = new fPoint[num_vertices];
 	tex_coords[0].create(0.0f, 0.0f);
-	tex_coords[1].create(0.5f, 0.0f);
-	tex_coords[2].create(0.5f, 0.5f);
-	tex_coords[3].create(0.0f, 0.5f);
+	tex_coords[1].create(1.0f, 0.0f);
+	tex_coords[2].create(0.0f, 1.0f);
+	tex_coords[3].create(1.0f, 1.0f);
 
 	tex_coords[4].create(1.0f, 0.0f);
 	tex_coords[5].create(0.0f, 1.0f);
@@ -175,10 +196,24 @@ void ComponentMesh::BuildPlane(float sx, float sy)
 	vertices[2].set(-sx, sy, 0);
 	vertices[3].set(sx, sy, 0);
 
-	num_tris = 2;
+	num_tris = 4;
 	tris = new Point3ui[num_tris];
 
-	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);	
+	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);
+	tris[2].set(0, 2, 1);	tris[3].set(3, 1, 2);
+
+	normals = new Point3f[num_vertices];
+	for (int i = 0; i < num_vertices; i++)
+		normals[i].set(0, 0, 0);
+
+	colors = new Point3f[num_vertices];
+	srand(num_vertices + time(NULL));
+	float R = ((float)(rand() % 101)) / 100;
+	float G = ((float)(rand() % 101)) / 100;
+	float B = ((float)(rand() % 101)) / 100;
+
+	for (int i = 0; i < num_vertices; i++)
+		colors[i].set(R, G, B);
 
 	tex_coords = new fPoint[num_vertices];
 	tex_coords[0].create(0.0f, 0.0f);
@@ -190,6 +225,7 @@ void ComponentMesh::BuildPlane(float sx, float sy)
 
 bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 {
+	//vertices
 	if (imported_mesh->mNumVertices)
 	{
 		num_vertices = imported_mesh->mNumVertices;
@@ -199,6 +235,7 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	else
 		return false;
 
+	// faces
 	if (imported_mesh->HasFaces())
 	{
 		num_tris = imported_mesh->mNumFaces;
@@ -214,14 +251,26 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	else
 		return false;
 
+	// normals
 	normals = new Point3f[num_vertices];
 	if (imported_mesh->HasNormals())
+	{
+		imported_normals = true;
 		memcpy(normals, imported_mesh->mNormals, sizeof(Point3f) * num_vertices);
-	
+	}
+	else
+	{
+		for (int i = 0; i < num_vertices; i++)
+			normals[i].set(0.0f, 0.0f, 0.0f);
+	}
 
+	// colors
 	colors = new Point3f[num_vertices];
 	if (imported_mesh->HasVertexColors(0))
+	{
+		imported_colors = true;
 		memcpy(normals, imported_mesh->mColors[0], sizeof(Point3f) * num_vertices);
+	}
 	else
 	{
 		srand(num_vertices + time(NULL));
@@ -233,25 +282,30 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 			colors[i].set(R, G, B);
 	}
 
+	// texture coordinates
+	tex_coords = new fPoint[num_vertices];
 	if (imported_mesh->HasTextureCoords(0))
 	{
-		tex_coords = new fPoint[num_vertices];
+		imported_tex_coords = true;
 		for (int i = 0; i < num_vertices; i++)
-		{
-			tex_coords[i].x = imported_mesh->mTextureCoords[0][i].x;
-			tex_coords[i].y = imported_mesh->mTextureCoords[0][i].y;
-		}
+			tex_coords[i].create(imported_mesh->mTextureCoords[0][i].x, imported_mesh->mTextureCoords[0][i].y);
+	}
+	else
+	{
+		for (int i = 0; i < num_vertices; i++)
+			tex_coords->create(0.0f, 0.0f);
 	}
 
 	return true;
 }
 
-void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_texcoords)
+void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords)
 {
 	vert_num = num_vertices;
 	poly_count = num_tris;
-	has_normals = normals;
-	has_texcoords = tex_coords;
+	has_normals = imported_normals;
+	has_colors = imported_colors;
+	has_texcoords = imported_tex_coords;
 }
 
 void ComponentMesh::assignCheckeredMat()
@@ -261,4 +315,20 @@ void ComponentMesh::assignCheckeredMat()
 
 	mat = new Material();
 	mat->LoadCheckered();
+}
+
+void ComponentMesh::ClearData()
+{
+	glDeleteBuffers(1, &iboId);
+	glDeleteBuffers(1, &vboId);
+
+	if (vertices)	delete vertices;
+	if (tris)		delete tris;
+	if (normals)	delete normals;
+	if (colors)		delete colors;
+	if (tex_coords) delete tex_coords; 
+	if (mat)		delete mat;
+
+	loaded = imported_normals = imported_colors = imported_tex_coords = false;
+	num_vertices = num_tris = iboId = vboId = 0;
 }

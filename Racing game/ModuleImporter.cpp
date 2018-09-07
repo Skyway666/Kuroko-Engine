@@ -83,7 +83,9 @@ bool ModuleImporter::LoadRootMesh(const char* file, ComponentMesh* component_to_
 
 	if (imported_scene && imported_scene->HasMeshes())
 	{
-		component_to_load->LoadFromAssimpMesh(imported_scene->mMeshes[0]);
+		component_to_load->ClearData();
+		if (component_to_load->loaded = component_to_load->LoadFromAssimpMesh(imported_scene->mMeshes[0]))
+			component_to_load->LoadDataToVRAM();
 		aiReleaseImport(imported_scene);
 		return true;
 	}
@@ -96,4 +98,11 @@ bool ModuleImporter::LoadRootMesh(const char* file, ComponentMesh* component_to_
 Material* ModuleImporter::quickLoadTex(char* file)
 {
 	return new Material(ilutGLLoadImage(file));
+}
+
+Material* ModuleImporter::LoadTex(char* file, Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
+{
+	Material* mat = new Material(ilutGLLoadImage(file));
+	mat->setParameters(wrap, min_filter, mag_filter);
+	return mat;
 }

@@ -2,20 +2,16 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 
-
-void Material::LoadToVRAM(const void* pixels, Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
+Material::~Material()
 {
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &id);
-	glBindTexture(GL_TEXTURE_2D, id);
-	setParameters(wrap, min_filter, mag_filter);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SIZE_CHECKERED, SIZE_CHECKERED, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (loaded)
+		glDeleteTextures(1, &id);
 }
 
-
-bool Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
+void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
 {
+	bool incompatible_parameter = false;
+	glBindTexture(GL_TEXTURE_2D, id);
 	wrap_mode = wrap;
 	switch (wrap)
 	{
@@ -36,7 +32,9 @@ bool Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 		break;
 	default: 
-		return false;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		incompatible_parameter =  true;
 	}
 
 	mag_filter_mode = mag_filter;
@@ -45,7 +43,8 @@ bool Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 	case LINEAR:	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); break;
 	case NEAREST:	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); break;
 	default:
-		return false;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); break;
+		incompatible_parameter = true;
 	}
 
 	min_filter_mode = min_filter;
@@ -56,10 +55,14 @@ bool Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 	case MIPMAP_NEAREST:	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST); break;
 	case MIPMAP_LINEAR:		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); break;
 	default:
-		return false;
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); break;
+		incompatible_parameter = true;
 	}
 
-	return true;
+	glBindTexture(GL_TEXTURE_2D, id);
+
+	if(incompatible_parameter)
+		APPLOG("error setting texture parameters")
 }
 
 void Material::LoadCheckered()
@@ -75,6 +78,13 @@ void Material::LoadCheckered()
 			pixels[i][j][3] = (GLubyte)255;
 		}
 	}
-	LoadToVRAM((void*) pixels);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &id);
+	setParameters(REPEAT, LINEAR, LINEAR);
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SIZE_CHECKERED, SIZE_CHECKERED, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	loaded = true;
 }

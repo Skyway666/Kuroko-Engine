@@ -28,6 +28,8 @@ bool ModuleScene::Start()
 
 // Load assets
 bool ModuleScene::CleanUp(){
+
+	game_objects.clear();
 	return true;
 }
 

@@ -69,6 +69,7 @@ bool ModuleImGUI::Init() {
 	open_tabs[HIERARCHY]		= true;
 	open_tabs[OBJ_INSPECTOR]	= true;
 	open_tabs[PRIMITIVE]		= true;
+	open_tabs[IMPORTER]			= true;
 
 
 	return true;
@@ -142,6 +143,11 @@ update_status ModuleImGUI::Update(float dt) {
 	{
 		ImGui::SetNextWindowPos(ImVec2(400, 320), ImGuiCond_FirstUseEver);
 		DrawPrimitivesTab();
+	}
+	if (open_tabs[IMPORTER])
+	{
+		ImGui::SetNextWindowPos(ImVec2(600, 520), ImGuiCond_FirstUseEver);
+		DrawImporterTab();
 	}
 
 	return UPDATE_CONTINUE;
@@ -379,13 +385,24 @@ void ModuleImGUI::DrawComponent(Component* component)
 			if (ImGui::Button("Load Texture"))
 				mesh->setMaterial(App->importer->quickLoadTex(texture_name_buffer));
 
+			static char rootmesh_name_buffer[64];
+			ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
+
+			ImGui::SameLine();
+			if (ImGui::Button("Load Root Mesh"))
+				App->importer->LoadRootMesh(rootmesh_name_buffer, mesh);
+
 			if (ImGui::CollapsingHeader("Mesh Data"))
 			{
-				uint vert_num = 0; uint poly_count = 0; bool has_normals = false; bool has_texcoords = false;
-				mesh->getData(vert_num, poly_count, has_normals, has_texcoords);
+				uint vert_num, poly_count; 
+				bool has_normals, has_colors, has_texcoords;
+
+				mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
 				ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
 				ImGui::SameLine();
 				ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
+				ImGui::SameLine();
+				ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
 				ImGui::SameLine();
 				ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
 			}
@@ -414,6 +431,22 @@ void ModuleImGUI::DrawPrimitivesTab()
 		plane->addComponent(new ComponentMesh(plane, Primitive_Plane));
 		App->scene_intro->game_objects.push_back(plane);
 	}
+
+	ImGui::End();
+}
+
+void ModuleImGUI::DrawImporterTab()
+{
+
+	ImGui::Begin("Importer", &open_tabs[PRIMITIVE]);
+	ImGui::Text("Use this tab to fbx and other files into the scene");
+
+	static char fbx_name_buffer[64];
+	ImGui::InputText("FBX to load", fbx_name_buffer, 64);
+
+	ImGui::SameLine();
+	if (ImGui::Button("Load FBX"))
+		App->scene_intro->game_objects.push_back(App->importer->LoadFBX(fbx_name_buffer));
 
 	ImGui::End();
 }
