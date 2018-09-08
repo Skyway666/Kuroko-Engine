@@ -63,7 +63,7 @@ GameObject* ModuleImporter::LoadFBX(const char* file)
 
 GameObject* ModuleImporter::LoadAssimpNode(aiNode* node, const aiScene* scene, GameObject* parent)
 {
-	GameObject* root_obj = new GameObject(node->mName.C_Str());
+	GameObject* root_obj = new GameObject(node->mName.C_Str(), parent);
 
 	for (int i = 0; i < node->mNumMeshes; i++)
 	{

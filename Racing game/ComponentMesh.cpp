@@ -1,13 +1,14 @@
 #include "ComponentMesh.h"
 #include "Math.h"
+#include "Color.h"
+#include "Material.h"
+#include "ComponentTransform.h"
+#include "GameObject.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
 #include "Assimp\include\scene.h"
-#include "Material.h"
 
-#include <cstdlib>
-#include <time.h>
 
 
 
@@ -83,6 +84,18 @@ void ComponentMesh::Draw() {
 		return;
 
 	bool active_texture = mat ? mat->isLoaded() : false;
+	ComponentTransform* transform = nullptr;
+	float4x4 view_mat = float4x4::identity;
+
+	if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+	{
+		GLfloat matrix[16];
+		glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+		view_mat.Set((float*)matrix);
+
+		glMatrixMode(GL_MODELVIEW_MATRIX);
+		glLoadMatrixf((GLfloat*)(transform->getInheritedTransform().Transposed() * view_mat).v);
+	}
 
 	if (active_texture)
 		glEnable(GL_TEXTURE_2D);
@@ -129,6 +142,9 @@ void ComponentMesh::Draw() {
 
 	if (active_texture)
 		glDisable(GL_TEXTURE_2D);
+
+	if (transform)
+		glLoadMatrixf((GLfloat*)view_mat.v);
 }
 
 
@@ -164,13 +180,11 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 		normals[i].set(0, 0, 0);
 
 	colors = new Point3f[num_vertices];
-	srand(num_vertices + time(NULL));
-	float R = ((float)(rand() % 101)) / 100;
-	float G = ((float)(rand() % 101)) / 100;
-	float B = ((float)(rand() % 101)) / 100;
+	Color random_color;
+	random_color.setRandom();
 
 	for (int i = 0; i < num_vertices; i++)
-		colors[i].set(R, G, B);
+		colors[i].set(random_color.r, random_color.g, random_color.b);
 
 	tex_coords = new fPoint[num_vertices];
 	tex_coords[0].create(0.0f, 0.0f);
@@ -207,13 +221,11 @@ void ComponentMesh::BuildPlane(float sx, float sy)
 		normals[i].set(0, 0, 0);
 
 	colors = new Point3f[num_vertices];
-	srand(num_vertices + time(NULL));
-	float R = ((float)(rand() % 101)) / 100;
-	float G = ((float)(rand() % 101)) / 100;
-	float B = ((float)(rand() % 101)) / 100;
+	Color random_color;
+	random_color.setRandom();
 
 	for (int i = 0; i < num_vertices; i++)
-		colors[i].set(R, G, B);
+		colors[i].set(random_color.r, random_color.g, random_color.b);
 
 	tex_coords = new fPoint[num_vertices];
 	tex_coords[0].create(0.0f, 0.0f);
@@ -273,13 +285,11 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	}
 	else
 	{
-		srand(num_vertices + time(NULL));
-		float R = ((float)(rand() % 101)) / 100;
-		float G = ((float)(rand() % 101)) / 100;
-		float B = ((float)(rand() % 101)) / 100;
+		Color random_color;
+		random_color.setRandom();
 
 		for (int i = 0; i < num_vertices; i++)
-			colors[i].set(R, G, B);
+			colors[i].set(random_color.r, random_color.g, random_color.b);
 	}
 
 	// texture coordinates

@@ -16,6 +16,7 @@
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentTransform.h"
 
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
@@ -408,6 +409,70 @@ void ModuleImGUI::DrawComponent(Component* component)
 			}
 		}
 		break;
+	case TRANSFORM:
+		if (ImGui::CollapsingHeader("Transform"))
+		{
+			ImGui::Text("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
+			ComponentTransform* transform = (ComponentTransform*)component;
+
+			static Vector3f position;
+			static Vector3f rotation;
+			static Vector3f scale;
+
+			position = transform->position;
+			rotation = transform->getRotationEuler();
+			scale = transform->scale;
+
+			rotation *= RADTODEG;
+
+			//position
+			ImGui::Text("Position:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("p z", &position.z, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			//rotation
+			ImGui::Text("Rotation:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("r x", &rotation.x, 0.2f, -180.0f, 180.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("r y", &rotation.y, 0.2f, -180.0f, 180.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.01f");
+
+			//scale
+			ImGui::Text("   Scale:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("s x", &scale.x, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("s y", &scale.y, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("s z", &scale.z, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			rotation *= DEGTORAD;
+
+			transform->SetPosition(position);
+			transform->SetRotationEuler(rotation);
+			transform->SetScale(scale);
+		}
 
 	default:
 		break;

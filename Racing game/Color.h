@@ -1,4 +1,3 @@
-
 #pragma once
 
 struct Color
@@ -18,6 +17,8 @@ struct Color
 		this->b = b;
 		this->a = a;
 	}
+
+	void setRandom();
 
 	float* operator & ()
 	{

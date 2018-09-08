@@ -10,7 +10,7 @@
 template <class TYPE>
 class Vector3
 {
-private:
+public:
 	TYPE x = 0.0f;
 	TYPE y = 0.0f;
 	TYPE z = 0.0f;

@@ -1,5 +1,11 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentTransform.h"
+
+GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent)
+{
+	addComponent((Component*)new ComponentTransform(this));
+}
 
 bool GameObject::Update(float dt)
 {

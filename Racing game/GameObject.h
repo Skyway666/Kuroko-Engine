@@ -22,7 +22,7 @@ public:
 public:
 
 	GameObject* parent = nullptr;
-	GameObject(const char* name, GameObject* parent = nullptr) : name(name), parent(parent) {};
+	GameObject(const char* name, GameObject* parent = nullptr);
 
 	bool Update(float dt);
 
