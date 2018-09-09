@@ -17,6 +17,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ComponentAABB.h"
 
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
@@ -329,6 +330,12 @@ void ModuleImGUI::DrawObjectInspectorTab()
 		ImGui::SameLine();
 		ImGui::Checkbox("Static", &selected_obj->is_static);
 
+		if (ImGui::CollapsingHeader("Add component"))
+		{
+			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
+			if (ImGui::Button("Add AABB"))  selected_obj->addComponent(C_AABB);
+		}
+
 		std::list<Component*> components;
 		selected_obj->getComponents(components);
 
@@ -367,8 +374,11 @@ void ModuleImGUI::DrawComponent(Component* component)
 		if (ImGui::CollapsingHeader("Mesh"))
 		{
 			ComponentMesh* mesh = (ComponentMesh*)component;
-			static bool wireframe_enabled = false;
-			static bool component_active = true;
+			static bool wireframe_enabled;
+			static bool component_active;
+
+			wireframe_enabled = mesh->getWireframe();
+			component_active = mesh->isActive();
 
 			if (ImGui::Checkbox("Is active", &component_active))
 				mesh->setActive(component_active);
@@ -451,21 +461,21 @@ void ModuleImGUI::DrawComponent(Component* component)
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.01f");
+			ImGui::DragFloat("r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.02f");
 
 			//scale
 			ImGui::Text("   Scale:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s x", &scale.x, 0.01f, 0.0f, 0.0f, "%.02f");
+			ImGui::DragFloat("s x", &scale.x, 0.01f, 0.01f, 1000.0f, "%.02f");
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s y", &scale.y, 0.01f, 0.0f, 0.0f, "%.02f");
+			ImGui::DragFloat("s y", &scale.y, 0.01f, 0.01f, 1000.0f, "%.02f");
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s z", &scale.z, 0.01f, 0.0f, 0.0f, "%.02f");
+			ImGui::DragFloat("s z", &scale.z, 0.01f, 0.01f, 1000.0f, "%.02f");
 
 			rotation *= DEGTORAD;
 
@@ -473,7 +483,30 @@ void ModuleImGUI::DrawComponent(Component* component)
 			transform->SetRotationEuler(rotation);
 			transform->SetScale(scale);
 		}
+		break;
 
+	case C_AABB:
+		if (ImGui::CollapsingHeader("AABB"))
+		{
+			ComponentAABB* aabb = (ComponentAABB*)component;
+
+			static bool aabb_active;
+			aabb_active = aabb->isActive();
+
+
+			if (ImGui::Checkbox("active AABB", &aabb_active))
+				aabb->setActive(aabb_active);
+
+			if (aabb_active)
+			{
+				static bool is_drawn;
+				is_drawn = aabb->draw;
+
+				if (ImGui::Checkbox("Is drawn", &is_drawn))
+					aabb->draw = is_drawn;
+			}
+		}
+		break;
 	default:
 		break;
 	}

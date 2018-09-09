@@ -2,7 +2,7 @@
 
 class GameObject;
 
-enum Component_type { NONE, MESH, TRANSFORM };
+enum Component_type { NONE, MESH, TRANSFORM, C_AABB };
 
 class Component
 {
@@ -19,9 +19,9 @@ public:
 	GameObject* getParent() { return parent; };
 	void setParent(GameObject* new_parent) { parent = new_parent; }
 
-	bool is_active = true;
 private:
 
+	bool is_active = true;
 	Component_type type = NONE;
 	GameObject* parent = nullptr;
 };

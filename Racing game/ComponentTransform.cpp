@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
+#include "Globals.h"
 
 
 ComponentTransform::ComponentTransform(GameObject* parent, Quat rot, Vector3f pos, Vector3f scl) : position(pos), scale(scl), rotation(rot), Component(parent, TRANSFORM)
@@ -66,15 +67,15 @@ void ComponentTransform::RotateAroundAxis(Vector3f axis, float rot_in_degrees)
 
 void ComponentTransform::SetRotationEuler(Vector3f euler_axis) 
 {
-	Quat rot = rot.FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z);
+	Quat rot = Quat::FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z);
 	mat = mat.FromTRS(position.toMathVec(), rot, scale.toMathVec());
 	rotation = rot;
 }
 
 Vector3f ComponentTransform::getRotationEuler()
 {
-	float3 rotation = mat.ToEulerXYZ();
-	return (Vector3f(rotation.x, rotation.y, rotation.z));
+	float3 rot = rotation.ToEulerXYZ();
+	return (Vector3f(rot.x, rot.y, rot.z));
 }
 
 void ComponentTransform::SetScale(Vector3f scl)

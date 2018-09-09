@@ -12,6 +12,7 @@ class Material;
 class ComponentMesh : public Component{
 
 	friend class ModuleImporter;
+	friend class ComponentAABB;
 
 public:
 
@@ -20,9 +21,10 @@ public:
 	ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive);
 	~ComponentMesh();
 
-	bool Update(float dt) { if (loaded && is_active) Draw(); return true; };
+	bool Update(float dt) { if (loaded && isActive()) Draw(); return true; };
 	void Draw();
 
+	bool getWireframe() { return wireframe; };
 	void setWireframe(bool state) { wireframe = state; };
 	void setMaterial(Material* new_mat) { mat = new_mat; };
 

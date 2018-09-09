@@ -55,6 +55,12 @@ public:
 		return(*this);
 	}
 
+	const Vector3& operator /=(const float &v)
+	{
+		x /= v; y /= v; z /= v;
+		return(*this);
+	}
+
 
 	// Utils ------------------------------------------------
 
@@ -111,7 +117,30 @@ public:
 		return sqrtf((fx*fx) + (fy*fy) + (fz*fz));
 	}
 
+	Vector3 Up() { return Vector3(0.0f, 1.0f, 0.0f); }
+	Vector3 Down() { return Vector3(0.0f, -1.0f, 0.0f); }
+	Vector3 Right() { return Vector3(1.0f, 0.0f, 0.0f); }
+	Vector3 Left() { return Vector3(-1.0f, 0.0f, 0.0f); }
+	Vector3 Forward() { return Vector3(0.0f, 0.0f, 1.0f); }
+	Vector3 Back() { return Vector3(0.0f, 0.0f, -1.0f); }
+
+	void Rotate(Vector3<float> axis, int degrees)
+	{
+		btVector3 vec = toBtVec();
+		vec = vec.rotate(axis.toBtVec(), degrees);
+		x = vec.x(); y = vec.y(); z = vec.z();
+	}
+
+	void RotateEuler(float X, float Y, float Z)
+	{
+		btVector3 vec = toBtVec();
+		vec = vec.rotate(Right().toBtVec(), X);
+		vec = vec.rotate(Up().toBtVec(), Y);
+		vec = vec.rotate(Forward().toBtVec(), Z);
+		x = vec.x(); y = vec.y(); z = vec.z();
+	}
 };
+
 
 typedef Vector3<float> Vector3f;
 typedef Vector3<float> Point3f;
@@ -119,3 +148,6 @@ typedef Vector3<int> Vector3i;
 typedef Vector3<int> Point3i;
 typedef Vector3<unsigned int> Vector3ui;
 typedef Vector3<unsigned int> Point3ui;
+
+
+

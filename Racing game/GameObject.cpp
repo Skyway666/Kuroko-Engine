@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ComponentAABB.h"
 
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent)
 {
@@ -66,9 +67,8 @@ Component* GameObject::addComponent(Component_type type)
 
 	switch (type)
 	{
-	case MESH:
-		components.push_back(new ComponentMesh(this));
-		break;
+	case MESH:		components.push_back(new ComponentMesh(this)); break;
+	case C_AABB:	components.push_back(new ComponentAABB(this)); break;
 	default:
 		break;
 	}
