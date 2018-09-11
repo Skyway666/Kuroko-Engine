@@ -34,23 +34,21 @@ ComponentAABB::ComponentAABB(GameObject* parent) : Component(parent, C_AABB)
 
 	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
 
-	lowest_p += transform->position; highest_p += transform->position;
-	last_pos = transform->position;
-
-	lowest_p.x *= transform->scale.x; lowest_p.y *= transform->scale.y; lowest_p.z *= transform->scale.z;
-	highest_p.x *= transform->scale.x; highest_p.y *= transform->scale.y; highest_p.z *= transform->scale.z;
-	last_scl = transform->scale;
+	mesh_center = ((lowest_p + highest_p) * 0.5f).toMathVec();
 	
-	aabb = new AABB(lowest_p.toMathVec(), highest_p.toMathVec());
-	obb = new OBB(aabb->ToOBB());
+	obb = new OBB();
+	obb->pos = Centroid();
+	obb->r = highest_p.toMathVec() - Centroid();
 
-	Vector3f euler_rot = transform->getRotationEuler();
-	float3x3 rotation_mat = float3x3::identity;
-	rotation_mat.RotateX(euler_rot.x); rotation_mat.RotateY(euler_rot.y); rotation_mat.RotateZ(euler_rot.z);
-	obb->Transform(rotation_mat);
-	last_rot = euler_rot;
+	obb->axis[0] = transform->Right();
+	obb->axis[1] = transform->Up();
+	obb->axis[2] = transform->Forward();
 
-	*aabb = obb->MinimalEnclosingAABB();
+	aabb = new AABB(obb->MinimalEnclosingAABB());
+
+	last_pos = transform->getPosition();
+	last_rot = transform->getRotation();
+	last_scl = transform->getScale();;
 }
 
 ComponentAABB::~ComponentAABB()
@@ -63,32 +61,44 @@ bool ComponentAABB::Update(float dt)
 {
 	if (isActive())
 	{
-		if (transform->position != last_pos)
+		bool update = false;
+
+		if (transform->getPosition() != last_pos)
 		{
-			aabb->Translate((transform->position - last_pos).toMathVec()); obb->Translate((transform->position - last_pos).toMathVec());
-			last_pos = transform->position;
+			last_pos = transform->getPosition();
+			update = true;
 		}
 
-		if ((transform->getRotationEuler()) != last_rot)
+		if (!transform->getRotation().Equals(last_rot))
 		{
-			Vector3f euler_rot = transform->getRotationEuler();
-			float3x3 rotation_mat = float3x3::FromEulerXYZ(euler_rot.x- last_rot.x, euler_rot.y - last_rot.y, euler_rot.z - last_rot.z);
-			obb->Transform(rotation_mat);
-			last_rot = euler_rot;
+			obb->axis[0] = transform->Right();
+			obb->axis[1] = transform->Up();
+			obb->axis[2] = transform->Forward();
 
+			last_rot = transform->getRotation();
+			update = true;
+		}
+
+		if (transform->getScale() != last_scl)
+		{
+			Vector3f scale = transform->getScale();
+			Vector3f scale_proportion = { scale.x / last_scl.x, scale.y / last_scl.y, scale.z / last_scl.z };
+			obb->r = { obb->r.x * scale_proportion.x, obb->r.y * scale_proportion.y, obb->r.z * scale_proportion.z };
+
+			last_scl = scale;
+			update = true;
+		}
+
+		if (update)
+		{
+			obb->pos = Centroid();
 			*aabb = obb->MinimalEnclosingAABB();
 		}
 
-		if (transform->scale != last_scl)
-		{
-			Vector3f scl_propotion = { transform->scale.x / last_scl.x, transform->scale.y / last_scl.y, transform->scale.z / last_scl.z };
-			aabb->Scale(aabb->CenterPoint(), scl_propotion.toMathVec());
-			obb->Scale(aabb->CenterPoint(), scl_propotion.toMathVec());
-			last_scl = transform->scale;
-		}
-
-		if (draw)
+		if (draw_aabb)
 			DrawAABB();
+		if (draw_obb)
+			DrawOBB();
 	}
 	return true;
 }
@@ -124,6 +134,22 @@ void ComponentAABB::DrawAABB()
 	glLineWidth(1.0f);
 }
 
+void ComponentAABB::DrawOBB()
+{
+	glLineWidth(1.5f);
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glBegin(GL_LINES);
+
+	for (int i = 0; i < 12; i++)
+		{ glVertex3f(obb->Edge(i).a.x, obb->Edge(i).a.y, obb->Edge(i).a.z);		glVertex3f(obb->Edge(i).b.x, obb->Edge(i).b.y, obb->Edge(i).b.z); }
+	
+	glEnd();
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glLineWidth(1.0f);
+}
+
 
 void ComponentAABB::getAllMeshes(GameObject* obj,std::list<Component*>& list_to_fill)
 {
@@ -134,4 +160,18 @@ void ComponentAABB::getAllMeshes(GameObject* obj,std::list<Component*>& list_to_
 
 	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
 		getAllMeshes(*it, list_to_fill);
+}
+
+float3 ComponentAABB::Centroid()
+{
+	float3 centroid = { mesh_center.x * transform->getScale().x, mesh_center.y * transform->getScale().y , mesh_center.z * transform->getScale().z };
+	centroid = transform->getRotation() * centroid;
+	centroid += transform->getPosition().toMathVec();
+	return centroid;
+}
+
+Vector3f ComponentAABB::getCentroid()
+{
+	float3 centroid = Centroid();
+	return Vector3f(centroid.x, centroid.y, centroid.z);
 }

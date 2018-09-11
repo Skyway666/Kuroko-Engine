@@ -433,7 +433,6 @@ void ModuleImGUI::DrawComponent(Component* component)
 			rotation = transform->getRotationEuler();
 			scale = transform->scale;
 
-			rotation *= RADTODEG;
 
 			//position
 			ImGui::Text("Position:");
@@ -467,21 +466,19 @@ void ModuleImGUI::DrawComponent(Component* component)
 			ImGui::Text("   Scale:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s x", &scale.x, 0.01f, 0.01f, 1000.0f, "%.02f");
+			ImGui::DragFloat("s x", &scale.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s y", &scale.y, 0.01f, 0.01f, 1000.0f, "%.02f");
+			ImGui::DragFloat("s y", &scale.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s z", &scale.z, 0.01f, 0.01f, 1000.0f, "%.02f");
+			ImGui::DragFloat("s z", &scale.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
-			rotation *= DEGTORAD;
-
-			transform->SetPosition(position);
-			transform->SetRotationEuler(rotation);
-			transform->SetScale(scale);
+			transform->setPosition(position);
+			transform->setRotationEuler(rotation);
+			transform->setScale(scale);
 		}
 		break;
 
@@ -499,11 +496,17 @@ void ModuleImGUI::DrawComponent(Component* component)
 
 			if (aabb_active)
 			{
-				static bool is_drawn;
-				is_drawn = aabb->draw;
+				static bool aabb_drawn;
+				aabb_drawn = aabb->draw_aabb;
 
-				if (ImGui::Checkbox("Is drawn", &is_drawn))
-					aabb->draw = is_drawn;
+				if (ImGui::Checkbox("AABB drawn", &aabb_drawn))
+					aabb->draw_aabb = aabb_drawn;
+
+				static bool obb_drawn;
+				obb_drawn = aabb->draw_obb;
+
+				if (ImGui::Checkbox("OBB drawn", &obb_drawn))
+					aabb->draw_obb = obb_drawn;
 			}
 		}
 		break;

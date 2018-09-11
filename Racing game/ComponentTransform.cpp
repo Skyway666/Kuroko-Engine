@@ -2,31 +2,12 @@
 #include "GameObject.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
-#include "Globals.h"
 
-
-ComponentTransform::ComponentTransform(GameObject* parent, Quat rot, Vector3f pos, Vector3f scl) : position(pos), scale(scl), rotation(rot), Component(parent, TRANSFORM)
-{
-	mat = mat.FromTRS(position.toMathVec(), rotation, scale.toMathVec());
-}
-
-ComponentTransform::ComponentTransform(GameObject* parent, Vector3f euler_axis, Vector3f pos, Vector3f scl) : position(pos), scale(scl), Component(parent, TRANSFORM)
-{
-	rotation = rotation.FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z);
-	mat = mat.FromTRS(position.toMathVec(), rotation, scale.toMathVec());
-}
 
 ComponentTransform::ComponentTransform(GameObject* parent, ComponentTransform& transform) : Component(parent, TRANSFORM)
 {
 	position = transform.position; rotation = transform.rotation; scale = transform.scale;
-	mat = transform.mat;
 }
-
-ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, TRANSFORM)
-{
-	mat = mat.FromTRS(position.toMathVec(), rotation, scale.toMathVec());
-}
-
 
 float4x4 ComponentTransform::getInheritedTransform()
 {
@@ -34,68 +15,56 @@ float4x4 ComponentTransform::getInheritedTransform()
 	if (GameObject* parent_obj = obj->getParent())
 	{
 		ComponentTransform* parent_transform = (ComponentTransform*)parent_obj->getComponent(TRANSFORM);
-		return mat * parent_transform->getInheritedTransform();
+		return getModelViewMatrix() * parent_transform->getInheritedTransform();
 	}
 	else
-		return mat;
+		return getModelViewMatrix();
 }
 
-void ComponentTransform::SetPosition(Vector3f pos)
+
+
+void ComponentTransform::setRotationEuler(Vector3f euler) 
 {
-	mat = mat.FromTRS(pos.toMathVec(), rotation, scale.toMathVec());
-	position = pos;
+	rotation = Quat::identity;
+	rotation = rotation * rotation.RotateX(DegToRad(euler.x));
+	rotation = rotation * rotation.RotateY(DegToRad(euler.y));
+	rotation = rotation * rotation.RotateZ(DegToRad(euler.z));
+	euler_angles = euler.toMathVec();
 }
 
-void ComponentTransform::Translate(Vector3f dir) 
+void ComponentTransform::LookAt(Vector3f position, Vector3f target, Vector3f forward, Vector3f up)
 {
-	mat = mat.FromTRS((position + dir).toMathVec(), rotation, scale.toMathVec());
-	position += dir;
+	mat = mat.LookAt(position.toMathVec(), target.toMathVec(), forward.toMathVec(), up.toMathVec(), position.Up.toMathVec());
+	rotation = mat.RotatePart().ToQuat();
 }
 
-void ComponentTransform::SetRotation(Quat rot)
+float4x4 ComponentTransform::getModelViewMatrix()
 {
-	mat = mat.FromTRS(position.toMathVec(), rot, scale.toMathVec());
-	rotation = rot;
+	mat = float4x4::identity;
+	mat = mat * rotation;
+	mat = mat * mat.Scale(scale.toMathVec());
+	mat.SetTranslatePart(position.toMathVec());
+	return mat;
 }
 
-void ComponentTransform::RotateAroundAxis(Vector3f axis, float rot_in_degrees)
+
+float3 ComponentTransform::Forward()
 {
-	mat = mat.RotateAxisAngle(axis.toMathVec(), DegToRad(rot_in_degrees));
-	float3 euler_axis = mat.ToEulerXYZ();
-	rotation = rotation.FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z);
+	float3 forward = { 0.0f, 0.0f, 1.0f };
+	forward = rotation * forward;
+	return forward;
 }
 
-void ComponentTransform::SetRotationEuler(Vector3f euler_axis) 
+float3 ComponentTransform::Up()
 {
-	Quat rot = Quat::FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z);
-	mat = mat.FromTRS(position.toMathVec(), rot, scale.toMathVec());
-	rotation = rot;
+	float3 up = { 0.0f, 1.0f, 0.0f };
+	up = rotation * up;
+	return up;
 }
 
-Vector3f ComponentTransform::getRotationEuler()
+float3 ComponentTransform::Right()
 {
-	float3 rot = rotation.ToEulerXYZ();
-	return (Vector3f(rot.x, rot.y, rot.z));
+	float3 right = { 1.0f, 0.0f, 0.0f };
+	right = rotation * right;
+	return right;
 }
-
-void ComponentTransform::SetScale(Vector3f scl)
-{
-	mat = mat.FromTRS(position.toMathVec(), rotation, scl.toMathVec());
-	scale = scl;
-}
-
-void ComponentTransform::Scale(Vector3f scl) 
-{
-	mat = mat.FromTRS(position.toMathVec(), rotation, (scale + scl).toMathVec());
-	scale += scl;
-}
-
-void ComponentTransform::LookAt(Vector3f position, Vector3f target, Vector3f forward, Vector3f up, Vector3f worldUp)
-{
-	mat = mat.LookAt(position.toMathVec(), target.toMathVec(), forward.toMathVec(), up.toMathVec(), worldUp.toMathVec());
-	this->position = position;
-	float3 euler_axis = mat.ToEulerXYZ();
-	rotation = rotation.FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z);
-}
-
-

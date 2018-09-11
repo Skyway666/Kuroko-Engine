@@ -117,13 +117,6 @@ public:
 		return sqrtf((fx*fx) + (fy*fy) + (fz*fz));
 	}
 
-	Vector3 Up() { return Vector3(0.0f, 1.0f, 0.0f); }
-	Vector3 Down() { return Vector3(0.0f, -1.0f, 0.0f); }
-	Vector3 Right() { return Vector3(1.0f, 0.0f, 0.0f); }
-	Vector3 Left() { return Vector3(-1.0f, 0.0f, 0.0f); }
-	Vector3 Forward() { return Vector3(0.0f, 0.0f, 1.0f); }
-	Vector3 Back() { return Vector3(0.0f, 0.0f, -1.0f); }
-
 	void Rotate(Vector3<float> axis, int degrees)
 	{
 		btVector3 vec = toBtVec();
@@ -134,13 +127,22 @@ public:
 	void RotateEuler(float X, float Y, float Z)
 	{
 		btVector3 vec = toBtVec();
-		vec = vec.rotate(Right().toBtVec(), X);
-		vec = vec.rotate(Up().toBtVec(), Y);
-		vec = vec.rotate(Forward().toBtVec(), Z);
+		vec = vec.rotate(Right.toBtVec(), X);
+		vec = vec.rotate(Up.toBtVec(), Y);
+		vec = vec.rotate(Forward.toBtVec(), Z);
 		x = vec.x(); y = vec.y(); z = vec.z();
 	}
-};
 
+	static Vector3<float> Up;
+	static Vector3<float> Down;
+	static Vector3<float> Right;
+	static Vector3<float> Left;
+	static Vector3<float> Forward;
+	static Vector3<float> Back;
+	static Vector3<float> Zero;
+	static Vector3<float> One;
+
+};
 
 typedef Vector3<float> Vector3f;
 typedef Vector3<float> Point3f;
@@ -148,6 +150,15 @@ typedef Vector3<int> Vector3i;
 typedef Vector3<int> Point3i;
 typedef Vector3<unsigned int> Vector3ui;
 typedef Vector3<unsigned int> Point3ui;
+
+ Vector3<float> Vector3f::Up = { 0.0f, 1.0f, 0.0f };
+ Vector3<float> Vector3f::Down = { 0.0f, -1.0f, 0.0f };
+ Vector3<float> Vector3f::Right = { 1.0f, 0.0f, 0.0f };
+ Vector3<float> Vector3f::Left = { -1.0f, 0.0f, 0.0f };
+ Vector3<float> Vector3f::Forward = { 0.0f, 0.0f, 1.0f };
+ Vector3<float> Vector3f::Back = { 0.0f, 0.0f, -1.0f };
+ Vector3<float> Vector3f::Zero = { 0.0f, 0.0f, 0.0f };
+ Vector3<float> Vector3f::One = { 1.0f, 1.0f, 1.0f };
 
 
 

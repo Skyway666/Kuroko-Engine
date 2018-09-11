@@ -2,6 +2,7 @@
 
 #include "Vector3.h"
 #include "Component.h"
+#include "Color.h"
 
 #include <list>
 
@@ -13,14 +14,21 @@ public:
 	ComponentAABB(GameObject* parent);
 	~ComponentAABB();
 
-	void DrawAABB();
-	void getAllMeshes(GameObject* obj, std::list<Component*>& list_to_fill);
 	bool Update(float dt);
 	math::AABB* getAABB() { return aabb; };
 	math::OBB* getOBB() { return obb; };
+	void DrawAABB();
+	void DrawOBB();
+	Vector3f getCentroid();
 
 public:
-	bool draw = false;
+	bool draw_aabb = false;
+	bool draw_obb = false;
+
+private:
+
+	void getAllMeshes(GameObject* obj, std::list<Component*>& list_to_fill);
+	float3 Centroid();
 
 private: 
 
@@ -30,5 +38,7 @@ private:
 	ComponentTransform* transform = nullptr;
 	Vector3f last_pos = { 0.0f, 0.0f, 0.0f };
 	Vector3f last_scl = { 0.0f, 0.0f, 0.0f };
-	Vector3f last_rot = { 0.0f, 0.0f, 0.0f };
+	Quat last_rot = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	float3 mesh_center = { 0.0f, 0.0f, 0.0f };
 };
