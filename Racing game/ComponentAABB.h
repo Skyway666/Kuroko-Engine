@@ -11,14 +11,18 @@ class ComponentTransform;
 class ComponentAABB : public Component
 {
 public:
-	ComponentAABB(GameObject* parent);
+	ComponentAABB(GameObject* parent) : Component(parent, C_AABB) { Reload(); };
 	~ComponentAABB();
 
 	bool Update(float dt);
+	void Reload();
+
 	math::AABB* getAABB() { return aabb; };
 	math::OBB* getOBB() { return obb; };
+
 	void DrawAABB();
 	void DrawOBB();
+
 	Vector3f getCentroid();
 
 public:

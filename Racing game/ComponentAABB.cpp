@@ -5,7 +5,13 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ComponentTransform.h"
 
-ComponentAABB::ComponentAABB(GameObject* parent) : Component(parent, C_AABB)
+ComponentAABB::~ComponentAABB()
+{
+	if (aabb) delete aabb;
+	if (obb) delete obb;
+}
+
+void ComponentAABB::Reload()
 {
 	std::list<Component*> meshes;
 	getAllMeshes(getParent(), meshes);
@@ -35,8 +41,10 @@ ComponentAABB::ComponentAABB(GameObject* parent) : Component(parent, C_AABB)
 	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
 
 	mesh_center = ((lowest_p + highest_p) * 0.5f).toMathVec();
-	
-	obb = new OBB();
+
+	if (!obb)
+		obb = new OBB();
+
 	obb->pos = Centroid();
 	obb->r = highest_p.toMathVec() - Centroid();
 
@@ -44,17 +52,14 @@ ComponentAABB::ComponentAABB(GameObject* parent) : Component(parent, C_AABB)
 	obb->axis[1] = transform->Up();
 	obb->axis[2] = transform->Forward();
 
-	aabb = new AABB(obb->MinimalEnclosingAABB());
+	if (!aabb)
+		aabb = new AABB();
+
+	*aabb = obb->MinimalEnclosingAABB();
 
 	last_pos = transform->getPosition();
 	last_rot = transform->getRotation();
-	last_scl = transform->getScale();;
-}
-
-ComponentAABB::~ComponentAABB()
-{
-	if (aabb) delete aabb;
-	if (obb) delete obb;
+	last_scl = transform->getScale();
 }
 
 bool ComponentAABB::Update(float dt)

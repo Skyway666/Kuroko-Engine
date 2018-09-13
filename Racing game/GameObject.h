@@ -13,6 +13,7 @@ private:
 	std::list<GameObject*> children;
 	std::string name;
 
+	GameObject* parent = nullptr;
 
 public:
 
@@ -21,13 +22,13 @@ public:
 
 public:
 
-	GameObject* parent = nullptr;
 	GameObject(const char* name, GameObject* parent = nullptr);
 
 	bool Update(float dt);
 
-	void addComponent(Component* component) { components.push_back(component); };
+	void addComponent(Component* component);
 	Component* addComponent(Component_type type);
+	void removeComponent(Component* component);
 
 	Component* getComponent(Component_type type);
 	bool getComponents(Component_type type, std::list<Component*>& list_to_fill);

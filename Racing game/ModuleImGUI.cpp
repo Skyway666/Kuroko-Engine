@@ -339,9 +339,13 @@ void ModuleImGUI::DrawObjectInspectorTab()
 		std::list<Component*> components;
 		selected_obj->getComponents(components);
 
+		std::list<Component*> components_to_erase;
 		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
-			DrawComponent(*it);
+			if (!DrawComponent(*it))
+				components_to_erase.push_back(*it);
 
+		for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
+			selected_obj->removeComponent(*it);
 	}
 	else if (show_rename)
 		show_rename = false;
@@ -366,7 +370,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 	}
 }
 
-void ModuleImGUI::DrawComponent(Component* component)
+bool ModuleImGUI::DrawComponent(Component* component)
 {
 	switch (component->getType())
 	{
@@ -375,48 +379,55 @@ void ModuleImGUI::DrawComponent(Component* component)
 		{
 			ComponentMesh* mesh = (ComponentMesh*)component;
 			static bool wireframe_enabled;
-			static bool component_active;
+			static bool mesh_active;
 
 			wireframe_enabled = mesh->getWireframe();
-			component_active = mesh->isActive();
+			mesh_active = mesh->isActive();
 
-			if (ImGui::Checkbox("Is active", &component_active))
-				mesh->setActive(component_active);
+			if (ImGui::Checkbox("Is active", &mesh_active))
+				mesh->setActive(mesh_active);
 
-			if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
-				mesh->setWireframe(wireframe_enabled);
-
-			if (ImGui::Button("Load checkered texture"))
-				mesh->assignCheckeredMat();
-
-			static char texture_name_buffer[64];
-			ImGui::InputText("texture to load", texture_name_buffer, 64);
-
-			ImGui::SameLine();
-			if (ImGui::Button("Load Texture"))
-				mesh->setMaterial(App->importer->quickLoadTex(texture_name_buffer));
-
-			static char rootmesh_name_buffer[64];
-			ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
-
-			ImGui::SameLine();
-			if (ImGui::Button("Load Root Mesh"))
-				App->importer->LoadRootMesh(rootmesh_name_buffer, mesh);
-
-			if (ImGui::CollapsingHeader("Mesh Data"))
+			if (mesh_active)
 			{
-				uint vert_num, poly_count; 
-				bool has_normals, has_colors, has_texcoords;
 
-				mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
-				ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
+				if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
+					mesh->setWireframe(wireframe_enabled);
+
+				if (ImGui::Button("Load checkered texture"))
+					mesh->assignCheckeredMat();
+
+				static char texture_name_buffer[64];
+				ImGui::InputText("texture to load", texture_name_buffer, 64);
+
 				ImGui::SameLine();
-				ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
+				if (ImGui::Button("Load Texture"))
+					mesh->setMaterial(App->importer->quickLoadTex(texture_name_buffer));
+
+				static char rootmesh_name_buffer[64];
+				ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
+
 				ImGui::SameLine();
-				ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
-				ImGui::SameLine();
-				ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
+				if (ImGui::Button("Load Root Mesh"))
+					App->importer->LoadRootMesh(rootmesh_name_buffer, mesh);
+
+				if (ImGui::CollapsingHeader("Mesh Data"))
+				{
+					uint vert_num, poly_count;
+					bool has_normals, has_colors, has_texcoords;
+
+					mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
+					ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
+					ImGui::SameLine();
+					ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
+					ImGui::SameLine();
+					ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
+					ImGui::SameLine();
+					ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
+				}
 			}
+
+			if (ImGui::Button("Remove mesh"))
+				return false;
 		}
 		break;
 	case TRANSFORM:
@@ -508,11 +519,16 @@ void ModuleImGUI::DrawComponent(Component* component)
 				if (ImGui::Checkbox("OBB drawn", &obb_drawn))
 					aabb->draw_obb = obb_drawn;
 			}
+
+			if (ImGui::Button("Remove AABB"))
+				return false;
 		}
 		break;
 	default:
 		break;
 	}
+
+	return true;
 }
 
 void ModuleImGUI::DrawPrimitivesTab()

@@ -25,7 +25,7 @@ public:
 	void DrawHierarchyTab();
 	void DrawHierarchyNode(GameObject* game_object, int& id);
 	void DrawObjectInspectorTab();
-	void DrawComponent(Component* component);
+	bool DrawComponent(Component* component);
 	void DrawPrimitivesTab();
 	void DrawImporterTab();
 

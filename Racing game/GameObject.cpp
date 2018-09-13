@@ -67,11 +67,65 @@ Component* GameObject::addComponent(Component_type type)
 
 	switch (type)
 	{
-	case MESH:		components.push_back(new ComponentMesh(this)); break;
-	case C_AABB:	components.push_back(new ComponentAABB(this)); break;
+	case MESH:		
+		new_component = new ComponentMesh(this); 
+		components.push_back(new_component);
+		if (ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB))
+			aabb->Reload();
+		break;
+	case C_AABB:	
+		if (!getComponent(C_AABB))
+		{
+			new_component = new ComponentAABB(this);
+			components.push_back(new_component);
+		}
 	default:
 		break;
 	}
 
 	return new_component;
+}
+
+void GameObject::addComponent(Component* component)
+{
+	switch (component->getType())
+	{
+	case MESH:	
+		components.push_back(component);
+		if (ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB))
+			aabb->Reload();
+		break;
+	case C_AABB:
+		if (!getComponent(C_AABB))
+			components.push_back(component);
+		break;
+	case TRANSFORM:
+		if (!getComponent(TRANSFORM))
+			components.push_back(component);
+		break;
+	default:
+		break;
+	}
+}
+
+
+void GameObject::removeComponent(Component* component)
+{
+	for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
+	{
+		if (component->getType() == TRANSFORM)
+			continue;
+		if (*it == component)
+		{
+			bool mesh = (component->getType() == MESH);
+			components.remove(component);
+			if (getComponent(C_AABB) && mesh)
+			{
+				ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB);
+				aabb->Reload();
+			}
+			break;
+		}
+	}
+	
 }
