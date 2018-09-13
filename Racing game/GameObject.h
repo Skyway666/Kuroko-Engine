@@ -3,10 +3,11 @@
 #include <list>
 #include <string>
 #include "Component.h"
+#include "Vector3.h"
 
 class GameObject
 {
-
+	
 private:
 
 	std::list<Component*> components;
@@ -14,6 +15,9 @@ private:
 	std::string name;
 
 	GameObject* parent = nullptr;
+
+	Vector3f centroid = Vector3f::Zero;
+	Vector3f half_size = Vector3f::Zero;
 
 public:
 
@@ -41,6 +45,14 @@ public:
 	GameObject* getParent() { return parent; };
 	void setParent(GameObject* parent) { this->parent = parent; }
 
+	Vector3f getCenter();	// transform applied
+	Vector3f getCentroid() { return centroid; };	// transform not applied
+	Vector3f getHalfsize() { return half_size; };
+
+	Vector3f getInheritedCenter();	// transform applied
+	Vector3f getInheritedCentroid();	// transform not applied
+	Vector3f getInheritedHalfsize();
+
 	bool isActive() { return is_active; }
 	bool isStatic() { return is_static; }
 	void setActive(bool state) { is_active = state; }
@@ -49,5 +61,6 @@ public:
 	void Rename(const char* new_name) { name = new_name; };
 	std::string getName() { return name; };
 
-
+private: 
+	void calculateCentroidandHalfsize();
 };

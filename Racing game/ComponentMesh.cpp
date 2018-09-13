@@ -22,6 +22,7 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) :
 		break;
 	}
 
+	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
 	loaded = true;
 }
@@ -30,6 +31,7 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, aiMesh* imported_mesh) : Co
 {
 	if (LoadFromAssimpMesh(imported_mesh))
 	{
+		calculateCentroidandHalfsize();
 		LoadDataToVRAM();
 		loaded = true;
 	}
@@ -307,6 +309,37 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	}
 
 	return true;
+}
+
+void ComponentMesh::calculateCentroidandHalfsize()
+{
+	Vector3f lowest_p = Vector3f::PosInfinity;
+	Vector3f highest_p = Vector3f::NegInfinity;
+
+	if (vertices)
+	{
+		for (int i = 0; i < num_vertices; i++)
+		{
+			if (lowest_p.x > vertices[i].x) lowest_p.x = vertices[i].x;
+			if (lowest_p.y > vertices[i].y) lowest_p.y = vertices[i].y;
+			if (lowest_p.z > vertices[i].z) lowest_p.z = vertices[i].z;
+
+			if (highest_p.x < vertices[i].x) highest_p.x = vertices[i].x;
+			if (highest_p.y < vertices[i].y) highest_p.y = vertices[i].y;
+			if (highest_p.z < vertices[i].z) highest_p.z = vertices[i].z;
+		}
+	}
+
+	centroid = ((lowest_p + highest_p) * 0.5f);
+	half_size = highest_p - centroid;
+
+	if (vertices)
+	{
+		for (int i = 0; i < num_vertices; i++)
+			vertices[i] -= centroid;
+	}
+
+	((ComponentTransform*)getParent()->getComponent(TRANSFORM))->setPosition(centroid);
 }
 
 void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords)

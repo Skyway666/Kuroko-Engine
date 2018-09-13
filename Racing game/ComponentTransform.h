@@ -5,7 +5,7 @@
 #include "MathGeoLib\MathGeoLib.h"
 
 
-class ComponentTransform : Component {
+class ComponentTransform : public Component {
 public:
 
 	friend class ModuleImGUI;

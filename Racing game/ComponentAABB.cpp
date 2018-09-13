@@ -5,6 +5,7 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ComponentTransform.h"
 
+
 ComponentAABB::~ComponentAABB()
 {
 	if (aabb) delete aabb;
@@ -13,40 +14,13 @@ ComponentAABB::~ComponentAABB()
 
 void ComponentAABB::Reload()
 {
-	std::list<Component*> meshes;
-	getAllMeshes(getParent(), meshes);
-
-	Vector3f lowest_p = { 0.0f, 0.0f, 0.0f };
-	Vector3f highest_p = { 0.0f, 0.0f, 0.0f };
-
-	if (!meshes.empty())
-		lowest_p = highest_p = ((ComponentMesh*)meshes.front())->vertices[0];
-
-	for (std::list<Component*>::iterator it = meshes.begin(); it != meshes.end(); it++)
-	{
-		ComponentMesh* mesh = (ComponentMesh*)(*it);
-
-		for (int i = 0; i < mesh->num_vertices; i++)
-		{
-			if (lowest_p.x > mesh->vertices[i].x) lowest_p.x = mesh->vertices[i].x;
-			if (lowest_p.y > mesh->vertices[i].y) lowest_p.y = mesh->vertices[i].y;
-			if (lowest_p.z > mesh->vertices[i].z) lowest_p.z = mesh->vertices[i].z;
-
-			if (highest_p.x < mesh->vertices[i].x) highest_p.x = mesh->vertices[i].x;
-			if (highest_p.y < mesh->vertices[i].y) highest_p.y = mesh->vertices[i].y;
-			if (highest_p.z < mesh->vertices[i].z) highest_p.z = mesh->vertices[i].z;
-		}
-	}
-
-	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
-
-	mesh_center = ((lowest_p + highest_p) * 0.5f).toMathVec();
-
 	if (!obb)
 		obb = new OBB();
 
-	obb->pos = Centroid();
-	obb->r = highest_p.toMathVec() - Centroid();
+	obb->pos = getParent()->getInheritedCenter().toMathVec();
+	obb->r = getParent()->getInheritedHalfsize().toMathVec();
+
+	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
 
 	obb->axis[0] = transform->Right();
 	obb->axis[1] = transform->Up();
@@ -57,9 +31,13 @@ void ComponentAABB::Reload()
 
 	*aabb = obb->MinimalEnclosingAABB();
 
-	last_pos = transform->getPosition();
+	last_pos = getParent()->getInheritedCenter();
 	last_rot = transform->getRotation();
 	last_scl = transform->getScale();
+
+
+	Vector3f scale_proportion = { last_scl.x / 1.0f, last_scl.y / 1.0f, last_scl.z / 1.0f };
+	obb->r = { obb->r.x * scale_proportion.x, obb->r.y * scale_proportion.y, obb->r.z * scale_proportion.z };
 }
 
 bool ComponentAABB::Update(float dt)
@@ -68,9 +46,9 @@ bool ComponentAABB::Update(float dt)
 	{
 		bool update = false;
 
-		if (transform->getPosition() != last_pos)
+		if (getParent()->getInheritedCenter() != last_pos)
 		{
-			last_pos = transform->getPosition();
+			last_pos = getParent()->getInheritedCenter();
 			update = true;
 		}
 
@@ -96,7 +74,7 @@ bool ComponentAABB::Update(float dt)
 
 		if (update)
 		{
-			obb->pos = Centroid();
+			obb->pos = getParent()->getInheritedCenter().toMathVec();
 			*aabb = obb->MinimalEnclosingAABB();
 		}
 
@@ -148,6 +126,7 @@ void ComponentAABB::DrawOBB()
 
 	for (int i = 0; i < 12; i++)
 		{ glVertex3f(obb->Edge(i).a.x, obb->Edge(i).a.y, obb->Edge(i).a.z);		glVertex3f(obb->Edge(i).b.x, obb->Edge(i).b.y, obb->Edge(i).b.z); }
+
 	
 	glEnd();
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -155,28 +134,3 @@ void ComponentAABB::DrawOBB()
 	glLineWidth(1.0f);
 }
 
-
-void ComponentAABB::getAllMeshes(GameObject* obj,std::list<Component*>& list_to_fill)
-{
-	obj->getComponents(MESH, list_to_fill);
-
-	std::list<GameObject*> children;
-	obj->getChildren(children);
-
-	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
-		getAllMeshes(*it, list_to_fill);
-}
-
-float3 ComponentAABB::Centroid()
-{
-	float3 centroid = { mesh_center.x * transform->getScale().x, mesh_center.y * transform->getScale().y , mesh_center.z * transform->getScale().z };
-	centroid = transform->getRotation() * centroid;
-	centroid += transform->getPosition().toMathVec();
-	return centroid;
-}
-
-Vector3f ComponentAABB::getCentroid()
-{
-	float3 centroid = Centroid();
-	return Vector3f(centroid.x, centroid.y, centroid.z);
-}

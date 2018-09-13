@@ -518,6 +518,9 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 				if (ImGui::Checkbox("OBB drawn", &obb_drawn))
 					aabb->draw_obb = obb_drawn;
+
+				if (ImGui::Button("Reload AABB"))
+					aabb->Reload();
 			}
 
 			if (ImGui::Button("Remove AABB"))

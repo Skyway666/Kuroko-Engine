@@ -13,6 +13,7 @@ class ComponentMesh : public Component{
 
 	friend class ModuleImporter;
 	friend class ComponentAABB;
+	friend class GameObject;
 
 public:
 
@@ -30,6 +31,7 @@ public:
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
 	void assignCheckeredMat();
+	Vector3f getCentroid() { return centroid; };
 
 private:
 
@@ -38,6 +40,9 @@ private:
 	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	bool LoadFromAssimpMesh(aiMesh* mesh);
 	void ClearData();
+
+private:
+	void calculateCentroidandHalfsize();
 
 private:
 	bool loaded = false;
@@ -61,4 +66,6 @@ private:
 	Point3f* colors		= nullptr;
 	fPoint* tex_coords	= nullptr;
 
+	Vector3f centroid = Vector3f::Zero;
+	Vector3f half_size = Vector3f::Zero;
 };

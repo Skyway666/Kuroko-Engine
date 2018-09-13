@@ -7,6 +7,8 @@
 #include "glmath.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
+#include <limits>
+
 template <class TYPE>
 class Vector3
 {
@@ -141,6 +143,8 @@ public:
 	static Vector3<float> Back;
 	static Vector3<float> Zero;
 	static Vector3<float> One;
+	static Vector3<float> PosInfinity;
+	static Vector3<float> NegInfinity;
 
 };
 
@@ -159,6 +163,8 @@ typedef Vector3<unsigned int> Point3ui;
  Vector3<float> Vector3f::Back = { 0.0f, 0.0f, -1.0f };
  Vector3<float> Vector3f::Zero = { 0.0f, 0.0f, 0.0f };
  Vector3<float> Vector3f::One = { 1.0f, 1.0f, 1.0f };
+ Vector3<float> Vector3f::PosInfinity = { std::numeric_limits<float>::infinity() , std::numeric_limits<float>::infinity() , std::numeric_limits<float>::infinity() };
+ Vector3<float> Vector3f::NegInfinity = { -std::numeric_limits<float>::infinity() , -std::numeric_limits<float>::infinity() , -std::numeric_limits<float>::infinity() };
 
 
 
