@@ -178,8 +178,11 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
 
 	normals = new Point3f[num_vertices];
-	for (int i = 0; i < num_vertices; i++)
-		normals[i].set(0, 0, 0);
+	for (int i = 0; i < num_vertices; i++){
+		normals[i] = centroid + vertices[i];
+		normals[i].Normalize();
+	} // TO BE TESTED
+		
 
 	colors = new Point3f[num_vertices];
 	Color random_color;
