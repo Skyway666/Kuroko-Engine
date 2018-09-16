@@ -179,7 +179,7 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 
 	normals = new Point3f[num_vertices];
 	for (int i = 0; i < num_vertices; i++){
-		normals[i] = centroid + vertices[i];
+		normals[i] = vertices[i] - centroid;
 		normals[i].Normalize();
 	} // TO BE TESTED
 		
