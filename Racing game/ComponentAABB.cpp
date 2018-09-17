@@ -17,7 +17,7 @@ void ComponentAABB::Reload()
 	if (!obb)
 		obb = new OBB();
 
-	obb->pos = getParent()->getInheritedCenter().toMathVec();
+	obb->pos = getParent()->getInheritedCentroid().toMathVec();
 	obb->r = getParent()->getInheritedHalfsize().toMathVec();
 
 	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
@@ -30,14 +30,6 @@ void ComponentAABB::Reload()
 		aabb = new AABB();
 
 	*aabb = obb->MinimalEnclosingAABB();
-
-	last_pos = getParent()->getInheritedCenter();
-	last_rot = transform->getRotation();
-	last_scl = transform->getScale();
-
-
-	Vector3f scale_proportion = { last_scl.x / 1.0f, last_scl.y / 1.0f, last_scl.z / 1.0f };
-	obb->r = { obb->r.x * scale_proportion.x, obb->r.y * scale_proportion.y, obb->r.z * scale_proportion.z };
 }
 
 bool ComponentAABB::Update(float dt)
@@ -46,38 +38,34 @@ bool ComponentAABB::Update(float dt)
 	{
 		bool update = false;
 
-		if (getParent()->getInheritedCenter() != last_pos)
+		float3 inh_centroid = getParent()->getInheritedCentroid().toMathVec();
+		if (!inh_centroid.Equals(obb->pos))
 		{
-			last_pos = getParent()->getInheritedCenter();
+			obb->pos = inh_centroid;
 			update = true;
 		}
 
-		if (!transform->getRotation().Equals(last_rot))
+		if (!transform->Right().Equals(obb->axis[0]))
 		{
 			obb->axis[0] = transform->Right();
 			obb->axis[1] = transform->Up();
 			obb->axis[2] = transform->Forward();
 
-			last_rot = transform->getRotation();
 			update = true;
 		}
 
-		if (transform->getScale() != last_scl)
-		{
-			Vector3f scale = transform->getScale();
-			Vector3f scale_proportion = { scale.x / last_scl.x, scale.y / last_scl.y, scale.z / last_scl.z };
-			obb->r = { obb->r.x * scale_proportion.x, obb->r.y * scale_proportion.y, obb->r.z * scale_proportion.z };
 
-			last_scl = scale;
+		float3 inh_halfsize = getParent()->getInheritedHalfsize().toMathVec();
+		if (!inh_halfsize.Equals(obb->r))
+		{
+			obb->r = inh_halfsize;
 			update = true;
 		}
 
 		if (update)
-		{
-			obb->pos = getParent()->getInheritedCenter().toMathVec();
 			*aabb = obb->MinimalEnclosingAABB();
-		}
-
+		
+		
 		if (draw_aabb)
 			DrawAABB();
 		if (draw_obb)

@@ -31,7 +31,6 @@ public:
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
 	void assignCheckeredMat();
-	Vector3f getCentroid() { return centroid; };
 
 private:
 
@@ -42,7 +41,7 @@ private:
 	void ClearData();
 
 private:
-	void calculateCentroidandHalfsize();
+	void calculateHalfsize();
 
 private:
 	bool loaded = false;
@@ -66,6 +65,5 @@ private:
 	Point3f* colors		= nullptr;
 	fPoint* tex_coords	= nullptr;
 
-	Vector3f centroid = Vector3f::Zero;
 	Vector3f half_size = Vector3f::Zero;
 };

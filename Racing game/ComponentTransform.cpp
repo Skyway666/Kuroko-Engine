@@ -68,3 +68,8 @@ float3 ComponentTransform::Right()
 	right = rotation * right;
 	return right;
 }
+
+void ComponentTransform::setPosition(Vector3f pos)	{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Translate(Vector3f dir)	{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setScale(Vector3f scl)		{ scale = scl;		getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Scale(Vector3f scl)		{ scale += scl;		getParent()->calculateCentroidandHalfsize(); };

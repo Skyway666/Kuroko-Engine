@@ -22,7 +22,7 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) :
 		break;
 	}
 
-	calculateCentroidandHalfsize();
+	calculateHalfsize();
 	LoadDataToVRAM();
 	loaded = true;
 }
@@ -31,7 +31,6 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, aiMesh* imported_mesh) : Co
 {
 	if (LoadFromAssimpMesh(imported_mesh))
 	{
-		calculateCentroidandHalfsize();
 		LoadDataToVRAM();
 		loaded = true;
 	}
@@ -179,7 +178,7 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 
 	normals = new Point3f[num_vertices];
 	for (int i = 0; i < num_vertices; i++){
-		normals[i] = vertices[i] - centroid;
+		normals[i] = vertices[i];
 		normals[i].Normalize();
 	} // TO BE TESTED
 		
@@ -310,11 +309,12 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 		for (int i = 0; i < num_vertices; i++)
 			tex_coords->create(0.0f, 0.0f);
 	}
+	calculateHalfsize();
 
 	return true;
 }
 
-void ComponentMesh::calculateCentroidandHalfsize()
+void ComponentMesh::calculateHalfsize()
 {
 	Vector3f lowest_p = Vector3f::PosInfinity;
 	Vector3f highest_p = Vector3f::NegInfinity;
@@ -333,7 +333,7 @@ void ComponentMesh::calculateCentroidandHalfsize()
 		}
 	}
 
-	centroid = ((lowest_p + highest_p) * 0.5f);
+	Vector3f centroid = ((lowest_p + highest_p) * 0.5f);
 	half_size = highest_p - centroid;
 
 	if (vertices)

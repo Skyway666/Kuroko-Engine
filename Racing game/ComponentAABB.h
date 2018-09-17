@@ -35,8 +35,5 @@ private:
 	math::OBB* obb = nullptr;
 
 	ComponentTransform* transform = nullptr;
-	Vector3f last_pos = { 0.0f, 0.0f, 0.0f };
-	Vector3f last_scl = { 0.0f, 0.0f, 0.0f };
-	Quat last_rot = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 };

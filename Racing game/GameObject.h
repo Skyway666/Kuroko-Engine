@@ -7,7 +7,7 @@
 
 class GameObject
 {
-	
+	friend class ComponentTransform;
 private:
 
 	std::list<Component*> components;
@@ -45,11 +45,9 @@ public:
 	GameObject* getParent() { return parent; };
 	void setParent(GameObject* parent) { this->parent = parent; }
 
-	Vector3f getCenter();	// transform applied
-	Vector3f getCentroid() { return centroid; };	// transform not applied
+	Vector3f getCentroid() { return centroid; };	
 	Vector3f getHalfsize() { return half_size; };
 
-	Vector3f getInheritedCenter();	// transform applied
 	Vector3f getInheritedCentroid();	// transform not applied
 	Vector3f getInheritedHalfsize();
 

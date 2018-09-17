@@ -19,10 +19,10 @@ public:
 
 	float4x4 getInheritedTransform();
 
-	void setPosition(Vector3f pos) { position = pos; };
-	void Translate(Vector3f dir) { position += dir; };
-	void setScale(Vector3f scl) { scale = scl; };
-	void Scale(Vector3f scl) { scale += scl; };
+	void setPosition(Vector3f pos);
+	void Translate(Vector3f dir);
+	void setScale(Vector3f scl);
+	void Scale(Vector3f scl);
 	void setRotation(Quat rot) { rotation = rot; euler_angles = rot.ToEulerXYZ(); };
 	void setRotationEuler(Vector3f euler);
 	void RotateAroundAxis(Vector3f axis, float rot_in_degrees) { rotation.RotateAxisAngle(axis.toMathVec(), DegToRad(rot_in_degrees)); euler_angles = rotation.ToEulerXYZ();};
