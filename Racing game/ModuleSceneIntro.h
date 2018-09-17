@@ -14,12 +14,6 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-
-	// PROVISIONAL
-	void ShowAboutWindow();
-	bool show_engine_about = false;
-
-
 public:
 
 	std::list<GameObject*> game_objects;

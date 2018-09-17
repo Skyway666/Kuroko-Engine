@@ -19,10 +19,13 @@
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 
+#include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
+#pragma comment( lib, "glew-2.1.0/lib/glew32.lib")
+#pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
 
 
 
@@ -154,7 +157,28 @@ update_status ModuleImGUI::Update(float dt) {
 		DrawImporterTab();
 	}
 
-	return UPDATE_CONTINUE;
+	bool close_app = false;
+
+	if (show_engine_about)
+		ShowAboutWindow();
+
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Quit"))
+				close_app = true;
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help")) {
+			ImGui::MenuItem("About", NULL, &show_engine_about);
+			ImGui::EndMenu();
+		}
+	}
+	ImGui::EndMainMenuBar();
+
+	if (!close_app)
+		return UPDATE_CONTINUE;
+	else
+		return UPDATE_STOP;
 
 }
 
@@ -570,5 +594,19 @@ void ModuleImGUI::DrawImporterTab()
 	if (ImGui::Button("Load FBX"))
 		App->scene_intro->game_objects.push_back(App->importer->LoadFBX(fbx_name_buffer));
 
+	ImGui::End();
+}
+
+void ModuleImGUI::ShowAboutWindow() {
+	ImGui::Begin("About", &show_engine_about);
+	ImGui::Text("Kuroko Engine");
+	ImGui::Separator();
+	ImGui::Text("By Rodrigo de Pedro Lombao and Lucas Garcia Mateu.");
+	ImGui::Text("Kuroko Engine is licensed under the MIT License.\n");
+	ImGui::Text("Using Glew %s", glewGetString(GLEW_VERSION));
+	ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
+	ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
+	ImGui::Text("OpenGL version supported %s", glGetString(GL_VERSION));
+	ImGui::Text("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	ImGui::End();
 }
