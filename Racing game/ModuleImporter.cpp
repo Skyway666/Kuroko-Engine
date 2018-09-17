@@ -15,9 +15,9 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
-#pragma comment (lib, "DevIL/lib/x86/Release/DevIL.lib")
-#pragma comment (lib, "DevIL/lib/x86/Release/ILU.lib")
-#pragma comment (lib, "DevIL/lib/x86/Release/ILUT.lib")
+#pragma comment (lib, "DevIL/lib/DevIL.lib")
+#pragma comment (lib, "DevIL/lib/ILU.lib")
+#pragma comment (lib, "DevIL/lib/ILUT.lib")
 
 
 ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {}
