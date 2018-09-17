@@ -21,9 +21,9 @@ public:
 
 	Vector3() {};
 	Vector3(TYPE x, TYPE y, TYPE z) : x(x), y(y), z(z) {};
-	Vector3(float3 vec) : x(vec.x), y(vec.y), z(vec.z) {};
-	Vector3(btVector3 vec) : x(vec.x), y(vec.y), z(vec.z) {};
-	Vector3(vec3 vec) : x(vec.x), y(vec.y), z(vec.z) {};
+	Vector3(float3& vec) : x(vec.x), y(vec.y), z(vec.z) {};
+	Vector3(btVector3& vec) : x(vec.x), y(vec.y), z(vec.z) {};
+	Vector3(vec3& vec) : x(vec.x), y(vec.y), z(vec.z) {};
 
 
 	float3	  toMathVec() { return float3((float)x, (float)y, (float)z); };
