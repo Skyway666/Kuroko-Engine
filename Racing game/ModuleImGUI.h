@@ -31,6 +31,8 @@ public:
 
 private:
 
+	void ShowAboutWindow();
+	bool show_engine_about = false;
 	bool open_tabs[LAST];
 	ImGuiIO io;
 };
