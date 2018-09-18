@@ -32,7 +32,6 @@ bool ModuleCamera3D::Start()
 bool ModuleCamera3D::CleanUp()
 {
 	APPLOG("Cleaning camera");
-
 	return true;
 }
 
@@ -53,6 +52,25 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
+
+
+	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT) {
+		int dx = -App->input->GetMouseXMotion();
+		int dy = -App->input->GetMouseYMotion();
+
+		float Sensitivity = 0.01f;
+
+		if (dx != 0) {
+			float DeltaX = (float)dx * Sensitivity;
+			newPos += X * DeltaX;
+		}
+
+		if (dy != 0) {
+			float DeltaY = (float)dy * Sensitivity;
+			newPos.y -= DeltaY;
+		}
+
+	}
 
 	Position += newPos;
 	Reference += newPos;
@@ -93,6 +111,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * length(Position);
 	}
+
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
