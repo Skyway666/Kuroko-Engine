@@ -1,9 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "glmath.h"
 #include "Light.h"
-#include "p2Point.h"
 
 #include "SDL\include\SDL.h"
 

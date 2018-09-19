@@ -59,7 +59,7 @@ void ComponentMesh::LoadDataToVRAM()
 	glGenBuffers(1, &iboId);    // for index buffer
 
 	size_t vSize = sizeof(Vector3f) * num_vertices;
-	size_t tSize = sizeof(fPoint) * num_vertices;
+	size_t tSize = sizeof(Point2f) * num_vertices;
 
 	// copy vertex attribs data to VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -190,16 +190,16 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	for (int i = 0; i < num_vertices; i++)
 		colors[i].set(random_color.r, random_color.g, random_color.b);
 
-	tex_coords = new fPoint[num_vertices];
-	tex_coords[0].create(0.0f, 0.0f);
-	tex_coords[1].create(1.0f, 0.0f);
-	tex_coords[2].create(0.0f, 1.0f);
-	tex_coords[3].create(1.0f, 1.0f);
-
-	tex_coords[4].create(1.0f, 0.0f);
-	tex_coords[5].create(0.0f, 1.0f);
-	tex_coords[6].create(0.0f, 0.0f);
-	tex_coords[7].create(1.0f, 1.0f);
+	tex_coords = new Point2f[num_vertices];
+	tex_coords[0] = {0.0f, 0.0f};
+	tex_coords[1] = {1.0f, 0.0f};
+	tex_coords[2] = {0.0f, 1.0f};
+	tex_coords[3] = {1.0f, 1.0f};
+			
+	tex_coords[4] = {1.0f, 0.0f};
+	tex_coords[5] = {0.0f, 1.0f};
+	tex_coords[6] = {0.0f, 0.0f};
+	tex_coords[7] = {1.0f, 1.0f};
 }
 
 void ComponentMesh::BuildPlane(float sx, float sy)
@@ -231,11 +231,11 @@ void ComponentMesh::BuildPlane(float sx, float sy)
 	for (int i = 0; i < num_vertices; i++)
 		colors[i].set(random_color.r, random_color.g, random_color.b);
 
-	tex_coords = new fPoint[num_vertices];
-	tex_coords[0].create(0.0f, 0.0f);
-	tex_coords[1].create(1.0f, 0.0f);
-	tex_coords[2].create(0.0f, 1.0f);
-	tex_coords[3].create(1.0f, 1.0f);
+	tex_coords = new Point2f[num_vertices];
+	tex_coords[0] = {0.0f, 0.0f};
+	tex_coords[1] = {1.0f, 0.0f};
+	tex_coords[2] = {0.0f, 1.0f};
+	tex_coords[3] = {1.0f, 1.0f};
 }
 
 
@@ -297,17 +297,17 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	}
 
 	// texture coordinates
-	tex_coords = new fPoint[num_vertices];
+	tex_coords = new Point2f[num_vertices];
 	if (imported_mesh->HasTextureCoords(0))
 	{
 		imported_tex_coords = true;
 		for (int i = 0; i < num_vertices; i++)
-			tex_coords[i].create(imported_mesh->mTextureCoords[0][i].x, imported_mesh->mTextureCoords[0][i].y);
+			tex_coords[i] = { imported_mesh->mTextureCoords[0][i].x, imported_mesh->mTextureCoords[0][i].y };
 	}
 	else
 	{
 		for (int i = 0; i < num_vertices; i++)
-			tex_coords->create(0.0f, 0.0f);
+			tex_coords[i].SetToZero();
 	}
 	calculateHalfsize();
 

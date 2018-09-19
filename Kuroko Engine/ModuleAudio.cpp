@@ -55,17 +55,12 @@ bool ModuleAudio::CleanUp()
 {
 	APPLOG("Freeing sound FX, closing Mixer and Audio subsystem");
 
-	if(music != NULL)
-	{
+	if(music)
 		Mix_FreeMusic(music);
-	}
 
-	p2List_item<Mix_Chunk*>* item;
+	for (std::list<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); it++)
+		Mix_FreeChunk(*it);
 
-	for(item = fx.getFirst(); item != NULL; item = item->next)
-	{
-		Mix_FreeChunk(item->data);
-	}
 
 	fx.clear();
 	Mix_CloseAudio();
@@ -130,33 +125,26 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 {
 	unsigned int ret = 0;
 
-	Mix_Chunk* chunk = Mix_LoadWAV(path);
+	if (Mix_Chunk* chunk = Mix_LoadWAV(path))
+		fx.push_back(chunk);
 
-	if(chunk == NULL)
-	{
-		APPLOG("Cannot load wav %s. Mix_GetError(): %s", path, Mix_GetError());
-	}
-	else
-	{
-		fx.add(chunk);
-		ret = fx.count();
-	}
 
-	return ret;
+	return fx.size();
 }
 
 // Play WAV
 bool ModuleAudio::PlayFx(unsigned int id, int repeat, int channel)
 {
-	bool ret = false;
-
-	Mix_Chunk* chunk = NULL;
-	
-	if(fx.at(id-1, chunk) == true)
+	int i = 0;
+	for (std::list<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); it++)
 	{
-		Mix_PlayChannel(channel, chunk, repeat);
-		ret = true;
+		i++;
+		if (id == i)
+		{
+			Mix_PlayChannel(channel, *it, repeat);
+			return true;
+		}
 	}
 
-	return ret;
+	return false;
 }

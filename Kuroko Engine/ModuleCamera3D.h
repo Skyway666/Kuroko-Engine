@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "glmath.h"
 
+#include "Vector3.h"
+
 class vec3;
 class btVector3;
 
@@ -30,6 +32,6 @@ public:
 	vec3 X, Y, Z, Position, Reference;
 
 private:
-
-	mat4x4 ViewMatrix, ViewMatrixInverse;
+	
+	float4x4 ViewMatrix, ViewMatrixInverse;
 };

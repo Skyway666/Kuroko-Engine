@@ -1,13 +1,22 @@
 #pragma once
 #include "Globals.h"
-#include "Primitive.h"
 #include "Component.h"
 
 #include "Vector3.h"
-#include "p2Point.h"
+#include "Vector2.h"
 
 class aiMesh;
 class Material;
+
+enum PrimitiveTypes
+{
+	Primitive_Point,
+	Primitive_Line,
+	Primitive_Plane,
+	Primitive_Cube,
+	Primitive_Sphere,
+	Primitive_Cylinder
+};
 
 class ComponentMesh : public Component{
 
@@ -63,7 +72,7 @@ private:
 	Point3f* vertices	= nullptr;
 	Point3f* normals	= nullptr;
 	Point3f* colors		= nullptr;
-	fPoint* tex_coords	= nullptr;
+	Point2f* tex_coords	= nullptr;
 
 	Vector3f half_size = Vector3f::Zero;
 };

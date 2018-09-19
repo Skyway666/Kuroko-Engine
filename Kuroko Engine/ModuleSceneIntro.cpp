@@ -1,11 +1,11 @@
 #include "Application.h"
 #include "ModuleSceneIntro.h"
-#include "Primitive.h"
 #include "ModuleCamera3D.h"
 #include "imgui.h"
 
 #include "GameObject.h"			// <--  testing purposes
 #include "ModuleImporter.h"	// <--  testing purposes
+#include "glmath.h"
 
 
 #include "SDL\include\SDL_opengl.h"
@@ -30,6 +30,7 @@ ModuleScene::~ModuleScene()
 bool ModuleScene::Start()
 {
 	game_objects.push_back(App->importer->LoadFBX("BakerHouse.fbx"));
+
 	return true;
 }
 
@@ -43,9 +44,9 @@ bool ModuleScene::CleanUp(){
 // Update
 update_status ModuleScene::Update(float dt)
 {
-	Primitives::Plane p(0, 1, 0, 0);
+	/*Primitives::Plane p(0, 1, 0, 0);
 	p.axis = true;
-	p.Render();
+	p.Render();*/
 
 	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Update(dt);
