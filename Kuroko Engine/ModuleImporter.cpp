@@ -13,7 +13,7 @@
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
 
-#pragma comment (lib, "Assimp/libx86/assimp.lib")
+#pragma comment (lib, "Assimp/lib/assimp.lib")
 
 #pragma comment (lib, "DevIL/lib/DevIL.lib")
 #pragma comment (lib, "DevIL/lib/ILU.lib")
