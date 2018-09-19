@@ -1,7 +1,5 @@
 #include "pcg_basic.h"
 
-
-
 int randomFromTo(int n1, int n2);
 
 float randomFloat();
