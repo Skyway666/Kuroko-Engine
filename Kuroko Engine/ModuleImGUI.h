@@ -35,5 +35,10 @@ private:
 	bool show_engine_about = false;
 	bool open_tabs[LAST];
 	ImGuiIO io;
+
+
+	// RANDOM TESTING
+	int bound1, bound2;
+	 
 };
 

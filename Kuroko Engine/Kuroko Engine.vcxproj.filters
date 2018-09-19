@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Sources">
@@ -48,6 +48,9 @@
     </Filter>
     <Filter Include="Sources\Helpers\MathGeoLib\Time">
       <UniqueIdentifier>{3a1b6f45-e4f3-412d-b2b4-c1b21db2e558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\RNG">
+      <UniqueIdentifier>{e28b8a70-d93d-47b1-bf23-6f6c221ce93b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +354,12 @@
     <ClInclude Include="ComponentAABB.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
+    <ClInclude Include="pcg_basic.h">
+      <Filter>Sources\Tools\RNG</Filter>
+    </ClInclude>
+    <ClInclude Include="RNG.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -529,6 +538,12 @@
     </ClCompile>
     <ClCompile Include="ComponentAABB.cpp">
       <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="pcg_basic.c">
+      <Filter>Sources\Tools\RNG</Filter>
+    </ClCompile>
+    <ClCompile Include="RNG.cpp">
+      <Filter>Sources\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
