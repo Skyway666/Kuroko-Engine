@@ -1,5 +1,6 @@
 #pragma once
 #include "Module.h"
+#include "MathGeoLib\MathGeoLib.h"
 #include <list>
 
 class GameObject;  // <--  testing purposes
@@ -18,4 +19,11 @@ public:
 
 	std::list<GameObject*> game_objects;
 	GameObject* selected_obj = nullptr;
+	
+	Sphere sphere;
+	float3 Scentre;
+	float Sradius;
+
+	AABB cube;
+	float3 Ccentre, Csize;
 };

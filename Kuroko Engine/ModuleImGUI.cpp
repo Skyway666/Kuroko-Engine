@@ -71,12 +71,12 @@ bool ModuleImGUI::Init() {
 	//IM_ASSERT(font != NULL);
 
 	open_tabs[DEMO]				= false;
-	open_tabs[GRAPHIC]			= true;
+	open_tabs[GRAPHIC]			= false;
 	open_tabs[TEST]				= true;
-	open_tabs[HIERARCHY]		= true;
-	open_tabs[OBJ_INSPECTOR]	= true;
-	open_tabs[PRIMITIVE]		= true;
-	open_tabs[IMPORTER]			= true;
+	open_tabs[HIERARCHY]		= false;
+	open_tabs[OBJ_INSPECTOR]	= false;
+	open_tabs[PRIMITIVE]		= false;
+	open_tabs[IMPORTER]			= false;
 
 	//RANDOM TESTING
 
