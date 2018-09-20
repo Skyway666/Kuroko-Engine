@@ -73,10 +73,11 @@ bool ModuleImGUI::Init() {
 	open_tabs[DEMO]				= false;
 	open_tabs[GRAPHIC]			= false;
 	open_tabs[TEST]				= true;
-	open_tabs[HIERARCHY]		= false;
-	open_tabs[OBJ_INSPECTOR]	= false;
+	open_tabs[HIERARCHY]		= true;
+	open_tabs[OBJ_INSPECTOR]	= true;
 	open_tabs[PRIMITIVE]		= false;
 	open_tabs[IMPORTER]			= false;
+	open_tabs[ABOUT]			= false;
 
 	//RANDOM TESTING
 
@@ -173,8 +174,8 @@ update_status ModuleImGUI::Update(float dt) {
 
 	bool close_app = false;
 
-	if (show_engine_about)
-		ShowAboutWindow();
+	if (open_tabs[ABOUT])
+		DrawAboutWindow();
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -182,10 +183,21 @@ update_status ModuleImGUI::Update(float dt) {
 				close_app = true;
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Help")) {
-			ImGui::MenuItem("About", NULL, &show_engine_about);
+		if (ImGui::BeginMenu("Windows")) {
+			ImGui::MenuItem("Demo", NULL, &open_tabs[DEMO]);
+			ImGui::MenuItem("Graphic", NULL, &open_tabs[GRAPHIC]);
+			ImGui::MenuItem("Test", NULL, &open_tabs[TEST]);
+			ImGui::MenuItem("Hierarchy", NULL, &open_tabs[HIERARCHY]);
+			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[OBJ_INSPECTOR]);
+			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
+			ImGui::MenuItem("Importer", NULL, &open_tabs[IMPORTER]);
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Help")) {
+			ImGui::MenuItem("About", NULL, &open_tabs[ABOUT]);
+			ImGui::EndMenu();
+		}
+	
 	}
 	ImGui::EndMainMenuBar();
 
@@ -611,8 +623,8 @@ void ModuleImGUI::DrawImporterTab()
 	ImGui::End();
 }
 
-void ModuleImGUI::ShowAboutWindow() {
-	ImGui::Begin("About", &show_engine_about);
+void ModuleImGUI::DrawAboutWindow() {
+	ImGui::Begin("About", &open_tabs[ABOUT]);
 	ImGui::Text("Kuroko Engine");
 	ImGui::Separator();
 	ImGui::Text("By Rodrigo de Pedro Lombao and Lucas Garcia Mateu.");
