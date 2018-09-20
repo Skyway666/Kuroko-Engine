@@ -153,16 +153,16 @@ typedef Vector3<int> Point3i;
 typedef Vector3<unsigned int> Vector3ui;
 typedef Vector3<unsigned int> Point3ui;
 
- Vector3<float> Vector3f::Up = { 0.0f, 1.0f, 0.0f };
- Vector3<float> Vector3f::Down = { 0.0f, -1.0f, 0.0f };
- Vector3<float> Vector3f::Right = { 1.0f, 0.0f, 0.0f };
- Vector3<float> Vector3f::Left = { -1.0f, 0.0f, 0.0f };
- Vector3<float> Vector3f::Forward = { 0.0f, 0.0f, 1.0f };
- Vector3<float> Vector3f::Back = { 0.0f, 0.0f, -1.0f };
- Vector3<float> Vector3f::Zero = { 0.0f, 0.0f, 0.0f };
- Vector3<float> Vector3f::One = { 1.0f, 1.0f, 1.0f };
- Vector3<float> Vector3f::PosInfinity = { std::numeric_limits<float>::infinity() , std::numeric_limits<float>::infinity() , std::numeric_limits<float>::infinity() };
- Vector3<float> Vector3f::NegInfinity = { -std::numeric_limits<float>::infinity() , -std::numeric_limits<float>::infinity() , -std::numeric_limits<float>::infinity() };
+Vector3<float> Vector3f::Up = { 0.0f, 1.0f, 0.0f };
+Vector3<float> Vector3f::Down = { 0.0f, -1.0f, 0.0f };
+Vector3<float> Vector3f::Right = { 1.0f, 0.0f, 0.0f };
+Vector3<float> Vector3f::Left = { -1.0f, 0.0f, 0.0f };
+Vector3<float> Vector3f::Forward = { 0.0f, 0.0f, 1.0f };
+Vector3<float> Vector3f::Back = { 0.0f, 0.0f, -1.0f };
+Vector3<float> Vector3f::Zero = { 0.0f, 0.0f, 0.0f };
+Vector3<float> Vector3f::One = { 1.0f, 1.0f, 1.0f };
+Vector3<float> Vector3f::PosInfinity = { std::numeric_limits<float>::infinity() , std::numeric_limits<float>::infinity() , std::numeric_limits<float>::infinity() };
+Vector3<float> Vector3f::NegInfinity = { -std::numeric_limits<float>::infinity() , -std::numeric_limits<float>::infinity() , -std::numeric_limits<float>::infinity() };
 
 
 

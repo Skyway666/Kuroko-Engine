@@ -13,11 +13,11 @@ public:
 	ComponentTransform(GameObject* parent, Quat rot, Vector3f pos, Vector3f scl) : position(pos), scale(scl), rotation(rot), Component(parent, TRANSFORM) {};
 	ComponentTransform(GameObject* parent, Vector3f euler_axis, Vector3f pos, Vector3f scl) : position(pos), scale(scl), Component(parent, TRANSFORM) {};
 	ComponentTransform(GameObject* parent, ComponentTransform& transform);
-	ComponentTransform(GameObject* parent) : Component(parent, TRANSFORM) {};
+	ComponentTransform(GameObject* parent) : Component(parent, TRANSFORM) { rotation = Quat::identity; };
 
 	~ComponentTransform() {};
 
-	float4x4 getInheritedTransform();
+	float4x4 getInheritedTransform(Vector3f pos = Vector3f::Zero, Quat rot = { 0.0f ,0.0f ,0.0f, 1.0f }, Vector3f scl = Vector3f::One);  // DON'T set values to the args
 
 	void setPosition(Vector3f pos);
 	void Translate(Vector3f dir);
@@ -44,7 +44,7 @@ private:
 
 	Vector3f position = { 0.0f,0.0f,0.0f };			
 	Vector3f scale = { 1.0f,1.0f,1.0f };				
-	Quat rotation = { 0.0f,0.0f,0.0f,0.0f };	
+	Quat rotation = { 0.0f,0.0f,0.0f,1.0f };	
 
 	float3 euler_angles = { 0.0f,0.0f,0.0f };
 

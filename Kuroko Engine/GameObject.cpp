@@ -174,7 +174,8 @@ void GameObject::calculateCentroidandHalfsize()
 }
 
 
-Vector3f  GameObject::getInheritedCentroid()
+
+void GameObject::getInheritedHalfsizeAndCentroid(Vector3f& half_size, Vector3f& centroid)
 {
 	std::list<GameObject*> children;
 	getChildren(children);
@@ -185,43 +186,31 @@ Vector3f  GameObject::getInheritedCentroid()
 	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
 	{
 		ComponentTransform* transform = (ComponentTransform*)(*it)->getComponent(TRANSFORM);
-		Vector3f half_size_rotated = Vector3f(transform->getRotation() * (*it)->getHalfsize().toMathVec());
+		math::OBB temp_obb;
 
-		if (lowest_p.x > ((*it)->getCentroid().x -half_size_rotated.x)) lowest_p.x = (*it)->getCentroid().x - half_size_rotated.x;
-		if (lowest_p.y > ((*it)->getCentroid().y -half_size_rotated.y)) lowest_p.y = (*it)->getCentroid().y - half_size_rotated.y;
-		if (lowest_p.z > ((*it)->getCentroid().z -half_size_rotated.z)) lowest_p.z = (*it)->getCentroid().z - half_size_rotated.z;
+		temp_obb.axis[0] = transform->Right();
+		temp_obb.axis[1] = transform->Up();
+		temp_obb.axis[2] = transform->Forward();
+		temp_obb.r = (*it)->getHalfsize().toMathVec();
+		temp_obb.pos = Vector3f::Zero.toMathVec();
 
-		if (highest_p.x < ((*it)->getCentroid().x + half_size_rotated.x)) highest_p.x = (*it)->getCentroid().x + half_size_rotated.x;
-		if (highest_p.y < ((*it)->getCentroid().y + half_size_rotated.y)) highest_p.y = (*it)->getCentroid().y + half_size_rotated.y;
-		if (highest_p.z < ((*it)->getCentroid().z + half_size_rotated.z)) highest_p.z = (*it)->getCentroid().z + half_size_rotated.z;
+		float3 corners[8];
+		temp_obb.GetCornerPoints(corners);
+
+		for (int i = 0; i < 8; i++)
+		{
+			if (lowest_p.x > ((*it)->getCentroid().x - corners[i].x))  lowest_p.x = (*it)->getCentroid().x - corners[i].x;
+			if (lowest_p.y > ((*it)->getCentroid().y - corners[i].y))  lowest_p.y = (*it)->getCentroid().y - corners[i].y;
+			if (lowest_p.z > ((*it)->getCentroid().z - corners[i].z))  lowest_p.z = (*it)->getCentroid().z - corners[i].z;
+
+			if (highest_p.x < ((*it)->getCentroid().x + corners[i].x)) highest_p.x = (*it)->getCentroid().x + corners[i].x;
+			if (highest_p.y < ((*it)->getCentroid().y + corners[i].y)) highest_p.y = (*it)->getCentroid().y + corners[i].y;
+			if (highest_p.z < ((*it)->getCentroid().z + corners[i].z)) highest_p.z = (*it)->getCentroid().z + corners[i].z;
+
+		}
 	}
 
-	return ((lowest_p + highest_p) * 0.5f);
-}
+	centroid = (lowest_p + highest_p) * 0.5f;
+	half_size = highest_p - centroid;
 
-
-Vector3f GameObject::getInheritedHalfsize()
-{
-	std::list<GameObject*> children;
-	getChildren(children);
-
-	Vector3f lowest_p = centroid - half_size;
-	Vector3f highest_p = centroid + half_size;
-
-	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
-	{
-		ComponentTransform* transform = (ComponentTransform*)(*it)->getComponent(TRANSFORM);
-		Vector3f half_size_rotated = Vector3f(transform->getRotation() * (*it)->getHalfsize().toMathVec());
-
-
-		if (lowest_p.x > ((*it)->getCentroid().x - half_size_rotated.x)) lowest_p.x = (*it)->getCentroid().x - half_size_rotated.x;
-		if (lowest_p.y > ((*it)->getCentroid().y - half_size_rotated.y)) lowest_p.y = (*it)->getCentroid().y - half_size_rotated.y;
-		if (lowest_p.z > ((*it)->getCentroid().z - half_size_rotated.z)) lowest_p.z = (*it)->getCentroid().z - half_size_rotated.z;
-
-		if (highest_p.x < ((*it)->getCentroid().x + half_size_rotated.x)) highest_p.x = (*it)->getCentroid().x + half_size_rotated.x;
-		if (highest_p.y < ((*it)->getCentroid().y + half_size_rotated.y)) highest_p.y = (*it)->getCentroid().y + half_size_rotated.y;
-		if (highest_p.z < ((*it)->getCentroid().z + half_size_rotated.z)) highest_p.z = (*it)->getCentroid().z + half_size_rotated.z;
-	}
-
-	return (highest_p - ((lowest_p + highest_p) * 0.5f));
 }
