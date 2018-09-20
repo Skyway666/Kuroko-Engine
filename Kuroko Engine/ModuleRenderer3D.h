@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "glmath.h"
 #include "Light.h"
+#include "Vector3.h"
 
 #define MAX_LIGHTS 8
 
@@ -21,7 +22,7 @@ public:
 
 	SDL_GLContext getContext()	{ return context; }
 
-	void DirectDrawCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
+	void DirectDrawCube(Vector3f size);
 
 private:
 	Light lights[MAX_LIGHTS];

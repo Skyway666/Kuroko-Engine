@@ -19,11 +19,9 @@ public:
 
 	std::list<GameObject*> game_objects;
 	GameObject* selected_obj = nullptr;
-	
-	Sphere sphere;
-	float3 Scentre;
-	float Sradius;
+	bool draw_grid = true;
 
-	AABB cube;
-	float3 Ccentre, Csize;
+private:
+	
+	void DrawGrid();
 };

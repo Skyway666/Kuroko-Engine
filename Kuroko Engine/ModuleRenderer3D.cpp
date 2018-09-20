@@ -166,49 +166,49 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glLoadIdentity();
 }
 
-void ModuleRenderer3D::DirectDrawCube(float sx, float sy, float sz)
+void ModuleRenderer3D::DirectDrawCube(Vector3f size)
 {
 	glLineWidth(2.0f);
 
-	sx *= 0.5f; sy *= 0.5f; sz *= 0.5f;
+	size.x *= 0.5f; size.y *= 0.5f; size.z *= 0.5f;
 
 	glBegin(GL_TRIANGLES);
 
 	glNormal3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(-sx, -sy, sz);
-	glVertex3f(sx, -sy, sz);
-	glVertex3f(sx, sy, sz);
-	glVertex3f(-sx, sy, sz);
+	glVertex3f(-size.x, -size.y, size.z);
+	glVertex3f(size.x, -size.y, size.z);
+	glVertex3f(size.x, size.y, size.z);
+	glVertex3f(-size.x, size.y, size.z);
 
 	glNormal3f(0.0f, 0.0f, -1.0f);
-	glVertex3f(sx, -sy, -sz);
-	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(-sx, sy, -sz);
-	glVertex3f(sx, sy, -sz);
+	glVertex3f(size.x, -size.y, -size.z);
+	glVertex3f(-size.x, -size.y, -size.z);
+	glVertex3f(-size.x, size.y, -size.z);
+	glVertex3f(size.x, size.y, -size.z);
 
 	glNormal3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(sx, -sy, sz);
-	glVertex3f(sx, -sy, -sz);
-	glVertex3f(sx, sy, -sz);
-	glVertex3f(sx, sy, sz);
+	glVertex3f(size.x, -size.y, size.z);
+	glVertex3f(size.x, -size.y, -size.z);
+	glVertex3f(size.x, size.y, -size.z);
+	glVertex3f(size.x, size.y, size.z);
 
 	glNormal3f(-1.0f, 0.0f, 0.0f);
-	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(-sx, -sy, sz);
-	glVertex3f(-sx, sy, sz);
-	glVertex3f(-sx, sy, -sz);
+	glVertex3f(-size.x, -size.y, -size.z);
+	glVertex3f(-size.x, -size.y, size.z);
+	glVertex3f(-size.x, size.y, size.z);
+	glVertex3f(-size.x, size.y, -size.z);
 
 	glNormal3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(-sx, sy, sz);
-	glVertex3f(sx, sy, sz);
-	glVertex3f(sx, sy, -sz);
-	glVertex3f(-sx, sy, -sz);
+	glVertex3f(-size.x, size.y, size.z);
+	glVertex3f(size.x, size.y, size.z);
+	glVertex3f(size.x, size.y, -size.z);
+	glVertex3f(-size.x, size.y, -size.z);
 
 	glNormal3f(0.0f, -1.0f, 0.0f);
-	glVertex3f(-sx, -sy, -sz);
-	glVertex3f(sx, -sy, -sz);
-	glVertex3f(sx, -sy, sz);
-	glVertex3f(-sx, -sy, sz);
+	glVertex3f(-size.x, -size.y, -size.z);
+	glVertex3f(size.x, -size.y, -size.z);
+	glVertex3f(size.x, -size.y, size.z);
+	glVertex3f(-size.x, -size.y, size.z);
 
 	glEnd();
 
