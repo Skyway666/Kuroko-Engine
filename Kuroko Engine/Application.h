@@ -44,6 +44,7 @@ public:
 	bool Init();
 	update_status Update();
 	bool CleanUp();
+	void requestBrowser(std::string link);
 
 private:
 
