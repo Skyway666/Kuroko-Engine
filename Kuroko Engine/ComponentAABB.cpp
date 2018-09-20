@@ -17,8 +17,11 @@ void ComponentAABB::Reload()
 	if (!obb)
 		obb = new OBB();
 
-	obb->pos = getParent()->getInheritedCentroid().toMathVec();
-	obb->r = getParent()->getInheritedHalfsize().toMathVec();
+	Vector3f half_size, centroid;
+	getParent()->getInheritedHalfsizeAndCentroid(half_size, centroid);
+
+	obb->pos = centroid.toMathVec();
+	obb->r = half_size.toMathVec();
 
 	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
 
@@ -38,10 +41,12 @@ bool ComponentAABB::Update(float dt)
 	{
 		bool update = false;
 
-		float3 inh_centroid = getParent()->getInheritedCentroid().toMathVec();
-		if (!inh_centroid.Equals(obb->pos))
+		Vector3f inh_half_size, inh_centroid;
+		getParent()->getInheritedHalfsizeAndCentroid(inh_half_size, inh_centroid);
+
+		if (!inh_centroid.toMathVec().Equals(obb->pos))
 		{
-			obb->pos = inh_centroid;
+			obb->pos = inh_centroid.toMathVec();
 			update = true;
 		}
 
@@ -55,10 +60,9 @@ bool ComponentAABB::Update(float dt)
 		}
 
 
-		float3 inh_halfsize = getParent()->getInheritedHalfsize().toMathVec();
-		if (!inh_halfsize.Equals(obb->r))
+		if (!inh_half_size.toMathVec().Equals(obb->r))
 		{
-			obb->r = inh_halfsize;
+			obb->r = inh_half_size.toMathVec();
 			update = true;
 		}
 

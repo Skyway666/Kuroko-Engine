@@ -9,16 +9,26 @@ ComponentTransform::ComponentTransform(GameObject* parent, ComponentTransform& t
 	position = transform.position; rotation = transform.rotation; scale = transform.scale;
 }
 
-float4x4 ComponentTransform::getInheritedTransform()
+float4x4 ComponentTransform::getInheritedTransform(Vector3f pos, Quat rot, Vector3f scl)
 {
+	pos += position;
+	scl.x *= scale.x; scl.y *= scale.y; scl.z *= scale.z;
+	rot = rotation * rot;
+
 	GameObject* obj = getParent();
 	if (GameObject* parent_obj = obj->getParent())
 	{
 		ComponentTransform* parent_transform = (ComponentTransform*)parent_obj->getComponent(TRANSFORM);
-		return getModelViewMatrix() * parent_transform->getInheritedTransform();
+		return parent_transform->getInheritedTransform(pos, rot, scl);
 	}
 	else
-		return getModelViewMatrix();
+	{
+		float4x4 inh_mat = float4x4::identity;
+		inh_mat = inh_mat * rot;
+		inh_mat = inh_mat * inh_mat.Scale(scl.toMathVec());
+		inh_mat.SetTranslatePart(pos.toMathVec());
+		return inh_mat;
+	}
 }
 
 
@@ -69,7 +79,7 @@ float3 ComponentTransform::Right()
 	return right;
 }
 
-void ComponentTransform::setPosition(Vector3f pos)	{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Translate(Vector3f dir)	{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::setScale(Vector3f scl)		{ scale = scl;		getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Scale(Vector3f scl)		{ scale += scl;		getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setPosition(Vector3f pos)	{ position = pos;										getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Translate(Vector3f dir)	{ position += dir;										getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setScale(Vector3f scl)		{ scale = scl;											getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Scale(Vector3f scl)		{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };

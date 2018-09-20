@@ -48,8 +48,7 @@ public:
 	Vector3f getCentroid() { return centroid; };	
 	Vector3f getHalfsize() { return half_size; };
 
-	Vector3f getInheritedCentroid();	// transform not applied
-	Vector3f getInheritedHalfsize();
+	void getInheritedHalfsizeAndCentroid(Vector3f& half_size, Vector3f& centroid);
 
 	bool isActive() { return is_active; }
 	bool isStatic() { return is_static; }
