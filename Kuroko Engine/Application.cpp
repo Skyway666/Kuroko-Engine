@@ -108,3 +108,7 @@ bool Application::CleanUp()
 
 	return ret;
 }
+
+void Application::requestBrowser(std::string link) {
+	ShellExecute(NULL, "open", link.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
