@@ -59,13 +59,13 @@ update_status ModuleScene::Update(float dt)
 		ImGui::Text("Sphere Values");
 		ImGui::Text("Position");
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("SPx", &Scentre.x, 0.3f);
+		ImGui::DragFloat("SPx", &Scentre.x, 0.15f);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("SPy", &Scentre.y, 0.3f);
+		ImGui::DragFloat("SPy", &Scentre.y, 0.15f);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("SPz", &Scentre.z,0.3f);
+		ImGui::DragFloat("SPz", &Scentre.z,0.15f);
 		ImGui::Text("Radius");
 		ImGui::DragFloat("Radius", &Sradius);
 		sphere.pos = Scentre;
@@ -74,22 +74,22 @@ update_status ModuleScene::Update(float dt)
 		ImGui::Text("Cube Values");
 		ImGui::Text("Position");
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("CPx", &Ccentre.x, 0.3f);
+		ImGui::DragFloat("CPx", &Ccentre.x, 0.15f);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("CPy", &Ccentre.y, 0.3f);
+		ImGui::DragFloat("CPy", &Ccentre.y, 0.15f);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("CPz", &Ccentre.z, 0.3f);
+		ImGui::DragFloat("CPz", &Ccentre.z, 0.15f);
 		ImGui::Text("Size");
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("CSx", &Csize.x, 0.3f);
+		ImGui::DragFloat("CSx", &Csize.x, 0.15f);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("CSy", &Csize.y, 0.3f);
+		ImGui::DragFloat("CSy", &Csize.y, 0.15f);
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-		ImGui::DragFloat("CSz", &Csize.z, 0.3f);
+		ImGui::DragFloat("CSz", &Csize.z, 0.15f);
 		cube.SetFromCenterAndSize(Ccentre, Csize);
 
 		if (cube.Intersects(sphere))
