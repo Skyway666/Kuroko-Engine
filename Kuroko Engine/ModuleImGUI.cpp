@@ -173,11 +173,18 @@ update_status ModuleImGUI::Update(float dt) {
 		ImGui::SetNextWindowPos(ImVec2(600, 520), ImGuiCond_FirstUseEver);
 		DrawImporterTab();
 	}
+	if (open_tabs[ABOUT])
+	{
+		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
+		DrawAboutWindow();
+	}
+	if (open_tabs[WINDOW_CONFIG]) {
+		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
+		DrawWindowConfig();
+	}
+
 
 	bool close_app = false;
-
-	if (open_tabs[ABOUT])
-		DrawAboutWindow();
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -668,4 +675,8 @@ void ModuleImGUI::DrawAboutWindow() {
 	ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
 	
 	ImGui::End();
+}
+
+void ModuleImGUI::DrawWindowConfig() {
+
 }
