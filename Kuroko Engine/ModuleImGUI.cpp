@@ -79,6 +79,7 @@ bool ModuleImGUI::Init() {
 	open_tabs[OBJ_INSPECTOR]	= true;
 	open_tabs[PRIMITIVE]		= false;
 	open_tabs[IMPORTER]			= false;
+	open_tabs[WINDOW_CONFIG]	= false;
 	open_tabs[ABOUT]			= false;
 
 	//RANDOM TESTING
@@ -192,7 +193,7 @@ update_status ModuleImGUI::Update(float dt) {
 				close_app = true;
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Windows")) {
+		if (ImGui::BeginMenu("View")) {
 			ImGui::MenuItem("Demo", NULL, &open_tabs[DEMO]);
 			ImGui::MenuItem("Graphic", NULL, &open_tabs[GRAPHIC]);
 			ImGui::MenuItem("Test", NULL, &open_tabs[TEST]);
@@ -200,6 +201,7 @@ update_status ModuleImGUI::Update(float dt) {
 			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[OBJ_INSPECTOR]);
 			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
 			ImGui::MenuItem("Importer", NULL, &open_tabs[IMPORTER]);
+			ImGui::MenuItem("Window", NULL, &open_tabs[WINDOW_CONFIG]);
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help")) {
