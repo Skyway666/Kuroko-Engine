@@ -197,6 +197,12 @@ update_status ModuleImGUI::Update(float dt) {
 		}
 		if (ImGui::BeginMenu("Help")) {
 			ImGui::MenuItem("About", NULL, &open_tabs[ABOUT]);
+			if(ImGui::MenuItem("Documentation"))
+				App->requestBrowser("https://github.com/Skyway666/Kuroko-Engine/wiki");
+			if(ImGui::MenuItem("Download latest"))
+				App->requestBrowser("https://github.com/Skyway666/Kuroko-Engine/releases");
+			if(ImGui::MenuItem("Report a bug"))
+				App->requestBrowser("https://github.com/Skyway666/Kuroko-Engine/issues");
 			ImGui::EndMenu();
 		}
 	
