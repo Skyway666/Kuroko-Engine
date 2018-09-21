@@ -684,5 +684,37 @@ void ModuleImGUI::DrawAboutWindow() {
 }
 
 void ModuleImGUI::DrawWindowConfig() {
+	static float brightnes = 1.0f;
+	static int width = SCREEN_WIDTH;
+	static int height = SCREEN_HEIGHT;
+	static bool fullscreen = false;
+	static bool resizable = false;
+	static bool borderless = false;
+	static bool fulldesktop = false;
+	ImGui::Begin("Window");
+	ImGui::SliderFloat("Brightness", &brightnes, 0, 1.0f);
+	ImGui::SliderInt("Width", &width, 0, 10000);
+	ImGui::SliderInt("Height", &height, 0, 10000);
+	// Update values
+	App->window->setBrightnes(brightnes);
+	App->window->setSetSize(width, height);
+
+	// Refresh rate
+	ImGui::Text("Refresh Rate %i", (int)ImGui::GetIO().Framerate);
+
+	//Bools
+	if (ImGui::Checkbox("Fullscreen", &fullscreen))
+		App->window->setFullscreen(fullscreen);
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Resizable", &resizable))
+		App->window->setResizable(resizable);
+	if (ImGui::Checkbox("Borderless", &borderless))
+		App->window->setBorderless(!borderless);
+	ImGui::SameLine();
+	if (ImGui::Checkbox("FullDesktop", &fulldesktop))
+		App->window->setFullDesktop(fulldesktop);
+
+
+	ImGui::End();
 
 }
