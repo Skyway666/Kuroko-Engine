@@ -1,7 +1,6 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "glmath.h"
 #include "Light.h"
 #include "Vector3.h"
 
@@ -22,11 +21,13 @@ public:
 
 	SDL_GLContext getContext()	{ return context; }
 
+	float4x4 CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane);
+
 	void DirectDrawCube(Vector3f size);
 
 private:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	mat3x3 NormalMatrix;
-	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	float3x3 NormalMatrix;
+	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 };

@@ -2,6 +2,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModuleWindow.h"
+#include "Globals.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -12,6 +13,7 @@
 
 #pragma comment( lib, "glew-2.1.0/lib/glew32.lib")
 #pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
+
 
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -159,11 +161,28 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	glLoadMatrixf(&ProjectionMatrix);
+
+	ProjectionMatrix = CreatePerspMat(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	glLoadMatrixf((GLfloat*)ProjectionMatrix.v);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+float4x4 ModuleRenderer3D::CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane)
+{
+	float4x4 Perspective = float4x4::zero;
+	
+	float coty = 1.0f / tan(fov * (float)M_PI / 360.0f);
+
+	Perspective.v[0][0] = coty / aspect_ratio;
+	Perspective.v[1][1] = coty;
+	Perspective.v[2][2] = (near_plane + far_plane) / (near_plane - far_plane);
+	Perspective.v[2][3] = -1.0f;
+	Perspective.v[3][2] = 2.0f * near_plane * far_plane / (near_plane - far_plane);
+	Perspective.v[3][3] = 0.0f;
+
+	return Perspective;
 }
 
 void ModuleRenderer3D::DirectDrawCube(Vector3f size)
