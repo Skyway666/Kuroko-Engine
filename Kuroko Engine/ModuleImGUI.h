@@ -7,7 +7,7 @@ struct ImGuiIO;
 class GameObject;
 class Component;
 
-enum GUI_Tabs { DEMO, GRAPHIC, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, WINDOW_CONFIG, LAST};  // LAST is an utility value to store the max num of tabs.
+enum GUI_Tabs { DEMO, GRAPHIC, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, WINDOW_CONFIG, HARDWARE, LAST};  // LAST is an utility value to store the max num of tabs.
 
 class ModuleImGUI :
 	public Module {
@@ -30,6 +30,7 @@ public:
 	void DrawImporterTab();
 	void DrawAboutWindow();
 	void DrawWindowConfig();
+	void DrawHardware();
 
 private:
 

@@ -72,6 +72,7 @@ bool ModuleImGUI::Init() {
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
+	// HARDCODED
 	open_tabs[DEMO]				= false;
 	open_tabs[GRAPHIC]			= false;
 	open_tabs[TEST]				= true;
@@ -80,6 +81,7 @@ bool ModuleImGUI::Init() {
 	open_tabs[PRIMITIVE]		= false;
 	open_tabs[IMPORTER]			= false;
 	open_tabs[WINDOW_CONFIG]	= false;
+	open_tabs[HARDWARE]			= true;
 	open_tabs[ABOUT]			= false;
 
 	//RANDOM TESTING
@@ -182,6 +184,9 @@ update_status ModuleImGUI::Update(float dt) {
 	if (open_tabs[WINDOW_CONFIG]) {
 		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
 		DrawWindowConfig();
+	}
+	if (open_tabs[HARDWARE]) {
+		DrawHardware();
 	}
 
 
@@ -677,10 +682,6 @@ void ModuleImGUI::DrawAboutWindow() {
 	ImGui::SameLine();
 	if (ImGui::Button("Learn more##opngl"))
 		App->requestBrowser("https://www.opengl.org/");
-	ImGui::Separator();
-
-	ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
-	ImGui::Text("Renderer: %s", glGetString(GL_RENDERER));
 	
 	ImGui::End();
 }
@@ -693,7 +694,7 @@ void ModuleImGUI::DrawWindowConfig() {
 	static bool resizable = false;
 	static bool borderless = false;
 	static bool fulldesktop = false;
-	ImGui::Begin("Window");
+	ImGui::Begin("Window", &open_tabs[WINDOW_CONFIG]);
 	ImGui::SliderFloat("Brightness", &brightnes, 0, 1.0f);
 	ImGui::SliderInt("Width", &width, 0, 10000);
 	ImGui::SliderInt("Height", &height, 0, 10000);
@@ -719,4 +720,65 @@ void ModuleImGUI::DrawWindowConfig() {
 
 	ImGui::End();
 
+}
+
+void ModuleImGUI::DrawHardware() {
+	ImGui::Begin("Hardware", &open_tabs[HARDWARE]);
+	//CPUs
+		ImGui::Text("CPUs");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255),"%i", SDL_GetCPUCount());
+	// RAM
+		ImGui::Text("System RAM");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Gb", SDL_GetSystemRAM());
+	// Caps
+		ImGui::Text("Caps:");
+		ImGui::SameLine();
+		if(SDL_HasRDTSC())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "RDTSC, ");
+		ImGui::SameLine();
+		if (SDL_HasMMX())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "MMX, ");
+		ImGui::SameLine();
+		if (SDL_HasSSE())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE, ");
+		ImGui::SameLine();
+		if (SDL_HasSSE2())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE2, ");
+		if (SDL_HasSSE3())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE3, ");
+		ImGui::SameLine();
+		if (SDL_HasSSE41())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE41, ");
+		ImGui::SameLine();
+		if (SDL_HasSSE42())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE42, ");
+		ImGui::SameLine();
+		if (SDL_HasAVX())
+			ImGui::TextColored(ImVec4(0, 255, 0, 255), "AVX.");
+		ImGui::SameLine();
+
+	ImGui::Separator();
+	//GPU
+		ImGui::Text("Caps:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_VENDOR));
+		ImGui::Text("Brand:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_RENDERER));
+		ImGui::Text("VRAM Budget:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::Text("VRAM Usage:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::Text("VRAM Avaliable:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::Text("VRAM Reserved:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+
+	ImGui::End();
 }
