@@ -1,6 +1,12 @@
 
 #include "VRAM.h"
+#include "glew-2.1.0\include\GL\glew.h"
+#include "SDL\include\SDL_opengl.h"
+#include <gl/GL.h>
+#include <gl/GLU.h>
 
+#pragma comment( lib, "glew-2.1.0/lib/glew32.lib")
+#pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
 
 BOOL WINAPI DDEnumCallbackEx(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext, HMONITOR hm) {
 	UNREFERENCED_PARAMETER(lpDriverDescription);
@@ -69,8 +75,21 @@ float getAvaliableVRAMMb() {
 
 	if (GetVideoMemoryViaDirectDraw(monitor, &memory) == S_OK){
 		float float_memory = (float)memory;
-		return float_memory /(8*1000000); // The information is in bits. 8 bits are 1 byte, and 1000000 bytes are 1 Mb
+		return float_memory /(1000000); // Bytes to MB
 	}
 	else
 		return 0;
 }
+
+float getTotalVRAMMb_NVIDIA() {
+	GLint total_mem_kb = 0;
+	glGetIntegerv(0x9048, &total_mem_kb);
+	return total_mem_kb / (1000); // KB to MB
+}
+float getAvaliableVRAMMb_NVIDIA() {
+	GLint avaliable_mem_kb = 0;
+	glGetIntegerv(0x9049, &avaliable_mem_kb);
+	return avaliable_mem_kb / (1000); // KB to MB
+}
+
+

@@ -41,4 +41,7 @@ BOOL WINAPI DDEnumCallbackEx(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR 
 //-----------------------------------------------------------------------------
 HRESULT GetVideoMemoryViaDirectDraw(HMONITOR hMonitor, DWORD* pdwAvailableVidMem); //Returns the total memory dedicated to video
 
-float getAvaliableVRAMMb(); // In Mb
+float getAvaliableVRAMMb();
+float getTotalVRAMMb_NVIDIA(); // InMb (only works with NVidia)
+float getAvaliableVRAMMb_NVIDIA(); // In Mb (only works with NVidia)
+
