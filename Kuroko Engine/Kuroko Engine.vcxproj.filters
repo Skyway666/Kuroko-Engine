@@ -345,6 +345,9 @@
     <ClInclude Include="pcg_basic.h">
       <Filter>Sources\Tools\RNG lib</Filter>
     </ClInclude>
+    <ClInclude Include="VRAM.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -523,6 +526,9 @@
     </ClCompile>
     <ClCompile Include="pcg_basic.c">
       <Filter>Sources\Tools\RNG lib</Filter>
+    </ClCompile>
+    <ClCompile Include="VRAM.cpp">
+      <Filter>Sources\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -18,6 +18,7 @@
 #include "ComponentAABB.h"
 
 #include "RNG.h"
+#include "VRAM.h"
 
 #include "Assimp/include/version.h"
 
@@ -769,16 +770,16 @@ void ModuleImGUI::DrawHardware() {
 		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_RENDERER));
 		ImGui::Text("VRAM Budget:");
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
 		ImGui::Text("VRAM Usage:");
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
 		ImGui::Text("VRAM Avaliable:");
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%F Mb", getAvaliableVRAMMb());
 		ImGui::Text("VRAM Reserved:");
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Mb", 0);
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
 
 	ImGui::End();
 }

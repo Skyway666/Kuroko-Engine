@@ -14,7 +14,6 @@ int randomFromTo(int n1, int n2) {
 	// Calculate random number
 	int bound = n2 - n1;
 	int random_number = pcg32_boundedrand_r(&rng, bound);
-
 	return n1 + random_number;
 }
 

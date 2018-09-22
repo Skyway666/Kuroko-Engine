@@ -172,6 +172,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
+    <ClInclude Include="VRAM.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -233,6 +234,7 @@
     <ClCompile Include="pcg_basic.c" />
     <ClCompile Include="RNG.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="VRAM.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Geometry\KDTree.inl" />
