@@ -776,7 +776,7 @@ void ModuleImGUI::DrawHardware() {
 		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getTotalVRAMMb_NVIDIA() - getAvaliableVRAMMb_NVIDIA());
 		ImGui::Text("VRAM Avaliable:");
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getAvaliableVRAMMb());
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getAvaliableVRAMMb_NVIDIA());
 		ImGui::Text("VRAM Reserved:");
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
