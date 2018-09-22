@@ -39,6 +39,6 @@ struct DDRAW_MATCH {
 //-----------------------------------------------------------------------------
 BOOL WINAPI DDEnumCallbackEx(GUID FAR* lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext, HMONITOR hm);
 //-----------------------------------------------------------------------------
-HRESULT GetVideoMemoryViaDirectDraw(HMONITOR hMonitor, DWORD* pdwAvailableVidMem);
+HRESULT GetVideoMemoryViaDirectDraw(HMONITOR hMonitor, DWORD* pdwAvailableVidMem); //Returns the total memory dedicated to video
 
 float getAvaliableVRAMMb(); // In Mb
