@@ -4,19 +4,19 @@
     "resolution": [
       {
         "name": "x",
-        "value": "1280"
+        "value": 1280
       },
       {
         "name": "y",
-        "value": "1024"
+        "value": 1024
       }
     ],
-    "resizable": "false",
-    "fullscreen": "false",
-    "borderless": "false",
-    "fulldesktop": "32"
+    "resizable": false,
+    "fullscreen": false,
+    "borderless": false,
+    "fulldesktop": false
   },
   "renderer": {
-    "vsync": "true"
+    "vsync": true
   }
 }
