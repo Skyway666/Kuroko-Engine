@@ -34,14 +34,14 @@
 
 
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled) {
-
+	name = "gui";
 }
 
 
 ModuleImGUI::~ModuleImGUI() {
 }
 
-bool ModuleImGUI::Init() {
+bool ModuleImGUI::Init(JSON_Object* config) {
 	
 	SDL_GL_SetSwapInterval(1); // Enable vsync
 

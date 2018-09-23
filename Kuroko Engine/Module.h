@@ -4,6 +4,7 @@ class Application;
 struct PhysBody3D;
 #include "Globals.h"
 #include "Parson\parson.h"
+#include <string>
 
 class Module
 {
@@ -19,7 +20,7 @@ public:
 	virtual ~Module()
 	{}
 
-	virtual bool Init() 
+	virtual bool Init(JSON_Object* config) 
 	{
 		return true; 
 	}
@@ -51,4 +52,6 @@ public:
 
 	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	{}
+
+	std::string name;
 };

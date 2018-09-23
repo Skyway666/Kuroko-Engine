@@ -14,7 +14,7 @@
     "resizable": "false",
     "fullscreen": "false",
     "borderless": "false",
-    "fulldesktop": "false"
+    "fulldesktop": "32"
   },
   "renderer": {
     "vsync": "true"

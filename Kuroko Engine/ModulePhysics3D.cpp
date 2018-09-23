@@ -8,6 +8,7 @@
 
 ModulePhysics3D::ModulePhysics3D(Application* app, bool start_enabled) : Module(app, start_enabled) {
 	debug = true;
+	name = "physics";
 }
 
 // Destructor
@@ -15,7 +16,7 @@ ModulePhysics3D::~ModulePhysics3D() {
 }
 
 // Render not available yet----------------------------------
-bool ModulePhysics3D::Init() {
+bool ModulePhysics3D::Init(JSON_Object* config) {
 	APPLOG("Creating 3D Physics simulation");
 	bool ret = true;
 

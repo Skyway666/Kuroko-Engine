@@ -14,7 +14,7 @@ public:
 	ModuleImporter(Application* app, bool start_enabled = true);
 	~ModuleImporter();
 
-	bool Init();
+	bool Init(JSON_Object* config);
 	bool CleanUp();
 
 	GameObject* LoadFBX(const char* file);

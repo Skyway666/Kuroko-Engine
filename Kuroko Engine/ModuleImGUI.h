@@ -15,7 +15,7 @@ public:
 	ModuleImGUI(Application* app, bool start_enabled = true);
 	~ModuleImGUI();
 
-	bool Init();
+	bool Init(JSON_Object* config);
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
 	update_status PostUpdate(float dt);

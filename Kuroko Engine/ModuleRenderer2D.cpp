@@ -6,6 +6,7 @@
 
 
 ModuleRenderer2D::ModuleRenderer2D(Application* app, bool start_enabled): Module(app, start_enabled) {
+	name = "renderer2d";
 }
 
 
@@ -13,7 +14,7 @@ ModuleRenderer2D::~ModuleRenderer2D() {
 
 }
 
-bool ModuleRenderer2D::Init() {
+bool ModuleRenderer2D::Init(JSON_Object* config) {
 
 	APPLOG("Creating Renderer context");
 	bool ret = true;

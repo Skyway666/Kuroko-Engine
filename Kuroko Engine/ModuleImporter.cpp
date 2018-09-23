@@ -20,11 +20,13 @@
 #pragma comment (lib, "DevIL/lib/ILUT.lib")
 
 
-ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {}
+ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {
+	name = "importer";
+}
 
 ModuleImporter::~ModuleImporter() {}
 
-bool ModuleImporter::Init()
+bool ModuleImporter::Init(JSON_Object* config)
 {
 	struct aiLogStream stream;
 	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);

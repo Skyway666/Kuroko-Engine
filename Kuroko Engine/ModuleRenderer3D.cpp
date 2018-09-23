@@ -17,6 +17,7 @@
 
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	name = "renderer3d";
 }
 
 // Destructor
@@ -24,7 +25,7 @@ ModuleRenderer3D::~ModuleRenderer3D()
 {}
 
 // Called before render is available
-bool ModuleRenderer3D::Init()
+bool ModuleRenderer3D::Init(JSON_Object* config)
 {
 	APPLOG("Creating 3D Renderer context");
 	bool ret = true;
@@ -40,12 +41,6 @@ bool ModuleRenderer3D::Init()
 	if(ret == true)
 	{
 		GLenum err = glewInit();
-		APPLOG("Using Glew %s", glewGetString(GLEW_VERSION));
-
-		APPLOG("Vendor: %s", glGetString(GL_VENDOR));
-		APPLOG("Renderer: %s", glGetString(GL_RENDERER));
-		APPLOG("OpenGL version supported %s", glGetString(GL_VERSION));
-		APPLOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 		//Use Vsync
 		if(VSYNC && SDL_GL_SetSwapInterval(1) < 0)
