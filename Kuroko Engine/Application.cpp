@@ -1,5 +1,5 @@
 #include "Application.h"
-
+#include "Parson\parson.h"
 
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
@@ -55,6 +55,12 @@ Application::~Application()
 bool Application::Init()
 {
 	bool ret = true;
+
+	//JASON Stuff
+	JSON_Value* config = json_parse_file("JSON Files/config.json");
+	JSON_Object* obj = json_value_get_object(config);
+	
+	std::string title = json_object_dotget_string(obj, "window.title");
 
 	APPLOG("Application Init --------------");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)

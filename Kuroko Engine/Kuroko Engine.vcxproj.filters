@@ -49,6 +49,9 @@
     <Filter Include="Sources\Tools\RNG lib">
       <UniqueIdentifier>{b7470c80-6ba2-46ea-b339-229ccc4cfb85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\Parson lib">
+      <UniqueIdentifier>{68cd2827-9879-45d4-a53c-4039b61bad05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -348,6 +351,9 @@
     <ClInclude Include="VRAM.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="Parson\parson.h">
+      <Filter>Sources\Tools\Parson lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -529,6 +535,9 @@
     </ClCompile>
     <ClCompile Include="VRAM.cpp">
       <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Parson\parson.c">
+      <Filter>Sources\Tools\Parson lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
