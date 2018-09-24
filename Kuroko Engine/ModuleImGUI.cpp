@@ -83,12 +83,8 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 	open_tabs[IMPORTER]			= false;
 	open_tabs[WINDOW_CONFIG]	= false;
 	open_tabs[HARDWARE]			= true;
+	open_tabs[APPLICATION]		= true;
 	open_tabs[ABOUT]			= false;
-
-	//RANDOM TESTING
-
-	bound1 = 0;
-	bound2 = 100;
 
 
 	return true;
@@ -111,16 +107,13 @@ update_status ModuleImGUI::Update(float dt) {
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	if(open_tabs[TEST])
 	{
-		// features functionality
-
-		ImGui::Checkbox("Graphic tab", &open_tabs[GRAPHIC]);
-
-		ImGui::Checkbox("Demo Window", &open_tabs[DEMO]);      // Edit bools storing our windows open/close state
 
 		// test functionality
 		static float f = 0.0f;
 		static int random = 0;
 		static float randomFloa = 0;
+		static int bound1 = 0;
+		static int bound2 = 100;
 		ImGui::Text("RANDOM NUMBER GENERATOR");					 								    // Edit 1 float using a slider from 0.0f to 1.0f   
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
 		ImGui::DragInt("Start", &bound1);
@@ -188,6 +181,9 @@ update_status ModuleImGUI::Update(float dt) {
 	}
 	if (open_tabs[HARDWARE]) {
 		DrawHardware();
+	}
+	if (open_tabs[APPLICATION]) {
+		DrawApplication();
 	}
 
 
@@ -781,5 +777,18 @@ void ModuleImGUI::DrawHardware() {
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
 
+	ImGui::End();
+}
+
+void ModuleImGUI::DrawApplication(){
+	ImGui::Begin("Application");
+	// HARDCODED (?)
+	ImGui::Text("App name: Kuroko Engine");
+	ImGui::Text("Organization: UPC CITM");
+	char title[25];
+	sprintf_s(title, 25, "Framerate %.1f", App->fps_log[App->fps_log.size() - 1]);
+	ImGui::PlotHistogram("##framerate", &App->fps_log[0], App->fps_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
+	sprintf_s(title, 25, "Milliseconds %.1f", App->ms_log[App->ms_log.size() - 1]);
+	ImGui::PlotHistogram("##milliseconds", &App->ms_log[0], App->ms_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 	ImGui::End();
 }

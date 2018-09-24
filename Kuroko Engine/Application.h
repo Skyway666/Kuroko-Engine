@@ -4,6 +4,7 @@
 #include "Timer.h"
 #include "Module.h"
 #include <list>
+#include <vector>
 
 class ModuleWindow;
 class ModuleInput;
@@ -45,6 +46,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void requestBrowser(std::string link);
+	std::vector<float> fps_log;
+	std::vector<float> ms_log;
+	int vector_limit; 
 
 private:
 

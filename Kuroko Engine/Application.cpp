@@ -44,11 +44,15 @@ Application::Application()
 	//AddModule(renderer2D);
 	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
+
+	// HARDCODED
+	vector_limit = 100;
 }
 
 Application::~Application()
 {
 	list_modules.clear();
+	
 }
 
 bool Application::Init()
@@ -74,12 +78,20 @@ bool Application::Init()
 void Application::PrepareUpdate()
 {
 	dt = (float)ms_timer.Read() / 1000.0f;
+	ms_log.push_back(ms_timer.Read());
+	fps_log.push_back(1.0f / dt);
+	if (ms_log.size() > vector_limit) { // ms and fps fill at the same time, so only need top check one
+		ms_log.erase(ms_log.begin());
+		fps_log.erase(fps_log.begin());
+	}
+
 	ms_timer.Start();
 }
 
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
+
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules
