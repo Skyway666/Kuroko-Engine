@@ -34,7 +34,7 @@ public:
 	void DrawApplication();
 
 	void SaveConfig(JSON_Object* config);
-
+	void LoadConfig(JSON_Object* config);
 private:
 
 

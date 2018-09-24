@@ -73,18 +73,8 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
+	LoadConfig(config);
 
-	open_tabs[DEMO]				= json_object_get_boolean(config, "demo");
-	open_tabs[GRAPHIC]			= json_object_get_boolean(config, "graphic");
-	open_tabs[TEST]				= json_object_get_boolean(config, "test");
-	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
-	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
-	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
-	open_tabs[IMPORTER]			= json_object_get_boolean(config, "importer");
-	open_tabs[WINDOW_CONFIG]	= json_object_get_boolean(config, "window_config");
-	open_tabs[HARDWARE]			= json_object_get_boolean(config, "hardware");
-	open_tabs[APPLICATION]		= json_object_get_boolean(config, "application");
-	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 
 
 	return true;
@@ -193,10 +183,15 @@ update_status ModuleImGUI::Update(float dt) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit"))
 				close_app = true;
-			if (ImGui::MenuItem("Save Configuration"))
-				App->SaveConfig();
-			if (ImGui::MenuItem("Delete Configuration"))
-				App->DeleteConfig();
+			if(ImGui::BeginMenu("Configuration")){
+				if (ImGui::MenuItem("Save Configuration"))
+					App->SaveConfig();
+				if (ImGui::MenuItem("Delete Configuration"))
+					App->DeleteConfig();
+				if (ImGui::MenuItem("Load Default Configuration"))
+					App->LoadDefaultConfig();
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
@@ -690,20 +685,20 @@ void ModuleImGUI::DrawAboutWindow() {
 }
 
 void ModuleImGUI::DrawWindowConfig() {
-	static float brightnes = 1.0f;
-	static int width = SCREEN_WIDTH;
-	static int height = SCREEN_HEIGHT;
-	static bool fullscreen = false;
-	static bool resizable = false;
-	static bool borderless = false;
-	static bool fulldesktop = false;
+	static float brightnes = App->window->window_config.brightness;
+	static int width = App->window->window_config.width;
+	static int height = App->window->window_config.height;
+	static bool fullscreen = App->window->window_config.fullscreen;
+	static bool resizable = App->window->window_config.resizable;
+	static bool borderless = App->window->window_config.borderless;
+	static bool fulldesktop = App->window->window_config.fulldesk;
 	ImGui::Begin("Window", &open_tabs[WINDOW_CONFIG]);
 	ImGui::SliderFloat("Brightness", &brightnes, 0, 1.0f);
 	ImGui::SliderInt("Width", &width, 0, 10000);
 	ImGui::SliderInt("Height", &height, 0, 10000);
 	// Update values
 	App->window->setBrightness(brightnes);
-	App->window->setSetSize(width, height);
+	App->window->setSize(width, height);
 
 	// Refresh rate
 	ImGui::Text("Refresh Rate %i", (int)ImGui::GetIO().Framerate);
@@ -787,7 +782,7 @@ void ModuleImGUI::DrawHardware() {
 }
 
 void ModuleImGUI::DrawApplication(){
-	ImGui::Begin("Application");
+	ImGui::Begin("Application", &open_tabs[APPLICATION]);
 	// HARDCODED (?)
 	ImGui::Text("App name: Kuroko Engine");
 	ImGui::Text("Organization: UPC CITM");
@@ -810,5 +805,17 @@ void ModuleImGUI::SaveConfig(JSON_Object* config) {
 	json_object_set_boolean(config, "window_config", open_tabs[WINDOW_CONFIG]);
 	json_object_set_boolean(config, "hardware", open_tabs[HARDWARE]);
 	json_object_set_boolean(config, "application", open_tabs[APPLICATION]);
-
+}
+void ModuleImGUI::LoadConfig(JSON_Object* config) {
+	open_tabs[DEMO] = json_object_get_boolean(config, "demo");
+	open_tabs[GRAPHIC] = json_object_get_boolean(config, "graphic");
+	open_tabs[TEST] = json_object_get_boolean(config, "test");
+	open_tabs[HIERARCHY] = json_object_get_boolean(config, "hierarchy");
+	open_tabs[OBJ_INSPECTOR] = json_object_get_boolean(config, "obj_inspector");
+	open_tabs[PRIMITIVE] = json_object_get_boolean(config, "primitive");
+	open_tabs[IMPORTER] = json_object_get_boolean(config, "importer");
+	open_tabs[WINDOW_CONFIG] = json_object_get_boolean(config, "window_config");
+	open_tabs[HARDWARE] = json_object_get_boolean(config, "hardware");
+	open_tabs[APPLICATION] = json_object_get_boolean(config, "application");
+	open_tabs[ABOUT] = json_object_get_boolean(config, "about");
 }

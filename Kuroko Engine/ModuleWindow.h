@@ -29,17 +29,17 @@ public:
 	void setBorderless(bool borderless);
 	void setFullDesktop(bool fulldesk);
 	void setBrightness(float brightness);
-	void setSetSize(int x, int y);
+	void setSize(int x, int y);
 
 	void fillWindowConfig(JSON_Object* config);
 
 	void SaveConfig(JSON_Object* config);
+	void LoadConfig(JSON_Object* config);
+	window_config window_config;
 
 public:
 	//The window we'll be rendering to
 	SDL_Window* window;
-	window_config window_config;
-
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
 };

@@ -184,5 +184,8 @@ void Application::DeleteConfig_Real() {
 }
 
 void Application::LoadDefaultConfig_Real() {
+	JSON_Object* config = json_value_get_object(json_parse_file(config_file_name.c_str()));
 
+	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); it++)
+		(*it)->LoadConfig(json_object_get_object(config, (*it)->name.c_str()));
 }

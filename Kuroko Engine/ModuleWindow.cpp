@@ -138,7 +138,7 @@ void ModuleWindow::setBrightness(float brightness) {
 	SDL_SetWindowBrightness(window, brightness);
 }
 
-void ModuleWindow::setSetSize(int x, int y) {
+void ModuleWindow::setSize(int x, int y) {
 	window_config.width = x;
 	window_config.height = y;
 	SDL_SetWindowSize(window, x, y);
@@ -165,4 +165,15 @@ void ModuleWindow::SaveConfig(JSON_Object* config) {
 	json_object_set_number(config, "width", window_config.width);
 	json_object_set_number(config, "height", window_config.height);
 	json_object_set_number(config, "brightness", window_config.brightness);
+}
+
+void ModuleWindow::LoadConfig(JSON_Object* config) {
+	setBorderless(!json_object_get_boolean(config, "borderless"));
+	setFullscreen(json_object_get_boolean(config, "fullscreen"));
+	setResizable(json_object_get_boolean(config, "resizable"));
+	setFullDesktop(json_object_get_boolean(config, "fulldesktop"));
+
+	setSize(json_object_get_number(config, "width"), json_object_get_number(config, "height"));
+
+	setBrightness(json_object_get_number(config, "brightness"));
 }
