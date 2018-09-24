@@ -18,5 +18,18 @@
   },
   "renderer": {
     "vsync": true
+  },
+  "gui": {
+    "demo": false,
+    "graphic": false,
+    "test": false,
+    "hierarchy": false,
+    "obj_inspector": false,
+    "primitive": false,
+    "importer": false,
+    "window_config": true,
+    "hardware": true,
+    "application": true,
+    "about": false
   }
 }
