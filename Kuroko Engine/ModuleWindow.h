@@ -6,6 +6,11 @@
 
 class Application;
 
+struct window_config {
+	int width, height;
+	float brightness;
+	bool resizable, fullscreen, borderless, fulldesk;
+};
 class ModuleWindow : public Module
 {
 public:
@@ -23,12 +28,17 @@ public:
 	void setFullscreen(bool fullscreen);
 	void setBorderless(bool borderless);
 	void setFullDesktop(bool fulldesk);
-	void setBrightnes(float brightness);
+	void setBrightness(float brightness);
 	void setSetSize(int x, int y);
+
+	void fillWindowConfig(JSON_Object* config);
+
+	void SaveConfig(JSON_Object* config);
 
 public:
 	//The window we'll be rendering to
 	SDL_Window* window;
+	window_config window_config;
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;

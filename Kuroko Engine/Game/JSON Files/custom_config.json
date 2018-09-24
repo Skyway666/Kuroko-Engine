@@ -1,0 +1,21 @@
+{
+  
+  "saved_data": false,
+  "window": {
+    "borderless": false,
+    "fullscreen": false,
+    "resizable": false,
+    "fulldesktop": false,
+    "width": 1280,
+    "height": 1024,
+    "brightness": 1
+  },
+  "camera": {},
+  "input": {},
+  "audio": {},
+  "importer": {},
+  "physics": {},
+  "gui": {},
+  "renderer3d": {},
+  "scene": {}
+}

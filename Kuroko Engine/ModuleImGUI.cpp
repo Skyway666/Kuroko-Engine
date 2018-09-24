@@ -193,6 +193,8 @@ update_status ModuleImGUI::Update(float dt) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit"))
 				close_app = true;
+			if (ImGui::MenuItem("Save Configuration"))
+				App->SaveConfig();
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
@@ -698,7 +700,7 @@ void ModuleImGUI::DrawWindowConfig() {
 	ImGui::SliderInt("Width", &width, 0, 10000);
 	ImGui::SliderInt("Height", &height, 0, 10000);
 	// Update values
-	App->window->setBrightnes(brightnes);
+	App->window->setBrightness(brightnes);
 	App->window->setSetSize(width, height);
 
 	// Refresh rate

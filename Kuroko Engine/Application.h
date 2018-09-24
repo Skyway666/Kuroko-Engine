@@ -45,13 +45,20 @@ public:
 	bool Init();
 	update_status Update();
 	bool CleanUp();
+	void SaveConfig();
+
+
 	void requestBrowser(std::string link);
 	std::vector<float> fps_log;
 	std::vector<float> ms_log;
 	int vector_limit; 
+	std::string config_file_name, custom_config_file_name;
+
 
 private:
 
+	void SaveConfig_Real();
 	void PrepareUpdate();
 	void FinishUpdate();
+	bool want_to_save_config = false;
 };

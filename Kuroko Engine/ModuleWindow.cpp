@@ -28,9 +28,10 @@ bool ModuleWindow::Init(JSON_Object* config)
 	}
 	else
 	{
+		fillWindowConfig(config);
 		//Create window
-		int width = json_object_get_number(json_array_get_object(json_object_get_array(config, "resolution"), 0),"value") * SCREEN_SIZE; // A bit of a hardcod, but nothing important
-		int height = json_object_get_number(json_array_get_object(json_object_get_array(config, "resolution"), 1), "value") * SCREEN_SIZE;
+		int width = window_config.width * SCREEN_SIZE; // A bit of a hardcod, but nothing important
+		int height = window_config.height * SCREEN_SIZE;
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
 		//Use OpenGL 2.1
@@ -42,22 +43,22 @@ bool ModuleWindow::Init(JSON_Object* config)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-		if(json_object_get_boolean(config, "fullscreen"))
+		if(window_config.fullscreen)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
-		if(json_object_get_boolean(config, "resizable"))
+		if(window_config.resizable)
 		{
 			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
-		if(json_object_get_boolean(config, "borderless"))
+		if(window_config.borderless)
 		{
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if(json_object_get_boolean(config, "fulldesktop"))
+		if(window_config.fulldesk)
 		{
 			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
@@ -75,6 +76,7 @@ bool ModuleWindow::Init(JSON_Object* config)
 			screen_surface = SDL_GetWindowSurface(window);
 		}
 	}
+	setBrightness(window_config.brightness);
 
 	return ret;
 }
@@ -101,19 +103,23 @@ void ModuleWindow::SetTitle(const char* title)
 }
 
 void ModuleWindow::setResizable(bool resizable) {
+	window_config.resizable = resizable;
 	SDL_SetWindowResizable(window,(SDL_bool)resizable);
 }
 void ModuleWindow::setFullscreen(bool fullscreen) {
 	Uint32 flag;
+
 	if (fullscreen)
 		flag = SDL_WINDOW_FULLSCREEN;
 	else
 		flag = 0;
 
+	window_config.fullscreen = fullscreen;
 	SDL_SetWindowFullscreen(window, flag);
 }
 
 void ModuleWindow::setBorderless(bool borderless) {
+	window_config.borderless = borderless;
 	SDL_SetWindowBordered(window, (SDL_bool)borderless);
 }
 
@@ -123,14 +129,40 @@ void ModuleWindow::setFullDesktop(bool fulldesktop) {
 		flag = SDL_WINDOW_FULLSCREEN_DESKTOP;
 	else
 		flag = 0;
-
+	window_config.fulldesk = fulldesktop;
 	SDL_SetWindowFullscreen(window, flag);
 }
 
-void ModuleWindow::setBrightnes(float brightness) {
+void ModuleWindow::setBrightness(float brightness) {
+	window_config.brightness = brightness;
 	SDL_SetWindowBrightness(window, brightness);
 }
 
 void ModuleWindow::setSetSize(int x, int y) {
+	window_config.width = x;
+	window_config.height = y;
 	SDL_SetWindowSize(window, x, y);
+}
+
+void ModuleWindow::fillWindowConfig(JSON_Object* config) {
+	window_config.borderless = json_object_get_boolean(config, "borderless");
+	window_config.fullscreen = json_object_get_boolean(config, "fullscreen");
+	window_config.resizable = json_object_get_boolean(config, "resizable");
+	window_config.fulldesk = json_object_get_boolean(config, "fulldesktop");
+
+	window_config.width = json_object_get_number(config, "width");
+	window_config.height = json_object_get_number(config, "height");
+
+	window_config.brightness = json_object_get_number(config, "brightness");
+}
+
+void ModuleWindow::SaveConfig(JSON_Object* config) {
+	json_object_set_boolean(config, "borderless", window_config.borderless);
+	json_object_set_boolean(config, "fullscreen", window_config.fullscreen);
+	json_object_set_boolean(config, "resizable", window_config.resizable);
+	json_object_set_boolean(config, "fulldesktop", window_config.fulldesk);
+
+	json_object_set_number(config, "width", window_config.width);
+	json_object_set_number(config, "height", window_config.height);
+	json_object_set_number(config, "brightness", window_config.brightness);
 }

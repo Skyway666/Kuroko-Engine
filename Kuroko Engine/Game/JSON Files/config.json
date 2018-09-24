@@ -1,23 +1,14 @@
 {
   "window": {
     "title": "Kuroko Engine",
-    "resolution": [
-      {
-        "name": "x",
-        "value": 1280
-      },
-      {
-        "name": "y",
-        "value": 1024
-      }
-    ],
+
     "resizable": false,
     "fullscreen": false,
     "borderless": false,
-    "fulldesktop": false
-  },
-  "renderer": {
-    "vsync": true
+    "fulldesktop": false,
+    "brightness": 1.0,
+    "width": 1280,
+    "height": 1024
   },
   "gui": {
     "demo": false,
@@ -30,6 +21,9 @@
     "window_config": true,
     "hardware": true,
     "application": true,
-    "about": false
+    "about": true
+  },
+  "renderer": {
+    "vsync": true
   }
 }
