@@ -73,18 +73,18 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
-	// HARDCODED
+
 	open_tabs[DEMO]				= json_object_get_boolean(config, "demo");
 	open_tabs[GRAPHIC]			= json_object_get_boolean(config, "graphic");
 	open_tabs[TEST]				= json_object_get_boolean(config, "test");
 	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
 	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
-	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");;
-	open_tabs[IMPORTER]			= json_object_get_boolean(config, "importer");;
-	open_tabs[WINDOW_CONFIG]	= json_object_get_boolean(config, "window_config");;
-	open_tabs[HARDWARE]			= json_object_get_boolean(config, "hardware");;
-	open_tabs[APPLICATION]		= json_object_get_boolean(config, "application");;
-	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");;
+	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
+	open_tabs[IMPORTER]			= json_object_get_boolean(config, "importer");
+	open_tabs[WINDOW_CONFIG]	= json_object_get_boolean(config, "window_config");
+	open_tabs[HARDWARE]			= json_object_get_boolean(config, "hardware");
+	open_tabs[APPLICATION]		= json_object_get_boolean(config, "application");
+	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 
 
 	return true;
@@ -195,6 +195,8 @@ update_status ModuleImGUI::Update(float dt) {
 				close_app = true;
 			if (ImGui::MenuItem("Save Configuration"))
 				App->SaveConfig();
+			if (ImGui::MenuItem("Delete Configuration"))
+				App->DeleteConfig();
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
@@ -795,4 +797,18 @@ void ModuleImGUI::DrawApplication(){
 	sprintf_s(title, 25, "Milliseconds %.1f", App->ms_log[App->ms_log.size() - 1]);
 	ImGui::PlotHistogram("##milliseconds", &App->ms_log[0], App->ms_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 	ImGui::End();
+}
+void ModuleImGUI::SaveConfig(JSON_Object* config) {
+	json_object_set_boolean(config, "demo", open_tabs[DEMO]);
+	json_object_set_boolean(config, "graphic", open_tabs[GRAPHIC]);
+	json_object_set_boolean(config, "test", open_tabs[TEST]);
+	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);
+	json_object_set_boolean(config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
+	json_object_set_boolean(config, "primitive", open_tabs[PRIMITIVE]);
+	json_object_set_boolean(config, "importer", open_tabs[IMPORTER]);
+	json_object_set_boolean(config, "about", open_tabs[ABOUT]);
+	json_object_set_boolean(config, "window_config", open_tabs[WINDOW_CONFIG]);
+	json_object_set_boolean(config, "hardware", open_tabs[HARDWARE]);
+	json_object_set_boolean(config, "application", open_tabs[APPLICATION]);
+
 }

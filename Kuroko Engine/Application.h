@@ -46,6 +46,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void SaveConfig();
+	void DeleteConfig();
+	void LoadDefaultConfig();
 
 
 	void requestBrowser(std::string link);
@@ -58,7 +60,11 @@ public:
 private:
 
 	void SaveConfig_Real();
+	void DeleteConfig_Real();
+	void LoadDefaultConfig_Real();
 	void PrepareUpdate();
 	void FinishUpdate();
 	bool want_to_save_config = false;
+	bool want_to_delete_config = false;
+	bool want_to_load_default_config = false;
 };

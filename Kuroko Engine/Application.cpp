@@ -106,6 +106,14 @@ void Application::FinishUpdate()
 		SaveConfig_Real();
 		want_to_save_config = false;
 	}
+	if (want_to_delete_config) {
+		DeleteConfig_Real();
+		want_to_delete_config = false;
+	}
+	if (want_to_load_default_config) {
+		LoadDefaultConfig_Real();
+		want_to_load_default_config = false;
+	}
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules
@@ -144,6 +152,12 @@ void Application::requestBrowser(std::string link) {
 void Application::SaveConfig() {
 	want_to_save_config = true;
 }
+void Application::DeleteConfig() {
+	want_to_delete_config = true;
+}
+void Application::LoadDefaultConfig() {
+	want_to_load_default_config = true;
+}
 
 void Application::SaveConfig_Real() {
 	JSON_Value* config = json_parse_file(custom_config_file_name.c_str());
@@ -156,6 +170,19 @@ void Application::SaveConfig_Real() {
 		(*it)->SaveConfig(json_object(module_config));
 		json_object_set_value(json_object(config), (*it)->name.c_str(), module_config);
 	}
-	//// Fill file with info
+	// Fill file with info
 	json_serialize_to_file(config, custom_config_file_name.c_str());
+}
+
+void Application::DeleteConfig_Real() {
+	JSON_Value* config = json_parse_file(custom_config_file_name.c_str());
+
+	json_object_clear(json_object(config));
+	json_object_set_boolean(json_object(config), "saved_data", false);
+
+	json_serialize_to_file(config, custom_config_file_name.c_str());
+}
+
+void Application::LoadDefaultConfig_Real() {
+
 }

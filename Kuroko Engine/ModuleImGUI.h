@@ -33,6 +33,8 @@ public:
 	void DrawHardware();
 	void DrawApplication();
 
+	void SaveConfig(JSON_Object* config);
+
 private:
 
 
