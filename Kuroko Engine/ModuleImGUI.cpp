@@ -670,8 +670,8 @@ void ModuleImGUI::DrawAboutWindow() {
 	if (ImGui::Button("Learn more##mathgeolib"))
 		App->requestBrowser("http://clb.demon.fi/MathGeoLib/");
 	SDL_version compiled; 
-	SDL_VERSION(&compiled);
-	ImGui::Text("SDL %i", compiled.major);
+	SDL_GetVersion(&compiled);
+	ImGui::Text("SDL %d.%d.%d", compiled.major, compiled.major, compiled.patch);
 	ImGui::SameLine();
 	if (ImGui::Button("Learn more##sdl"))
 		App->requestBrowser("https://wiki.libsdl.org/FrontPage");
@@ -680,6 +680,14 @@ void ModuleImGUI::DrawAboutWindow() {
 	ImGui::SameLine();
 	if (ImGui::Button("Learn more##opngl"))
 		App->requestBrowser("https://www.opengl.org/");
+	ImGui::Text("Parson");
+	ImGui::SameLine();
+	if (ImGui::Button("Learn more##parson"))
+		App->requestBrowser("https://github.com/kgabis/parson");
+	ImGui::Text("PCG Random");
+	ImGui::SameLine();
+	if (ImGui::Button("Learn more##pcg_random"))
+		App->requestBrowser("http://www.pcg-random.org");
 	
 	ImGui::End();
 }
