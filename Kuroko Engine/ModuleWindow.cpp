@@ -120,7 +120,7 @@ void ModuleWindow::setFullscreen(bool fullscreen) {
 
 void ModuleWindow::setBorderless(bool borderless) {
 	window_config.borderless = borderless;
-	SDL_SetWindowBordered(window, (SDL_bool)borderless);
+	SDL_SetWindowBordered(window, (SDL_bool)!borderless);
 }
 
 void ModuleWindow::setFullDesktop(bool fulldesktop) {
@@ -168,7 +168,7 @@ void ModuleWindow::SaveConfig(JSON_Object* config) {
 }
 
 void ModuleWindow::LoadConfig(JSON_Object* config) {
-	setBorderless(!json_object_get_boolean(config, "borderless"));
+	setBorderless(json_object_get_boolean(config, "borderless"));
 	setFullscreen(json_object_get_boolean(config, "fullscreen"));
 	setResizable(json_object_get_boolean(config, "resizable"));
 	setFullDesktop(json_object_get_boolean(config, "fulldesktop"));

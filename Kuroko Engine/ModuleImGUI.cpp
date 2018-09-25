@@ -710,7 +710,7 @@ void ModuleImGUI::DrawWindowConfig() {
 	if (ImGui::Checkbox("Resizable", &resizable))
 		App->window->setResizable(resizable);
 	if (ImGui::Checkbox("Borderless", &borderless))
-		App->window->setBorderless(!borderless);
+		App->window->setBorderless(borderless);
 	ImGui::SameLine();
 	if (ImGui::Checkbox("FullDesktop", &fulldesktop))
 		App->window->setFullDesktop(fulldesktop);
