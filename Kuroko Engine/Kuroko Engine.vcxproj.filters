@@ -46,11 +46,11 @@
     <Filter Include="Sources\Helpers\MathGeoLib\Time">
       <UniqueIdentifier>{3a1b6f45-e4f3-412d-b2b4-c1b21db2e558}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Tools\RNG lib">
-      <UniqueIdentifier>{b7470c80-6ba2-46ea-b339-229ccc4cfb85}</UniqueIdentifier>
+    <Filter Include="Sources\Helpers\Parson">
+      <UniqueIdentifier>{fcfe9ba7-7461-4736-84ad-535b3b3afd35}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Tools\Parson lib">
-      <UniqueIdentifier>{68cd2827-9879-45d4-a53c-4039b61bad05}</UniqueIdentifier>
+    <Filter Include="Sources\Helpers\PCG Random">
+      <UniqueIdentifier>{281b94b6-c907-4efb-b15a-94a6ca675fe5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -345,14 +345,14 @@
     <ClInclude Include="RNG.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="pcg_basic.h">
-      <Filter>Sources\Tools\RNG lib</Filter>
-    </ClInclude>
     <ClInclude Include="VRAM.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
     <ClInclude Include="Parson\parson.h">
-      <Filter>Sources\Tools\Parson lib</Filter>
+      <Filter>Sources\Helpers\Parson</Filter>
+    </ClInclude>
+    <ClInclude Include="PCG Random\pcg_basic.h">
+      <Filter>Sources\Helpers\PCG Random</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -530,14 +530,14 @@
     <ClCompile Include="RNG.cpp">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="pcg_basic.c">
-      <Filter>Sources\Tools\RNG lib</Filter>
-    </ClCompile>
     <ClCompile Include="VRAM.cpp">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
     <ClCompile Include="Parson\parson.c">
-      <Filter>Sources\Tools\Parson lib</Filter>
+      <Filter>Sources\Helpers\Parson</Filter>
+    </ClCompile>
+    <ClCompile Include="PCG Random\pcg_basic.c">
+      <Filter>Sources\Helpers\PCG Random</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
