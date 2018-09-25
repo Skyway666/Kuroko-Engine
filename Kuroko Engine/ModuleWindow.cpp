@@ -30,7 +30,7 @@ bool ModuleWindow::Init(JSON_Object* config)
 	{
 		fillWindowConfig(config);
 		//Create window
-		int width = window_config.width * SCREEN_SIZE; // A bit of a hardcod, but nothing important
+		int width = window_config.width * SCREEN_SIZE; 
 		int height = window_config.height * SCREEN_SIZE;
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
@@ -168,10 +168,10 @@ void ModuleWindow::SaveConfig(JSON_Object* config) {
 }
 
 void ModuleWindow::LoadConfig(JSON_Object* config) {
-	setBorderless(json_object_get_boolean(config, "borderless"));
 	setFullscreen(json_object_get_boolean(config, "fullscreen"));
 	setResizable(json_object_get_boolean(config, "resizable"));
 	setFullDesktop(json_object_get_boolean(config, "fulldesktop"));
+	setBorderless(json_object_get_boolean(config, "borderless"));
 
 	setSize(json_object_get_number(config, "width"), json_object_get_number(config, "height"));
 
