@@ -693,35 +693,32 @@ void ModuleImGUI::DrawAboutWindow() {
 }
 
 void ModuleImGUI::DrawWindowConfig() {
-	float* brightnes = &App->window->window_config.brightness;
-	int* width = &App->window->window_config.width;
-	int* height = &App->window->window_config.height;
-	bool* fullscreen = &App->window->window_config.fullscreen;
-	bool* resizable = &App->window->window_config.resizable;
-	bool* borderless = &App->window->window_config.borderless;
-	bool* fulldesktop = &App->window->window_config.fulldesk;
+	window_config* window_config = &App->window->window_config;
 	ImGui::Begin("Window", &open_tabs[WINDOW_CONFIG]);
-	ImGui::SliderFloat("Brightness", brightnes, 0, 1.0f);
-	ImGui::SliderInt("Width", width, 0, 10000);
-	ImGui::SliderInt("Height", height, 0, 10000);
-	// Update values
-	App->window->setBrightness(*brightnes);
-	App->window->setSize(*width, *height);
+
+	if(ImGui::SliderFloat("Brightness", &window_config->brightness, 0, 1.0f))
+		App->window->setBrightness(window_config->brightness);
+
+	bool width_mod, height_mod = false;
+	width_mod = ImGui::SliderInt("Width", &window_config->width, 0, 10000);
+	height_mod = ImGui::SliderInt("Height", &window_config->height, 0, 10000);
+	
+	if(width_mod || height_mod)
+		App->window->setSize(window_config->width, window_config->height);
 
 	// Refresh rate
 	ImGui::Text("Refresh Rate %i", (int)ImGui::GetIO().Framerate);
-
 	//Bools
-	if (ImGui::Checkbox("Fullscreen", fullscreen))
-		App->window->setFullscreen(*fullscreen);
+	if (ImGui::Checkbox("Fullscreen", &window_config->fullscreen))
+		App->window->setFullscreen(window_config->fullscreen);
 	ImGui::SameLine();
-	if (ImGui::Checkbox("Resizable", resizable))
-		App->window->setResizable(*resizable);
-	if (ImGui::Checkbox("Borderless", borderless))
-		App->window->setBorderless(*borderless);
+	if (ImGui::Checkbox("Resizable", &window_config->resizable))
+		App->window->setResizable(window_config->resizable);
+	if (ImGui::Checkbox("Borderless", &window_config->borderless))
+		App->window->setBorderless(window_config->borderless);
 	ImGui::SameLine();
-	if (ImGui::Checkbox("FullDesktop", fulldesktop))
-		App->window->setFullDesktop(*fulldesktop);
+	if (ImGui::Checkbox("FullDesktop", &window_config->fulldesk))
+		App->window->setFullDesktop(window_config->fulldesk);
 
 
 	ImGui::End();
