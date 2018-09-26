@@ -73,11 +73,11 @@ bool Application::Init()
 	else
 		config = json_value_get_object(json_parse_file(config_file_name.c_str()));
 
-	APPLOG("Application Init --------------");
+	gui->getLog()->AddLog("Application Init --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Init(json_object_get_object(config, (*it)->name.c_str()));
 
-	APPLOG("Application Start --------------");
+	gui->getLog()->AddLog("Application Start --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Start();
 	

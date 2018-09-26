@@ -21,7 +21,8 @@
     "window_config": true,
     "hardware": true,
     "application": true,
-    "about": true
+    "about": true,
+    "log":  true
   },
   "renderer": {
     "vsync": true

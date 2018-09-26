@@ -169,12 +169,14 @@ update_status ModuleImGUI::Update(float dt) {
 		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
 		DrawWindowConfig();
 	}
-	if (open_tabs[HARDWARE]) {
+	if (open_tabs[HARDWARE]) 
 		DrawHardware();
-	}
-	if (open_tabs[APPLICATION]) {
+	
+	if (open_tabs[APPLICATION]) 
 		DrawApplication();
-	}
+	
+	if (open_tabs[LOG])
+		app_log.Draw("App log",&open_tabs[LOG]);
 
 
 	bool close_app = false;
@@ -810,6 +812,7 @@ void ModuleImGUI::SaveConfig(JSON_Object* config) {
 	json_object_set_boolean(config, "window_config", open_tabs[WINDOW_CONFIG]);
 	json_object_set_boolean(config, "hardware", open_tabs[HARDWARE]);
 	json_object_set_boolean(config, "application", open_tabs[APPLICATION]);
+	json_object_set_boolean(config, "log", open_tabs[LOG]);
 }
 void ModuleImGUI::LoadConfig(JSON_Object* config) {
 	open_tabs[DEMO] = json_object_get_boolean(config, "demo");
@@ -823,4 +826,9 @@ void ModuleImGUI::LoadConfig(JSON_Object* config) {
 	open_tabs[HARDWARE] = json_object_get_boolean(config, "hardware");
 	open_tabs[APPLICATION] = json_object_get_boolean(config, "application");
 	open_tabs[ABOUT] = json_object_get_boolean(config, "about");
+	open_tabs[LOG] = json_object_get_boolean(config, "log");
+}
+
+AppLog* ModuleImGUI::getLog() {
+	return &app_log;
 }

@@ -2,6 +2,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModuleWindow.h"
+#include "ModuleImGUI.h"
 #include "Globals.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
@@ -27,14 +28,14 @@ ModuleRenderer3D::~ModuleRenderer3D()
 // Called before render is available
 bool ModuleRenderer3D::Init(JSON_Object* config)
 {
-	APPLOG("Creating 3D Renderer context");
+	App->gui->getLog()->AddLog("Creating 3D Renderer context...\n");
 	bool ret = true;
 	
 	//Create context
 	context = SDL_GL_CreateContext(App->window->window);
 	if(context == NULL)
 	{
-		APPLOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
+		App->gui->getLog()->AddLog("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	
@@ -44,7 +45,7 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 
 		//Use Vsync
 		if(VSYNC && SDL_GL_SetSwapInterval(1) < 0)
-			APPLOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+			App->gui->getLog()->AddLog("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
