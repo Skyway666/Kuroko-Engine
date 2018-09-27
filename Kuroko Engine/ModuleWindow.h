@@ -4,13 +4,21 @@
 #include "Module.h"
 #include "SDL/include/SDL.h"
 
+#include <list>
+
 class Application;
 
-struct window_config {
-	int width, height;
-	float brightness;
-	bool resizable, fullscreen, borderless, fulldesk;
+struct Window
+{
+	SDL_Window* window = nullptr;
+	SDL_Surface* screen_surface = nullptr;
+
+	int width = 0; int height = 0;
+	float brightness = 1.0f;
+	bool resizable = false; bool fullscreen = false; bool borderless = false; bool fulldesk = false;
+	uint id = 0;
 };
+
 
 class ModuleWindow : public Module
 {
@@ -24,24 +32,24 @@ public:
 	bool Init(JSON_Object* config);
 	bool CleanUp();
 
-	void SetTitle(const char* title);
-	void setResizable(bool resize);
-	void setFullscreen(bool fullscreen);
-	void setBorderless(bool borderless);
-	void setFullDesktop(bool fulldesk);
-	void setBrightness(float brightness);
-	void setSize(int x, int y);
+	// id = 0 assigns to main window
+	void SetTitle(const char* title, uint id = 0);
+	void setResizable(bool resize, uint id = 0);
+	void setFullscreen(bool fullscreen, uint id = 0);
+	void setBorderless(bool borderless, uint id = 0);
+	void setFullDesktop(bool fulldesk, uint id = 0);
+	void setBrightness(float brightness, uint id = 0);
+	void setSize(int x, int y, uint id = 0);
 
 	void fillWindowConfig(JSON_Object* config);
 
 	void SaveConfig(JSON_Object* config);
 	void LoadConfig(JSON_Object* config);
-	window_config window_config;
 
 public:
 
-	SDL_Window* window = nullptr;
-	SDL_Surface* screen_surface = nullptr;
+	Window* main_window = nullptr;
+	std::list<Window*> aux_windows;
 };
 
 #endif // __ModuleWindow_H__

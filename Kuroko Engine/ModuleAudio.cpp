@@ -116,6 +116,8 @@ bool ModuleAudio::PlayMusic(uint id, float fade_time)
 					ret = false;
 				}
 			}
+
+			break;
 		}
 	}
 

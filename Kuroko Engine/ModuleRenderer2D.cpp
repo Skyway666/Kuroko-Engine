@@ -26,7 +26,7 @@ bool ModuleRenderer2D::Init(JSON_Object* config) {
 		flags |= SDL_RENDERER_PRESENTVSYNC;
 	}
 
-	renderer = SDL_CreateRenderer(App->window->window, -1, flags);
+	renderer = SDL_CreateRenderer(App->window->main_window->window, -1, flags);
 
 	if (renderer == NULL) {
 		app_log->AddLog("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
