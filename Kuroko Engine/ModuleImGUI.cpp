@@ -130,7 +130,8 @@ update_status ModuleImGUI::Update(float dt) {
 	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) 
 		open_tabs[GRAPHIC] = !open_tabs[GRAPHIC];
 
-	if (open_tabs[GRAPHIC]) DrawGraphicsTab();
+	if (open_tabs[GRAPHIC])
+		DrawGraphicsTab();
 
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (open_tabs[DEMO]) {
@@ -342,7 +343,7 @@ void ModuleImGUI::DrawGraphicsTab()
 
 void ModuleImGUI::DrawHierarchyTab()
 {
-	ImGui::Begin("Hierarchy Tab", &open_tabs[GRAPHIC]);
+	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::Text("Use this tab to set the hierarchy of the scene objects");
 	int id = 0;
 
@@ -632,7 +633,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 void ModuleImGUI::DrawImporterTab()
 {
 
-	ImGui::Begin("Importer", &open_tabs[PRIMITIVE]);
+	ImGui::Begin("Importer", &open_tabs[IMPORTER]);
 	ImGui::Text("Use this tab to fbx and other files into the scene");
 
 	static char fbx_name_buffer[64];
