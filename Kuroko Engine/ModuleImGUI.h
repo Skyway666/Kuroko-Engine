@@ -39,7 +39,7 @@ public:
 
 private:
 	
-	bool open_tabs[LAST];
+	bool open_tabs[LAST];  // _serializable_var
 	ImGuiIO io;
 };
 

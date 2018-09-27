@@ -3,7 +3,7 @@
 #include "MathGeoLib\MathGeoLib.h"
 #include <list>
 
-class GameObject;  // <--  testing purposes
+class GameObject; 
 
 class ModuleScene : public Module
 {

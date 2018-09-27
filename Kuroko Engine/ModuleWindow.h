@@ -11,6 +11,7 @@ struct window_config {
 	float brightness;
 	bool resizable, fullscreen, borderless, fulldesk;
 };
+
 class ModuleWindow : public Module
 {
 public:
@@ -38,10 +39,9 @@ public:
 	window_config window_config;
 
 public:
-	//The window we'll be rendering to
-	SDL_Window* window;
-	//The surface contained by the window
-	SDL_Surface* screen_surface;
+
+	SDL_Window* window = nullptr;
+	SDL_Surface* screen_surface = nullptr;
 };
 
 #endif // __ModuleWindow_H__
