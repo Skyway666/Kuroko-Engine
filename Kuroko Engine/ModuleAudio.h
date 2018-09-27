@@ -17,19 +17,27 @@ public:
 	bool Init(JSON_Object* config);
 	bool CleanUp();
 
-	// Play a music file
-	bool PlayMusic(const char* path, float fade_time = DEFAULT_MUSIC_FADE_TIME);
+	unsigned int LoadMusic(const char* path);
+	bool PlayMusic(uint id, float fade_time = DEFAULT_MUSIC_FADE_TIME);
 
-	// Load a WAV in memory
 	unsigned int LoadFx(const char* path);
+	bool PlayFx(uint id, int repeat = 0, int channel = -1);
 
-	// Play a previously loaded WAV
-	bool PlayFx(unsigned int fx, int repeat = 0, int channel = -1);
+	void setMasterVolume(uint volume);
+	void setMusicVolume(uint volume);
+	void setEffectsVolume(uint volume);
+	uint getMasterVolume()	{ return master_volume; };
+	uint getMusicVolume()	{ return music_volume; };
+	uint getEffectsVolume() { return effects_volume; };
 
 private:
 
-	Mix_Music*				music;
+	std::list<Mix_Music*>	music;
 	std::list<Mix_Chunk*>	fx;
+
+	uint master_volume	= 100;	 // _seriazible_var
+	uint music_volume	= 100;	 // _seriazible_var
+	uint effects_volume = 100;   // _seriazible_var
 };
 
 #endif // __ModuleAudio_H__

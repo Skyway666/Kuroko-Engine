@@ -88,5 +88,6 @@ int main(int argc, char ** argv)
 
 	delete App;
 	app_log->AddLog("Exiting game '%s'...\n", TITLE);
+	delete app_log;
 	return main_return;
 }

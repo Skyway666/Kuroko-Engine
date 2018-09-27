@@ -59,8 +59,8 @@ bool ModuleAudio::CleanUp()
 {
 	app_log->AddLog("Freeing sound FX, closing Mixer and Audio subsystem");
 
-	if(music)
-		Mix_FreeMusic(music);
+	for (std::list<Mix_Music*>::iterator it = music.begin(); it != music.end(); it++)
+		Mix_FreeMusic(*it);
 
 	for (std::list<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); it++)
 		Mix_FreeChunk(*it);
@@ -73,71 +73,70 @@ bool ModuleAudio::CleanUp()
 	return true;
 }
 
-// Play a music file
-bool ModuleAudio::PlayMusic(const char* path, float fade_time)
+uint ModuleAudio::LoadMusic(const char* path)
+{
+	if (Mix_Music* m = Mix_LoadMUS(path))
+		music.push_back(m);
+
+	return music.size();
+}
+
+bool ModuleAudio::PlayMusic(uint id, float fade_time)
 {
 	bool ret = true;
-	
-	if(music != NULL)
+
+	if(Mix_PlayingMusic())
 	{
 		if(fade_time > 0.0f)
-		{
 			Mix_FadeOutMusic((int) (fade_time * 1000.0f));
-		}
 		else
-		{
 			Mix_HaltMusic();
-		}
 
-		// this call blocks until fade out is done
-		Mix_FreeMusic(music);
 	}
 
-	music = Mix_LoadMUS(path);
-
-	if(music == NULL)
+	int i = 0;
+	for (std::list<Mix_Music*>::iterator it = music.begin(); it != music.end(); it++)
 	{
-		app_log->AddLog("Cannot load music %s. Mix_GetError(): %s\n", path, Mix_GetError());
-		ret = false;
-	}
-	else
-	{
-		if(fade_time > 0.0f)
+		i++;
+		if (id == i)
 		{
-			if(Mix_FadeInMusic(music, -1, (int) (fade_time * 1000.0f)) < 0)
+			if (fade_time > 0.0f)
 			{
-				app_log->AddLog("Cannot fade in music %s. Mix_GetError(): %s", path, Mix_GetError());
-				ret = false;
+				if (Mix_FadeInMusic((*it), -1, (int)(fade_time * 1000.0f)) < 0)
+				{
+					app_log->AddLog("Cannot fade in music. Mix_GetError(): %s", Mix_GetError());
+					ret = false;
+				}
 			}
-		}
-		else
-		{
-			if(Mix_PlayMusic(music, -1) < 0)
+			else
 			{
-				app_log->AddLog("Cannot play in music %s. Mix_GetError(): %s", path, Mix_GetError());
-				ret = false;
+				if (Mix_PlayMusic((*it), -1) < 0)
+				{
+					app_log->AddLog("Cannot play in music. Mix_GetError(): %s", Mix_GetError());
+					ret = false;
+				}
 			}
 		}
 	}
 
-	app_log->AddLog("Successfully playing %s", path);
+	app_log->AddLog("Successfully playing music");
 	return ret;
 }
 
 // Load WAV
 unsigned int ModuleAudio::LoadFx(const char* path)
 {
-	unsigned int ret = 0;
-
 	if (Mix_Chunk* chunk = Mix_LoadWAV(path))
+	{
+		chunk->volume = ((float)effects_volume / 100.0f) * MIX_MAX_VOLUME;
 		fx.push_back(chunk);
-
+	}
 
 	return fx.size();
 }
 
 // Play WAV
-bool ModuleAudio::PlayFx(unsigned int id, int repeat, int channel)
+bool ModuleAudio::PlayFx(uint id, int repeat, int channel)
 {
 	int i = 0;
 	for (std::list<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); it++)
@@ -151,4 +150,27 @@ bool ModuleAudio::PlayFx(unsigned int id, int repeat, int channel)
 	}
 
 	return false;
+}
+
+
+void ModuleAudio::setMasterVolume(uint volume)
+{
+	master_volume = volume;
+	Mix_Volume(-1, ((float)master_volume / 100.0f) * MIX_MAX_VOLUME);
+}
+
+void ModuleAudio::setMusicVolume(uint volume)
+{
+	if (!Mix_FadingMusic())
+	{
+		music_volume = volume;
+		Mix_VolumeMusic(((float)effects_volume / 100.0f) * MIX_MAX_VOLUME);
+	}
+}
+
+void ModuleAudio::setEffectsVolume(uint volume)
+{
+	effects_volume = volume;
+	for (std::list<Mix_Chunk*>::iterator it = fx.begin(); it != fx.end(); it++)
+		(*it)->volume = ((float)effects_volume / 100.0f) * MIX_MAX_VOLUME;
 }
