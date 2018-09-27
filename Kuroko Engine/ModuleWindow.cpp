@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleWindow.h"
-
+#include "Applog.h"
 
 ModuleWindow::ModuleWindow(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -18,12 +18,12 @@ ModuleWindow::~ModuleWindow()
 // Called before render is available
 bool ModuleWindow::Init(JSON_Object* config)
 {
-	APPLOG("Init SDL window & surface");
+	app_log->AddLog("Init SDL window & surface");
 	bool ret = true;
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		APPLOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
+		app_log->AddLog("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	else
@@ -67,7 +67,7 @@ bool ModuleWindow::Init(JSON_Object* config)
 
 		if(window == NULL)
 		{
-			APPLOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+			app_log->AddLog("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
 		}
 		else
@@ -84,7 +84,7 @@ bool ModuleWindow::Init(JSON_Object* config)
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {
-	APPLOG("Destroying SDL window and quitting all SDL systems");
+	app_log->AddLog("Destroying SDL window and quitting all SDL systems");
 
 	//Destroy window
 	if(window != NULL)

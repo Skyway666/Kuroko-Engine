@@ -7,6 +7,8 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl2.h"
 
+#include "Applog.h"
+
 #define MAX_KEYS 300
 
 ModuleInput::ModuleInput(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -26,13 +28,13 @@ ModuleInput::~ModuleInput()
 // Called before render is available
 bool ModuleInput::Init(JSON_Object* config)
 {
-	APPLOG("Init SDL input event system");
+	app_log->AddLog("Init SDL input event system");
 	bool ret = true;
 	SDL_Init(0);
 
 	if(SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
-		APPLOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
+		app_log->AddLog("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
@@ -131,7 +133,7 @@ update_status ModuleInput::PreUpdate(float dt)
 // Called before quitting
 bool ModuleInput::CleanUp()
 {
-	APPLOG("Quitting SDL input event subsystem");
+	app_log->AddLog("Quitting SDL input event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }

@@ -10,11 +10,14 @@
 #include "ModulePhysics3D.h"
 #include "ModuleImGUI.h"
 #include "ModuleImporter.h"
+#include "AppLog.h"
 #include <iostream>
 #include <fstream>
 
+
 Application::Application()
 {
+
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
@@ -68,18 +71,17 @@ bool Application::Init()
 
 	App = this;
 
-
 	// Check if there is editor saved data, load custom if there is, load default if there isn't
 	if (json_object_get_boolean(json_value_get_object(json_parse_file(custom_config_file_name.c_str())), "saved_data"))
 		config = json_value_get_object(json_parse_file(custom_config_file_name.c_str()));
 	else
 		config = json_value_get_object(json_parse_file(config_file_name.c_str()));
 
-	gui->getLog()->AddLog("Application Init --------------\n");
+	app_log->AddLog("Application Init --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Init(json_object_get_object(config, (*it)->name.c_str()));
 
-	gui->getLog()->AddLog("Application Start --------------\n");
+	app_log->AddLog("Application Start --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Start();
 	

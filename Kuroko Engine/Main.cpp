@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "Application.h"
 #include "Globals.h"
-#include "ModuleImGUI.h"
+#include "Applog.h"
 
 #include "SDL/include/SDL.h"
 #pragma comment( lib, "SDL/lib/SDL2.lib" )
@@ -17,10 +17,12 @@ enum main_states
 };
 
 Application* App;
+AppLog* app_log;
 
 int main(int argc, char ** argv)
 {
-	APPLOG("Starting engine '%s'...", TITLE);
+	app_log = new AppLog();
+	app_log->AddLog("Starting engine '%s'...", TITLE);
 
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
@@ -31,23 +33,23 @@ int main(int argc, char ** argv)
 		{
 		case MAIN_CREATION:
 
-			APPLOG("-------------- Application Creation --------------");
+			app_log->AddLog("-------------- Application Creation --------------");
 			App = new Application();
 			state = MAIN_START;
 			break;
 
 		case MAIN_START:
 
-			App->gui->getLog()->AddLog("-------------- Application Init --------------\n");
+			app_log->AddLog("-------------- Application Init --------------\n");
 			if (App->Init() == false)
 			{
-				App->gui->getLog()->AddLog("Application Init exits with ERROR\n");
+				app_log->AddLog("Application Init exits with ERROR\n");
 				state = MAIN_EXIT;
 			}
 			else
 			{
 				state = MAIN_UPDATE;
-				App->gui->getLog()->AddLog("-------------- Application Update --------------\n");
+				app_log->AddLog("\n -------------- Application Update --------------\n");
 			}
 
 			break;
@@ -58,7 +60,7 @@ int main(int argc, char ** argv)
 
 			if (update_return == UPDATE_ERROR)
 			{
-				App->gui->getLog()->AddLog("Application Update exits with ERROR\n");
+				app_log->AddLog("Application Update exits with ERROR\n");
 				state = MAIN_EXIT;
 			}
 
@@ -69,10 +71,10 @@ int main(int argc, char ** argv)
 
 		case MAIN_FINISH:
 
-			App->gui->getLog()->AddLog("-------------- Application CleanUp --------------\n");
+			app_log->AddLog("-------------- Application CleanUp --------------\n");
 			if (App->CleanUp() == false)
 			{
-				App->gui->getLog()->AddLog("Application CleanUp exits with ERROR\n");
+				app_log->AddLog("Application CleanUp exits with ERROR\n");
 			}
 			else
 				main_return = EXIT_SUCCESS;
@@ -85,6 +87,6 @@ int main(int argc, char ** argv)
 	}
 
 	delete App;
-	APPLOG("Exiting game '%s'...\n", TITLE);
+	app_log->AddLog("Exiting game '%s'...\n", TITLE);
 	return main_return;
 }

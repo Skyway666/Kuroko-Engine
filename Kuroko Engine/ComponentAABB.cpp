@@ -19,7 +19,7 @@ void ComponentAABB::Reload()
 
 	Vector3f half_size, centroid;
 	getParent()->getInheritedHalfsizeAndCentroid(half_size, centroid);
-
+	
 	obb->pos = centroid.toMathVec();
 	obb->r = half_size.toMathVec();
 

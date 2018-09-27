@@ -7,8 +7,8 @@
 #include "ModuleInput.h"
 #include "ModuleWindow.h"
 #include "ModuleImporter.h"
+#include "Applog.h"
 
-#include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl2.h"
 
@@ -177,7 +177,7 @@ update_status ModuleImGUI::Update(float dt) {
 		DrawApplication();
 	
 	if (open_tabs[LOG])
-		app_log.Draw("App log",&open_tabs[LOG]);
+		app_log->Draw("App log",&open_tabs[LOG]);
 
 
 	bool close_app = false;
@@ -828,8 +828,4 @@ void ModuleImGUI::LoadConfig(JSON_Object* config) {
 	open_tabs[APPLICATION] = json_object_get_boolean(config, "application");
 	open_tabs[ABOUT] = json_object_get_boolean(config, "about");
 	open_tabs[LOG] = json_object_get_boolean(config, "log");
-}
-
-AppLog* ModuleImGUI::getLog() {
-	return &app_log;
 }

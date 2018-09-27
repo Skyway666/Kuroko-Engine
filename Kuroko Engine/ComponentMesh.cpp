@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Application.h"
 #include "ModuleImGUI.h"
+#include "Applog.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
@@ -37,7 +38,7 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, aiMesh* imported_mesh) : Co
 		loaded = true;
 	}
 	else
-		App->gui->getLog()->AddLog("error loading mesh for the component %s", imported_mesh->mName.C_Str());
+		app_log->AddLog("error loading mesh for the component %s", imported_mesh->mName.C_Str());
 }
 
 
@@ -263,7 +264,7 @@ bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 			if (imported_mesh->mFaces[i].mNumIndices == 3)
 				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
 			else
-				App->gui->getLog()->AddLog("WARNING, geometry face with != 3 indices!");
+				app_log->AddLog("WARNING, geometry face with != 3 indices!");
 		}
 	}
 	else

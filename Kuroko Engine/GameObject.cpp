@@ -4,6 +4,8 @@
 #include "ComponentAABB.h"
 #include "Application.h"
 #include "ModuleImGUI.h"
+#include "Applog.h"
+
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent)
 {
 	addComponent(TRANSFORM);
@@ -22,7 +24,7 @@ bool GameObject::Update(float dt)
 			ret = (*it)->Update(dt);
 
 		if (!ret)
-			App->gui->getLog()->AddLog("error in gameobject %s", name.c_str());
+			app_log->AddLog("error in gameobject %s", name.c_str());
 	}
 
 	return ret;

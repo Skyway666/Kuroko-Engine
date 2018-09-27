@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleImGUI.h"
 #include "glew-2.1.0\include\GL\glew.h"
+#include "Applog.h"
 
 Material::~Material()
 {
@@ -62,7 +63,7 @@ void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	if (incompatible_parameter)
-		App->gui->getLog()->AddLog("error setting texture parameters");
+		app_log->AddLog("error setting texture parameters");
 }
 
 void Material::LoadCheckered()

@@ -5,6 +5,7 @@
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
 #include "imgui.h"
+#include "Applog.h"
 
 ModulePhysics3D::ModulePhysics3D(Application* app, bool start_enabled) : Module(app, start_enabled) {
 	debug = true;
@@ -17,7 +18,7 @@ ModulePhysics3D::~ModulePhysics3D() {
 
 // Render not available yet----------------------------------
 bool ModulePhysics3D::Init(JSON_Object* config) {
-	APPLOG("Creating 3D Physics simulation");
+	app_log->AddLog("Creating 3D Physics simulation");
 	bool ret = true;
 
 	return ret;
@@ -25,7 +26,7 @@ bool ModulePhysics3D::Init(JSON_Object* config) {
 
 // ---------------------------------------------------------
 bool ModulePhysics3D::Start() {
-	APPLOG("Creating Physics environment");
+	app_log->AddLog("Creating Physics environment");
 
 	return true;
 }
@@ -51,7 +52,7 @@ update_status ModulePhysics3D::PostUpdate(float dt) {
 
 // Called before quitting
 bool ModulePhysics3D::CleanUp() {
-	APPLOG("Destroying 3D Physics simulation");
+	app_log->AddLog("Destroying 3D Physics simulation");
 
 	return true;
 }
