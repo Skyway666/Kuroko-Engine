@@ -112,6 +112,8 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	HomeworksInit();
+
 	return ret;
 }
 
@@ -123,8 +125,10 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
-
+	
 	// light 0 on cam pos
+
+	HomeworksUpdate();
 	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
 	//for(uint i = 0; i < MAX_LIGHTS; ++i)
@@ -227,4 +231,122 @@ void ModuleRenderer3D::DirectDrawCube(Vector3f size)
 
 	glEnd();
 
+}
+
+void ModuleRenderer3D::HomeworksInit() {
+	myid = 0;
+	float float_array[108] = {
+		//face 1
+		0.f, 0.f, 0.f,
+		0.f, 0.f, 10.f,
+		0.f, 10.f, 0.f,
+
+		0.f, 10.f, 10.f,
+		0.f, 10.f, 0.f,
+		0.f, 0.f, 10.f,
+		//face 2
+		10.f, 10.f, 0.f,
+		0.f, 10.f, 0.f,
+		0.f, 10.f, 10.f,
+
+		0.f, 10.f, 10.f,
+		10.f, 10.f, 10.f,
+		10.f, 10.f, 0.f,
+		//face 3
+		10.f, 0.f, 10.f,
+		10.f, 0.f, 0.f,
+		10.f, 10.f, 0.f,
+
+		10.f, 10.f, 0.f,
+		10.f, 10.f, 10.f,
+		10.f, 0.f, 10.f,
+		//face 4
+		10.0f, 0.f, 0.f,
+		10.f, 0.f, 10.f,
+		0.f, 0.f, 10.f,
+
+		0.f, 0.f, 10.f,
+		0.f, 0.f, 0.f,
+		10.f, 0.f, 0.f,
+		//face 5
+		10.f, 0.f, 10.f,
+		10.f, 10.f, 10.f,
+		0.f, 10.f, 10.f,
+
+		0.f, 10.f, 10.f,
+		0.f, 0.f, 10.f,
+		10.f, 0.f, 10.f,
+		//face 6
+		10.f, 0.f, 0.f,
+		0.f, 0.f, 0.f,
+		0.f, 10.f, 0.f,
+
+		0.f, 10.f, 0.f,
+		10.f, 10.f, 0.f,
+		10.f, 0.f, 0.f
+
+	};
+	glGenBuffers(1, (GLuint*)&myid);
+	glBindBuffer(GL_ARRAY_BUFFER, myid);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, (void*)float_array, GL_STATIC_DRAW);
+}
+
+void ModuleRenderer3D::HomeworksUpdate() {
+	//glBegin(GL_TRIANGLES);
+	//// face 1
+	//glVertex3f(0.f, 0.f, 0.f);
+	//glVertex3f(0.f, 0.f, 10.f);
+	//glVertex3f(0.f, 10.f, 0.f);
+
+	//glVertex3f(0.f, 10.f, 10.f);
+	//glVertex3f(0.f, 10.f, 0.f);
+	//glVertex3f(0.f, 0.f, 10.f);
+	//// face 2
+	//glVertex3f(10.f, 10.f, 0.f); 
+	//glVertex3f(0.f, 10.f, 0.f);
+	//glVertex3f(0.f, 10.f, 10.f);
+
+	//glVertex3f(0.f, 10.f, 10.f);
+	//glVertex3f(10.f, 10.f, 10.f);
+	//glVertex3f(10.f, 10.f, 0.f);
+	//// face 3
+	//glVertex3f(10.f, 0.f, 10.f);
+	//glVertex3f(10.f, 0.f, 0.f);
+	//glVertex3f(10.f, 10.f, 0.f);
+
+	//glVertex3f(10.f, 10.f, 0.f);
+	//glVertex3f(10.f, 10.f, 10.f);
+	//glVertex3f(10.f, 0.f, 10.f);
+	//// face 4
+	//glVertex3f(10.0f, 0.f, 0.f);
+	//glVertex3f(10.f, 0.f, 10.f);
+	//glVertex3f(0.f, 0.f, 10.f);
+
+	//glVertex3f(0.f, 0.f, 10.f);
+	//glVertex3f(0.f, 0.f, 0.f);
+	//glVertex3f(10.f, 0.f, 0.f);
+	//// face 5
+	//glVertex3f(10.f, 0.f, 10.f);
+	//glVertex3f(10.f, 10.f, 10.f);
+	//glVertex3f(0.f, 10.f, 10.f);
+
+	//glVertex3f(0.f, 10.f, 10.f);
+	//glVertex3f(0.f, 0.f, 10.f);
+	//glVertex3f(10.f, 0.f, 10.f);
+	//// face 6
+	//glVertex3f(10.f, 0.f, 0.f);
+	//glVertex3f(0.f, 0.f, 0.f);
+	//glVertex3f(0.f, 10.f, 0.f);
+
+	//glVertex3f(0.f, 10.f, 0.f);
+	//glVertex3f(10.f, 10.f, 0.f);
+	//glVertex3f(10.f, 0.f, 0.f);
+	//glEnd();
+	//glLineWidth(1.0f);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, myid);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }

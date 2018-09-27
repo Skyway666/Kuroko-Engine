@@ -25,9 +25,14 @@ public:
 
 	void DirectDrawCube(Vector3f size);
 
+	// JUST FOR LEARNING PURPUSES
+	void HomeworksInit();
+	void HomeworksUpdate();
+
 private:
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	float3x3 NormalMatrix;
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	uint myid;
 };
