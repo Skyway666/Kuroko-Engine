@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "Application.h"
 #include "Globals.h"
+#include "ModuleImGUI.h"
 
 #include "SDL/include/SDL.h"
 #pragma comment( lib, "SDL/lib/SDL2.lib" )
@@ -15,13 +16,14 @@ enum main_states
 	MAIN_EXIT
 };
 
+Application* App;
+
 int main(int argc, char ** argv)
 {
-	APPLOG("Starting game '%s'...", TITLE);
+	APPLOG("Starting engine '%s'...", TITLE);
 
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
-	Application* App = NULL;
 
 	while (state != MAIN_EXIT)
 	{
@@ -36,16 +38,16 @@ int main(int argc, char ** argv)
 
 		case MAIN_START:
 
-			APPLOG("-------------- Application Init --------------");
+			App->gui->getLog()->AddLog("-------------- Application Init --------------\n");
 			if (App->Init() == false)
 			{
-				APPLOG("Application Init exits with ERROR");
+				App->gui->getLog()->AddLog("Application Init exits with ERROR\n");
 				state = MAIN_EXIT;
 			}
 			else
 			{
 				state = MAIN_UPDATE;
-				APPLOG("-------------- Application Update --------------");
+				App->gui->getLog()->AddLog("-------------- Application Update --------------\n");
 			}
 
 			break;
@@ -56,7 +58,7 @@ int main(int argc, char ** argv)
 
 			if (update_return == UPDATE_ERROR)
 			{
-				APPLOG("Application Update exits with ERROR");
+				App->gui->getLog()->AddLog("Application Update exits with ERROR\n");
 				state = MAIN_EXIT;
 			}
 
@@ -67,10 +69,10 @@ int main(int argc, char ** argv)
 
 		case MAIN_FINISH:
 
-			APPLOG("-------------- Application CleanUp --------------");
+			App->gui->getLog()->AddLog("-------------- Application CleanUp --------------\n");
 			if (App->CleanUp() == false)
 			{
-				APPLOG("Application CleanUp exits with ERROR");
+				App->gui->getLog()->AddLog("Application CleanUp exits with ERROR\n");
 			}
 			else
 				main_return = EXIT_SUCCESS;

@@ -66,6 +66,8 @@ bool Application::Init()
 	config_file_name = "JSON Files/config.json";
 	custom_config_file_name = "JSON Files/custom_config.json";
 
+	App = this;
+
 
 	// Check if there is editor saved data, load custom if there is, load default if there isn't
 	if (json_object_get_boolean(json_value_get_object(json_parse_file(custom_config_file_name.c_str())), "saved_data"))

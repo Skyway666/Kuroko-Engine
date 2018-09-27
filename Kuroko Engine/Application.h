@@ -68,3 +68,5 @@ private:
 	bool want_to_delete_config = false;
 	bool want_to_load_default_config = false;
 };
+
+extern Application* App;

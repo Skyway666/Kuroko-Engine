@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "ComponentMesh.h"
 #include "Material.h"
+#include "ModuleImGUI.h"
+#include "Application.h"
 
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
@@ -58,7 +60,7 @@ GameObject* ModuleImporter::LoadFBX(const char* file)
 		aiReleaseImport(imported_scene);
 	}
 	else
-		APPLOG("Error loading scene %s", file);
+		App->gui->getLog()->AddLog("Error loading scene %s", file);
 
 	return root_obj;
 }
@@ -70,7 +72,7 @@ GameObject* ModuleImporter::LoadAssimpNode(aiNode* node, const aiScene* scene, G
 	for (int i = 0; i < node->mNumMeshes; i++)
 	{
 		root_obj->addComponent(new ComponentMesh(root_obj, scene->mMeshes[node->mMeshes[i]]));
-		APPLOG("New mesh with %d vertices", scene->mMeshes[node->mMeshes[i]]->mNumVertices);
+		App->gui->getLog()->AddLog("New mesh with %d vertices", scene->mMeshes[node->mMeshes[i]]->mNumVertices);
 	}
 
 	for (int i = 0; i < node->mNumChildren; i++)
@@ -92,7 +94,7 @@ bool ModuleImporter::LoadRootMesh(const char* file, ComponentMesh* component_to_
 		return true;
 	}
 	else
-		APPLOG("Error loading scene %s", file);
+		App->gui->getLog()->AddLog("Error loading scene %s", file);
 
 	return false;
 }

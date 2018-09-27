@@ -1,5 +1,6 @@
 #include "Material.h"
-
+#include "Application.h"
+#include "ModuleImGUI.h"
 #include "glew-2.1.0\include\GL\glew.h"
 
 Material::~Material()
@@ -7,7 +8,6 @@ Material::~Material()
 	if (loaded)
 		glDeleteTextures(1, &id);
 }
-
 void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
 {
 	bool incompatible_parameter = false;
@@ -61,8 +61,8 @@ void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 
 	glBindTexture(GL_TEXTURE_2D, id);
 
-	if(incompatible_parameter)
-		APPLOG("error setting texture parameters")
+	if (incompatible_parameter)
+		App->gui->getLog()->AddLog("error setting texture parameters");
 }
 
 void Material::LoadCheckered()

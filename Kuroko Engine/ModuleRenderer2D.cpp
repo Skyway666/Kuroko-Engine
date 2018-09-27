@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleWindow.h"
+#include "ModuleImGUI.h"
 
 
 
@@ -16,7 +17,7 @@ ModuleRenderer2D::~ModuleRenderer2D() {
 
 bool ModuleRenderer2D::Init(JSON_Object* config) {
 
-	APPLOG("Creating Renderer context");
+	App->gui->getLog()->AddLog("Creating Renderer context");
 	bool ret = true;
 	Uint32 flags = 0;
 
@@ -27,7 +28,7 @@ bool ModuleRenderer2D::Init(JSON_Object* config) {
 	renderer = SDL_CreateRenderer(App->window->window, -1, flags);
 
 	if (renderer == NULL) {
-		APPLOG("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+		App->gui->getLog()->AddLog("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
@@ -63,7 +64,7 @@ update_status ModuleRenderer2D::PostUpdate(float dt) {
 }
 
 bool ModuleRenderer2D::CleanUp() {
-	APPLOG("Destroying renderer");
+	App->gui->getLog()->AddLog("Destroying renderer");
 
 	//Destroy window
 	if (renderer != NULL) {
