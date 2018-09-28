@@ -178,7 +178,7 @@ void GameObject::calculateCentroidandHalfsize()
 
 
 
-void GameObject::getInheritedHalfsizeAndCentroid(Vector3f& half_size, Vector3f& centroid)
+void GameObject::getInheritedHalfsizeAndCentroid(Vector3f& out_half_size, Vector3f& out_centroid)
 {
 	std::list<GameObject*> children;
 	getChildren(children);
@@ -213,7 +213,7 @@ void GameObject::getInheritedHalfsizeAndCentroid(Vector3f& half_size, Vector3f& 
 		}
 	}
 
-	centroid = (lowest_p + highest_p) * 0.5f;
-	half_size = highest_p - centroid;
+	out_centroid = (lowest_p + highest_p) * 0.5f;
+	out_half_size = highest_p - centroid;
 
 }
