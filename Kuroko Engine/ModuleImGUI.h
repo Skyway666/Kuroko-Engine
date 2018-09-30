@@ -2,13 +2,15 @@
 #include "Module.h"
 #include "Globals.h"
 #include "imgui.h"
+#include <array>
 
 struct ImGuiIO;
 class GameObject;
 class Component;
+class Material;
 
-enum GUI_Tabs { DEMO, GRAPHIC, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, WINDOW_CONFIG, HARDWARE, APPLICATION, LOG, LAST};  // LAST is an utility value to store the max num of tabs.
-
+enum GUI_Tabs { DEMO, GRAPHIC, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, WINDOW_CONFIG, HARDWARE, APPLICATION, LOG, TIME_CONTROL, LAST};  // LAST is an utility value to store the max num of tabs.
+enum UI_textures { PLAY, PAUSE, STOP, LAST_TEX};
 
 class ModuleImGUI :
 	public Module {
@@ -33,6 +35,7 @@ public:
 	void DrawWindowConfig();
 	void DrawHardware();
 	void DrawApplication();
+	void DrawTimeControl();
 
 	void SaveConfig(JSON_Object* config);
 	void LoadConfig(JSON_Object* config);
@@ -41,5 +44,6 @@ private:
 	
 	bool open_tabs[LAST];  // _serializable_var
 	ImGuiIO io;
+	std::array<Material*, LAST_TEX> ui_textures;
 };
 

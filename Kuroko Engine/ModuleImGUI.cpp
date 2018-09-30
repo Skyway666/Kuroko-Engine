@@ -75,7 +75,9 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 
 	LoadConfig(config);
 
-
+	ui_textures[PLAY] = App->importer->quickLoadTex("Play.png");
+	ui_textures[PAUSE] = App->importer->quickLoadTex("Pause.png");
+	ui_textures[STOP] = App->importer->quickLoadTex("Stop.png");
 
 	return true;
 }
@@ -166,6 +168,7 @@ update_status ModuleImGUI::Update(float dt) {
 		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
 		DrawAboutWindow();
 	}
+
 	if (open_tabs[WINDOW_CONFIG]) {
 		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
 		DrawWindowConfig();
@@ -178,6 +181,9 @@ update_status ModuleImGUI::Update(float dt) {
 	
 	if (open_tabs[LOG])
 		app_log->Draw("App log",&open_tabs[LOG]);
+
+	if (open_tabs[TIME_CONTROL])
+		DrawTimeControl();
 
 
 	bool close_app = false;
@@ -208,6 +214,7 @@ update_status ModuleImGUI::Update(float dt) {
 			ImGui::MenuItem("Window", NULL, &open_tabs[WINDOW_CONFIG]);
 			ImGui::MenuItem("Hardware", NULL, &open_tabs[HARDWARE]);
 			ImGui::MenuItem("Application", NULL, &open_tabs[APPLICATION]);
+			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help")) {
@@ -703,8 +710,8 @@ void ModuleImGUI::DrawWindowConfig() {
 		App->window->setBrightness(window->brightness);
 
 	bool width_mod, height_mod = false;
-	width_mod = ImGui::SliderInt("Width", &window->width, 0, 10000);
-	height_mod = ImGui::SliderInt("Height", &window->height, 0, 10000);
+	width_mod = ImGui::SliderInt("Width", &window->width, 640, 1920);
+	height_mod = ImGui::SliderInt("Height", &window->height, 480, 1080);
 	
 	if(width_mod || height_mod)
 		App->window->setSize(window->width, window->height);
@@ -801,7 +808,31 @@ void ModuleImGUI::DrawApplication(){
 	ImGui::PlotHistogram("##milliseconds", &App->ms_log[0], App->ms_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 	ImGui::End();
 }
-void ModuleImGUI::SaveConfig(JSON_Object* config) {
+
+void ModuleImGUI::DrawTimeControl()
+{
+	ImGui::Begin("Time control", &open_tabs[TIME_CONTROL]);
+
+	int w, h;
+	ui_textures[PLAY]->getSize(w, h);
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h)))
+		App->scene_intro->Play();
+
+	ImGui::SameLine();
+	ui_textures[PAUSE]->getSize(w, h);
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h)))
+		App->scene_intro->Pause();
+
+	ImGui::SameLine();
+	ui_textures[STOP]->getSize(w, h);
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h)))
+		App->scene_intro->Stop();
+
+	ImGui::End();
+}
+
+void ModuleImGUI::SaveConfig(JSON_Object* config) 
+{
 	json_object_set_boolean(config, "demo", open_tabs[DEMO]);
 	json_object_set_boolean(config, "graphic", open_tabs[GRAPHIC]);
 	json_object_set_boolean(config, "test", open_tabs[TEST]);
@@ -814,18 +845,22 @@ void ModuleImGUI::SaveConfig(JSON_Object* config) {
 	json_object_set_boolean(config, "hardware", open_tabs[HARDWARE]);
 	json_object_set_boolean(config, "application", open_tabs[APPLICATION]);
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
+	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
 }
-void ModuleImGUI::LoadConfig(JSON_Object* config) {
-	open_tabs[DEMO] = json_object_get_boolean(config, "demo");
-	open_tabs[GRAPHIC] = json_object_get_boolean(config, "graphic");
-	open_tabs[TEST] = json_object_get_boolean(config, "test");
-	open_tabs[HIERARCHY] = json_object_get_boolean(config, "hierarchy");
-	open_tabs[OBJ_INSPECTOR] = json_object_get_boolean(config, "obj_inspector");
-	open_tabs[PRIMITIVE] = json_object_get_boolean(config, "primitive");
-	open_tabs[IMPORTER] = json_object_get_boolean(config, "importer");
-	open_tabs[WINDOW_CONFIG] = json_object_get_boolean(config, "window_config");
-	open_tabs[HARDWARE] = json_object_get_boolean(config, "hardware");
-	open_tabs[APPLICATION] = json_object_get_boolean(config, "application");
-	open_tabs[ABOUT] = json_object_get_boolean(config, "about");
-	open_tabs[LOG] = json_object_get_boolean(config, "log");
+
+void ModuleImGUI::LoadConfig(JSON_Object* config) 
+{
+	open_tabs[DEMO]				= json_object_get_boolean(config, "demo");
+	open_tabs[GRAPHIC]			= json_object_get_boolean(config, "graphic");
+	open_tabs[TEST]				= json_object_get_boolean(config, "test");
+	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
+	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
+	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
+	open_tabs[IMPORTER]			= json_object_get_boolean(config, "importer");
+	open_tabs[WINDOW_CONFIG]	= json_object_get_boolean(config, "window_config");
+	open_tabs[HARDWARE]			= json_object_get_boolean(config, "hardware");
+	open_tabs[APPLICATION]		= json_object_get_boolean(config, "application");
+	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
+	open_tabs[LOG]				= json_object_get_boolean(config, "log");
+	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 }

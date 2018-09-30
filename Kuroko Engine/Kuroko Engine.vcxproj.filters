@@ -81,9 +81,6 @@
     <ClInclude Include="Light.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleSceneIntro.h">
-      <Filter>Sources\Modules\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
@@ -356,6 +353,9 @@
     </ClInclude>
     <ClInclude Include="Applog.h">
       <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleSceneIntro.h">
+      <Filter>Sources\Modules\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

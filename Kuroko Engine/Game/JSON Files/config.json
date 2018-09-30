@@ -22,7 +22,8 @@
     "hardware": true,
     "application": true,
     "about": true,
-    "log":  true
+    "log": true,
+    "time_control": false
   },
   "renderer": {
     "vsync": true

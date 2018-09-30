@@ -17,6 +17,10 @@ public:
 
 public:
 
+	void Play() {};
+	void Pause() {};
+	void Stop() {};
+
 	std::list<GameObject*> game_objects;
 	GameObject* selected_obj = nullptr;
 	bool draw_grid = true;

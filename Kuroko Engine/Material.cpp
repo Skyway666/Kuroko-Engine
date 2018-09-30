@@ -4,6 +4,17 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Applog.h"
 
+Material::Material(uint GL_id) 
+{ 
+	id = GL_id; 
+	loaded = true; 
+
+	glBindTexture(GL_TEXTURE_2D, id);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, (GLint*)&size_x);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&size_y);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 Material::~Material()
 {
 	if (loaded)
