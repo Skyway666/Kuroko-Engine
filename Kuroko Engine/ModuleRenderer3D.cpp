@@ -113,7 +113,7 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	HomeworksInit();
+	//HomeworksInit();
 
 	return ret;
 }
@@ -129,7 +129,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	
 	// light 0 on cam pos
 
-	HomeworksUpdate();
+	//HomeworksUpdate();
 	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
 	//for(uint i = 0; i < MAX_LIGHTS; ++i)

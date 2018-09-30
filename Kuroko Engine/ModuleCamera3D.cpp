@@ -2,7 +2,10 @@
 #include "Application.h"
 #include "ModuleCamera3D.h"
 #include "ModuleInput.h"
+#include "ModuleSceneIntro.h"
 #include "Applog.h"
+#include "GameObject.h"
+#include "ComponentTransform.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -42,13 +45,17 @@ bool ModuleCamera3D::CleanUp()
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
+	// Not allow camera to be modified if UI is being operated
+	if (ImGui::IsMouseHoveringAnyWindow())
+		return UPDATE_CONTINUE;
+
 	vec3 newPos(0, 0, 0);
 	float speed = 1.0f * dt;
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 8.0f * dt;
 
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y += speed;
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPos.y -= speed;
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) newPos.y += speed;
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) newPos.y -= speed;
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
@@ -57,6 +64,20 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
 
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		if (GameObject* selected_obj = App->scene_intro->selected_obj)
+		{
+			Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+			selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+			float3 new_pos = (centroid + (half_size * 1.5f)).toMathVec();
+			new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
+			Move(vec3(new_pos.x, new_pos.y, new_pos.z) - Position);
+			LookAt(vec3(centroid.x, centroid.y, centroid.z));
+		}
+		else
+			LookAt(vec3(0,0,0));
+	}
 
 	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT) {
 		int dx = -App->input->GetMouseXMotion();
