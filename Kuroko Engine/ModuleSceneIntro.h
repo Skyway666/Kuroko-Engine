@@ -5,6 +5,8 @@
 
 class GameObject; 
 
+enum GameState { STOPPED, PAUSED, PLAYING};
+
 class ModuleScene : public Module
 {
 public:
@@ -17,13 +19,14 @@ public:
 
 public:
 
-	void Play() {};
-	void Pause() {};
-	void Stop() {};
+	void Play() { game_state = PLAYING; };
+	void Pause() { game_state = PAUSED; };
+	void Stop() { game_state = STOPPED; };
 
 	std::list<GameObject*> game_objects;
 	GameObject* selected_obj = nullptr;
 	bool draw_grid = true;
+	GameState game_state = STOPPED;
 
 private:
 	

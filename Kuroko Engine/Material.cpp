@@ -71,7 +71,7 @@ void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 		incompatible_parameter = true;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, id);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	if (incompatible_parameter)
 		app_log->AddLog("error setting texture parameters");
