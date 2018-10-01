@@ -35,6 +35,7 @@ public:
 	std::vector<float> texcoords;
 	std::vector<unsigned short> indices;
 
+	uint sphereVID, sphereIID, sphereNID, sphereTID;
 	float cube_vertices[24];
 	short cube_indices[36];
 
