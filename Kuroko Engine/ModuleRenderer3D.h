@@ -29,10 +29,30 @@ public:
 	void HomeworksInit();
 	void HomeworksUpdate();
 
+	bool draw_direct_cube,draw_buffer_cube, draw_index_cube, draw_sphere, draw_cylinder;
+	std::vector<float> vertices;
+	std::vector<float> normals;
+	std::vector<float> texcoords;
+	std::vector<unsigned short> indices;
+
+	float cube_vertices[24];
+	short cube_indices[36];
+
+
+
+
+	
+	uint my_cubeid, my_cubeindexid, my_cubevertexid;  // _to_remove
+	// JUST FOR LEARNING PURPUSES
+
 private:
+
+
+
+
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
 	float3x3 NormalMatrix;
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
-	uint myid;  // _to_remove
+
 };
