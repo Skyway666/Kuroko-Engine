@@ -116,8 +116,8 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	HomeworksInit();
 	draw_direct_cube = false;
 	draw_buffer_cube = false;
-	draw_index_cube = false;
-	draw_sphere = true;
+	draw_index_cube = true;
+	draw_sphere = false;
 	draw_cylinder = false;
 
 	return ret;
@@ -249,53 +249,53 @@ void ModuleRenderer3D::HomeworksInit() {
 	my_cubeid = 0;
 	float float_array[108] = {
 		//face 1
-		0.f, 0.f, 0.f,
-		0.f, 0.f, 10.f,
-		0.f, 10.f, 0.f,
+		0.f, 0.f, 0.f, //0
+		0.f, 0.f, 10.f, // 1
+		0.f, 10.f, 0.f, // 2
 
-		0.f, 10.f, 10.f,
-		0.f, 10.f, 0.f,
-		0.f, 0.f, 10.f,
+		0.f, 10.f, 10.f,//4
+		0.f, 10.f, 0.f,//2
+		0.f, 0.f, 10.f, //1
 		//face 2
-		10.f, 10.f, 0.f,
-		0.f, 10.f, 0.f,
-		0.f, 10.f, 10.f,
+		10.f, 10.f, 0.f,//5
+		0.f, 10.f, 0.f,//2
+		0.f, 10.f, 10.f,//4
 
-		0.f, 10.f, 10.f,
-		10.f, 10.f, 10.f,
-		10.f, 10.f, 0.f,
+		0.f, 10.f, 10.f,//4
+		10.f, 10.f, 10.f,//7
+		10.f, 10.f, 0.f,//5
 		//face 3
-		10.f, 0.f, 10.f,
-		10.f, 0.f, 0.f,
-		10.f, 10.f, 0.f,
+		10.f, 0.f, 10.f,//6
+		10.f, 0.f, 0.f, //3
+		10.f, 10.f, 0.f,//5
 
-		10.f, 10.f, 0.f,
-		10.f, 10.f, 10.f,
-		10.f, 0.f, 10.f,
+		10.f, 10.f, 0.f,//5
+		10.f, 10.f, 10.f,//7
+		10.f, 0.f, 10.f,//6
 		//face 4
-		10.0f, 0.f, 0.f,
-		10.f, 0.f, 10.f,
-		0.f, 0.f, 10.f,
+		10.0f, 0.f, 0.f,//3
+		10.f, 0.f, 10.f,//6
+		0.f, 0.f, 10.f, //1
 
-		0.f, 0.f, 10.f,
-		0.f, 0.f, 0.f,
-		10.f, 0.f, 0.f,
+		0.f, 0.f, 10.f, //1
+		0.f, 0.f, 0.f, //0
+		10.f, 0.f, 0.f,//3
 		//face 5
-		10.f, 0.f, 10.f,
-		10.f, 10.f, 10.f,
-		0.f, 10.f, 10.f,
+		10.f, 0.f, 10.f,//6
+		10.f, 10.f, 10.f,//7
+		0.f, 10.f, 10.f,//4
 
-		0.f, 10.f, 10.f,
-		0.f, 0.f, 10.f,
-		10.f, 0.f, 10.f,
+		0.f, 10.f, 10.f,//4
+		0.f, 0.f, 10.f,//1
+		10.f, 0.f, 10.f,//6
 		//face 6
-		10.f, 0.f, 0.f,
-		0.f, 0.f, 0.f,
-		0.f, 10.f, 0.f,
+		10.f, 0.f, 0.f,//3
+		0.f, 0.f, 0.f,//0
+		0.f, 10.f, 0.f,//2
 
-		0.f, 10.f, 0.f,
-		10.f, 10.f, 0.f,
-		10.f, 0.f, 0.f
+		0.f, 10.f, 0.f,//2
+		10.f, 10.f, 0.f,//5
+		10.f, 0.f, 0.f//3
 
 	};
 
@@ -305,6 +305,27 @@ void ModuleRenderer3D::HomeworksInit() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, (void*)float_array, GL_STATIC_DRAW);
 
 	// Cube with index
+
+	cube_vertices[0] = 0.f; cube_vertices[1] = 0.f; cube_vertices[2] = 0.f; //0
+	cube_vertices[3] = 0.f; cube_vertices[4] = 0.f; cube_vertices[5] = 10.f; //1
+	cube_vertices[6] = 0.f; cube_vertices[7] = 10.f; cube_vertices[8] = 0.f; //2
+	cube_vertices[9] = 10.f; cube_vertices[10] = 0.f; cube_vertices[11] = 0.f;//3
+
+	cube_vertices[12] = 0.f; cube_vertices[13] = 10.f; cube_vertices[14] = 10.f;//4
+	cube_vertices[15] = 10.f; cube_vertices[16] = 10.f; cube_vertices[17] = 0.f;//5
+	cube_vertices[18] = 10.f; cube_vertices[19] = 0.f; cube_vertices[20] = 10.f;//6
+	cube_vertices[21] = 10.f; cube_vertices[22] = 10.f; cube_vertices[23] = 10.f;//7
+
+	cube_indices[0] = 0; cube_indices[1] = 1; cube_indices[2] = 2;   	cube_indices[3] = 4; cube_indices[4] = 2; cube_indices[5] = 1; // face 1
+	cube_indices[6] = 5; cube_indices[7] = 2; cube_indices[8] = 4;   	cube_indices[9] = 4; cube_indices[10] = 7; cube_indices[11] = 5; // face 2
+	cube_indices[12] = 6; cube_indices[13] = 3; cube_indices[14] = 5;   	cube_indices[15] = 5; cube_indices[16] = 7; cube_indices[17] = 6; // face 3
+	cube_indices[18] = 3; cube_indices[19] = 6; cube_indices[20] = 1;   	cube_indices[21] = 1; cube_indices[22] = 0; cube_indices[23] = 3; // face 4
+	cube_indices[24] = 6; cube_indices[25] = 7; cube_indices[26] = 4;   	cube_indices[27] = 4; cube_indices[28] = 1; cube_indices[29] = 6; // face 5
+	cube_indices[30] = 3; cube_indices[31] = 0; cube_indices[32] = 2;   	cube_indices[33] = 2; cube_indices[34] = 5; cube_indices[35] = 3; // face 6
+
+	
+
+	// Sphere
 	float radius = 10.0f;
 	int rings = 100;
 	int sectors = 200;
@@ -410,7 +431,13 @@ void ModuleRenderer3D::HomeworksUpdate() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 	if (draw_index_cube) {
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, cube_vertices);
+		// draw a cube
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, cube_indices);
 
+		// deactivate vertex arrays after drawing
+		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 	else if(draw_sphere){
 		glEnableClientState(GL_VERTEX_ARRAY);

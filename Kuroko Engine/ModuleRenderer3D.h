@@ -35,14 +35,14 @@ public:
 	std::vector<float> texcoords;
 	std::vector<unsigned short> indices;
 
-	float*cube_vertices;
-	float*cube_indices;
+	float cube_vertices[24];
+	short cube_indices[36];
 
 
 
 
 	
-	uint my_cubeid;  // _to_remove
+	uint my_cubeid, my_cubeindexid, my_cubevertexid;  // _to_remove
 	// JUST FOR LEARNING PURPUSES
 
 private:
