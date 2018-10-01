@@ -28,7 +28,7 @@ struct DebugShape
 	uint num_vertices = 0;
 
 	bool wireframe = false;
-	bool enable_face_culling = true;
+	bool face_culling = true;
 
 	void Draw();
 	void LoadDataToVRAM();
@@ -46,6 +46,7 @@ public:
 
 	uint addArrow(Vector3f start_point, Vector3f end_point, Color color = Red);
 	uint addAxis(Vector3f position, float length = 1.0f, Quat rotation = Quat::identity);
+	uint addRay(Vector3f start_point, Vector3f end_point, Color color = Green);
 
 	void removeShape(uint id);
 	void ClearShapes() { shapes.clear(); };

@@ -50,7 +50,7 @@ uint ModuleDebug::addArrow(Vector3f start_point, Vector3f end_point, Color color
 
 	arrow->id = last_id++;
 	arrow->wireframe = true;
-	arrow->enable_face_culling = false;
+	arrow->face_culling = false;
 	arrow->LoadDataToVRAM();
 
 	shapes.push_back(arrow);
@@ -91,11 +91,39 @@ uint ModuleDebug::addAxis(Vector3f position, float length, Quat rotation)
 
 	axis->id = last_id++;
 	axis->wireframe = true;
-	axis->enable_face_culling = false;
+	axis->face_culling = false;
 	axis->LoadDataToVRAM();
 
 	shapes.push_back(axis);
 	return axis->id;
+}
+
+uint ModuleDebug::addRay(Vector3f start_point, Vector3f end_point, Color color)
+{
+	DebugShape* ray = new DebugShape();
+	ray->type = RAY;
+
+	ray->num_vertices = 2;
+	ray->vertices = new Vector3f[2];
+	ray->vertices[0] = start_point; ray->vertices[1] = end_point;
+
+	ray->num_tris = 1;
+	ray->tris = new Point3ui[1];
+	ray->tris[0] = { 0,1,0 }; 
+
+	ray->colors = new Vector3f[2];
+	ray->colors[0] = { color.r, color.g, color.b }; ray->colors[1] = { color.r, color.g, color.b };
+
+	ray->normals = new Vector3f[2];
+	ray->normals[0] = (start_point - end_point).Normalized(); ray->normals[1] = (end_point - start_point).Normalized();
+
+	ray->id = last_id++;
+	ray->wireframe = true;
+	ray->face_culling = false;
+	ray->LoadDataToVRAM();
+
+	shapes.push_back(ray);
+	return ray->id;
 }
 
 void ModuleDebug::removeShape(uint id)
@@ -115,7 +143,6 @@ void ModuleDebug::removeShape(uint id)
 }
 
 
-
 void DebugShape::Draw()
 {
 	// bind VBOs before drawing
@@ -132,8 +159,8 @@ void DebugShape::Draw()
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	bool previous_setting = glIsEnabled(GL_CULL_FACE);
-	if (enable_face_culling != previous_setting)
-		enable_face_culling ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+	if (face_culling != previous_setting)
+		face_culling ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
 
 	size_t Offset = sizeof(Vector3f) * num_vertices;
 
@@ -144,7 +171,7 @@ void DebugShape::Draw()
 
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
-	if (enable_face_culling != previous_setting)
+	if (face_culling != previous_setting)
 		previous_setting ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
 		
 	glDisableClientState(GL_COLOR_ARRAY);
