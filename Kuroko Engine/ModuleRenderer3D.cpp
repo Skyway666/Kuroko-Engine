@@ -116,8 +116,8 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	HomeworksInit();
 	draw_direct_cube = false;
 	draw_buffer_cube = false;
-	draw_index_cube = true;
-	draw_sphere = false;
+	draw_index_cube = false;
+	draw_sphere = true;
 	draw_cylinder = false;
 
 	return ret;
@@ -325,46 +325,104 @@ void ModuleRenderer3D::HomeworksInit() {
 
 	
 
-	// Sphere
-	float radius = 10.0f;
-	int rings = 100;
-	int sectors = 200;
+	// Sphere (codde from http://www.songho.ca/opengl/gl_sphere.html)
 
-	float const R = 1. / (float)(rings - 1);
-	float const S = 1. / (float)(sectors - 1);
-	int r, s;
+	float radius = 1.0f;
+	float sectorCount = 12.0f;
+	float stackCount = 24.0f;
 
-	vertices.resize(rings * sectors * 3);
-	normals.resize(rings * sectors * 3);
-	texcoords.resize(rings * sectors * 2);
-	std::vector<float>::iterator v = vertices.begin();
-	std::vector<float>::iterator n = normals.begin();
-	std::vector<float>::iterator t = texcoords.begin();
-	for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
-		float const y = sin(-M_PI_2 + M_PI * r * R);
-		float const x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
-		float const z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
+	float x, y, z, xy;                              // vertex position
+	float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
+	float s, t;                                     // vertex texCoord
 
-		*t++ = s * S;
-		*t++ = r * R;
+	float sectorStep = 2 * PI / sectorCount;
+	float stackStep = PI / stackCount;
+	float sectorAngle, stackAngle;
 
-		*v++ = x * radius;
-		*v++ = y * radius;
-		*v++ = z * radius;
+	for (int i = 0; i <= stackCount; ++i) {
+		stackAngle = PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+		xy = radius * cosf(stackAngle);             // r * cos(u)
+		z = radius * sinf(stackAngle);              // r * sin(u)
 
-		*n++ = x;
-		*n++ = y;
-		*n++ = z;
+													// add (sectorCount+1) vertices per stack
+													// the first and last vertices have same position and normal, but different tex coods
+		for (int j = 0; j <= sectorCount; ++j) {
+			sectorAngle = j * sectorStep;
+
+			// vertex position (x, y, z)
+			x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
+			y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(z);
+
+			// vertex normal (nx, ny, nz)
+			nx = x * lengthInv;
+			ny = y * lengthInv;
+			nz = z * lengthInv;
+			normals.push_back(nx);
+			normals.push_back(ny);
+			normals.push_back(nz);
+
+			// vertex tex coord (s, t)
+			s = (float)j / sectorCount;
+			t = (float)i / stackCount;
+			texcoords.push_back(s);
+			texcoords.push_back(t);
+		}
+	}
+	int k1, k2;
+	for (int i = 0; i < stackCount; ++i) {
+		k1 = i * (sectorCount + 1);     // beginning of current stack
+		k2 = k1 + sectorCount + 1;      // beginning of next stack
+
+		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
+			// 2 triangles per sector excluding 1st and last stacks
+			if (i != 0) {
+				indices.push_back(k1);
+				indices.push_back(k2);
+				indices.push_back(k1 + 1);
+			}
+
+			if (i != (stackCount - 1)) {
+				indices.push_back(k1 + 1);
+				indices.push_back(k2);
+				indices.push_back(k2 + 1);
+			}
+		}
 	}
 
-	indices.resize(rings * sectors * 4);
-	std::vector<unsigned short>::iterator i = indices.begin();
-	for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
-		*i++ = r * sectors + s;
-		*i++ = r * sectors + (s + 1);
-		*i++ = (r + 1) * sectors + (s + 1);
-		*i++ = (r + 1) * sectors + s;
-	}
+
+	//glGenBuffers(1, &sphereVID);
+	//glBindBuffer(GL_ARRAY_BUFFER, sphereVID);
+	//glBufferData(GL_ARRAY_BUFFER,						// target
+	//	vertices.size()*sizeof(float),					// data size, bytes
+	//	&vertices[0],									// ptr to vertex data
+	//	GL_STATIC_DRAW);								// usage
+
+	//									   // copy index data to VBO
+
+	//glGenBuffers(1, &sphereIID);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereIID);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER,               // target
+	//	indices.size()*sizeof(short),                   // data size, bytes
+	//	&indices[0],									// ptr to index data
+	//	GL_STATIC_DRAW);						        // usage
+
+	//glGenBuffers(1, &sphereNID);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereNID);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER,               // target
+	//	normals.size() * sizeof(short),                 // data size, bytes
+	//	&normals[0],									// ptr to index data
+	//	GL_STATIC_DRAW);						        // usage
+
+	//glGenBuffers(1, &sphereTID);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereTID);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER,               // target
+	//	texcoords.size() * sizeof(short),               // data size, bytes
+	//	&texcoords[0],									// ptr to index data
+	//	GL_STATIC_DRAW);						        // usage
+
 }
 
 
@@ -440,6 +498,10 @@ void ModuleRenderer3D::HomeworksUpdate() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 	else if(draw_sphere){
+
+
+
+
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -447,7 +509,46 @@ void ModuleRenderer3D::HomeworksUpdate() {
 		glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
 		glNormalPointer(GL_FLOAT, 0, &normals[0]);
 		glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-		glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
-		glPopMatrix();
+
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+
+
+
+
+
+
+
+
+
+		//glBindBuffer(GL_ARRAY_BUFFER, sphereVID);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereIID);
+
+		//glEnableVertexAttribArray(sphereVID);
+		//glEnableVertexAttribArray(sphereNID);
+		//glEnableVertexAttribArray(sphereTID);
+
+
+
+		//glVertexAttribPointer(sphereVID, 3, GL_FLOAT, false, stride, 0);
+		//glVertexAttribPointer(sphereNID, 3, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
+		//glVertexAttribPointer(sphereTID, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 6));
+
+
+
+		//glDrawElements(GL_TRIANGLES,                  // primitive type
+		//	indices.size(),								// # of indices
+		//	GL_UNSIGNED_SHORT,							// data type
+		//	(void*)0);								    // offset to indices
+
+		//glDisableVertexAttribArray(sphereVID);
+		//glDisableVertexAttribArray(sphereNID);
+		//glDisableVertexAttribArray(sphereTID);
+
+		//// unbind
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+
 	}
 }
