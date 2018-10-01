@@ -34,9 +34,11 @@ uint ModuleDebug::addArrow(Vector3f start_point, Vector3f end_point, Color color
 	arrow->vertices[2] = (aux* 0.95f) - (perp1); arrow->vertices[3] = (aux* 0.95f) + (perp1);
 	arrow->vertices[4] = (aux* 0.95f) - (perp2); arrow->vertices[5] = (aux* 0.95f) + (perp2);
 	
-	arrow->num_tris = 3;
-	arrow->tris = new Point3ui[3];
-	arrow->tris[0] = { 0,1,0 }; arrow->tris[1] = { 2,1,3 }; arrow->tris[2] = { 4,1,5 };
+	arrow->num_lines = 9;
+	arrow->lines = new Point2ui[9];
+	arrow->lines[0] = { 0,1 }; arrow->lines[1] = { 2,1 }; arrow->lines[2] = { 3,1 };
+	arrow->lines[3] = { 4,1 }; arrow->lines[4] = { 5,1 }; arrow->lines[5] = { 2,4 }; 
+	arrow->lines[6] = { 2,5 }; arrow->lines[7] = { 3,5 }; arrow->lines[8] = { 4,3 };
 
 	arrow->colors = new Vector3f[6];
 	for (int i = 0; i < 6; i++)
@@ -49,8 +51,6 @@ uint ModuleDebug::addArrow(Vector3f start_point, Vector3f end_point, Color color
 	arrow->normals[4] = (arrow->vertices[4] - end_point).Normalized(); arrow->normals[5] = (arrow->vertices[5] - end_point).Normalized();
 
 	arrow->id = last_id++;
-	arrow->wireframe = true;
-	arrow->face_culling = false;
 	arrow->LoadDataToVRAM();
 
 	shapes.push_back(arrow);
@@ -77,9 +77,9 @@ uint ModuleDebug::addAxis(Vector3f position, float length, Quat rotation)
 	axis->vertices = new Vector3f[4];
 	axis->vertices[0] = position; axis->vertices[1] = position + X; axis->vertices[2] = position + Y; axis->vertices[3] = position + Z;
 
-	axis->num_tris = 3;
-	axis->tris = new Point3ui[3];
-	axis->tris[0] = { 1,0,1 }; axis->tris[1] = { 2,0,2 }; axis->tris[2] = { 3,0,3 };
+	axis->num_lines = 3;
+	axis->lines = new Point2ui[3];
+	axis->lines[0] = { 0,1 }; axis->lines[1] = { 0,2 }; axis->lines[2] = { 0,3 };
 
 	axis->colors = new Vector3f[4];
 	axis->colors[0] = { 1.0f, 1.0f, 1.0f }; axis->colors[1] = { 1.0f, 0.0f, 0.0f }; 
@@ -90,8 +90,6 @@ uint ModuleDebug::addAxis(Vector3f position, float length, Quat rotation)
 	axis->normals[2] = Y.Negate().Normalized();  axis->normals[3] = Z.Negate().Normalized();
 
 	axis->id = last_id++;
-	axis->wireframe = true;
-	axis->face_culling = false;
 	axis->LoadDataToVRAM();
 
 	shapes.push_back(axis);
@@ -107,9 +105,9 @@ uint ModuleDebug::addRay(Vector3f start_point, Vector3f end_point, Color color)
 	ray->vertices = new Vector3f[2];
 	ray->vertices[0] = start_point; ray->vertices[1] = end_point;
 
-	ray->num_tris = 1;
-	ray->tris = new Point3ui[1];
-	ray->tris[0] = { 0,1,0 }; 
+	ray->num_lines = 1;
+	ray->lines = new Point2ui[1];
+	ray->lines[0] = { 0,1 }; 
 
 	ray->colors = new Vector3f[2];
 	ray->colors[0] = { color.r, color.g, color.b }; ray->colors[1] = { color.r, color.g, color.b };
@@ -118,15 +116,13 @@ uint ModuleDebug::addRay(Vector3f start_point, Vector3f end_point, Color color)
 	ray->normals[0] = (start_point - end_point).Normalized(); ray->normals[1] = (end_point - start_point).Normalized();
 
 	ray->id = last_id++;
-	ray->wireframe = true;
-	ray->face_culling = false;
 	ray->LoadDataToVRAM();
 
 	shapes.push_back(ray);
 	return ray->id;
 }
 
-uint  ModuleDebug::addFrustum(Vector3f pos, bool wireframe, Quat rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, Color color)
+uint  ModuleDebug::addFrustum(Vector3f pos,Quat rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, Color color)
 {
 	Frustum f;
 	f.pos = pos.toMathVec();
@@ -148,14 +144,14 @@ uint  ModuleDebug::addFrustum(Vector3f pos, bool wireframe, Quat rotation, Frust
 	for (int i = 0; i < 8; i++)
 		frustum->vertices[i] = corners[i];
 	
-	frustum->num_tris = 12;
-	frustum->tris = new Point3ui[12];
-	frustum->tris[0].set(0, 1, 2);	frustum->tris[1].set(3, 2, 1);	//front
-	frustum->tris[2].set(6, 5, 4);	frustum->tris[3].set(5, 6, 7);	//back
-	frustum->tris[4].set(5, 3, 1);	frustum->tris[5].set(3, 5, 7);	//up
-	frustum->tris[6].set(0, 2, 4);	frustum->tris[7].set(6, 4, 2);	//down
-	frustum->tris[8].set(4, 1, 0);	frustum->tris[9].set(1, 4, 5);	//left
-	frustum->tris[10].set(2, 3, 6);	frustum->tris[11].set(7, 6, 3);	//right 
+	frustum->num_lines = 12;
+	frustum->lines = new Point2ui[12];
+	frustum->lines[0].set(4, 6);	frustum->lines[1].set(4, 0);	
+	frustum->lines[6].set(2, 6);	frustum->lines[7].set(2, 0);	
+	frustum->lines[2].set(5, 1);	frustum->lines[3].set(5, 7);
+	frustum->lines[8].set(3, 1);	frustum->lines[9].set(7, 3);
+	frustum->lines[4].set(4, 5);	frustum->lines[5].set(2, 3);	
+	frustum->lines[10].set(1, 0);	frustum->lines[11].set(7, 6);	
 
 	frustum->normals = new Vector3f[8];
 	for (int i = 0; i < 8; i++)
@@ -166,8 +162,6 @@ uint  ModuleDebug::addFrustum(Vector3f pos, bool wireframe, Quat rotation, Frust
 		frustum->colors[i] = { color.r, color.g, color.b };
 
 	frustum->id = last_id++;
-	frustum->wireframe = wireframe;
-	frustum->face_culling = false;
 	frustum->LoadDataToVRAM();
 
 	shapes.push_back(frustum);
@@ -201,15 +195,12 @@ void DebugShape::Draw()
 	// enable vertex arrays
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 
-	if (wireframe) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); glLineWidth(3.0f); }
-	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	bool face_cull_enabled = glIsEnabled(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 
-	bool previous_setting = glIsEnabled(GL_CULL_FACE);
-	if (face_culling != previous_setting)
-		face_culling ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+	glLineWidth(3.0f);
 
 	size_t Offset = sizeof(Vector3f) * num_vertices;
 
@@ -218,15 +209,15 @@ void DebugShape::Draw()
 	glNormalPointer(GL_FLOAT, 0, (void*)Offset);
 	glColorPointer(3, GL_FLOAT, 0, (void*)(Offset * 2));
 
-	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_LINES, num_lines * 2, GL_UNSIGNED_INT, NULL);
 
-	if (face_culling != previous_setting)
-		previous_setting ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+	glLineWidth(1.0f);
+
+	if(face_cull_enabled) glEnable(GL_CULL_FACE);
 		
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	// unbind VBOs
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -252,7 +243,7 @@ void DebugShape::LoadDataToVRAM()
 
 	// copy index data to VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point3ui) * num_tris, tris, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point2ui) * num_lines, lines, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 }
@@ -263,7 +254,7 @@ DebugShape::~DebugShape()
 	glDeleteBuffers(1, &vboId);
 
 	if (vertices)	delete vertices;
-	if (tris)		delete tris;
+	if (lines)		delete lines;
 	if (normals)		delete normals;
 	if (colors)		delete colors;
 }
