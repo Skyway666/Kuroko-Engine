@@ -7,6 +7,11 @@
 #include "Application.h"
 #include "Applog.h"
 
+#include "glew-2.1.0\include\GL\glew.h"
+#include "SDL\include\SDL_opengl.h"
+#include <gl/GL.h>
+#include <gl/GLU.h>
+
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
 #include "Assimp\include\postprocess.h"
@@ -39,7 +44,11 @@ bool ModuleImporter::Init(JSON_Object* config)
 	ilInit();
 	iluInit();
 	ilutInit();
+
 	ilutRenderer(ILUT_OPENGL);
+
+	ilEnable(IL_CONV_PAL);
+	ilutEnable(ILUT_OPENGL_CONV);
 
 	return true;
 }
@@ -100,14 +109,10 @@ bool ModuleImporter::LoadRootMesh(const char* file, ComponentMesh* component_to_
 	return false;
 }
 
-Material* ModuleImporter::quickLoadTex(char* file)
-{
-	return new Material(ilutGLLoadImage(file));
-}
-
 Material* ModuleImporter::LoadTex(char* file, Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
 {
 	Material* mat = new Material(ilutGLLoadImage(file));
 	mat->setParameters(wrap, min_filter, mag_filter);
 	return mat;
 }
+

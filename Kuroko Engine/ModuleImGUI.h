@@ -19,6 +19,7 @@ public:
 	~ModuleImGUI();
 
 	bool Init(JSON_Object* config);
+	bool Start();
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
 	update_status PostUpdate(float dt);

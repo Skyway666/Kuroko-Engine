@@ -75,9 +75,14 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 
 	LoadConfig(config);
 
-	ui_textures[PLAY] = App->importer->quickLoadTex("Play.png");
-	ui_textures[PAUSE] = App->importer->quickLoadTex("Pause.png");
-	ui_textures[STOP] = App->importer->quickLoadTex("Stop.png");
+	return true;
+}
+
+bool ModuleImGUI::Start()
+{
+	ui_textures[PLAY] = App->importer->LoadTex("Play.png");
+	ui_textures[PAUSE] = App->importer->LoadTex("Pause.png");
+	ui_textures[STOP] = App->importer->LoadTex("Stop.png");
 
 	return true;
 }
@@ -214,6 +219,7 @@ update_status ModuleImGUI::Update(float dt) {
 			ImGui::MenuItem("Window", NULL, &open_tabs[WINDOW_CONFIG]);
 			ImGui::MenuItem("Hardware", NULL, &open_tabs[HARDWARE]);
 			ImGui::MenuItem("Application", NULL, &open_tabs[APPLICATION]);
+			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::EndMenu();
 		}
@@ -483,7 +489,7 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 				ImGui::SameLine();
 				if (ImGui::Button("Load Texture"))
-					mesh->setMaterial(App->importer->quickLoadTex(texture_name_buffer));
+					mesh->setMaterial(App->importer->LoadTex(texture_name_buffer));
 
 				static char rootmesh_name_buffer[64];
 				ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
@@ -815,17 +821,17 @@ void ModuleImGUI::DrawTimeControl()
 
 	int w, h;
 	ui_textures[PLAY]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h)))
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->game_state == PLAYING ? 1.0f : 0.0f)))
 		App->scene_intro->Play();
 
 	ImGui::SameLine();
 	ui_textures[PAUSE]->getSize(w, h);
-	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h)))
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->game_state == PAUSED ? 1.0f : 0.0f)))
 		App->scene_intro->Pause();
 
 	ImGui::SameLine();
 	ui_textures[STOP]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h)))
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->game_state == STOPPED ? 1.0f : 0.0f)))
 		App->scene_intro->Stop();
 
 	ImGui::End();
