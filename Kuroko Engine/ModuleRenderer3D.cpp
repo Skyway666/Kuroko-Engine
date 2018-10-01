@@ -113,7 +113,10 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	//HomeworksInit();
+	HomeworksInit();
+	draw_cube = true;
+	draw_sphere = false;
+	draw_cylinder = false;
 
 	return ret;
 }
@@ -129,7 +132,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	
 	// light 0 on cam pos
 
-	//HomeworksUpdate();
+	HomeworksUpdate();
 	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
 	//for(uint i = 0; i < MAX_LIGHTS; ++i)
@@ -235,7 +238,7 @@ void ModuleRenderer3D::DirectDrawCube(Vector3f size)
 }
 
 void ModuleRenderer3D::HomeworksInit() {
-	myid = 0;
+	my_cubeid = 0;
 	float float_array[108] = {
 		//face 1
 		0.f, 0.f, 0.f,
@@ -287,10 +290,54 @@ void ModuleRenderer3D::HomeworksInit() {
 		10.f, 0.f, 0.f
 
 	};
-	glGenBuffers(1, (GLuint*)&myid);
-	glBindBuffer(GL_ARRAY_BUFFER, myid);
+
+
+	glGenBuffers(1, (GLuint*)&my_cubeid);
+	glBindBuffer(GL_ARRAY_BUFFER, my_cubeid);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, (void*)float_array, GL_STATIC_DRAW);
+
+	float radius = 10.0f;
+	int rings = 12;
+	int sectors = 24;
+
+	float const R = 1. / (float)(rings - 1);
+	float const S = 1. / (float)(sectors - 1);
+	int r, s;
+
+	vertices.resize(rings * sectors * 3);
+	normals.resize(rings * sectors * 3);
+	texcoords.resize(rings * sectors * 2);
+	std::vector<float>::iterator v = vertices.begin();
+	std::vector<float>::iterator n = normals.begin();
+	std::vector<float>::iterator t = texcoords.begin();
+	for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
+		float const y = sin(-M_PI_2 + M_PI * r * R);
+		float const x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
+		float const z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
+
+		*t++ = s * S;
+		*t++ = r * R;
+
+		*v++ = x * radius;
+		*v++ = y * radius;
+		*v++ = z * radius;
+
+		*n++ = x;
+		*n++ = y;
+		*n++ = z;
+	}
+
+	indices.resize(rings * sectors * 4);
+	std::vector<unsigned short>::iterator i = indices.begin();
+	for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
+		*i++ = r * sectors + s;
+		*i++ = r * sectors + (s + 1);
+		*i++ = (r + 1) * sectors + (s + 1);
+		*i++ = (r + 1) * sectors + s;
+	}
 }
+
+
 
 void ModuleRenderer3D::HomeworksUpdate() {
 	//glBegin(GL_TRIANGLES);
@@ -345,9 +392,22 @@ void ModuleRenderer3D::HomeworksUpdate() {
 	//glEnd();
 	//glLineWidth(1.0f);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, myid);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	if(draw_cube){
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, my_cubeid);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
+	else if(draw_sphere){
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
+		glNormalPointer(GL_FLOAT, 0, &normals[0]);
+		glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
+		glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+		glPopMatrix();
+	}
 }
