@@ -5,6 +5,7 @@
 
 #include "GameObject.h"			// <--  testing purposes
 #include "ModuleImporter.h"	// <--  testing purposes
+#include "ModuleDebug.h" // <--  testing purposes
 #include "glmath.h"
 
 
@@ -26,6 +27,7 @@ ModuleScene::~ModuleScene(){}
 bool ModuleScene::Start()
 {
 	game_objects.push_back(App->importer->LoadFBX("BakerHouse.fbx"));
+	App->debug->addAxis(Vector3f(10.0f, 0.0f, 0.0f));
 
 	return true;
 }

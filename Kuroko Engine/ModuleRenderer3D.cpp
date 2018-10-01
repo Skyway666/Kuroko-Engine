@@ -116,7 +116,7 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	HomeworksInit();
 	draw_direct_cube = false;
 	draw_buffer_cube = false;
-	draw_index_cube = true;
+	draw_index_cube = false;
 	draw_sphere = false;
 	draw_cylinder = false;
 

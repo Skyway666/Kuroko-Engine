@@ -16,6 +16,7 @@ class ModuleCamera3D;
 class ModulePhysics3D;
 class ModuleImGUI;
 class ModuleImporter;
+class ModuleDebug;
 
 class Application
 {
@@ -24,6 +25,7 @@ public:
 	ModuleInput* input;
 	ModuleAudio* audio;
 	ModuleScene* scene_intro;
+	ModuleDebug* debug;
 	ModuleRenderer3D* renderer3D;
 	ModuleRenderer2D* renderer2D;
 	ModuleCamera3D* camera;

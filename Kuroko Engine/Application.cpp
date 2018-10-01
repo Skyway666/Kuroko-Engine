@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
 #include "ModuleSceneIntro.h"
+#include "ModuleDebug.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleRenderer2D.h"
 #include "ModuleCamera3D.h"
@@ -22,6 +23,7 @@ Application::Application()
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
 	scene_intro = new ModuleScene(this);
+	debug = new ModuleDebug(this);
 	renderer3D = new ModuleRenderer3D(this);
 	//renderer2D = new ModuleRenderer2D(this);
 	importer = new ModuleImporter(this);
@@ -44,6 +46,7 @@ Application::Application()
 	
 	// Scenes
 	list_modules.push_back(scene_intro);
+	list_modules.push_back(debug);
 
 	// Renderer last!
 	//AddModule(renderer2D);
