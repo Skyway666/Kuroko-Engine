@@ -126,6 +126,55 @@ uint ModuleDebug::addRay(Vector3f start_point, Vector3f end_point, Color color)
 	return ray->id;
 }
 
+uint  ModuleDebug::addFrustum(Vector3f pos, bool wireframe, Quat rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, Color color)
+{
+	Frustum f;
+	f.pos = pos.toMathVec();
+	f.front = rotation * Vector3f::Forward.toMathVec();
+	f.up	= rotation * Vector3f::Up.toMathVec();
+	f.nearPlaneDistance = n_plane;
+	f.farPlaneDistance = f_plane;
+	f.type = type;
+	if (type == OrthographicFrustum) { f.orthographicHeight = v_fov_or_ortho_height;	f.orthographicWidth = h_fov_or_ortho_width; }
+	else							 { f.verticalFov = v_fov_or_ortho_height;			f.horizontalFov = h_fov_or_ortho_width; }
+	
+	DebugShape* frustum = new DebugShape();
+	frustum->type = FRUSTUM;
+
+	frustum->num_vertices = 8;
+	frustum->vertices = new Vector3f[8];
+	float3 corners[8];
+	f.GetCornerPoints(corners);
+	for (int i = 0; i < 8; i++)
+		frustum->vertices[i] = corners[i];
+	
+	frustum->num_tris = 12;
+	frustum->tris = new Point3ui[12];
+	frustum->tris[0].set(0, 1, 2);	frustum->tris[1].set(3, 2, 1);	//front
+	frustum->tris[2].set(6, 5, 4);	frustum->tris[3].set(5, 6, 7);	//back
+	frustum->tris[4].set(5, 3, 1);	frustum->tris[5].set(3, 5, 7);	//up
+	frustum->tris[6].set(0, 2, 4);	frustum->tris[7].set(6, 4, 2);	//down
+	frustum->tris[8].set(4, 1, 0);	frustum->tris[9].set(1, 4, 5);	//left
+	frustum->tris[10].set(2, 3, 6);	frustum->tris[11].set(7, 6, 3);	//right 
+
+	frustum->normals = new Vector3f[8];
+	for (int i = 0; i < 8; i++)
+		frustum->normals[i] = (frustum->vertices[i] - f.CenterPoint()).Normalized();
+
+	frustum->colors = new Vector3f[8];
+	for (int i = 0; i < 8; i++)
+		frustum->colors[i] = { color.r, color.g, color.b };
+
+	frustum->id = last_id++;
+	frustum->wireframe = wireframe;
+	frustum->face_culling = false;
+	frustum->LoadDataToVRAM();
+
+	shapes.push_back(frustum);
+	return frustum->id;
+
+}
+
 void ModuleDebug::removeShape(uint id)
 {
 	DebugShape* to_erase = nullptr;
@@ -192,11 +241,10 @@ void DebugShape::LoadDataToVRAM()
 	glGenBuffers(1, &iboId);    // for index buffer
 
 	size_t vSize = sizeof(Vector3f) * num_vertices;
-	size_t tSize = sizeof(Point2f) * num_vertices;
 
 	// copy vertex attribs data to VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
-	glBufferData(GL_ARRAY_BUFFER, vSize + vSize + vSize + tSize, 0, GL_STATIC_DRAW); // reserve space
+	glBufferData(GL_ARRAY_BUFFER, vSize + vSize + vSize, 0, GL_STATIC_DRAW); // reserve space
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices);                  // copy verts at offset 0
 	glBufferSubData(GL_ARRAY_BUFFER, vSize, vSize, normals);               // copy norms after verts
 	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize, vSize, colors);          // copy cols after norms
@@ -204,7 +252,7 @@ void DebugShape::LoadDataToVRAM()
 
 	// copy index data to VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Vector3ui) * num_tris, tris, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point3ui) * num_tris, tris, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 }

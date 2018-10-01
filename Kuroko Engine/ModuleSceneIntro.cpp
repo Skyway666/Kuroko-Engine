@@ -27,7 +27,7 @@ ModuleScene::~ModuleScene(){}
 bool ModuleScene::Start()
 {
 	game_objects.push_back(App->importer->LoadFBX("BakerHouse.fbx"));
-	App->debug->addRay(Vector3f(10.0f, 5.0f, 0.0f), Vector3f(-10.0f, 5.0f, 0.0f));
+	App->debug->addFrustum(Vector3f(10.0f, 5.0f, 0.0f));
 
 	return true;
 }
