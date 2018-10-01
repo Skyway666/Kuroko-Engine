@@ -29,11 +29,20 @@ public:
 	void HomeworksInit();
 	void HomeworksUpdate();
 
-	bool draw_cube, draw_sphere, draw_cylinder;
+	bool draw_direct_cube,draw_buffer_cube, draw_index_cube, draw_sphere, draw_cylinder;
 	std::vector<float> vertices;
 	std::vector<float> normals;
 	std::vector<float> texcoords;
 	std::vector<unsigned short> indices;
+
+	float*cube_vertices;
+	float*cube_indices;
+
+
+
+
+	
+	uint my_cubeid;  // _to_remove
 	// JUST FOR LEARNING PURPUSES
 
 private:
@@ -45,5 +54,5 @@ private:
 	SDL_GLContext context;
 	float3x3 NormalMatrix;
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
-	uint my_cubeid;  // _to_remove
+
 };

@@ -114,8 +114,10 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	HomeworksInit();
-	draw_cube = true;
-	draw_sphere = false;
+	draw_direct_cube = false;
+	draw_buffer_cube = false;
+	draw_index_cube = false;
+	draw_sphere = true;
 	draw_cylinder = false;
 
 	return ret;
@@ -124,15 +126,19 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
+
+
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetViewMatrix());
 	
+	HomeworksUpdate();
 	// light 0 on cam pos
 
-	HomeworksUpdate();
+
 	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
 	//for(uint i = 0; i < MAX_LIGHTS; ++i)
@@ -238,6 +244,8 @@ void ModuleRenderer3D::DirectDrawCube(Vector3f size)
 }
 
 void ModuleRenderer3D::HomeworksInit() {
+
+	// Cube no index
 	my_cubeid = 0;
 	float float_array[108] = {
 		//face 1
@@ -296,9 +304,10 @@ void ModuleRenderer3D::HomeworksInit() {
 	glBindBuffer(GL_ARRAY_BUFFER, my_cubeid);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, (void*)float_array, GL_STATIC_DRAW);
 
+	// Cube with index
 	float radius = 10.0f;
-	int rings = 12;
-	int sectors = 24;
+	int rings = 100;
+	int sectors = 200;
 
 	float const R = 1. / (float)(rings - 1);
 	float const S = 1. / (float)(sectors - 1);
@@ -340,6 +349,7 @@ void ModuleRenderer3D::HomeworksInit() {
 
 
 void ModuleRenderer3D::HomeworksUpdate() {
+	if(draw_direct_cube){
 	//glBegin(GL_TRIANGLES);
 	//// face 1
 	//glVertex3f(0.f, 0.f, 0.f);
@@ -391,13 +401,16 @@ void ModuleRenderer3D::HomeworksUpdate() {
 	//glVertex3f(10.f, 0.f, 0.f);
 	//glEnd();
 	//glLineWidth(1.0f);
-
-	if(draw_cube){
+	}
+	if(draw_buffer_cube){
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, my_cubeid);
 		glVertexPointer(3, GL_FLOAT, 0, NULL);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDisableClientState(GL_VERTEX_ARRAY);
+	}
+	if (draw_index_cube) {
+
 	}
 	else if(draw_sphere){
 		glEnableClientState(GL_VERTEX_ARRAY);
