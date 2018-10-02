@@ -30,12 +30,22 @@ public:
 	void HomeworksUpdate();
 
 	bool draw_direct_cube,draw_buffer_cube, draw_index_cube, draw_sphere, draw_cylinder;
+
+	// Sphere
 	std::vector<float> vertices;
 	std::vector<float> normals;
 	std::vector<float> texcoords;
 	std::vector<unsigned short> indices;
 
-	uint sphereVID, sphereIID, sphereNID, sphereTID;
+	//cylinder
+	std::vector<float> cyvertices;
+	std::vector<float> cynormals;
+	std::vector<float> cytexcoords;
+	std::vector<unsigned short> cyindices;
+
+	//uint sphereVID, sphereIID, sphereNID, sphereTID;
+
+	// Index cube
 	float cube_vertices[24];
 	short cube_indices[36];
 
@@ -43,7 +53,7 @@ public:
 
 
 	
-	uint my_cubeid, my_cubeindexid, my_cubevertexid;  // _to_remove
+	uint my_cubeid;  // _to_remove
 	// JUST FOR LEARNING PURPUSES
 
 private:
