@@ -359,9 +359,6 @@ void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals,
 
 void ComponentMesh::assignCheckeredMat(TextureType type)
 {
-	if (mat)
-		delete mat;
-
 	mat = new Material();
 	if (!App->importer->checkered_tex)
 	{

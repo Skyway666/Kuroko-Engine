@@ -36,6 +36,7 @@ public:
 
 	bool getWireframe() { return wireframe; };
 	void setWireframe(bool state) { wireframe = state; };
+	Material* getMaterial() { return mat; };
 	void setMaterial(Material* new_mat) { mat = new_mat; };
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);

@@ -31,8 +31,6 @@
 #pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
 
 
-
-
 ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled) {
 	name = "gui";
 }
@@ -83,6 +81,7 @@ bool ModuleImGUI::Start()
 	ui_textures[PLAY] = App->importer->LoadTex("Play.png");
 	ui_textures[PAUSE] = App->importer->LoadTex("Pause.png");
 	ui_textures[STOP] = App->importer->LoadTex("Stop.png");
+	ui_textures[NO_TEXTURE] = App->importer->LoadTex("no_texture.png");
 
 	return true;
 }
@@ -241,6 +240,11 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 
 bool ModuleImGUI::CleanUp() {
 	// Cleanup
+	for (int i = 0; i < LAST_UI_TEX; i++)
+	{
+		delete ui_textures[i];
+		ui_textures[i] = nullptr;
+	}
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
@@ -470,6 +474,40 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 				static char rootmesh_name_buffer[64];
 				ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
+
+				
+				if (Material* material = mesh->getMaterial())
+				{
+					if (ImGui::CollapsingHeader("Material"))
+					{
+						static int preview_size = 64;
+						ImGui::Text("Id: %d", material->getId());
+						ImGui::Text("preview size");
+						ImGui::SameLine();
+						if (ImGui::Button("64")) preview_size = 64;
+						ImGui::SameLine();
+						if (ImGui::Button("128")) preview_size = 128;
+						ImGui::SameLine();
+						if (ImGui::Button("256")) preview_size = 256;
+
+						ImGui::Text("diffuse texture:  ");
+						ImGui::SameLine();
+						ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+						ImGui::Text("ambient texture:  ");
+						ImGui::SameLine();
+						
+						ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+						ImGui::Text("normals texture:  ");
+						ImGui::SameLine();
+						ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+						ImGui::Text("lightmap texture: ");
+						ImGui::SameLine();
+						ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+					}
+				}
 
 				if (ImGui::CollapsingHeader("Mesh Data"))
 				{

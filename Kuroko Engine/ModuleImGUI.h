@@ -10,7 +10,7 @@ class Component;
 class Texture;
 
 enum GUI_Tabs { DEMO, GRAPHIC, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, WINDOW_CONFIG, HARDWARE, APPLICATION, LOG, TIME_CONTROL, LAST};  // LAST is an utility value to store the max num of tabs.
-enum UI_textures { PLAY, PAUSE, STOP, LAST_TEX};
+enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
 
 class ModuleImGUI :
 	public Module {
@@ -45,6 +45,6 @@ private:
 	
 	bool open_tabs[LAST];  // _serializable_var
 	ImGuiIO io;
-	std::array<Texture*, LAST_TEX> ui_textures;
+	std::array<Texture*, LAST_UI_TEX> ui_textures;
 };
 
