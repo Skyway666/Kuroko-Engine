@@ -3,6 +3,7 @@
 #include "ModuleCamera3D.h"
 #include "imgui.h"
 #include "Material.h"
+#include "ModuleInput.h"
 
 #include "GameObject.h"			// <--  testing purposes
 #include "ModuleImporter.h"	// <--  testing purposes
@@ -45,6 +46,10 @@ update_status ModuleScene::Update(float dt)
 {
 	if (draw_grid)
 		DrawGrid();
+
+	char* file_to_load = nullptr;
+	if (App->input->GetDroppedFile(&file_to_load))
+		game_objects.push_back(App->importer->LoadFBX(file_to_load));
 
 	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Update(dt);

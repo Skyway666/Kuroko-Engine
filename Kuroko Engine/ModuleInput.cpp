@@ -38,6 +38,8 @@ bool ModuleInput::Init(JSON_Object* config)
 		ret = false;
 	}
 
+	is_file_dropped = false;
+
 	return ret;
 }
 
@@ -120,7 +122,15 @@ update_status ModuleInput::PreUpdate(float dt)
 			{
 				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
 					App->renderer3D->OnResize(e.window.data1, e.window.data2);
+
 			}
+			break;
+			case SDL_DROPFILE:
+			{
+				is_file_dropped = true;
+				file = e.drop.file;
+			}
+			break;
 		}
 	}
 

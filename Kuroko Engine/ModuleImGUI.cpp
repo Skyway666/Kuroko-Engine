@@ -229,11 +229,9 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 	ImGui::Render();
 	
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	//glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-	//glClear(GL_COLOR_BUFFER_BIT);
-/*	glUseProgram(0);*/ // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
+
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	//SDL_GL_SwapWindow(App->window->window);
+
 
 	return UPDATE_CONTINUE;
 }

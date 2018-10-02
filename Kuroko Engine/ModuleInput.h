@@ -57,6 +57,16 @@ public:
 	{
 		return mouse_y_motion;
 	}
+	bool GetDroppedFile(char** copy_file) {
+		if (is_file_dropped) {
+			*copy_file = file;
+			file = nullptr;
+			is_file_dropped = false;
+			return true;
+		}
+		else
+			return false;
+	}
 
 private:
 	KEY_STATE* keyboard;
@@ -66,5 +76,8 @@ private:
 	int mouse_z;
 	int mouse_x_motion;
 	int mouse_y_motion;
+	bool is_file_dropped;
+	char* file;
+
 	//int mouse_z_motion;
 };
