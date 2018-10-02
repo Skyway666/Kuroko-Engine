@@ -132,7 +132,7 @@ uint  ModuleDebug::addFrustum(Vector3f pos,Quat rotation, FrustumType type, floa
 	f.farPlaneDistance = f_plane;
 	f.type = type;
 	if (type == OrthographicFrustum) { f.orthographicHeight = v_fov_or_ortho_height;	f.orthographicWidth = h_fov_or_ortho_width; }
-	else							 { f.verticalFov = v_fov_or_ortho_height;			f.horizontalFov = h_fov_or_ortho_width; }
+	else							 { f.verticalFov = h_fov_or_ortho_width;			f.horizontalFov = v_fov_or_ortho_height; }
 	
 	DebugShape* frustum = new DebugShape();
 	frustum->type = FRUSTUM;
