@@ -106,30 +106,11 @@ update_status ModuleImGUI::Update(float dt) {
 	{
 
 		// test functionality
-		static float f = 0.0f;
-		static int random = 0;
-		static float randomFloa = 0;
-		static int bound1 = 0;
-		static int bound2 = 100;
-		ImGui::Text("RANDOM NUMBER GENERATOR");					 								    // Edit 1 float using a slider from 0.0f to 1.0f   
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
-		ImGui::DragInt("Start", &bound1);
-		ImGui::SameLine();
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
-		ImGui::DragInt("End", &bound2);
-		if (ImGui::Button("Generate random integer"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-			random = randomFromTo(bound1, bound2);
-
-		ImGui::SameLine();
-		ImGui::Text("Random integer = %d", random);
-
-		if (ImGui::Button("Generate random float"))
-			randomFloa = randomFloat();
-
-		ImGui::SameLine();
-		ImGui::Text("Random float = %f", randomFloa);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Checkbox("DrawDirectCube", &App->renderer3D->draw_direct_cube);
+		ImGui::Checkbox("DrawBufferCube", &App->renderer3D->draw_buffer_cube);
+		ImGui::Checkbox("DrawIndexCube", &App->renderer3D->draw_index_cube);
+		ImGui::Checkbox("DrawSphere", &App->renderer3D->draw_sphere);
+		ImGui::Checkbox("DrawCylinder", &App->renderer3D->draw_cylinder);
 	}
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
