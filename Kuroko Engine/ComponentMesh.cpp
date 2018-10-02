@@ -1,10 +1,10 @@
 #include "ComponentMesh.h"
 #include "Math.h"
 #include "Color.h"
-#include "Material.h"
 #include "ComponentTransform.h"
 #include "GameObject.h"
 #include "Application.h"
+#include "ModuleImporter.h"
 #include "ModuleImGUI.h"
 #include "Applog.h"
 
@@ -87,7 +87,7 @@ void ComponentMesh::Draw() {
 	if (num_tris == 0 || num_vertices == 0)
 		return;
 
-	bool active_texture = mat ? mat->isLoaded() : false;
+	Texture* diffuse_tex = mat->getTexture(DIFFUSE);
 	ComponentTransform* transform = nullptr;
 	float4x4 view_mat = float4x4::identity;
 
@@ -101,7 +101,7 @@ void ComponentMesh::Draw() {
 		glLoadMatrixf((GLfloat*)(transform->getInheritedTransform().Transposed() * view_mat).v);
 	}
 
-	if (active_texture)
+	if (diffuse_tex)
 		glEnable(GL_TEXTURE_2D);
 	else
 		glEnableClientState(GL_COLOR_ARRAY);
@@ -118,8 +118,8 @@ void ComponentMesh::Draw() {
 	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	if (active_texture)
-		glBindTexture(GL_TEXTURE_2D, mat->getGLid());
+	if (diffuse_tex)
+		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
 	size_t Offset = sizeof(Vector3f) * num_vertices;
 
@@ -131,7 +131,7 @@ void ComponentMesh::Draw() {
 
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
-	if (active_texture)
+	if (diffuse_tex)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	else
 		glDisableClientState(GL_COLOR_ARRAY);
@@ -144,7 +144,7 @@ void ComponentMesh::Draw() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	if (active_texture)
+	if (diffuse_tex)
 		glDisable(GL_TEXTURE_2D);
 
 	if (transform)
@@ -357,13 +357,19 @@ void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals,
 	has_texcoords = imported_tex_coords;
 }
 
-void ComponentMesh::assignCheckeredMat()
+void ComponentMesh::assignCheckeredMat(TextureType type)
 {
 	if (mat)
 		delete mat;
 
 	mat = new Material();
-	mat->LoadCheckered();
+	if (!App->importer->checkered_tex)
+	{
+		App->importer->checkered_tex = new Texture();
+		App->importer->checkered_tex->LoadCheckered();
+	}
+
+	mat->setTexture(type, App->importer->checkered_tex);
 }
 
 void ComponentMesh::ClearData()

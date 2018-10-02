@@ -1,12 +1,12 @@
 #pragma once
 #include "Globals.h"
 #include "Component.h"
+#include "Material.h"
 
 #include "Vector3.h"
 #include "Vector2.h"
 
 class aiMesh;
-class Material;
 
 enum PrimitiveTypes
 {
@@ -39,7 +39,7 @@ public:
 	void setMaterial(Material* new_mat) { mat = new_mat; };
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
-	void assignCheckeredMat();
+	void assignCheckeredMat(TextureType type = DIFFUSE);
 
 private:
 

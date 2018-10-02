@@ -1,29 +1,65 @@
 #include "Material.h"
 #include "Application.h"
+#include "ModuleSceneIntro.h"
 #include "ModuleImGUI.h"
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Applog.h"
 
-Material::Material(uint GL_id) 
-{ 
-	id = GL_id; 
-	loaded = true; 
 
-	glBindTexture(GL_TEXTURE_2D, id);
+Material::Material()
+{
+	id = ++App->scene_intro->last_mat_id;
+}
+Material::~Material()
+{
+	if (diffuse) delete diffuse;
+	if (ambient) delete ambient;
+	if (normals) delete normals;
+	if (lightmap) delete lightmap;
+}
+
+
+Texture* Material::getTexture(TextureType tex_type)
+{
+	switch (tex_type)
+	{
+	case DIFFUSE: return diffuse; break;
+	case AMBIENT: return ambient; break;
+	case NORMALS: return normals; break;
+	case LIGHTMAP: return lightmap; break;
+	default: return nullptr;
+	}
+}
+
+void Material::setTexture(TextureType tex_type, Texture* texture)
+{
+	switch (tex_type)
+	{
+	case DIFFUSE: diffuse = texture; break;
+	case AMBIENT: ambient = texture; break;
+	case NORMALS: normals = texture; break;
+	case LIGHTMAP: lightmap = texture; break;
+	}
+}
+
+Texture::Texture(uint GL_id)
+{ 
+	gl_id = GL_id;
+
+	glBindTexture(GL_TEXTURE_2D, gl_id);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, (GLint*)&size_x);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&size_y);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Material::~Material()
+Texture::~Texture()
 {
-	if (loaded)
-		glDeleteTextures(1, &id);
+	glDeleteTextures(1, &gl_id);
 }
-void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
+void Texture::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
 {
 	bool incompatible_parameter = false;
-	glBindTexture(GL_TEXTURE_2D, id);
+	glBindTexture(GL_TEXTURE_2D, gl_id);
 	wrap_mode = wrap;
 	switch (wrap)
 	{
@@ -77,7 +113,7 @@ void Material::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_Min
 		app_log->AddLog("error setting texture parameters");
 }
 
-void Material::LoadCheckered()
+void Texture::LoadCheckered()
 {
 	size_x = size_y = SIZE_CHECKERED;
 	GLubyte pixels[SIZE_CHECKERED][SIZE_CHECKERED][4];
@@ -92,11 +128,10 @@ void Material::LoadCheckered()
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &id);
+	glGenTextures(1, &gl_id);
 	setParameters(REPEAT, LINEAR, LINEAR);
-	glBindTexture(GL_TEXTURE_2D, id);
+	glBindTexture(GL_TEXTURE_2D, gl_id);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SIZE_CHECKERED, SIZE_CHECKERED, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	loaded = true;
 }

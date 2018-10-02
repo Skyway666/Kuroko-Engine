@@ -3,6 +3,7 @@
 #include <list>
 #include <string>
 #include "Component.h"
+#include "Globals.h"
 #include "Vector3.h"
 
 class GameObject
@@ -18,6 +19,8 @@ private:
 
 	Vector3f centroid = Vector3f::Zero;
 	Vector3f half_size = Vector3f::Zero;
+
+	uint id = 0;
 
 public:
 

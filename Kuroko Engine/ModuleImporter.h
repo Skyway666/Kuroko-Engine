@@ -1,6 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Material.h"
+#include <vector>
 
 class GameObject;
 class ComponentMesh;
@@ -17,7 +18,12 @@ public:
 	bool CleanUp();
 
 	GameObject* LoadFBX(const char* file);
-	GameObject* LoadAssimpNode(aiNode* node, const aiScene* scene, GameObject* parent = nullptr);
-	bool LoadRootMesh(const char* file, ComponentMesh* component_to_load);	 // this method will only load the root mesh of an FBX, if existent. To load a full FBX scene, use LoadFBX()
-	Material* LoadTex(char* file, Mat_Wrap wrap = CLAMP, Mat_MinMagFilter min_filter = LINEAR, Mat_MinMagFilter mag_filter = LINEAR);
+	Texture* LoadTex(char* file, Mat_Wrap wrap = CLAMP, Mat_MinMagFilter min_filter = LINEAR, Mat_MinMagFilter mag_filter = LINEAR);
+
+private:
+	uint LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
+	GameObject* LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
+
+public:
+	Texture* checkered_tex = nullptr;
 };

@@ -4,6 +4,7 @@
 #include "ComponentMesh.h"
 #include "Material.h"
 #include "ModuleImGUI.h"
+#include "ModuleSceneIntro.h"
 #include "Application.h"
 #include "Applog.h"
 
@@ -56,6 +57,8 @@ bool ModuleImporter::Init(JSON_Object* config)
 bool ModuleImporter::CleanUp()
 {
 	aiDetachAllLogStreams();
+	if (checkered_tex)
+		delete checkered_tex;
 	return true;
 }
 
@@ -66,7 +69,9 @@ GameObject* ModuleImporter::LoadFBX(const char* file)
 
 	if (imported_scene)
 	{
-		root_obj = LoadAssimpNode(imported_scene->mRootNode, imported_scene);
+		std::vector<uint> mat_id;
+		LoadMaterials(imported_scene, mat_id);
+		root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
 		aiReleaseImport(imported_scene);
 	}
 	else
@@ -75,44 +80,65 @@ GameObject* ModuleImporter::LoadFBX(const char* file)
 	return root_obj;
 }
 
-GameObject* ModuleImporter::LoadAssimpNode(aiNode* node, const aiScene* scene, GameObject* parent)
+uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id)
+{
+	aiString path;
+	for (int i = 0; i < scene->mNumMaterials; i++)
+	{
+		Material* new_mat = new Material();
+		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
+		{
+			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+			new_mat->setTexture(DIFFUSE, LoadTex((char*)path.C_Str()));
+		}
+		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
+		{
+			path.Clear();
+			scene->mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
+			new_mat->setTexture(AMBIENT, LoadTex((char*)path.C_Str()));
+		}
+		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
+		{
+			path.Clear();
+			scene->mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
+			new_mat->setTexture(NORMALS, LoadTex((char*)path.C_Str()));
+		}
+		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
+		{
+			path.Clear();
+			scene->mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
+			new_mat->setTexture(LIGHTMAP, LoadTex((char*)path.C_Str()));
+		}
+		out_mat_id.push_back(new_mat->getId());
+		App->scene_intro->materials.push_back(new_mat);
+	}
+
+	return scene->mNumMaterials;
+}
+
+GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent)
 {
 	GameObject* root_obj = new GameObject(node->mName.C_Str(), parent);
 
 	for (int i = 0; i < node->mNumMeshes; i++)
 	{
-		root_obj->addComponent(new ComponentMesh(root_obj, scene->mMeshes[node->mMeshes[i]]));
+		ComponentMesh* mesh = new ComponentMesh(root_obj, scene->mMeshes[node->mMeshes[i]]);
+		mesh->mat = App->scene_intro->getMaterial(in_mat_id.at(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex));
+		root_obj->addComponent(mesh);
 		app_log->AddLog("New mesh with %d vertices", scene->mMeshes[node->mMeshes[i]]->mNumVertices);
 	}
 
 	for (int i = 0; i < node->mNumChildren; i++)
-		root_obj->addChild(LoadAssimpNode(node->mChildren[i], scene, root_obj));
+		root_obj->addChild(LoadMeshRecursive(node->mChildren[i], scene, in_mat_id, root_obj));
 
 	return root_obj;
 }
 
-bool ModuleImporter::LoadRootMesh(const char* file, ComponentMesh* component_to_load)
+
+Texture* ModuleImporter::LoadTex(char* file, Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
 {
-	const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
-
-	if (imported_scene && imported_scene->HasMeshes())
-	{
-		component_to_load->ClearData();
-		if (component_to_load->loaded = component_to_load->LoadFromAssimpMesh(imported_scene->mMeshes[0]))
-			component_to_load->LoadDataToVRAM();
-		aiReleaseImport(imported_scene);
-		return true;
-	}
-	else
-		app_log->AddLog("Error loading scene %s", file);
-
-	return false;
-}
-
-Material* ModuleImporter::LoadTex(char* file, Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
-{
-	Material* mat = new Material(ilutGLLoadImage(file));
-	mat->setParameters(wrap, min_filter, mag_filter);
-	return mat;
+	Texture* tex = new Texture(ilutGLLoadImage(file));
+	tex->setParameters(wrap, min_filter, mag_filter);
+	return tex;
 }
 

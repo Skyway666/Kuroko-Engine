@@ -118,7 +118,7 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	draw_buffer_cube = false;
 	draw_index_cube = false;
 	draw_sphere = false;
-	draw_cylinder = true;
+	draw_cylinder = false;
 
 	return ret;
 }

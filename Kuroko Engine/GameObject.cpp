@@ -4,11 +4,13 @@
 #include "ComponentAABB.h"
 #include "Application.h"
 #include "ModuleImGUI.h"
+#include "ModuleSceneIntro.h"
 #include "Applog.h"
 
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent)
 {
 	addComponent(TRANSFORM);
+	id = ++App->scene_intro->last_gobj_id;
 }
 
 bool GameObject::Update(float dt)

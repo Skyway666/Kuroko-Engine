@@ -2,6 +2,7 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleCamera3D.h"
 #include "imgui.h"
+#include "Material.h"
 
 #include "GameObject.h"			// <--  testing purposes
 #include "ModuleImporter.h"	// <--  testing purposes
@@ -27,7 +28,6 @@ ModuleScene::~ModuleScene(){}
 bool ModuleScene::Start()
 {
 	game_objects.push_back(App->importer->LoadFBX("BakerHouse.fbx"));
-	App->debug->addFrustum(Vector3f(0.0f, 10.0f, 0.0f));
 
 	return true;
 }
@@ -36,6 +36,7 @@ bool ModuleScene::Start()
 bool ModuleScene::CleanUp(){
 
 	game_objects.clear();
+	materials.clear();
 	return true;
 }
 
@@ -49,6 +50,15 @@ update_status ModuleScene::Update(float dt)
 		(*it)->Update(dt);
 
 	return UPDATE_CONTINUE;
+}
+
+Material* ModuleScene::getMaterial(uint id)
+{
+	for (std::list<Material*>::iterator it = materials.begin(); it != materials.end(); it++)
+		if (id = (*it)->getId())
+			return *it;
+
+	return nullptr;
 }
 
 void ModuleScene::DrawGrid()

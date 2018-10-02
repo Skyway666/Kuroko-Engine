@@ -4,6 +4,7 @@
 #include <list>
 
 class GameObject; 
+class Material;
 
 enum GameState { STOPPED, PAUSED, PLAYING};
 
@@ -17,18 +18,24 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-public:
-
 	void Play() { game_state = PLAYING; };
 	void Pause() { game_state = PAUSED; };
 	void Stop() { game_state = STOPPED; };
 
-	std::list<GameObject*> game_objects;
-	GameObject* selected_obj = nullptr;
-	bool draw_grid = true;
-	GameState game_state = STOPPED;
+	Material* getMaterial(uint id);
 
 private:
 	
 	void DrawGrid();
+
+public:
+
+	std::list<GameObject*> game_objects;
+	std::list<Material*> materials;
+	GameObject* selected_obj = nullptr;
+	bool draw_grid = true;
+	GameState game_state = STOPPED;
+	uint last_mat_id = 0;
+	uint last_gobj_id = 0;
+
 };

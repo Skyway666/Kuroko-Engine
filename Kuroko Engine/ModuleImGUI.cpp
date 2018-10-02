@@ -468,16 +468,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 				static char texture_name_buffer[64];
 				ImGui::InputText("texture to load", texture_name_buffer, 64);
 
-				ImGui::SameLine();
-				if (ImGui::Button("Load Texture"))
-					mesh->setMaterial(App->importer->LoadTex(texture_name_buffer));
-
 				static char rootmesh_name_buffer[64];
 				ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
-
-				ImGui::SameLine();
-				if (ImGui::Button("Load Root Mesh"))
-					App->importer->LoadRootMesh(rootmesh_name_buffer, mesh);
 
 				if (ImGui::CollapsingHeader("Mesh Data"))
 				{
