@@ -7,16 +7,21 @@
 #include "ModuleSceneIntro.h"
 #include "Application.h"
 #include "Applog.h"
+#include "Assimp\include\DefaultLogger.hpp"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
+#include <fstream>
+#include <string>
+
 
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
 #include "Assimp\include\postprocess.h"
 #include "Assimp\include\cfileio.h"
+#include "Assimp\include\Logger.hpp"
 
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
@@ -37,9 +42,11 @@ ModuleImporter::~ModuleImporter() {}
 
 bool ModuleImporter::Init(JSON_Object* config)
 {
+
 	struct aiLogStream stream;
-	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
+	stream = aiGetPredefinedLogStream(aiDefaultLogStream_FILE, "log.txt");
 	aiAttachLogStream(&stream);
+
 
 	ilutRenderer(ILUT_OPENGL);
 	ilInit();
@@ -69,10 +76,23 @@ GameObject* ModuleImporter::LoadFBX(const char* file)
 
 	if (imported_scene)
 	{
+		
 		std::vector<uint> mat_id;
 		LoadMaterials(imported_scene, mat_id);
 		root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
 		aiReleaseImport(imported_scene);
+		
+		// Read file and log info
+		std::ifstream file_stream;
+		std::string file_content;
+		file_stream.open("log.txt");
+		while (std::getline(file_stream, file_content))
+			app_log->AddLog("%s", file_content.c_str());
+		file_stream.close();
+		//Clear the file 
+		std::ofstream ofs;
+		ofs.open("log.txt", std::ofstream::trunc);
+		ofs.close();
 	}
 	else
 		app_log->AddLog("Error loading scene %s", file);

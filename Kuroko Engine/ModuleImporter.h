@@ -3,10 +3,12 @@
 #include "Material.h"
 #include <vector>
 
+
 class GameObject;
 class ComponentMesh;
 class aiNode;
 class aiScene;
+
 
 class ModuleImporter : public Module
 {
@@ -23,6 +25,7 @@ public:
 private:
 	uint LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
 	GameObject* LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
+	
 
 public:
 	Texture* checkered_tex = nullptr;
