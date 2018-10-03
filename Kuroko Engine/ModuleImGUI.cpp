@@ -19,7 +19,7 @@
 
 #include "RNG.h"
 #include "VRAM.h"
-#include "WinItemDialog.h" // <--  testing purposes
+#include "WinItemDialog.h" 
 
 #include "Assimp/include/version.h"
 
@@ -80,10 +80,11 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 
 bool ModuleImGUI::Start()
 {
-	ui_textures[PLAY] = App->importer->LoadTex("Play.png");
-	ui_textures[PAUSE] = App->importer->LoadTex("Pause.png");
-	ui_textures[STOP] = App->importer->LoadTex("Stop.png");
-	ui_textures[NO_TEXTURE] = App->importer->LoadTex("no_texture.png");
+	if (App->importer->Import("Play.png"), I_TEXTURE)			ui_textures[PLAY] = App->importer->getLastTex();
+	if (App->importer->Import("Pause.png"), I_TEXTURE)			ui_textures[PAUSE] = App->importer->getLastTex();
+	if (App->importer->Import("Stop.png"), I_TEXTURE)			ui_textures[STOP] = App->importer->getLastTex();
+	if (App->importer->Import("no_texture.png"), I_TEXTURE)		ui_textures[NO_TEXTURE] = App->importer->getLastTex();
+
 
 	return true;
 }
@@ -156,11 +157,6 @@ update_status ModuleImGUI::Update(float dt) {
 		ImGui::SetNextWindowPos(ImVec2(400, 320), ImGuiCond_FirstUseEver);
 		DrawPrimitivesTab();
 	}
-	if (open_tabs[IMPORTER])
-	{
-		ImGui::SetNextWindowPos(ImVec2(600, 520), ImGuiCond_FirstUseEver);
-		DrawImporterTab();
-	}
 	if (open_tabs[ABOUT])
 	{
 		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
@@ -180,6 +176,11 @@ update_status ModuleImGUI::Update(float dt) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit"))
 				close_app = true;
+			if (ImGui::MenuItem("Import file"))
+			{
+				std::string file_path = openFileWID();
+				App->importer->Import(file_path.c_str());
+			}
 			if(ImGui::BeginMenu("Configuration")){
 				if (ImGui::MenuItem("Save Configuration"))
 					App->SaveConfig();
@@ -197,7 +198,6 @@ update_status ModuleImGUI::Update(float dt) {
 			ImGui::MenuItem("Hierarchy", NULL, &open_tabs[HIERARCHY]);
 			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[OBJ_INSPECTOR]);
 			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
-			ImGui::MenuItem("Importer", NULL, &open_tabs[IMPORTER]);
 			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
@@ -410,7 +410,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Dif: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							mesh->getMaterial()->setTexture(DIFFUSE, App->importer->LoadTex((char*)texture_path.c_str()));
+							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								mesh->getMaterial()->setTexture(DIFFUSE, App->importer->getLastTex());
 						}
 
 						ImGui::Text("ambient texture:  ");
@@ -424,7 +425,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Amb: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							mesh->getMaterial()->setTexture(AMBIENT, App->importer->LoadTex((char*)texture_path.c_str()));
+							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								mesh->getMaterial()->setTexture(AMBIENT, App->importer->getLastTex());
 						}
 
 						ImGui::Text("normals texture:  ");
@@ -438,7 +440,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Nor: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							mesh->getMaterial()->setTexture(NORMALS, App->importer->LoadTex((char*)texture_path.c_str()));
+							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								mesh->getMaterial()->setTexture(NORMALS, App->importer->getLastTex());
 						}
 
 						ImGui::Text("lightmap texture:  ");
@@ -452,7 +455,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Lgm: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->LoadTex((char*)texture_path.c_str()));
+							if(App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->getLastTex());
 						}
 					}
 				}
@@ -602,21 +606,6 @@ void ModuleImGUI::DrawPrimitivesTab()
 	ImGui::End();
 }
 
-void ModuleImGUI::DrawImporterTab()
-{
-
-	ImGui::Begin("Importer", &open_tabs[IMPORTER]);
-	ImGui::Text("Use this tab to fbx and other files into the scene");
-
-	static char fbx_name_buffer[64];
-	ImGui::InputText("FBX to load", fbx_name_buffer, 64);
-
-	ImGui::SameLine();
-	if (ImGui::Button("Load FBX"))
-		App->scene_intro->game_objects.push_back(App->importer->LoadFBX(fbx_name_buffer));
-
-	ImGui::End();
-}
 
 void ModuleImGUI::DrawAboutWindow() {
 	ImGui::Begin("About", &open_tabs[ABOUT]);
@@ -867,7 +856,6 @@ void ModuleImGUI::SaveConfig(JSON_Object* config)
 	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);
 	json_object_set_boolean(config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
 	json_object_set_boolean(config, "primitive", open_tabs[PRIMITIVE]);
-	json_object_set_boolean(config, "importer", open_tabs[IMPORTER]);
 	json_object_set_boolean(config, "about", open_tabs[ABOUT]);
 	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
@@ -882,7 +870,6 @@ void ModuleImGUI::LoadConfig(JSON_Object* config)
 	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
 	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
 	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
-	open_tabs[IMPORTER]			= json_object_get_boolean(config, "importer");
 	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");

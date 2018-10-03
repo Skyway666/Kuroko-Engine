@@ -4,8 +4,6 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleImporter.h"
 #include "ModuleRenderer3D.h"
-#include "shlwapi.h"
-#pragma comment (lib, "Shlwapi.lib")
 
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -98,7 +96,6 @@ update_status ModuleInput::PreUpdate(float dt)
 
 	bool quit = false;
 	SDL_Event e;
-	std::string extension = "";
 	while(SDL_PollEvent(&e))
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
@@ -128,11 +125,7 @@ update_status ModuleInput::PreUpdate(float dt)
 			break;
 
 			case SDL_DROPFILE:
-			{
-				extension = PathFindExtensionA(e.drop.file);
-				if(extension == ".fbx")
-					App->scene_intro->game_objects.push_back(App->importer->LoadFBX(e.drop.file));
-			}
+				App->importer->Import(e.drop.file);
 				break;
 
 			default: break;

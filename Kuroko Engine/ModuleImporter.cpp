@@ -7,6 +7,7 @@
 #include "ModuleSceneIntro.h"
 #include "Application.h"
 #include "Applog.h"
+#include "ModuleAudio.h"
 #include "Assimp\include\DefaultLogger.hpp"
 
 #include "glew-2.1.0\include\GL\glew.h"
@@ -26,6 +27,10 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
+
+#include "shlwapi.h"
+
+#pragma comment (lib, "Shlwapi.lib")
 
 #pragma comment (lib, "Assimp/lib/assimp.lib")
 
@@ -67,36 +72,84 @@ bool ModuleImporter::CleanUp()
 	return true;
 }
 
-GameObject* ModuleImporter::LoadFBX(const char* file)
-{
-	GameObject* root_obj = nullptr;
-	const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
 
-	if (imported_scene)
+bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
+{
+	std::string extension = PathFindExtensionA(file);
+
+	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
 	{
-		
-		std::vector<uint> mat_id;
-		LoadMaterials(imported_scene, mat_id);
-		root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
-		aiReleaseImport(imported_scene);
-		
-		// Read file and log info
-		std::ifstream file_stream;
-		std::string file_content;
-		file_stream.open("log.txt");
-		while (std::getline(file_stream, file_content))
-			app_log->AddLog("%s", file_content.c_str());
-		file_stream.close();
-		//Clear the file 
-		std::ofstream ofs;
-		ofs.open("log.txt", std::ofstream::trunc);
-		ofs.close();
+		if (extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
+			|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
+		{
+			const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
+
+			if (imported_scene)
+			{
+				std::vector<uint> mat_id;
+				LoadMaterials(imported_scene, mat_id);
+				GameObject* root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
+				aiReleaseImport(imported_scene);
+				App->scene_intro->game_objects.push_back(root_obj);
+				app_log->AddLog("Success loading file: %s", file);
+
+				// Read file and log info
+				std::ifstream file_stream;
+				std::string file_content;
+				file_stream.open("log.txt");
+				while (std::getline(file_stream, file_content))
+					app_log->AddLog("%s", file_content.c_str());
+				file_stream.close();
+				//Clear the file 
+				std::ofstream ofs;
+				ofs.open("log.txt", std::ofstream::trunc);
+				ofs.close();
+
+				last_gobj = root_obj;
+				return true;
+			}
+			else
+				app_log->AddLog("Error loading scene %s", file);
+		}
+	}
+	if (expected_filetype == I_NONE || expected_filetype == I_TEXTURE)
+	{
+		if (extension == ".bmp" || extension == ".dds" || extension == ".jpeg" || extension == ".pcx" || extension == ".png"
+			|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
+		{
+			Material* mat = new Material();
+			Texture* tex = new Texture(ilutGLLoadImage((char*)file));
+			mat->setTexture(DIFFUSE, tex);
+			App->scene_intro->materials.push_back(mat);
+			last_tex = tex;
+			app_log->AddLog("Success loading texture: %s", file);
+			return true;
+		}
+	}
+	if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
+	{
+		if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
+		{
+			last_music = App->audio->LoadMusic(file);
+			app_log->AddLog("Success loading music: %s", file);
+			return true;
+		}
+	}
+	if (expected_filetype == I_NONE || expected_filetype == I_FX)
+	{
+		if (extension == ".wav" || extension == ".aiff" || extension == ".riff" || extension == ".ogg" || extension == ".voc")
+		{
+			last_fx = App->audio->LoadFx(file);
+			app_log->AddLog("Success loading fx: %s", file);
+			return true;
+		}
 	}
 	else
-		app_log->AddLog("Error loading scene %s", file);
+		app_log->AddLog("Error loading file [incompatible format]: %s", file);
 
-	return root_obj;
+	return false;
 }
+
 
 uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id)
 {
@@ -107,25 +160,29 @@ uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
 		{
 			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			new_mat->setTexture(DIFFUSE, LoadTex((char*)path.C_Str()));
+			if(App->importer->Import(path.C_Str(), I_TEXTURE))
+				new_mat->setTexture(DIFFUSE, App->importer->getLastTex());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
-			new_mat->setTexture(AMBIENT, LoadTex((char*)path.C_Str()));
+			if (App->importer->Import(path.C_Str(), I_TEXTURE))
+				new_mat->setTexture(AMBIENT, App->importer->getLastTex());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
-			new_mat->setTexture(NORMALS, LoadTex((char*)path.C_Str()));
+			if (App->importer->Import(path.C_Str(), I_TEXTURE))
+				new_mat->setTexture(NORMALS, App->importer->getLastTex());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
-			new_mat->setTexture(LIGHTMAP, LoadTex((char*)path.C_Str()));
+			if (App->importer->Import(path.C_Str(), I_TEXTURE))
+				new_mat->setTexture(LIGHTMAP, App->importer->getLastTex());
 		}
 		out_mat_id.push_back(new_mat->getId());
 		App->scene_intro->materials.push_back(new_mat);
@@ -150,13 +207,5 @@ GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene
 		root_obj->addChild(LoadMeshRecursive(node->mChildren[i], scene, in_mat_id, root_obj));
 
 	return root_obj;
-}
-
-
-Texture* ModuleImporter::LoadTex(char* file, Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
-{
-	Texture* tex = new Texture(ilutGLLoadImage(file));
-	tex->setParameters(wrap, min_filter, mag_filter);
-	return tex;
 }
 

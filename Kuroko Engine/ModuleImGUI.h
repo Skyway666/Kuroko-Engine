@@ -10,7 +10,7 @@ class Component;
 class Texture;
 class Material;
 
-enum GUI_Tabs { DEMO, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, LAST};  // LAST is an utility value to store the max num of tabs.
+enum GUI_Tabs { DEMO, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, LAST};  // LAST is an utility value to store the max num of tabs.
 enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
 
 class ModuleImGUI :
@@ -33,7 +33,6 @@ public:
 	bool DrawComponent(Component* component);
 	void DrawMaterial(Material* mat);
 	void DrawPrimitivesTab();
-	void DrawImporterTab();
 	void DrawAboutWindow();
 	void DrawWindowConfig();
 	void DrawHardware();
