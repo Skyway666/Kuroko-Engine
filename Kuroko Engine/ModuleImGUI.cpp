@@ -115,11 +115,22 @@ update_status ModuleImGUI::Update(float dt) {
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
 
-	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) 
-		open_tabs[GRAPHIC] = !open_tabs[GRAPHIC];
+	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
+		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
 
-	if (open_tabs[GRAPHIC])
-		DrawGraphicsTab();
+
+	if (open_tabs[CONFIGURATION]) {
+		ImGui::Begin("Configuration", &open_tabs[CONFIGURATION]);
+		if (ImGui::CollapsingHeader("Graphics")) 
+			DrawGraphicsTab();
+		if (ImGui::CollapsingHeader("Window"))
+			DrawWindowConfig();
+		if (ImGui::CollapsingHeader("Hardware"))
+			DrawHardware();
+		if (ImGui::CollapsingHeader("Application"))
+			DrawApplication();;
+		ImGui::End();
+	}
 
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (open_tabs[DEMO]) {
@@ -154,16 +165,6 @@ update_status ModuleImGUI::Update(float dt) {
 		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
 		DrawAboutWindow();
 	}
-
-	if (open_tabs[WINDOW_CONFIG]) {
-		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
-		DrawWindowConfig();
-	}
-	if (open_tabs[HARDWARE]) 
-		DrawHardware();
-	
-	if (open_tabs[APPLICATION]) 
-		DrawApplication();
 	
 	if (open_tabs[LOG])
 		app_log->Draw("App log",&open_tabs[LOG]);
@@ -191,15 +192,12 @@ update_status ModuleImGUI::Update(float dt) {
 		}
 		if (ImGui::BeginMenu("View")) {
 			ImGui::MenuItem("Demo", NULL, &open_tabs[DEMO]);
-			ImGui::MenuItem("Graphic", NULL, &open_tabs[GRAPHIC]);
 			ImGui::MenuItem("Test", NULL, &open_tabs[TEST]);
 			ImGui::MenuItem("Hierarchy", NULL, &open_tabs[HIERARCHY]);
 			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[OBJ_INSPECTOR]);
 			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
 			ImGui::MenuItem("Importer", NULL, &open_tabs[IMPORTER]);
-			ImGui::MenuItem("Window", NULL, &open_tabs[WINDOW_CONFIG]);
-			ImGui::MenuItem("Hardware", NULL, &open_tabs[HARDWARE]);
-			ImGui::MenuItem("Application", NULL, &open_tabs[APPLICATION]);
+			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::EndMenu();
@@ -250,92 +248,7 @@ bool ModuleImGUI::CleanUp() {
 	return true;
 }
 
-void ModuleImGUI::DrawGraphicsTab()
-{
-	//starting values
 
-	static bool depth_test			= glIsEnabled(GL_DEPTH_TEST);
-	static bool face_culling		= glIsEnabled(GL_CULL_FACE);
-	static bool lighting			= glIsEnabled(GL_LIGHTING);
-	static bool material_color		= glIsEnabled(GL_COLOR_MATERIAL);
-	static bool textures			= glIsEnabled(GL_TEXTURE_2D);
-	static bool fog					= glIsEnabled(GL_FOG);
-	static bool antialias			= glIsEnabled(GL_LINE_SMOOTH);
-
-
-	ImGui::Begin("Graphics Tab", &open_tabs[GRAPHIC]);
-	ImGui::Text("Use this tab to enable/disable openGL characteristics");
-
-	if (ImGui::CollapsingHeader("Depth test"))
-	{
-		if (ImGui::Checkbox("DT Enabled", &depth_test))
-		{
-			if (depth_test)			glEnable(GL_DEPTH_TEST);
-			else					glDisable(GL_DEPTH_TEST);
-		}
-	}
-	if (ImGui::CollapsingHeader("Face culling"))
-	{
-		if (ImGui::Checkbox("FC Enabled", &face_culling))
-		{
-			if (face_culling)		glEnable(GL_CULL_FACE);
-			else					glDisable(GL_CULL_FACE);
-		}
-	}
-	if (ImGui::CollapsingHeader("Lighting"))
-	{
-		if (ImGui::Checkbox("L Enabled", &lighting))
-		{
-			if (lighting)			glEnable(GL_LIGHTING);
-			else					glDisable(GL_LIGHTING);
-		}
-	}
-	if (ImGui::CollapsingHeader("Material color"))
-	{
-		if (ImGui::Checkbox("M Enabled", &material_color))
-		{
-			if (material_color)		glEnable(GL_COLOR_MATERIAL);
-			else					glDisable(GL_COLOR_MATERIAL);
-		}
-	}
-	if (ImGui::CollapsingHeader("Textures"))
-	{
-		if (ImGui::Checkbox("T Enabled", &textures))
-		{
-			if (textures)			glEnable(GL_TEXTURE_2D);
-			else					glDisable(GL_TEXTURE_2D);
-		}
-	}
-	if (ImGui::CollapsingHeader("Fog"))
-	{
-		static float fog_distance = 0.5f;
-		if (ImGui::Checkbox("F Enabled", &fog))
-		{
-			if (fog)				glEnable(GL_FOG);
-			else					glDisable(GL_FOG);
-
-			if (fog)
-			{
-				GLfloat fog_color[4] = { 0.8f, 0.8f, 0.8f, 0.0f };
-				glFogfv(GL_FOG_COLOR, fog_color);
-				glFogf(GL_FOG_DENSITY, fog_distance);
-			}
-		}
-
-		if (ImGui::SliderFloat("Fog density", &fog_distance, 0.0f, 1.0f))
-			glFogf(GL_FOG_DENSITY, fog_distance);
-	}
-	if (ImGui::CollapsingHeader("Antialias"))
-	{
-		if (ImGui::Checkbox("A Enabled", &antialias))
-		{
-			if (antialias)			glEnable(GL_LINE_SMOOTH);
-			else					glDisable(GL_LINE_SMOOTH);
-		}
-	}
-
-	ImGui::End();
-}
 
 
 void ModuleImGUI::DrawHierarchyTab()
@@ -723,10 +636,82 @@ void ModuleImGUI::DrawAboutWindow() {
 	ImGui::End();
 }
 
+void ModuleImGUI::DrawGraphicsTab() {
+	//starting values
+
+	static bool depth_test = glIsEnabled(GL_DEPTH_TEST);
+	static bool face_culling = glIsEnabled(GL_CULL_FACE);
+	static bool lighting = glIsEnabled(GL_LIGHTING);
+	static bool material_color = glIsEnabled(GL_COLOR_MATERIAL);
+	static bool textures = glIsEnabled(GL_TEXTURE_2D);
+	static bool fog = glIsEnabled(GL_FOG);
+	static bool antialias = glIsEnabled(GL_LINE_SMOOTH);
+
+	ImGui::Text("Use this tab to enable/disable openGL characteristics");
+
+	if (ImGui::TreeNode("Depth test")) {
+		if (ImGui::Checkbox("DT Enabled", &depth_test)) {
+			if (depth_test)			glEnable(GL_DEPTH_TEST);
+			else					glDisable(GL_DEPTH_TEST);
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Face culling")) {
+		if (ImGui::Checkbox("FC Enabled", &face_culling)) {
+			if (face_culling)		glEnable(GL_CULL_FACE);
+			else					glDisable(GL_CULL_FACE);
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Lighting")) {
+		if (ImGui::Checkbox("L Enabled", &lighting)) {
+			if (lighting)			glEnable(GL_LIGHTING);
+			else					glDisable(GL_LIGHTING);
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Material color")) {
+		if (ImGui::Checkbox("M Enabled", &material_color)) {
+			if (material_color)		glEnable(GL_COLOR_MATERIAL);
+			else					glDisable(GL_COLOR_MATERIAL);
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Textures")) {
+		if (ImGui::Checkbox("T Enabled", &textures)) {
+			if (textures)			glEnable(GL_TEXTURE_2D);
+			else					glDisable(GL_TEXTURE_2D);
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Fog")) {
+		static float fog_distance = 0.5f;
+		if (ImGui::Checkbox("F Enabled", &fog)) {
+			if (fog)				glEnable(GL_FOG);
+			else					glDisable(GL_FOG);
+
+			if (fog) {
+				GLfloat fog_color[4] = { 0.8f, 0.8f, 0.8f, 0.0f };
+				glFogfv(GL_FOG_COLOR, fog_color);
+				glFogf(GL_FOG_DENSITY, fog_distance);
+			}
+		}
+
+		if (ImGui::SliderFloat("Fog density", &fog_distance, 0.0f, 1.0f))
+			glFogf(GL_FOG_DENSITY, fog_distance);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Antialias")) {
+		if (ImGui::Checkbox("A Enabled", &antialias)) {
+			if (antialias)			glEnable(GL_LINE_SMOOTH);
+			else					glDisable(GL_LINE_SMOOTH);
+		}
+		ImGui::TreePop();
+	}
+}
+
 void ModuleImGUI::DrawWindowConfig() {
 	Window* window = App->window->main_window;
-	ImGui::Begin("Window", &open_tabs[WINDOW_CONFIG]);
-
 	if(ImGui::SliderFloat("Brightness", &window->brightness, 0, 1.0f))
 		App->window->setBrightness(window->brightness);
 
@@ -751,13 +736,9 @@ void ModuleImGUI::DrawWindowConfig() {
 	if (ImGui::Checkbox("FullDesktop", &window->fulldesk))
 		App->window->setFullDesktop(window->fulldesk);
 
-
-	ImGui::End();
-
 }
 
 void ModuleImGUI::DrawHardware() {
-	ImGui::Begin("Hardware", &open_tabs[HARDWARE]);
 	//CPUs
 		ImGui::Text("CPUs");
 		ImGui::SameLine();
@@ -813,12 +794,9 @@ void ModuleImGUI::DrawHardware() {
 		ImGui::Text("VRAM Reserved:");
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
-
-	ImGui::End();
 }
 
 void ModuleImGUI::DrawApplication(){
-	ImGui::Begin("Application", &open_tabs[APPLICATION]);
 	// HARDCODED (?)
 	ImGui::Text("App name: Kuroko Engine");
 	ImGui::Text("Organization: UPC CITM");
@@ -827,7 +805,6 @@ void ModuleImGUI::DrawApplication(){
 	ImGui::PlotHistogram("##framerate", &App->fps_log[0], App->fps_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 	sprintf_s(title, 25, "Milliseconds %.1f", App->ms_log[App->ms_log.size() - 1]);
 	ImGui::PlotHistogram("##milliseconds", &App->ms_log[0], App->ms_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
-	ImGui::End();
 }
 
 void ModuleImGUI::DrawTimeControl()
@@ -855,16 +832,13 @@ void ModuleImGUI::DrawTimeControl()
 void ModuleImGUI::SaveConfig(JSON_Object* config) 
 {
 	json_object_set_boolean(config, "demo", open_tabs[DEMO]);
-	json_object_set_boolean(config, "graphic", open_tabs[GRAPHIC]);
 	json_object_set_boolean(config, "test", open_tabs[TEST]);
 	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);
 	json_object_set_boolean(config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
 	json_object_set_boolean(config, "primitive", open_tabs[PRIMITIVE]);
 	json_object_set_boolean(config, "importer", open_tabs[IMPORTER]);
 	json_object_set_boolean(config, "about", open_tabs[ABOUT]);
-	json_object_set_boolean(config, "window_config", open_tabs[WINDOW_CONFIG]);
-	json_object_set_boolean(config, "hardware", open_tabs[HARDWARE]);
-	json_object_set_boolean(config, "application", open_tabs[APPLICATION]);
+	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
 	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
 }
@@ -872,15 +846,12 @@ void ModuleImGUI::SaveConfig(JSON_Object* config)
 void ModuleImGUI::LoadConfig(JSON_Object* config) 
 {
 	open_tabs[DEMO]				= json_object_get_boolean(config, "demo");
-	open_tabs[GRAPHIC]			= json_object_get_boolean(config, "graphic");
+	open_tabs[CONFIGURATION]	= json_object_get_boolean(config, "configuration");
 	open_tabs[TEST]				= json_object_get_boolean(config, "test");
 	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
 	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
 	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
 	open_tabs[IMPORTER]			= json_object_get_boolean(config, "importer");
-	open_tabs[WINDOW_CONFIG]	= json_object_get_boolean(config, "window_config");
-	open_tabs[HARDWARE]			= json_object_get_boolean(config, "hardware");
-	open_tabs[APPLICATION]		= json_object_get_boolean(config, "application");
 	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
