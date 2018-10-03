@@ -8,6 +8,7 @@
 #include "GameObject.h"			// <--  testing purposes
 #include "ModuleImporter.h"	// <--  testing purposes
 #include "ModuleDebug.h" // <--  testing purposes
+#include "glew-2.1.0\include\GL\glew.h" // <--  testing purposes
 #include "glmath.h"
 
 
@@ -28,8 +29,6 @@ ModuleScene::~ModuleScene(){}
 // Load assets
 bool ModuleScene::Start()
 {
-	game_objects.push_back(App->importer->LoadFBX("BakerHouse.fbx"));
-
 	return true;
 }
 
@@ -44,12 +43,9 @@ bool ModuleScene::CleanUp(){
 // Update
 update_status ModuleScene::Update(float dt)
 {
+
 	if (draw_grid)
 		DrawGrid();
-
-	char* file_to_load = nullptr;
-	if (App->input->GetDroppedFile(&file_to_load))
-		game_objects.push_back(App->importer->LoadFBX(file_to_load));
 
 	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Update(dt);

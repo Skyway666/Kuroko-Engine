@@ -120,6 +120,7 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	draw_sphere = false;
 	draw_cylinder = false;
 
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return ret;
 }
 

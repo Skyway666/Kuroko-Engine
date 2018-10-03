@@ -87,7 +87,7 @@ void ComponentMesh::Draw() {
 	if (num_tris == 0 || num_vertices == 0)
 		return;
 
-	Texture* diffuse_tex = mat->getTexture(DIFFUSE);
+	Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
 	ComponentTransform* transform = nullptr;
 	float4x4 view_mat = float4x4::identity;
 

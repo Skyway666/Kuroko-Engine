@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
+#include "ModuleSceneIntro.h"
+#include "ModuleImporter.h"
 #include "ModuleRenderer3D.h"
 
 #include "imgui.h"
@@ -37,8 +39,6 @@ bool ModuleInput::Init(JSON_Object* config)
 		app_log->AddLog("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
-
-	is_file_dropped = false;
 
 	return ret;
 }
@@ -119,18 +119,16 @@ update_status ModuleInput::PreUpdate(float dt)
 			break;
 
 			case SDL_WINDOWEVENT:
-			{
 				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
 					App->renderer3D->OnResize(e.window.data1, e.window.data2);
 
-			}
 			break;
+
 			case SDL_DROPFILE:
-			{
-				is_file_dropped = true;
-				file = e.drop.file;
-			}
-			break;
+				App->scene_intro->game_objects.push_back(App->importer->LoadFBX(e.drop.file));
+				break;
+
+			default: break;
 		}
 	}
 

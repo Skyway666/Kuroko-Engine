@@ -73,6 +73,7 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 
 	LoadConfig(config);
 
+
 	return true;
 }
 
