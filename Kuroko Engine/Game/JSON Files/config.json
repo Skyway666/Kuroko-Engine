@@ -12,15 +12,12 @@
   },
   "gui": {
     "demo": false,
-    "graphic": false,
+    "configuration": false,
     "test": false,
     "hierarchy": false,
     "obj_inspector": false,
     "primitive": false,
     "importer": false,
-    "window_config": true,
-    "hardware": true,
-    "application": true,
     "about": true,
     "log": true,
     "time_control": false
