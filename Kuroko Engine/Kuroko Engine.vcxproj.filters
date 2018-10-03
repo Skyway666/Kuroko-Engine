@@ -360,6 +360,9 @@
     <ClInclude Include="ModuleDebug.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="WinItemDialog.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">

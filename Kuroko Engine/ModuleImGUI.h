@@ -8,6 +8,7 @@ struct ImGuiIO;
 class GameObject;
 class Component;
 class Texture;
+class Material;
 
 enum GUI_Tabs { DEMO, GRAPHIC, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, IMPORTER, ABOUT, WINDOW_CONFIG, HARDWARE, APPLICATION, LOG, TIME_CONTROL, LAST};  // LAST is an utility value to store the max num of tabs.
 enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
@@ -30,6 +31,7 @@ public:
 	void DrawHierarchyNode(GameObject* game_object, int& id);
 	void DrawObjectInspectorTab();
 	bool DrawComponent(Component* component);
+	void DrawMaterial(Material* mat);
 	void DrawPrimitivesTab();
 	void DrawImporterTab();
 	void DrawAboutWindow();

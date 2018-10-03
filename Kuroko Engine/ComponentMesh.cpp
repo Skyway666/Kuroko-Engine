@@ -376,14 +376,10 @@ void ComponentMesh::getData(uint& vert_num, uint& poly_count, bool& has_normals,
 
 void ComponentMesh::assignCheckeredMat(TextureType type)
 {
-	mat = new Material();
-	if (!App->importer->checkered_tex)
-	{
-		App->importer->checkered_tex = new Texture();
-		App->importer->checkered_tex->LoadCheckered();
-	}
+	Texture* tex = new Texture();
+	tex->LoadCheckered();
 
-	mat->setTexture(type, App->importer->checkered_tex);
+	mat->setTexture(type, tex);
 }
 
 void ComponentMesh::ClearData()

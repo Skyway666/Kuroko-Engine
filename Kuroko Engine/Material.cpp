@@ -35,10 +35,10 @@ void Material::setTexture(TextureType tex_type, Texture* texture)
 {
 	switch (tex_type)
 	{
-	case DIFFUSE: diffuse = texture; break;
-	case AMBIENT: ambient = texture; break;
-	case NORMALS: normals = texture; break;
-	case LIGHTMAP: lightmap = texture; break;
+	case DIFFUSE: if (diffuse) delete diffuse; diffuse = texture; break;
+	case AMBIENT: if (ambient) delete ambient; ambient = texture; break;
+	case NORMALS: if (normals) delete normals; normals = texture; break;
+	case LIGHTMAP: if (lightmap) delete lightmap; lightmap = texture; break;
 	}
 }
 

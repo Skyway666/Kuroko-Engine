@@ -57,8 +57,6 @@ bool ModuleImporter::Init(JSON_Object* config)
 bool ModuleImporter::CleanUp()
 {
 	aiDetachAllLogStreams();
-	if (checkered_tex)
-		delete checkered_tex;
 	return true;
 }
 

@@ -176,6 +176,7 @@
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="VRAM.h" />
+    <ClInclude Include="WinItemDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />

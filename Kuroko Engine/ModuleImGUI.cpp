@@ -19,6 +19,7 @@
 
 #include "RNG.h"
 #include "VRAM.h"
+#include "WinItemDialog.h" // <--  testing purposes
 
 #include "Assimp/include/version.h"
 
@@ -470,15 +471,6 @@ bool ModuleImGUI::DrawComponent(Component* component)
 				if (draw_normals)
 					mesh->DrawNormals();
 
-				if (ImGui::Button("Load checkered texture"))
-					mesh->assignCheckeredMat();
-
-				static char texture_name_buffer[64];
-				ImGui::InputText("texture to load", texture_name_buffer, 64);
-
-				static char rootmesh_name_buffer[64];
-				ImGui::InputText("root mesh to load", rootmesh_name_buffer, 64);
-
 				
 				if (Material* material = mesh->getMaterial())
 				{
@@ -496,20 +488,59 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 						ImGui::Text("diffuse texture:  ");
 						ImGui::SameLine();
+
 						ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-						ImGui::Text("ambient texture:  ");
+						if (ImGui::Button("Dif: Load checkered texture"))
+							mesh->assignCheckeredMat(DIFFUSE);
 						ImGui::SameLine();
-						
+						if (ImGui::Button("Dif: Load texture"))
+						{
+							std::string texture_path = openFileWID();
+							mesh->getMaterial()->setTexture(DIFFUSE, App->importer->LoadTex((char*)texture_path.c_str()));
+						}
+
+						ImGui::Text("ambient texture:  ");
+
+						ImGui::SameLine();
 						ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
+						if (ImGui::Button("Amb: Load checkered texture"))
+							mesh->assignCheckeredMat(AMBIENT);
+						ImGui::SameLine();
+						if (ImGui::Button("Amb: Load texture"))
+						{
+							std::string texture_path = openFileWID();
+							mesh->getMaterial()->setTexture(AMBIENT, App->importer->LoadTex((char*)texture_path.c_str()));
+						}
+
 						ImGui::Text("normals texture:  ");
+
 						ImGui::SameLine();
 						ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-						ImGui::Text("lightmap texture: ");
+						if (ImGui::Button("Nor: Load checkered texture"))
+							mesh->assignCheckeredMat(NORMALS);
+						ImGui::SameLine();
+						if (ImGui::Button("Nor: Load texture"))
+						{
+							std::string texture_path = openFileWID();
+							mesh->getMaterial()->setTexture(NORMALS, App->importer->LoadTex((char*)texture_path.c_str()));
+						}
+
+						ImGui::Text("lightmap texture:  ");
+
 						ImGui::SameLine();
 						ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+						if (ImGui::Button("Lgm: Load checkered texture"))
+							mesh->assignCheckeredMat(LIGHTMAP);
+						ImGui::SameLine();
+						if (ImGui::Button("Lgm: Load texture"))
+						{
+							std::string texture_path = openFileWID();
+							mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->LoadTex((char*)texture_path.c_str()));
+						}
 					}
 				}
 

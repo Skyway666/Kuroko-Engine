@@ -8,7 +8,6 @@
 #include "GameObject.h"			// <--  testing purposes
 #include "ModuleImporter.h"	// <--  testing purposes
 #include "ModuleDebug.h" // <--  testing purposes
-#include "glew-2.1.0\include\GL\glew.h" // <--  testing purposes
 #include "glmath.h"
 
 
