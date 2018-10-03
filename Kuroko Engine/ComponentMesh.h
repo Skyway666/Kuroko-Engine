@@ -33,6 +33,7 @@ public:
 
 	bool Update(float dt) { if (loaded && isActive()) Draw(); return true; };
 	void Draw();
+	void DrawNormals();
 
 	bool getWireframe() { return wireframe; };
 	void setWireframe(bool state) { wireframe = state; };

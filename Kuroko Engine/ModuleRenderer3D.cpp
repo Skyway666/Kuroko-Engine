@@ -120,7 +120,6 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	draw_sphere = false;
 	draw_cylinder = false;
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return ret;
 }
 
@@ -305,6 +304,7 @@ void ModuleRenderer3D::HomeworksInit() {
 	glBindBuffer(GL_ARRAY_BUFFER, my_cubeid);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 36 * 3, (void*)float_array, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// Cube with index
 
 	cube_vertices[0] = 0.f; cube_vertices[1] = 0.f; cube_vertices[2] = 0.f; //0
@@ -317,8 +317,8 @@ void ModuleRenderer3D::HomeworksInit() {
 	cube_vertices[18] = 10.f; cube_vertices[19] = 0.f; cube_vertices[20] = 10.f;//6
 	cube_vertices[21] = 10.f; cube_vertices[22] = 10.f; cube_vertices[23] = 10.f;//7
 
-	cube_indices[0] = 0; cube_indices[1] = 1; cube_indices[2] = 2;   	cube_indices[3] = 4; cube_indices[4] = 2; cube_indices[5] = 1; // face 1
-	cube_indices[6] = 5; cube_indices[7] = 2; cube_indices[8] = 4;   	cube_indices[9] = 4; cube_indices[10] = 7; cube_indices[11] = 5; // face 2
+	cube_indices[0] = 0; cube_indices[1] = 1; cube_indices[2] = 2;   		cube_indices[3] = 4; cube_indices[4] = 2; cube_indices[5] = 1; // face 1
+	cube_indices[6] = 5; cube_indices[7] = 2; cube_indices[8] = 4;   		cube_indices[9] = 4; cube_indices[10] = 7; cube_indices[11] = 5; // face 2
 	cube_indices[12] = 6; cube_indices[13] = 3; cube_indices[14] = 5;   	cube_indices[15] = 5; cube_indices[16] = 7; cube_indices[17] = 6; // face 3
 	cube_indices[18] = 3; cube_indices[19] = 6; cube_indices[20] = 1;   	cube_indices[21] = 1; cube_indices[22] = 0; cube_indices[23] = 3; // face 4
 	cube_indices[24] = 6; cube_indices[25] = 7; cube_indices[26] = 4;   	cube_indices[27] = 4; cube_indices[28] = 1; cube_indices[29] = 6; // face 5

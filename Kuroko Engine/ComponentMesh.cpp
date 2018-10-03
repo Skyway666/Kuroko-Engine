@@ -152,6 +152,23 @@ void ComponentMesh::Draw() {
 }
 
 
+void ComponentMesh::DrawNormals()
+{
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 0.0f, 0.0f);
+
+	Vector3f centroid = Vector3f::Zero;
+	Vector3f h_s = Vector3f::Zero;
+	getParent()->getInheritedHalfsizeAndCentroid(h_s, centroid);
+
+	for (int i = 0; i < num_vertices; i++)
+	{
+		glVertex3f(vertices[i].x + centroid.x, vertices[i].y + centroid.y, vertices[i].z + centroid.z);
+		glVertex3f(vertices[i].x + centroid.x + (normals[i].x * 0.2f), vertices[i].y + centroid.y + (normals[i].y * 0.2f), vertices[i].z + centroid.z + (normals[i].z * 0.2f));
+	}
+	glEnd();
+}
+
 void ComponentMesh::BuildCube(float sx, float sy, float sz)
 {
 	sx *= 0.5f, sy *= 0.5f, sz *= 0.5f;

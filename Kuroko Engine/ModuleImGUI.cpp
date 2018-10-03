@@ -452,6 +452,7 @@ bool ModuleImGUI::DrawComponent(Component* component)
 			ComponentMesh* mesh = (ComponentMesh*)component;
 			static bool wireframe_enabled;
 			static bool mesh_active;
+			static bool draw_normals = false;
 
 			wireframe_enabled = mesh->getWireframe();
 			mesh_active = mesh->isActive();
@@ -464,6 +465,10 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 				if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
 					mesh->setWireframe(wireframe_enabled);
+
+				ImGui::Checkbox("Draw normals", &draw_normals);
+				if (draw_normals)
+					mesh->DrawNormals();
 
 				if (ImGui::Button("Load checkered texture"))
 					mesh->assignCheckeredMat();
