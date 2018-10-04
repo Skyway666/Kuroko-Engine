@@ -223,7 +223,8 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	for (int i = 0; i < num_vertices; i++)
 		colors[i].set(random_color.r, random_color.g, random_color.b);
 
-	tex_coords = new Point2f[16];
+	tex_coords = new Point2f[36];
+
 	tex_coords[0] = {0.0f, 0.0f};
 	tex_coords[1] = {1.0f, 0.0f};
 	tex_coords[2] = {0.0f, 1.0f};
@@ -234,15 +235,6 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	tex_coords[6] = { 0.0f, 1.0f };
 	tex_coords[7] = { 1.0f, 1.0f };
 
-	tex_coords[8] = { 0.0f, 1.0f }; //0
-	tex_coords[9] = { 0.0f, 0.0f }; //1
-	tex_coords[10] = { 0.0f, 0.0f }; //2
-	tex_coords[11] = { 0.0f, 1.0f }; //3
-
-	tex_coords[12] = { 1.0f, 1.0f }; //4
-	tex_coords[13] = { 1.0f, 0.0f }; //5
-	tex_coords[14] = { 1.0f, 0.0f }; //6
-	tex_coords[15] = { 1.0f, 1.0f }; //7
 			
 
 	mat = new Material();
