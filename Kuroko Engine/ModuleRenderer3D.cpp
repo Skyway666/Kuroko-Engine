@@ -116,6 +116,7 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	HomeworksInit();
 	draw_sphere = false;
 	global_wireframe = false;
+	global_normals = false;
 
 	return ret;
 }

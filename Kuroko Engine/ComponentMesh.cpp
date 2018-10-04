@@ -119,6 +119,8 @@ void ComponentMesh::Draw() {
 	if (wireframe || App->renderer3D->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+
+
 	if (diffuse_tex)
 		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
@@ -150,6 +152,9 @@ void ComponentMesh::Draw() {
 
 	if (transform)
 		glLoadMatrixf((GLfloat*)view_mat.v);
+
+	//if (draw_normals || App->renderer3D->global_normals)
+	//	DrawNormals();
 }
 
 
@@ -167,6 +172,7 @@ void ComponentMesh::DrawNormals()
 		glVertex3f(vertices[i].x + centroid.x, vertices[i].y + centroid.y, vertices[i].z + centroid.z);
 		glVertex3f(vertices[i].x + centroid.x + (normals[i].x * 0.2f), vertices[i].y + centroid.y + (normals[i].y * 0.2f), vertices[i].z + centroid.z + (normals[i].z * 0.2f));
 	}
+	glClear(GL_COLOR_BUFFER_BIT);
 	glEnd();
 }
 

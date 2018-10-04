@@ -37,6 +37,8 @@ public:
 
 	bool getWireframe() { return wireframe; };
 	void setWireframe(bool state) { wireframe = state; };
+	void setNormals(bool state) { draw_normals = state; };
+	bool getNormals() { return draw_normals; };
 	Material* getMaterial() { return mat; };
 	void setMaterial(Material* new_mat) { mat = new_mat; };
 
@@ -57,6 +59,7 @@ private:
 private:
 	bool loaded = false;
 	bool wireframe = false;
+	bool draw_normals = false;
 
 	Material* mat = nullptr;
 

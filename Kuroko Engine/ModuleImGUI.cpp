@@ -361,9 +361,10 @@ bool ModuleImGUI::DrawComponent(Component* component)
 			ComponentMesh* mesh = (ComponentMesh*)component;
 			static bool wireframe_enabled;
 			static bool mesh_active;
-			static bool draw_normals = false;
+			static bool draw_normals;
 
 			wireframe_enabled = mesh->getWireframe();
+			draw_normals = mesh->getNormals();
 			mesh_active = mesh->isActive();
 
 			if (ImGui::Checkbox("Is active", &mesh_active))
@@ -375,9 +376,13 @@ bool ModuleImGUI::DrawComponent(Component* component)
 				if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
 					mesh->setWireframe(wireframe_enabled);
 
-				ImGui::Checkbox("Draw normals", &draw_normals);
-				if (draw_normals)
+				if (ImGui::Checkbox("Draw normals", &draw_normals))
+					mesh->setNormals(draw_normals);
+
+				if(draw_normals)
 					mesh->DrawNormals();
+				
+			
 
 				
 				if (Material* material = mesh->getMaterial())
@@ -724,6 +729,10 @@ void ModuleImGUI::DrawGraphicsTab() {
 	}
 	if (ImGui::TreeNode("Wireframe")) {
 		ImGui::Checkbox("WF Enabled", &App->renderer3D->global_wireframe);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Normals")) {
+		ImGui::Checkbox("N Enabled", &App->renderer3D->global_normals);
 		ImGui::TreePop();
 	}
 }
