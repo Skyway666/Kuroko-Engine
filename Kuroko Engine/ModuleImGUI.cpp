@@ -599,6 +599,11 @@ void ModuleImGUI::DrawPrimitivesTab()
 		plane->addComponent(new ComponentMesh(plane, Primitive_Plane));
 		App->scene_intro->game_objects.push_back(plane);
 	}
+	if (ImGui::Button("Add sphere")) {
+		GameObject* sphere = new GameObject("Sphere");
+		sphere->addComponent(new ComponentMesh(sphere, Primitive_Sphere));
+		App->scene_intro->game_objects.push_back(sphere);
+	}
 
 	ImGui::End();
 }

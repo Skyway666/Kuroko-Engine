@@ -22,6 +22,7 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) :
 	{
 	case Primitive_Cube: BuildCube(); break;
 	case Primitive_Plane: BuildPlane(); break;
+	case Primitive_Sphere: BuildSphere(); break;
 	default:
 		break;
 	}
@@ -266,6 +267,83 @@ void ComponentMesh::BuildPlane(float sx, float sy)
 	tex_coords[1] = {1.0f, 0.0f};
 	tex_coords[2] = {0.0f, 1.0f};
 	tex_coords[3] = {1.0f, 1.0f};
+}
+
+void ComponentMesh::BuildSphere(float radius, float sectorCount, float stackCount) {
+
+	// Sphere (code from http://www.songho.ca/opengl/gl_sphere.html)
+
+
+	float x, y, z, xy;                              // vertex position
+	float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
+	float s, t;                                     // vertex texCoord
+
+	float sectorStep = 2 * PI / sectorCount;
+	float stackStep = PI / stackCount;
+	float sectorAngle, stackAngle;
+
+	float sector_size = sectorCount + 1;
+	float stack_size = stackCount + 1;
+
+	num_vertices = sector_size * stack_size;
+	num_tris = 	stackCount*sectorCount * 2 - (2 * sectorCount); 
+
+	vertices = new Point3f[num_vertices];
+	normals = new Point3f[num_vertices];
+	tex_coords = new Point2f[num_vertices];
+	tris = new Point3ui[num_tris];
+
+	int array_pos = 0;
+	for (int i = 0; i <= stackCount; ++i) {
+		stackAngle = PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+		xy = radius * cosf(stackAngle);             // r * cos(u)
+		z = radius * sinf(stackAngle);              // r * sin(u)
+
+													// add (sectorCount+1) vertices per stack
+													// the first and last vertices have same position and normal, but different tex coods
+		for (int j = 0; j <= sectorCount; ++j) {
+			sectorAngle = j * sectorStep;
+
+			// vertex position (x, y, z)
+			x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
+			y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
+			vertices[array_pos].set(x,y,z);
+
+			// vertex normal (nx, ny, nz)
+			nx = x * lengthInv;
+			ny = y * lengthInv;
+			nz = z * lengthInv;
+			normals[array_pos].set(nx, ny, nz);
+
+			// vertex tex coord (s, t)
+			s = (float)j / sectorCount;
+			t = (float)i / stackCount;
+			tex_coords[array_pos].set(s, t);
+			array_pos++;
+		}
+	}
+
+	array_pos = 0;
+	int k1, k2;
+	for (int i = 0; i < stackCount; ++i) {
+		k1 = i * (sectorCount + 1);     // beginning of current stack
+		k2 = k1 + sectorCount + 1;      // beginning of next stack
+
+		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
+			// 2 triangles per sector excluding 1st and last stacks
+			if (i != 0) {
+				tris[array_pos].set(k1, k2, k1 + 1);
+				array_pos++;
+			}
+
+			if (i != (stackCount - 1)) {
+				tris[array_pos].set(k1 + 1, k2, k2 + 1);
+				array_pos++;
+			}
+		}
+	}
+
+
 }
 
 

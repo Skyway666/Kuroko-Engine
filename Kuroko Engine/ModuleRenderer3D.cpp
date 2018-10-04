@@ -310,38 +310,6 @@ void ModuleRenderer3D::HomeworksInit() {
 				}
 			}
 		}
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		//glGenBuffers(1, &sphereVID);
-		//glBindBuffer(GL_ARRAY_BUFFER, sphereVID);
-		//glBufferData(GL_ARRAY_BUFFER,						// target
-		//	vertices.size()*sizeof(float),					// data size, bytes
-		//	&vertices[0],									// ptr to vertex data
-		//	GL_STATIC_DRAW);								// usage
-
-		//									   // copy index data to VBO
-
-		//glGenBuffers(1, &sphereIID);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereIID);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER,               // target
-		//	indices.size()*sizeof(short),                   // data size, bytes
-		//	&indices[0],									// ptr to index data
-		//	GL_STATIC_DRAW);						        // usage
-
-		//glGenBuffers(1, &sphereNID);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereNID);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER,               // target
-		//	normals.size() * sizeof(short),                 // data size, bytes
-		//	&normals[0],									// ptr to index data
-		//	GL_STATIC_DRAW);						        // usage
-
-		//glGenBuffers(1, &sphereTID);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereTID);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER,               // target
-		//	texcoords.size() * sizeof(short),               // data size, bytes
-		//	&texcoords[0],									// ptr to index data
-		//	GL_STATIC_DRAW);						        // usage
 	}
 
 }
