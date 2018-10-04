@@ -355,13 +355,19 @@ void ComponentMesh::BuildSphere(float radius, float sectorCount, float stackCoun
 
 void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
 
+
+	// code belongs to Zakuayada https://www.gamedev.net/forums/topic/359467-draw-cylinder-with-triangle-strips/
+
 	num_vertices = numSteps * 2 + 2;
 	vertices = new Point3f[num_vertices];
 	normals = new Point3f[num_vertices];
 	tex_coords = new Point2f[num_vertices];
 	colors = new Point3f[num_vertices];
 
-
+	Color random_color;
+	random_color.setRandom();
+	for (int i = 0; i < num_vertices; i++)
+		colors[i].set(random_color.r, random_color.g, random_color.b);
 
 	float hl = length * 0.5f;
 	float a = 0.0f;
@@ -393,7 +399,6 @@ void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
 		tris[i * 6 + 3].set(i4, i2, i3);
 		// Caps
 		tris[numSteps * 6 + i * 6 + 0].set(numSteps * 2 + 0, i1, i2);
-
 		tris[numSteps * 6 + i * 6 + 3].set(numSteps * 2 + 1, i4, i3);
 	}
 
