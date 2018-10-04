@@ -10,6 +10,7 @@
 #include "ModuleRenderer3D.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include "glew-2.1.0\include\GL\glew.h"
+#include "ModuleSceneIntro.h"
 
 #include "Assimp\include\scene.h"
 
@@ -222,16 +223,30 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	for (int i = 0; i < num_vertices; i++)
 		colors[i].set(random_color.r, random_color.g, random_color.b);
 
-	tex_coords = new Point2f[num_vertices];
+	tex_coords = new Point2f[16];
 	tex_coords[0] = {0.0f, 0.0f};
 	tex_coords[1] = {1.0f, 0.0f};
 	tex_coords[2] = {0.0f, 1.0f};
 	tex_coords[3] = {1.0f, 1.0f};
+
+	tex_coords[4] = { 0.0f, 0.0f };
+	tex_coords[5] = { 1.0f, 0.0f };
+	tex_coords[6] = { 0.0f, 1.0f };
+	tex_coords[7] = { 1.0f, 1.0f };
+
+	tex_coords[8] = { 0.0f, 1.0f }; //0
+	tex_coords[9] = { 0.0f, 0.0f }; //1
+	tex_coords[10] = { 0.0f, 0.0f }; //2
+	tex_coords[11] = { 0.0f, 1.0f }; //3
+
+	tex_coords[12] = { 1.0f, 1.0f }; //4
+	tex_coords[13] = { 1.0f, 0.0f }; //5
+	tex_coords[14] = { 1.0f, 0.0f }; //6
+	tex_coords[15] = { 1.0f, 1.0f }; //7
 			
-	tex_coords[4] = {1.0f, 0.0f};
-	tex_coords[5] = {0.0f, 1.0f};
-	tex_coords[6] = {0.0f, 0.0f};
-	tex_coords[7] = {1.0f, 1.0f};
+
+	mat = new Material();
+	App->scene_intro->materials.push_back(mat);
 }
 
 void ComponentMesh::BuildPlane(float sx, float sy)
@@ -402,6 +417,10 @@ void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
 		tris[numSteps * 6 + i * 6 + 3].set(numSteps * 2 + 1, i4, i3);
 	}
 
+	for (int i = 0; i < num_vertices; i++) {
+		normals[i] = vertices[i];
+		normals[i].Normalize();
+	} // TO BE TESTED
 }
 
 
