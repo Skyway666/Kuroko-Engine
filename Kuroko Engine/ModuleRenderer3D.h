@@ -25,11 +25,12 @@ public:
 
 	void DirectDrawCube(Vector3f size);
 
+	bool global_wireframe;
 	// JUST FOR LEARNING PURPUSES
 	void HomeworksInit();
 	void HomeworksUpdate();
 
-	bool draw_direct_cube,draw_buffer_cube, draw_index_cube, draw_sphere, draw_cylinder;
+	bool draw_sphere;
 
 	// Sphere
 	std::vector<float> vertices;
@@ -37,23 +38,9 @@ public:
 	std::vector<float> texcoords;
 	std::vector<unsigned short> indices;
 
-	//cylinder
-	std::vector<float> cyvertices;
-	std::vector<float> cynormals;
-	std::vector<float> cytexcoords;
-	std::vector<unsigned short> cyindices;
 
 	//uint sphereVID, sphereIID, sphereNID, sphereTID;
 
-	// Index cube
-	float cube_vertices[24];
-	short cube_indices[36];
-
-
-
-
-	
-	uint my_cubeid;  // _to_remove
 	// JUST FOR LEARNING PURPUSES
 
 private:

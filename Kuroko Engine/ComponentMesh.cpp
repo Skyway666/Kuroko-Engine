@@ -7,6 +7,7 @@
 #include "ModuleImporter.h"
 #include "ModuleImGUI.h"
 #include "Applog.h"
+#include "ModuleRenderer3D.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
@@ -115,7 +116,7 @@ void ComponentMesh::Draw() {
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	if (wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (wireframe || App->renderer3D->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if (diffuse_tex)

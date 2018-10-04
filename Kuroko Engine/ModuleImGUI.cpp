@@ -106,13 +106,8 @@ update_status ModuleImGUI::Update(float dt) {
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	if(open_tabs[TEST])
 	{
-
 		// test functionality
-		ImGui::Checkbox("DrawDirectCube", &App->renderer3D->draw_direct_cube);
-		ImGui::Checkbox("DrawBufferCube", &App->renderer3D->draw_buffer_cube);
-		ImGui::Checkbox("DrawIndexCube", &App->renderer3D->draw_index_cube);
 		ImGui::Checkbox("DrawSphere", &App->renderer3D->draw_sphere);
-		ImGui::Checkbox("DrawCylinder", &App->renderer3D->draw_cylinder);
 	}
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
@@ -666,7 +661,6 @@ void ModuleImGUI::DrawGraphicsTab() {
 	static bool textures = glIsEnabled(GL_TEXTURE_2D);
 	static bool fog = glIsEnabled(GL_FOG);
 	static bool antialias = glIsEnabled(GL_LINE_SMOOTH);
-
 	ImGui::Text("Use this tab to enable/disable openGL characteristics");
 
 	if (ImGui::TreeNode("Depth test")) {
@@ -726,6 +720,10 @@ void ModuleImGUI::DrawGraphicsTab() {
 			if (antialias)			glEnable(GL_LINE_SMOOTH);
 			else					glDisable(GL_LINE_SMOOTH);
 		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Wireframe")) {
+		ImGui::Checkbox("WF Enabled", &App->renderer3D->global_wireframe);
 		ImGui::TreePop();
 	}
 }
