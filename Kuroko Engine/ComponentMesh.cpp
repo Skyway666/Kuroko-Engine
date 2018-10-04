@@ -8,7 +8,7 @@
 #include "ModuleImGUI.h"
 #include "Applog.h"
 #include "ModuleRenderer3D.h"
-
+#include "MathGeoLib\MathGeoLib.h"
 #include "glew-2.1.0\include\GL\glew.h"
 
 #include "Assimp\include\scene.h"
@@ -23,6 +23,7 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) :
 	case Primitive_Cube: BuildCube(); break;
 	case Primitive_Plane: BuildPlane(); break;
 	case Primitive_Sphere: BuildSphere(); break;
+	case Primitive_Cylinder: BuildCylinder(); break;
 	default:
 		break;
 	}
@@ -351,6 +352,53 @@ void ComponentMesh::BuildSphere(float radius, float sectorCount, float stackCoun
 
 
 }
+
+void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
+
+	num_vertices = numSteps * 2 + 2;
+	vertices = new Point3f[num_vertices];
+	normals = new Point3f[num_vertices];
+	tex_coords = new Point2f[num_vertices];
+	colors = new Point3f[num_vertices];
+
+
+
+	float hl = length * 0.5f;
+	float a = 0.0f;
+	float step = PI*2 / (float)numSteps;
+	for (int i = 0; i < numSteps; ++i) {
+		float x = cos(a) * radius;
+		float y = sin(a) * radius;
+		vertices[i].set(x, y, hl);
+		vertices[i + numSteps].set(x, y, -hl);
+
+		a += step;
+	}
+
+	vertices[numSteps * 2 + 0].set(0.0f, 0.0f, +hl);
+	vertices[numSteps * 2 + 1].set(0.0f, 0.0f, -hl);
+	
+	num_tris = 4 * numSteps * 3;
+	tris = new Point3ui[num_tris];
+
+	for (int i = 0; i < numSteps; ++i) {
+		unsigned int i1 = i;
+		unsigned int i2 = (i1 + 1) % numSteps;
+		unsigned int i3 = i1 + numSteps;
+		unsigned int i4 = i2 + numSteps;
+
+		// Sides
+
+		tris[i * 6 + 0].set(i1, i3, i2);
+		tris[i * 6 + 3].set(i4, i2, i3);
+		// Caps
+		tris[numSteps * 6 + i * 6 + 0].set(numSteps * 2 + 0, i1, i2);
+
+		tris[numSteps * 6 + i * 6 + 3].set(numSteps * 2 + 1, i4, i3);
+	}
+
+}
+
 
 
 bool ComponentMesh::LoadFromAssimpMesh(aiMesh* imported_mesh)

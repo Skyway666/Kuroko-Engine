@@ -51,6 +51,7 @@ private:
 	void BuildCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
 	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	void BuildSphere(float radius = 1.0f, float sectorCount = 12.0f, float stackCount = 24.0f);
+	void BuildCylinder(float radius = 1.0f, float length = 3.0f, int steps = 30);
 	bool LoadFromAssimpMesh(aiMesh* mesh);
 	void ClearData();
 

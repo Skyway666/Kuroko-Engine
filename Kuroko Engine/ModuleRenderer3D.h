@@ -26,22 +26,6 @@ public:
 	void DirectDrawCube(Vector3f size);
 
 	bool global_wireframe, global_normals;
-	// JUST FOR LEARNING PURPUSES
-	void HomeworksInit();
-	void HomeworksUpdate();
-
-	bool draw_sphere;
-
-	// Sphere
-	std::vector<float> vertices;
-	std::vector<float> normals;
-	std::vector<float> texcoords;
-	std::vector<unsigned short> indices;
-
-
-	//uint sphereVID, sphereIID, sphereNID, sphereTID;
-
-	// JUST FOR LEARNING PURPUSES
 
 private:
 

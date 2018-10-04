@@ -106,8 +106,7 @@ update_status ModuleImGUI::Update(float dt) {
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	if(open_tabs[TEST])
 	{
-		// test functionality
-		ImGui::Checkbox("DrawSphere", &App->renderer3D->draw_sphere);
+
 	}
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
@@ -602,6 +601,11 @@ void ModuleImGUI::DrawPrimitivesTab()
 	if (ImGui::Button("Add sphere")) {
 		GameObject* sphere = new GameObject("Sphere");
 		sphere->addComponent(new ComponentMesh(sphere, Primitive_Sphere));
+		App->scene_intro->game_objects.push_back(sphere);
+	}
+	if (ImGui::Button("Add cylinder")) {
+		GameObject* sphere = new GameObject("Cylinder");
+		sphere->addComponent(new ComponentMesh(sphere, Primitive_Cylinder));
 		App->scene_intro->game_objects.push_back(sphere);
 	}
 
