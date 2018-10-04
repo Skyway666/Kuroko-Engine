@@ -310,6 +310,9 @@ void ModuleRenderer3D::HomeworksInit() {
 				}
 			}
 		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 		//glGenBuffers(1, &sphereVID);
 		//glBindBuffer(GL_ARRAY_BUFFER, sphereVID);
 		//glBufferData(GL_ARRAY_BUFFER,						// target

@@ -101,6 +101,10 @@ void ComponentMesh::Draw() {
 		glMatrixMode(GL_MODELVIEW_MATRIX);
 		glLoadMatrixf((GLfloat*)(transform->getInheritedTransform().Transposed() * view_mat).v);
 	}
+	//glColor3f(1.0f, 1.0f, 1.0f);
+
+	if (draw_normals || App->renderer3D->global_normals)
+		DrawNormals();
 
 	if (diffuse_tex)
 		glEnable(GL_TEXTURE_2D);
@@ -153,26 +157,25 @@ void ComponentMesh::Draw() {
 	if (transform)
 		glLoadMatrixf((GLfloat*)view_mat.v);
 
-	//if (draw_normals || App->renderer3D->global_normals)
-	//	DrawNormals();
+
+
 }
 
 
 void ComponentMesh::DrawNormals()
 {
 	glBegin(GL_LINES);
-	glColor3f(1.0f, 0.0f, 0.0f);
+	//glColor3f(1.0f, 0.0f, 0.0f);
 
 	Vector3f centroid = Vector3f::Zero;
 	Vector3f h_s = Vector3f::Zero;
-	getParent()->getInheritedHalfsizeAndCentroid(h_s, centroid);
 
 	for (int i = 0; i < num_vertices; i++)
 	{
-		glVertex3f(vertices[i].x + centroid.x, vertices[i].y + centroid.y, vertices[i].z + centroid.z);
-		glVertex3f(vertices[i].x + centroid.x + (normals[i].x * 0.2f), vertices[i].y + centroid.y + (normals[i].y * 0.2f), vertices[i].z + centroid.z + (normals[i].z * 0.2f));
+		glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
+		glVertex3f(vertices[i].x + (normals[i].x * 0.2f), vertices[i].y+ (normals[i].y * 0.2f), vertices[i].z + (normals[i].z * 0.2f));
 	}
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glColor3f(1.0f,1.0f,1.0f);
 	glEnd();
 }
 

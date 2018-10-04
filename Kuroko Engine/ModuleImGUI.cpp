@@ -378,9 +378,6 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
 					mesh->setNormals(draw_normals);
-
-				if(draw_normals)
-					mesh->DrawNormals();
 				
 			
 
