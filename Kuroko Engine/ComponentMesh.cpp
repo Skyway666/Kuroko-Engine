@@ -343,6 +343,12 @@ void ComponentMesh::BuildSphere(float radius, float sectorCount, float stackCoun
 		}
 	}
 
+	colors = new Point3f[num_vertices];
+	Color random_color;
+	random_color.setRandom();
+	for (int i = 0; i < num_vertices; i++)
+		colors[i].set(random_color.r, random_color.g, random_color.b);
+
 
 }
 
