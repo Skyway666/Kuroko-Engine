@@ -29,6 +29,9 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes primitive) :
 		break;
 	}
 
+	mat = new Material();
+	App->scene_intro->materials.push_back(mat);
+
 	calculateHalfsize();
 	LoadDataToVRAM();
 	loaded = true;
@@ -126,8 +129,6 @@ void ComponentMesh::Draw() {
 	if (wireframe || App->renderer3D->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-
-
 	if (diffuse_tex)
 		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
@@ -159,8 +160,6 @@ void ComponentMesh::Draw() {
 
 	if (transform)
 		glLoadMatrixf((GLfloat*)view_mat.v);
-
-
 
 }
 
@@ -210,10 +209,8 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
 
 	normals = new Point3f[num_vertices];
-	for (int i = 0; i < num_vertices; i++){
-		normals[i] = vertices[i];
-		normals[i].Normalize();
-	} // TO BE TESTED
+	for (int i = 0; i < num_vertices; i++)
+		normals[i] = vertices[i].Normalized();
 		
 
 	colors = new Point3f[num_vertices];
@@ -225,43 +222,34 @@ void ComponentMesh::BuildCube(float sx, float sy, float sz)
 
 	tex_coords = new Point2f[36];
 
-	tex_coords[0] = {0.0f, 0.0f};
-	tex_coords[1] = {1.0f, 0.0f};
-	tex_coords[2] = {0.0f, 1.0f};
-	tex_coords[3] = {1.0f, 1.0f};
+	tex_coords[0] = { 0.0f, 0.0f }; tex_coords[1] = { 1.0f, 0.0f };
+	tex_coords[2] = { 0.0f, 1.0f }; tex_coords[3] = { 1.0f, 1.0f };
+	tex_coords[4] = { 0.0f, 0.0f }; tex_coords[5] = { 1.0f, 0.0f };
+	tex_coords[6] = { 0.0f, 1.0f }; tex_coords[7] = { 1.0f, 1.0f };
 
-	tex_coords[4] = { 0.0f, 0.0f };
-	tex_coords[5] = { 1.0f, 0.0f };
-	tex_coords[6] = { 0.0f, 1.0f };
-	tex_coords[7] = { 1.0f, 1.0f };
-
-			
-
-	mat = new Material();
-	App->scene_intro->materials.push_back(mat);
 }
 
 void ComponentMesh::BuildPlane(float sx, float sy)
 {
 	sx *= 0.5f, sy *= 0.5f;
 
-	num_vertices = 4;
+	num_vertices = 8;
 	vertices = new Point3f[num_vertices];
 
-	vertices[0].set(-sx, -sy, 0);
-	vertices[1].set(sx, -sy, 0);
-	vertices[2].set(-sx, sy, 0);
-	vertices[3].set(sx, sy, 0);
+	vertices[0].set(-sx, -sy, 0); vertices[1].set(sx, -sy, 0);
+	vertices[2].set(-sx, sy, 0);  vertices[3].set(sx, sy, 0);
+	vertices[4].set(-sx, -sy, 0); vertices[5].set(sx, -sy, 0);
+	vertices[6].set(-sx, sy, 0);  vertices[7].set(sx, sy, 0);
 
 	num_tris = 4;
 	tris = new Point3ui[num_tris];
 
 	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);
-	tris[2].set(0, 2, 1);	tris[3].set(3, 1, 2);
+	tris[2].set(6, 5, 4);	tris[3].set(7, 5, 6);
 
 	normals = new Point3f[num_vertices];
 	for (int i = 0; i < num_vertices; i++)
-		normals[i].set(0, 0, 0);
+		normals[i] = vertices[i].Normalized();
 
 	colors = new Point3f[num_vertices];
 	Color random_color;
@@ -271,10 +259,10 @@ void ComponentMesh::BuildPlane(float sx, float sy)
 		colors[i].set(random_color.r, random_color.g, random_color.b);
 
 	tex_coords = new Point2f[num_vertices];
-	tex_coords[0] = {0.0f, 0.0f};
-	tex_coords[1] = {1.0f, 0.0f};
-	tex_coords[2] = {0.0f, 1.0f};
-	tex_coords[3] = {1.0f, 1.0f};
+	tex_coords[0] = {0.0f, 0.0f};   tex_coords[1] = {1.0f, 0.0f};
+	tex_coords[2] = {0.0f, 1.0f};   tex_coords[3] = {1.0f, 1.0f};
+	tex_coords[4] = { 0.0f, 0.0f }; tex_coords[5] = { 1.0f, 0.0f };
+	tex_coords[6] = { 0.0f, 1.0f }; tex_coords[7] = { 1.0f, 1.0f };
 }
 
 void ComponentMesh::BuildSphere(float radius, float sectorCount, float stackCount) {
@@ -354,6 +342,7 @@ void ComponentMesh::BuildSphere(float radius, float sectorCount, float stackCoun
 	colors = new Point3f[num_vertices];
 	Color random_color;
 	random_color.setRandom();
+
 	for (int i = 0; i < num_vertices; i++)
 		colors[i].set(random_color.r, random_color.g, random_color.b);
 
@@ -383,13 +372,18 @@ void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
 		float x = cos(a) * radius;
 		float y = sin(a) * radius;
 		vertices[i].set(x, y, hl);
+		tex_coords[i] = { 1.0f / numSteps * i , 1.0f };
 		vertices[i + numSteps].set(x, y, -hl);
+		tex_coords[i + numSteps] = { 1.0f / numSteps * i , 0.0f };
 
 		a += step;
 	}
 
 	vertices[numSteps * 2 + 0].set(0.0f, 0.0f, +hl);
 	vertices[numSteps * 2 + 1].set(0.0f, 0.0f, -hl);
+							  
+	tex_coords[numSteps * 2 + 0] = { 0.0f, 1.0f };
+	tex_coords[numSteps * 2 + 1] = { 0.0f, 0.0f };
 	
 	num_tris = 4 * numSteps * 3;
 	tris = new Point3ui[num_tris];
@@ -409,10 +403,8 @@ void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
 		tris[numSteps * 6 + i * 6 + 3].set(numSteps * 2 + 1, i4, i3);
 	}
 
-	for (int i = 0; i < num_vertices; i++) {
-		normals[i] = vertices[i];
-		normals[i].Normalize();
-	} // TO BE TESTED
+	for (int i = 0; i < num_vertices; i++) 
+		normals[i] = vertices[i].Normalized();
 }
 
 
