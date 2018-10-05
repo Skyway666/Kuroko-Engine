@@ -381,9 +381,6 @@ void ComponentMesh::BuildCylinder(float radius, float length, int numSteps) {
 
 	vertices[numSteps * 2 + 0].set(0.0f, 0.0f, +hl);
 	vertices[numSteps * 2 + 1].set(0.0f, 0.0f, -hl);
-							  
-	tex_coords[numSteps * 2 + 0] = { 0.0f, 1.0f };
-	tex_coords[numSteps * 2 + 1] = { 0.0f, 0.0f };
 	
 	num_tris = 4 * numSteps * 3;
 	tris = new Point3ui[num_tris];
