@@ -81,7 +81,7 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 
 	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
 	{
-		if (extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
+		if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
 			|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
 		{
 			const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
@@ -93,6 +93,7 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				GameObject* root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
 				App->scene_intro->game_objects.push_back(root_obj);
+				// Just for assignment 1
 				App->camera->FocusSelectedGeometry(3); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
 
