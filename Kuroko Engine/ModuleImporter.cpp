@@ -39,6 +39,8 @@
 #pragma comment (lib, "DevIL/lib/ILUT.lib")
 
 
+#include "ModuleCamera3D.h"
+
 ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {
 	name = "importer";
 }
@@ -91,6 +93,7 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				GameObject* root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
 				App->scene_intro->game_objects.push_back(root_obj);
+				App->camera->FocusSelectedGeometry(3); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
 
 				// Read file and log info

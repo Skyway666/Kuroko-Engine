@@ -7,6 +7,7 @@
 #include "ModuleSceneIntro.h"
 #include "Applog.h"
 
+
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent)
 {
 	addComponent(TRANSFORM);
