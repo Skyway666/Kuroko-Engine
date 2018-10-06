@@ -79,9 +79,21 @@ update_status ModuleCamera3D::Update(float dt)
 			LookAt(vec3(0,0,0));
 	}
 
+	// Unfinished translation
 	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT) {
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
+
+
+		if (App->input->GetKey(SDL_SCANCODE_LALT)) {
+			if (GameObject* selected_obj = App->scene_intro->selected_obj) {
+				Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+				selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+				LookAt(vec3(centroid.x, centroid.y, centroid.z));
+			}
+			else
+				LookAt(vec3(0, 0, 0));
+		}
 
 		float Sensitivity = 0.01f;
 
@@ -104,6 +116,16 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
 	{
+
+		if(App->input->GetKey(SDL_SCANCODE_LALT)) {
+			if (GameObject* selected_obj = App->scene_intro->selected_obj) {
+				Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+				selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+				LookAt(vec3(centroid.x, centroid.y, centroid.z));
+			}
+			else
+				LookAt(vec3(0, 0, 0));
+		}
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
 
@@ -179,6 +201,7 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 	Y = cross(Z, X);
 
 	CalculateViewMatrix();
+	
 }
 
 
