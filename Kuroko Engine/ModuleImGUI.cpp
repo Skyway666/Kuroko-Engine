@@ -252,8 +252,15 @@ void ModuleImGUI::DrawHierarchyTab()
 	ImGui::Text("Use this tab to set the hierarchy of the scene objects");
 	int id = 0;
 
-	for (std::list<GameObject*>::iterator it = App->scene_intro->game_objects.begin(); it != App->scene_intro->game_objects.end(); it++)
+	//for (std::list<GameObject*>::iterator it = App->scene_intro->game_objects.begin(); it != App->scene_intro->game_objects.end(); it++)
+	//	DrawHierarchyNode(*it, id);
+
+	//Just for assignment 1
+	if (!App->scene_intro->game_objects.empty()) {
+		std::list<GameObject*>::iterator it = App->scene_intro->game_objects.end();
+		it--;
 		DrawHierarchyNode(*it, id);
+	}
 
 	ImGui::End();
 }

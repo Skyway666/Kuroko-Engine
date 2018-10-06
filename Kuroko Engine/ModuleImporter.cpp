@@ -121,6 +121,23 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file));
 			mat->setTexture(DIFFUSE, tex);
 			App->scene_intro->materials.push_back(mat);
+			//Just for assignment 1
+			if (!App->scene_intro->game_objects.empty()) {
+				std::list<GameObject*>::iterator it = App->scene_intro->game_objects.end();
+				it--;
+				//Get last game object and assign the material if they have a mesh
+				GameObject* object = *it;
+				ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
+				if(mesh) mesh->mat = mat;
+				//Get children and assign the material if they have a mesh
+				std::list<GameObject*> children;
+				object->getChildren(children);
+				for (auto it = children.begin(); it != children.end(); it++) {
+					GameObject* object = *it;
+					ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
+					if (mesh) mesh->mat = mat;
+				}
+			}
 			last_tex = tex;
 			app_log->AddLog("Success loading texture: %s", file);
 			return true;

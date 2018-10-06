@@ -11,6 +11,9 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 {
 	addComponent(TRANSFORM);
 	id = ++App->scene_intro->last_gobj_id;
+
+	//Just for assignment 1
+	App->scene_intro->selected_obj = this;
 }
 
 bool GameObject::Update(float dt)
