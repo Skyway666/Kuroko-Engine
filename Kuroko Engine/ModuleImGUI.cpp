@@ -378,12 +378,10 @@ bool ModuleImGUI::DrawComponent(Component* component)
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
 					mesh->setNormals(draw_normals);
 				
-			
-
 				
 				if (Material* material = mesh->getMaterial())
 				{
-					if (ImGui::CollapsingHeader("Material"))
+					if (ImGui::TreeNode("Material"))
 					{
 						static int preview_size = 64;
 						ImGui::Text("Id: %d", material->getId());
@@ -454,10 +452,11 @@ bool ModuleImGUI::DrawComponent(Component* component)
 							if(App->importer->Import(texture_path.c_str(), I_TEXTURE))
 								mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->getLastTex());
 						}
+						ImGui::TreePop();
 					}
 				}
 
-				if (ImGui::CollapsingHeader("Mesh Data"))
+				if (ImGui::TreeNode("Mesh Data"))
 				{
 					uint vert_num, poly_count;
 					bool has_normals, has_colors, has_texcoords;
@@ -470,6 +469,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 					ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
 					ImGui::SameLine();
 					ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
+
+					ImGui::TreePop();
 				}
 			}
 
