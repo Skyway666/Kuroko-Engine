@@ -76,6 +76,7 @@ bool ModuleImporter::CleanUp()
 bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 {
 	std::string extension = PathFindExtensionA(file);
+	bool ret = false;
 
 	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
 	{
@@ -106,7 +107,7 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				ofs.close();
 
 				last_gobj = root_obj;
-				return true;
+				ret = true;
 			}
 			else
 				app_log->AddLog("Error loading scene %s", file);
@@ -123,24 +124,36 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			App->scene_intro->materials.push_back(mat);
 			last_tex = tex;
 			app_log->AddLog("Success loading texture: %s", file);
-			return true;
+			ret = true;
 		}
 	}
 	if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
 	{
 		if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
 		{
-			last_music = App->audio->LoadMusic(file);
-			app_log->AddLog("Success loading music: %s", file);
-			return true;
+			std::string name = PathFindFileNameA(file);
+			if (last_audio_file = App->audio->LoadAudio(file, name.c_str(), MUSIC))
+			{
+				app_log->AddLog("Success loading music: %s", file);
+				ret = true;
+			}
+			else 
+				app_log->AddLog("Error loading music: %s", file);
 		}
 	}
 	if (expected_filetype == I_NONE || expected_filetype == I_FX)
 	{
 		if (extension == ".wav" || extension == ".aiff" || extension == ".riff" || extension == ".ogg" || extension == ".voc")
 		{
-			last_fx = App->audio->LoadFx(file);
-			app_log->AddLog("Success loading fx: %s", file);
+			std::string name = PathFindFileNameA(file);
+			if (last_audio_file = App->audio->LoadAudio(file, name.c_str(), FX))
+			{
+				app_log->AddLog("Success loading fx: %s", file);
+				ret = true;
+			}
+			else
+				app_log->AddLog("Error loading fx: %s", file);
+
 			return true;
 		}
 	}

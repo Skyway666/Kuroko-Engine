@@ -7,6 +7,7 @@ class GameObject;
 class ComponentMesh;
 class aiNode;
 class aiScene;
+class AudioFile;
 
 enum ImportType { I_NONE, I_GOBJ, I_TEXTURE, I_FX, I_MUSIC};
 
@@ -23,8 +24,7 @@ public:
 
 	Texture* getLastTex() { return last_tex; };
 	GameObject* getLastGObj() { return last_gobj; };
-	uint getLastFX() { return last_fx; };
-	uint getLastMusic() { return last_music; };
+	AudioFile* getLastAudioFile() { return last_audio_file; };
 
 private:
 	uint LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
@@ -34,7 +34,6 @@ private:
 
 	Texture * last_tex = nullptr;
 	GameObject* last_gobj = nullptr;
-	uint last_fx = 0;
-	uint last_music = 0;
+	AudioFile* last_audio_file = nullptr;
 
 };
