@@ -101,6 +101,12 @@ void ModuleAudio::Play(uint id, uint repeat)
 		}
 
 }
+
+void ModuleAudio::HaltMusic()
+{
+	Mix_HaltMusic();
+}
+
 void ModuleAudio::setMasterVolume(uint volume)
 {
 	master_volume = volume;
@@ -130,7 +136,7 @@ void AudioFile::Play(uint repeat)
 	if (data)
 	{
 		if(type == FX)					// for FX
-			Mix_PlayChannel(-1, (Mix_Chunk*)data, repeat);  
+			channel = Mix_PlayChannel(-1, (Mix_Chunk*)data, repeat);  
 		else if (type == MUSIC)			// for music
 		{
 			if (Mix_PlayingMusic())
@@ -146,5 +152,16 @@ void AudioFile::Play(uint repeat)
 			if(res < 0)
 				app_log->AddLog("Cannot fade in music. Mix_GetError(): %s", Mix_GetError());
 		}
+	}
+}
+
+void AudioFile::Stop()
+{
+	if (data)
+	{
+		if (type == FX)					// for FX
+			Mix_HaltChannel(channel);
+		else if (type == MUSIC)			// for music
+			Mix_HaltMusic();
 	}
 }

@@ -4,6 +4,7 @@
 #include "Module.h"
 #include "SDL_mixer\include\SDL_mixer.h"
 #include <list>
+#include <string>
 
 #define DEFAULT_MUSIC_FADE_TIME 2.0f
 
@@ -12,13 +13,14 @@ enum AudioType { A_UNKNOWN, MUSIC, FX};
 class AudioFile
 {
 	friend class ModuleAudio;
-
+	friend class ModuleImGUI;
 public:
 	AudioFile(const char* name, uint id, void* data, AudioType type, float volume = 1.0f, float fade_time = DEFAULT_MUSIC_FADE_TIME)
 		: name(name), data(data), type(type), volume(volume), fade_time(fade_time), id(id) {};
 	~AudioFile();
 
 	void Play(uint repeat = 0);
+	void Stop();
 
 	void setName(const char* new_name)	{ name = new_name; };
 	void setVolume(uint v)				{ volume = v; };
@@ -27,18 +29,21 @@ public:
 private:
 
 	uint id				= 0;
-	const char* name	= nullptr;
+	uint channel		= 0;
 	AudioType type		= A_UNKNOWN;
 	float volume		= 1.0f;
 	float fade_time		= DEFAULT_MUSIC_FADE_TIME;
 
 	void* data			= nullptr;
+	std::string name;
 
 };
 
 class ModuleAudio : public Module
 {
+	friend class ModuleImGUI;
 public:
+
 
 	ModuleAudio(Application* app, bool start_enabled = true);
 	~ModuleAudio();
@@ -55,6 +60,7 @@ public:
 	float getMasterVolume()			{ return master_volume; };
 	float getsetMasterMusicVolume()	{ return music_volume; };
 
+	void HaltMusic();
 
 private:
 

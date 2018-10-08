@@ -7,6 +7,7 @@
 #include "ModuleInput.h"
 #include "ModuleWindow.h"
 #include "ModuleImporter.h"
+#include "ModuleAudio.h"
 #include "Applog.h"
 
 #include "imgui_impl_sdl.h"
@@ -163,6 +164,9 @@ update_status ModuleImGUI::Update(float dt) {
 	if (open_tabs[TIME_CONTROL])
 		DrawTimeControl();
 
+	if (open_tabs[AUDIO])
+		DrawAudioTab();
+
 
 	bool close_app = false;
 
@@ -195,6 +199,7 @@ update_status ModuleImGUI::Update(float dt) {
 			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
+			ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help")) {
@@ -589,6 +594,29 @@ bool ModuleImGUI::DrawComponent(Component* component)
 	return true;
 }
 
+void ModuleImGUI::DrawAudioTab()
+{
+	ImGui::Begin("Audio", &open_tabs[AUDIO]);
+	ImGui::Text("Use this tab to check and play loaded audio files");
+	
+	for (auto it = App->audio->audio_files.begin(); it != App->audio->audio_files.end(); it++)
+	{
+		if (ImGui::TreeNode((*it)->name.c_str()))
+		{
+			ImGui::Text("type: %s", (*it)->type == FX ? "FX" : "Music");
+			ImGui::SameLine();
+			if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(16, 16)))
+				(*it)->Play();
+			ImGui::SameLine();
+			if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(16, 16)))
+				(*it)->Stop();
+			ImGui::TreePop();
+		}
+	}
+
+	ImGui::End();
+}
+
 void ModuleImGUI::DrawPrimitivesTab()
 {
 	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
@@ -881,6 +909,7 @@ void ModuleImGUI::SaveConfig(JSON_Object* config)
 	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
 	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
+	json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
 void ModuleImGUI::LoadConfig(JSON_Object* config) 
@@ -894,4 +923,5 @@ void ModuleImGUI::LoadConfig(JSON_Object* config)
 	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
+	open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
