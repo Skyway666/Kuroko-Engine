@@ -39,6 +39,8 @@
 #pragma comment (lib, "DevIL/lib/ILUT.lib")
 
 
+#include "ModuleCamera3D.h"
+
 ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {
 	name = "importer";
 }
@@ -80,7 +82,7 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 
 	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
 	{
-		if (extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
+		if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
 			|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
 		{
 			const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
@@ -92,6 +94,8 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				GameObject* root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
 				App->scene_intro->game_objects.push_back(root_obj);
+				// Just for assignment 1
+				App->camera->FocusSelectedGeometry(3); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
 
 				// Read file and log info
@@ -122,6 +126,23 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file));
 			mat->setTexture(DIFFUSE, tex);
 			App->scene_intro->materials.push_back(mat);
+			//Just for assignment 1
+			if (!App->scene_intro->game_objects.empty()) {
+				std::list<GameObject*>::iterator it = App->scene_intro->game_objects.end();
+				it--;
+				//Get last game object and assign the material if they have a mesh
+				GameObject* object = *it;
+				ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
+				if(mesh) mesh->mat = mat;
+				//Get children and assign the material if they have a mesh
+				std::list<GameObject*> children;
+				object->getChildren(children);
+				for (auto it = children.begin(); it != children.end(); it++) {
+					GameObject* object = *it;
+					ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
+					if (mesh) mesh->mat = mat;
+				}
+			}
 			last_tex = tex;
 			app_log->AddLog("Success loading texture: %s", file);
 			ret = true;

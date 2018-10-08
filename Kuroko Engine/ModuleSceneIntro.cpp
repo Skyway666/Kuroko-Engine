@@ -46,8 +46,17 @@ update_status ModuleScene::Update(float dt)
 	if (draw_grid)
 		DrawGrid();
 
-	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
-		(*it)->Update(dt);
+	//for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
+	//	(*it)->Update(dt);
+
+
+	//Just for assigment one
+	if(!game_objects.empty()){
+	std::list<GameObject*>::iterator it = game_objects.end();
+	it--;
+	(*it)->Update(dt);
+	}
+
 
 	return UPDATE_CONTINUE;
 }

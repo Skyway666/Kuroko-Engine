@@ -65,20 +65,12 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
 
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-	{
-		if (GameObject* selected_obj = App->scene_intro->selected_obj)
-		{
-			Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
-			selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
-			float3 new_pos = (centroid + (half_size * 1.5f)).toMathVec();
-			new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
-			Move(vec3(new_pos.x, new_pos.y, new_pos.z) - Position);
-			LookAt(vec3(centroid.x, centroid.y, centroid.z));
-		}
-		else
-			LookAt(vec3(0,0,0));
-	}
+		FocusSelectedGeometry(1.5f);
 
+	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
+		RotateSelectedGeometry();
+
+	// Unfinished translation
 	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT) {
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
@@ -94,11 +86,10 @@ update_status ModuleCamera3D::Update(float dt)
 			float DeltaY = (float)dy * Sensitivity;
 			newPos.y -= DeltaY;
 		}
-
+		Position += newPos;
+		Reference += newPos;
 	}
 
-	Position += newPos;
-	Reference += newPos;
 
 	// Mouse motion ----------------
 
@@ -179,6 +170,7 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 	Y = cross(Z, X);
 
 	CalculateViewMatrix();
+	
 }
 
 
@@ -203,4 +195,29 @@ void ModuleCamera3D::CalculateViewMatrix()
 	float4x4 test(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
 	ViewMatrix = test;
 	ViewMatrixInverse = ViewMatrix.Inverted();
+}
+
+void ModuleCamera3D::RotateSelectedGeometry() {
+
+	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
+		Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+		LookAt(vec3(centroid.x, centroid.y, centroid.z));
+	}
+	else
+		LookAt(vec3(0, 0, 0));
+
+}
+
+void ModuleCamera3D::FocusSelectedGeometry(float distance) {
+	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
+		Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+		float3 new_pos = (centroid + (half_size * distance)).toMathVec();
+		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
+		Move(vec3(new_pos.x, new_pos.y, new_pos.z) - Position);
+		LookAt(vec3(centroid.x, centroid.y, centroid.z));
+	}
+	else
+		LookAt(vec3(0, 0, 0));
 }
