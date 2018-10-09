@@ -369,29 +369,29 @@ bool ModuleImGUI::DrawComponent(Component* component)
 	case MESH:
 		if (ImGui::CollapsingHeader("Mesh"))
 		{
-			ComponentMesh* mesh = (ComponentMesh*)component;
+			ComponentMesh* c_mesh = (ComponentMesh*)component;
 			static bool wireframe_enabled;
 			static bool mesh_active;
 			static bool draw_normals;
 
-			wireframe_enabled = mesh->getWireframe();
-			draw_normals = mesh->getNormals();
-			mesh_active = mesh->isActive();
+			wireframe_enabled = c_mesh->getWireframe();
+			draw_normals = c_mesh->getDrawNormals();
+			mesh_active = c_mesh->isActive();
 
 			if (ImGui::Checkbox("Is active", &mesh_active))
-				mesh->setActive(mesh_active);
+				c_mesh->setActive(mesh_active);
 
 			if (mesh_active)
 			{
 
 				if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
-					mesh->setWireframe(wireframe_enabled);
+					c_mesh->setWireframe(wireframe_enabled);
 
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
-					mesh->setNormals(draw_normals);
+					c_mesh->setDrawNormals(draw_normals);
 				
 				
-				if (Material* material = mesh->getMaterial())
+				if (Material* material = c_mesh->getMaterial())
 				{
 					if (ImGui::TreeNode("Material"))
 					{
@@ -405,19 +405,26 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						ImGui::SameLine();
 						if (ImGui::Button("256")) preview_size = 256;
 
+						if (ImGui::Button("remove material"))
+						{
+							c_mesh->setMaterial(nullptr);
+							ImGui::TreePop();
+							return true;
+						}
+
 						ImGui::Text("diffuse texture:  ");
 						ImGui::SameLine();
 
 						ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
 						if (ImGui::Button("Dif: Load checkered texture"))
-							mesh->assignCheckeredMat(DIFFUSE);
+							material->setCheckeredTexture(DIFFUSE);
 						ImGui::SameLine();
 						if (ImGui::Button("Dif: Load texture"))
 						{
 							std::string texture_path = openFileWID();
 							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								mesh->getMaterial()->setTexture(DIFFUSE, App->importer->getLastTex());
+								c_mesh->getMaterial()->setTexture(DIFFUSE, App->importer->getLastTex());
 						}
 
 						ImGui::Text("ambient texture:  ");
@@ -426,13 +433,13 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
 						if (ImGui::Button("Amb: Load checkered texture"))
-							mesh->assignCheckeredMat(AMBIENT);
+							material->setCheckeredTexture(AMBIENT);
 						ImGui::SameLine();
 						if (ImGui::Button("Amb: Load texture"))
 						{
 							std::string texture_path = openFileWID();
 							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								mesh->getMaterial()->setTexture(AMBIENT, App->importer->getLastTex());
+								c_mesh->getMaterial()->setTexture(AMBIENT, App->importer->getLastTex());
 						}
 
 						ImGui::Text("normals texture:  ");
@@ -441,13 +448,13 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
 						if (ImGui::Button("Nor: Load checkered texture"))
-							mesh->assignCheckeredMat(NORMALS);
+							material->setCheckeredTexture(NORMALS);
 						ImGui::SameLine();
 						if (ImGui::Button("Nor: Load texture"))
 						{
 							std::string texture_path = openFileWID();
 							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								mesh->getMaterial()->setTexture(NORMALS, App->importer->getLastTex());
+								c_mesh->getMaterial()->setTexture(NORMALS, App->importer->getLastTex());
 						}
 
 						ImGui::Text("lightmap texture:  ");
@@ -456,33 +463,45 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
 						if (ImGui::Button("Lgm: Load checkered texture"))
-							mesh->assignCheckeredMat(LIGHTMAP);
+							material->setCheckeredTexture(LIGHTMAP);
 						ImGui::SameLine();
 						if (ImGui::Button("Lgm: Load texture"))
 						{
 							std::string texture_path = openFileWID();
 							if(App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->getLastTex());
+								c_mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->getLastTex());
 						}
 						ImGui::TreePop();
 					}
 				}
-
-				if (ImGui::TreeNode("Mesh Data"))
+				else
 				{
-					uint vert_num, poly_count;
-					bool has_normals, has_colors, has_texcoords;
+					if (ImGui::Button("Add material"))
+					{
+						Material* mat = new Material();
+						c_mesh->setMaterial(mat);
+						App->scene_intro->materials.push_back(mat);
+					}
+				}
 
-					mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
-					ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
-					ImGui::SameLine();
-					ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
-					ImGui::SameLine();
-					ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
-					ImGui::SameLine();
-					ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
+				if (Mesh* mesh = c_mesh->getMesh())
+				{
+					if (ImGui::TreeNode("Mesh Data"))
+					{
+						uint vert_num, poly_count;
+						bool has_normals, has_colors, has_texcoords;
 
-					ImGui::TreePop();
+						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
+						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
+						ImGui::SameLine();
+						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
+						ImGui::SameLine();
+						ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
+						ImGui::SameLine();
+						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
+
+						ImGui::TreePop();
+					}
 				}
 			}
 
@@ -625,24 +644,28 @@ void ModuleImGUI::DrawPrimitivesTab()
 	if (ImGui::Button("Add cube"))
 	{
 		GameObject* cube = new GameObject("Cube");
-		cube->addComponent(new ComponentMesh(cube, Primitive_Cube));
+		Mesh* mesh = new Mesh(Primitive_Cube);
+		cube->addComponent(new ComponentMesh(cube, mesh));
 		App->scene_intro->game_objects.push_back(cube);
 	}
 	if (ImGui::Button("Add plane"))
 	{
 		GameObject* plane = new GameObject("Plane");
-		plane->addComponent(new ComponentMesh(plane, Primitive_Plane));
+		Mesh* mesh = new Mesh(Primitive_Plane);
+		plane->addComponent(new ComponentMesh(plane, mesh));
 		App->scene_intro->game_objects.push_back(plane);
 	}
 	if (ImGui::Button("Add sphere")) {
 		GameObject* sphere = new GameObject("Sphere");
-		sphere->addComponent(new ComponentMesh(sphere, Primitive_Sphere));
+		Mesh* mesh = new Mesh(Primitive_Sphere);
+		sphere->addComponent(new ComponentMesh(sphere, mesh));
 		App->scene_intro->game_objects.push_back(sphere);
 	}
 	if (ImGui::Button("Add cylinder")) {
-		GameObject* sphere = new GameObject("Cylinder");
-		sphere->addComponent(new ComponentMesh(sphere, Primitive_Cylinder));
-		App->scene_intro->game_objects.push_back(sphere);
+		GameObject* cylinder = new GameObject("Cylinder");
+		Mesh* mesh = new Mesh(Primitive_Cylinder);
+		cylinder->addComponent(new ComponentMesh(cylinder, mesh));
+		App->scene_intro->game_objects.push_back(cylinder);
 	}
 
 	ImGui::End();
@@ -770,11 +793,11 @@ void ModuleImGUI::DrawGraphicsTab() {
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Wireframe")) {
-		ImGui::Checkbox("WF Enabled", &App->renderer3D->global_wireframe);
+		ImGui::Checkbox("WF Enabled", &App->scene_intro->global_wireframe);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Normals")) {
-		ImGui::Checkbox("N Enabled", &App->renderer3D->global_normals);
+		ImGui::Checkbox("N Enabled", &App->scene_intro->global_normals);
 		ImGui::TreePop();
 	}
 }

@@ -113,9 +113,6 @@ bool ModuleRenderer3D::Init(JSON_Object* config)
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	global_wireframe = false;
-	global_normals = false;
-
 	return ret;
 }
 

@@ -41,6 +41,7 @@ public:
 
 	Texture* getTexture(TextureType tex_type);
 	void setTexture(TextureType tex_type, Texture* texture);
+	void setCheckeredTexture(TextureType tex_type = DIFFUSE);
 	uint getId() { return id; };
 
 private:

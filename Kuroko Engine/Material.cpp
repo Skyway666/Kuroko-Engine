@@ -42,6 +42,20 @@ void Material::setTexture(TextureType tex_type, Texture* texture)
 	}
 }
 
+void Material::setCheckeredTexture(TextureType tex_type)
+{
+	Texture* texture = new Texture();
+	texture->LoadCheckered();
+
+	switch (tex_type)
+	{
+	case DIFFUSE: if (diffuse) delete diffuse; diffuse = texture; break;
+	case AMBIENT: if (ambient) delete ambient; ambient = texture; break;
+	case NORMALS: if (normals) delete normals; normals = texture; break;
+	case LIGHTMAP: if (lightmap) delete lightmap; lightmap = texture; break;
+	}
+}
+
 Texture::Texture(uint GL_id)
 { 
 	gl_id = GL_id;

@@ -109,6 +109,8 @@ void GameObject::addComponent(Component* component)
 	case MESH:	
 		components.push_back(component);
 		calculateCentroidandHalfsize();
+		if(Mesh* mesh = ((ComponentMesh*)component)->getMesh())
+			((ComponentTransform*)getComponent(TRANSFORM))->setPosition((mesh->getCentroid()));
 		if (ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB))
 			aabb->Reload();
 		break;
@@ -159,15 +161,18 @@ void GameObject::calculateCentroidandHalfsize()
 
 	for (std::list<Component*>::iterator it = meshes.begin(); it != meshes.end(); it++)
 	{
-		ComponentMesh* mesh = (ComponentMesh*)(*it);
+		if (Mesh* mesh = ((ComponentMesh*)(*it))->getMesh())
+		{
+			Vector3f half_size = mesh->getHalfSize();
 
-		if (lowest_p.x > mesh->half_size.x) lowest_p.x = -mesh->half_size.x;
-		if (lowest_p.y > mesh->half_size.y) lowest_p.y = -mesh->half_size.y;
-		if (lowest_p.z > mesh->half_size.z) lowest_p.z = -mesh->half_size.z;
+			if (lowest_p.x > -half_size.x) lowest_p.x = -half_size.x;
+			if (lowest_p.y > -half_size.y) lowest_p.y = -half_size.y;
+			if (lowest_p.z > -half_size.z) lowest_p.z = -half_size.z;
 
-		if (highest_p.x < mesh->half_size.x) highest_p.x = mesh->half_size.x;
-		if (highest_p.y < mesh->half_size.y) highest_p.y = mesh->half_size.y;
-		if (highest_p.z < mesh->half_size.z) highest_p.z = mesh->half_size.z;
+			if (highest_p.x < half_size.x) highest_p.x = half_size.x;
+			if (highest_p.y < half_size.y) highest_p.y = half_size.y;
+			if (highest_p.z < half_size.z) highest_p.z = half_size.z;
+		}
 	}
 
 	float4x4 inh_transform = ((ComponentTransform*)getComponent(TRANSFORM))->getInheritedTransform();

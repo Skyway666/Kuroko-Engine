@@ -25,8 +25,6 @@ public:
 
 	void DirectDrawCube(Vector3f size);
 
-	bool global_wireframe, global_normals;
-
 private:
 
 

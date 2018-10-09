@@ -133,14 +133,14 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				//Get last game object and assign the material if they have a mesh
 				GameObject* object = *it;
 				ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
-				if(mesh) mesh->mat = mat;
+				if(mesh) mesh->setMaterial(mat);
 				//Get children and assign the material if they have a mesh
 				std::list<GameObject*> children;
 				object->getChildren(children);
 				for (auto it = children.begin(); it != children.end(); it++) {
 					GameObject* object = *it;
 					ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
-					if (mesh) mesh->mat = mat;
+					if (mesh) mesh->setMaterial(mat);
 				}
 			}
 			last_tex = tex;
@@ -190,36 +190,34 @@ uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_
 	aiString path;
 	for (int i = 0; i < scene->mNumMaterials; i++)
 	{
-		Material* new_mat = new Material();
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
 		{
 			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 			if(App->importer->Import(path.C_Str(), I_TEXTURE))
-				new_mat->setTexture(DIFFUSE, App->importer->getLastTex());
+				App->scene_intro->materials.back()->setTexture(DIFFUSE, App->importer->getLastTex());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				new_mat->setTexture(AMBIENT, App->importer->getLastTex());
+				App->scene_intro->materials.back()->setTexture(AMBIENT, App->importer->getLastTex());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				new_mat->setTexture(NORMALS, App->importer->getLastTex());
+				App->scene_intro->materials.back()->setTexture(NORMALS, App->importer->getLastTex());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				new_mat->setTexture(LIGHTMAP, App->importer->getLastTex());
+				App->scene_intro->materials.back()->setTexture(LIGHTMAP, App->importer->getLastTex());
 		}
-		out_mat_id.push_back(new_mat->getId());
-		App->scene_intro->materials.push_back(new_mat);
+		out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 	}
 
 	return scene->mNumMaterials;
@@ -231,9 +229,10 @@ GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene
 
 	for (int i = 0; i < node->mNumMeshes; i++)
 	{
-		ComponentMesh* mesh = new ComponentMesh(root_obj, scene->mMeshes[node->mMeshes[i]]);
-		mesh->mat = App->scene_intro->getMaterial(in_mat_id.at(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex));
-		root_obj->addComponent(mesh);
+		Mesh* mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
+		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
+		c_m->setMaterial(App->scene_intro->getMaterial(in_mat_id.at(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex)));
+		root_obj->addComponent(c_m);
 		app_log->AddLog("New mesh with %d vertices", scene->mMeshes[node->mMeshes[i]]->mNumVertices);
 	}
 

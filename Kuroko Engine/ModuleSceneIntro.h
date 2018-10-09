@@ -32,10 +32,12 @@ public:
 
 	std::list<GameObject*> game_objects;
 	std::list<Material*> materials;
-	GameObject* selected_obj = nullptr;
-	bool draw_grid = true;
-	GameState game_state = STOPPED;
-	uint last_mat_id = 0;
-	uint last_gobj_id = 0;
+	GameObject* selected_obj	= nullptr;
+	bool draw_grid				= true;
+	GameState game_state		= STOPPED;
+	uint last_mat_id			= 0;
+	uint last_gobj_id			= 0;
 
+	bool global_wireframe		= false;
+	bool global_normals			= false;
 };
