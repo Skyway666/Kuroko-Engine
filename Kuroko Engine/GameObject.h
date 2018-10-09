@@ -30,6 +30,7 @@ public:
 public:
 
 	GameObject(const char* name, GameObject* parent = nullptr);
+	~GameObject();
 
 	bool Update(float dt);
 

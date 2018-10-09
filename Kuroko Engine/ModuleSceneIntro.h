@@ -31,6 +31,7 @@ private:
 public:
 
 	std::list<GameObject*> game_objects;
+	std::list<GameObject*> game_objs_to_delete;
 	std::list<Material*> materials;
 	GameObject* selected_obj	= nullptr;
 	bool draw_grid				= true;

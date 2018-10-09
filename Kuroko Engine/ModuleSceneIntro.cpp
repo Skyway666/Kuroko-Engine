@@ -46,17 +46,17 @@ update_status ModuleScene::Update(float dt)
 	if (draw_grid)
 		DrawGrid();
 
-	//for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
-	//	(*it)->Update(dt);
-
-
-	//Just for assigment one
-	if(!game_objects.empty()){
-	std::list<GameObject*>::iterator it = game_objects.end();
-	it--;
-	(*it)->Update(dt);
+	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
+	{
+		if (selected_obj == *it) selected_obj = nullptr;
+		game_objects.remove(*it);
 	}
 
+	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
+		(*it)->Update(dt);
+
+	//Just for assigment one
+	//game_objects.back()->Update(dt);
 
 	return UPDATE_CONTINUE;
 }

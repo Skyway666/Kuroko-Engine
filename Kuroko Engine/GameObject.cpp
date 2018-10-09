@@ -17,6 +17,15 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 	App->scene_intro->selected_obj = this;
 }
 
+GameObject::~GameObject()
+{
+	for (auto it = children.begin(); it != children.end(); it++)
+		delete *it;
+
+	for (auto it = components.begin(); it != components.end(); it++)
+		delete *it;
+}
+
 bool GameObject::Update(float dt)
 {
 	bool ret = true;
