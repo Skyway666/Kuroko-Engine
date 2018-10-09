@@ -35,10 +35,10 @@ void Material::setTexture(TextureType tex_type, Texture* texture)
 {
 	switch (tex_type)
 	{
-	case DIFFUSE: if (diffuse) delete diffuse; diffuse = texture; break;
-	case AMBIENT: if (ambient) delete ambient; ambient = texture; break;
-	case NORMALS: if (normals) delete normals; normals = texture; break;
-	case LIGHTMAP: if (lightmap) delete lightmap; lightmap = texture; break;
+	case DIFFUSE: if (diffuse && diffuse != texture) delete diffuse; diffuse = texture; break;
+	case AMBIENT: if (ambient && ambient != texture) delete ambient; ambient = texture; break;
+	case NORMALS: if (normals && normals != texture) delete normals; normals = texture; break;
+	case LIGHTMAP: if (lightmap && lightmap != texture) delete lightmap; lightmap = texture; break;
 	}
 }
 
@@ -49,10 +49,10 @@ void Material::setCheckeredTexture(TextureType tex_type)
 
 	switch (tex_type)
 	{
-	case DIFFUSE: if (diffuse) delete diffuse; diffuse = texture; break;
-	case AMBIENT: if (ambient) delete ambient; ambient = texture; break;
-	case NORMALS: if (normals) delete normals; normals = texture; break;
-	case LIGHTMAP: if (lightmap) delete lightmap; lightmap = texture; break;
+	case DIFFUSE: if (diffuse && diffuse != texture) delete diffuse; diffuse = texture; break;
+	case AMBIENT: if (ambient && ambient != texture) delete ambient; ambient = texture; break;
+	case NORMALS: if (normals && normals != texture) delete normals; normals = texture; break;
+	case LIGHTMAP: if (lightmap && lightmap != texture) delete lightmap; lightmap = texture; break;
 	}
 }
 
