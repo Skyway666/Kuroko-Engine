@@ -1,8 +1,8 @@
 #pragma once
 
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl2.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_sdl.h"
+#include "ImGui/imgui_impl_opengl2.h"
 
 struct AppLog {
 	ImGuiTextBuffer     Buf;

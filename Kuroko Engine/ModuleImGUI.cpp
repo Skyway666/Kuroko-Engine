@@ -10,8 +10,8 @@
 #include "ModuleAudio.h"
 #include "Applog.h"
 
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl2.h"
+#include "ImGui/imgui_impl_sdl.h"
+#include "ImGui/imgui_impl_opengl2.h"
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -48,7 +48,7 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 							   // Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	io = ImGui::GetIO();
+	
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->main_window->window, App->renderer3D->getContext());
@@ -72,7 +72,7 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
-
+	
 	LoadConfig(config);
 
 
@@ -86,6 +86,9 @@ bool ModuleImGUI::Start()
 	if (App->importer->Import("Stop.png"), I_TEXTURE)			ui_textures[STOP] = App->importer->getLastTex();
 	if (App->importer->Import("no_texture.png"), I_TEXTURE)		ui_textures[NO_TEXTURE] = App->importer->getLastTex();
 
+	io = &ImGui::GetIO();
+	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	docking_background = true;
 
 	return true;
 }
@@ -103,6 +106,7 @@ update_status ModuleImGUI::PreUpdate(float dt) {
 update_status ModuleImGUI::Update(float dt) {
 
 
+	InvisibleDockingBegin();
 	// 1. Show a simple window.
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	if(open_tabs[TEST])
@@ -215,7 +219,7 @@ update_status ModuleImGUI::Update(float dt) {
 	
 	}
 	ImGui::EndMainMenuBar();
-
+	ImGui::End();
 	if (!close_app)
 		return UPDATE_CONTINUE;
 	else
@@ -227,7 +231,7 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 	// Rendering
 	ImGui::Render();
 	
-	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+	glViewport(0, 0, (int)io->DisplaySize.x, (int)io->DisplaySize.y);
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
@@ -947,4 +951,32 @@ void ModuleImGUI::LoadConfig(JSON_Object* config)
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 	open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
+}
+
+void ModuleImGUI::InvisibleDockingBegin() {
+	ImGuiWindowFlags window = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	static ImGuiDockNodeFlags optional = ImGuiDockNodeFlags_PassthruDockspace;
+
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("Kuroko Engine", &docking_background, window);
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+	ImGuiIO& io = ImGui::GetIO();
+
+	ImGuiID dockspace_id = ImGui::GetID("The dockspace");
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), optional);
+}
+
+void ModuleImGUI::InvisibleDockingEnd() {
+	ImGui::End();
 }

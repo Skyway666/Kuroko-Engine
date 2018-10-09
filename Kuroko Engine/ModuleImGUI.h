@@ -1,7 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "imgui.h"
+#include "ImGui/imgui.h"
 #include <array>
 
 struct ImGuiIO;
@@ -39,13 +39,17 @@ public:
 	void DrawApplication();
 	void DrawTimeControl();
 
+	void InvisibleDockingBegin();
+	void InvisibleDockingEnd();
+
 	void SaveConfig(JSON_Object* config);
 	void LoadConfig(JSON_Object* config);
 
 private:
 	
+	bool docking_background;
 	bool open_tabs[LAST];  // _serializable_var
-	ImGuiIO io;
+	ImGuiIO* io;
 	std::array<Texture*, LAST_UI_TEX> ui_textures;
 };
 
