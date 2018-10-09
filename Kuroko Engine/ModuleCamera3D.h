@@ -23,6 +23,7 @@ public:
 	void Move(const vec3 &Movement);
 	void FocusSelectedGeometry(float distance);
 	void RotateSelectedGeometry();
+	void Reset();
 	float* GetViewMatrix();
 
 private:

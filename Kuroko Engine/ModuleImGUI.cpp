@@ -130,7 +130,10 @@ update_status ModuleImGUI::Update(float dt) {
 		if (ImGui::CollapsingHeader("Hardware"))
 			DrawHardware();
 		if (ImGui::CollapsingHeader("Application"))
-			DrawApplication();;
+			DrawApplication();
+
+		if (ImGui::Button("Reset Camera"))
+			App->camera->Reset();
 		ImGui::End();
 	}
 
