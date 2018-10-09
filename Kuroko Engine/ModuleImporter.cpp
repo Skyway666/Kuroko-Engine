@@ -75,10 +75,9 @@ bool ModuleImporter::CleanUp()
 }
 
 
-bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
+void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 {
 	std::string extension = PathFindExtensionA(file);
-	bool ret = false;
 
 	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
 	{
@@ -110,8 +109,7 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				ofs.open("log.txt", std::ofstream::trunc);
 				ofs.close();
 
-				last_gobj = root_obj;
-				ret = true;
+				return root_obj;
 			}
 			else
 				app_log->AddLog("Error loading scene %s", file);
@@ -143,9 +141,8 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 					if (mesh) mesh->setMaterial(mat);
 				}
 			}
-			last_tex = tex;
+			return tex;
 			app_log->AddLog("Success loading texture: %s", file);
-			ret = true;
 		}
 	}
 	if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
@@ -153,10 +150,10 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
 		{
 			std::string name = PathFindFileNameA(file);
-			if (last_audio_file = App->audio->LoadAudio(file, name.c_str(), MUSIC))
+			if (AudioFile* last_audio_file = App->audio->LoadAudio(file, name.c_str(), MUSIC))
 			{
 				app_log->AddLog("Success loading music: %s", file);
-				ret = true;
+				return last_audio_file;
 			}
 			else 
 				app_log->AddLog("Error loading music: %s", file);
@@ -167,21 +164,19 @@ bool ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		if (extension == ".wav" || extension == ".aiff" || extension == ".riff" || extension == ".ogg" || extension == ".voc")
 		{
 			std::string name = PathFindFileNameA(file);
-			if (last_audio_file = App->audio->LoadAudio(file, name.c_str(), FX))
+			if (AudioFile* last_audio_file = App->audio->LoadAudio(file, name.c_str(), FX))
 			{
 				app_log->AddLog("Success loading fx: %s", file);
-				ret = true;
+				return last_audio_file;
 			}
 			else
 				app_log->AddLog("Error loading fx: %s", file);
-
-			return true;
 		}
 	}
 	else
 		app_log->AddLog("Error loading file [incompatible format]: %s", file);
 
-	return false;
+	return nullptr;
 }
 
 
@@ -194,30 +189,29 @@ uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_
 		{
 			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 			if(App->importer->Import(path.C_Str(), I_TEXTURE))
-				App->scene_intro->materials.back()->setTexture(DIFFUSE, App->importer->getLastTex());
+				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				App->scene_intro->materials.back()->setTexture(AMBIENT, App->importer->getLastTex());
+				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				App->scene_intro->materials.back()->setTexture(NORMALS, App->importer->getLastTex());
+				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
 		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
 		{
 			path.Clear();
 			scene->mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				App->scene_intro->materials.back()->setTexture(LIGHTMAP, App->importer->getLastTex());
+				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
-		out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 	}
 
 	return scene->mNumMaterials;
