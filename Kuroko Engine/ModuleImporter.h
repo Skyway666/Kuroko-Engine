@@ -23,7 +23,7 @@ public:
 	void* Import(const char* file, ImportType expected_filetype = I_NONE);
 
 private:
-	uint LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
+	bool LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
 	GameObject* LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
 
 

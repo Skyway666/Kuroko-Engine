@@ -180,7 +180,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 }
 
 
-uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id)
+bool ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id)
 {
 	aiString path;
 	for (int i = 0; i < scene->mNumMaterials; i++)
@@ -214,7 +214,7 @@ uint ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_
 		}
 	}
 
-	return scene->mNumMaterials;
+	return scene->mNumMaterials == out_mat_id.size();
 }
 
 GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent)
@@ -225,7 +225,8 @@ GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene
 	{
 		Mesh* mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
 		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
-		c_m->setMaterial(App->scene_intro->getMaterial(in_mat_id.at(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex)));
+		if(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex < in_mat_id.size())
+			c_m->setMaterial(App->scene_intro->getMaterial(in_mat_id.at(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex)));
 		root_obj->addComponent(c_m);
 		app_log->AddLog("New mesh with %d vertices", scene->mMeshes[node->mMeshes[i]]->mNumVertices);
 	}
