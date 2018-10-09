@@ -92,11 +92,14 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				LoadMaterials(imported_scene, mat_id);
 				GameObject* root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
+				// Just for assignment 1
+				if(!App->scene_intro->game_objects.empty())
+					App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());
+
 				App->scene_intro->game_objects.push_back(root_obj);
 				App->camera->FocusSelectedGeometry(3); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
-				// Just for assignment 1
-				App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());
+
 				// Read file and log info
 				std::ifstream file_stream;
 				std::string file_content;
