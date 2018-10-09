@@ -88,6 +88,7 @@ bool ModuleImGUI::Start()
 
 	io = &ImGui::GetIO();
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	docking_background = true;
 
 	return true;
 }
@@ -105,6 +106,7 @@ update_status ModuleImGUI::PreUpdate(float dt) {
 update_status ModuleImGUI::Update(float dt) {
 
 
+	InvisibleDockingBegin();
 	// 1. Show a simple window.
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	if(open_tabs[TEST])
@@ -217,7 +219,7 @@ update_status ModuleImGUI::Update(float dt) {
 	
 	}
 	ImGui::EndMainMenuBar();
-
+	ImGui::End();
 	if (!close_app)
 		return UPDATE_CONTINUE;
 	else
@@ -926,4 +928,32 @@ void ModuleImGUI::LoadConfig(JSON_Object* config)
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 	open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
+}
+
+void ModuleImGUI::InvisibleDockingBegin() {
+	ImGuiWindowFlags window = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+	static ImGuiDockNodeFlags optional = ImGuiDockNodeFlags_PassthruDockspace;
+
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("Kuroko Engine", &docking_background, window);
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+	ImGuiIO& io = ImGui::GetIO();
+
+	ImGuiID dockspace_id = ImGui::GetID("The dockspace");
+	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), optional);
+}
+
+void ModuleImGUI::InvisibleDockingEnd() {
+	ImGui::End();
 }
