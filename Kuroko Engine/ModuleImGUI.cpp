@@ -649,6 +649,8 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* cube = new GameObject("Cube");
 		Mesh* mesh = new Mesh(Primitive_Cube);
 		cube->addComponent(new ComponentMesh(cube, mesh));
+		if (!App->scene_intro->game_objects.empty())
+			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front()); // Just for asignment 1
 		App->scene_intro->game_objects.push_back(cube);
 	}
 	if (ImGui::Button("Add plane"))
@@ -656,18 +658,24 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* plane = new GameObject("Plane");
 		Mesh* mesh = new Mesh(Primitive_Plane);
 		plane->addComponent(new ComponentMesh(plane, mesh));
+		if (!App->scene_intro->game_objects.empty())
+			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		App->scene_intro->game_objects.push_back(plane);
 	}
 	if (ImGui::Button("Add sphere")) {
 		GameObject* sphere = new GameObject("Sphere");
 		Mesh* mesh = new Mesh(Primitive_Sphere);
 		sphere->addComponent(new ComponentMesh(sphere, mesh));
+		if (!App->scene_intro->game_objects.empty())
+			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		App->scene_intro->game_objects.push_back(sphere);
 	}
 	if (ImGui::Button("Add cylinder")) {
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
 		cylinder->addComponent(new ComponentMesh(cylinder, mesh));
+		if(!App->scene_intro->game_objects.empty())
+			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		App->scene_intro->game_objects.push_back(cylinder);
 	}
 
