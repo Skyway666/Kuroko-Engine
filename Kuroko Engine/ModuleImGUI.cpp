@@ -496,11 +496,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
 						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
-						ImGui::SameLine();
 						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
-						ImGui::SameLine();
 						ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
-						ImGui::SameLine();
 						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
 
 						ImGui::TreePop();
