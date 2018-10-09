@@ -47,6 +47,7 @@ public:
 
 private:
 	
+	bool close_app;
 	bool docking_background;
 	bool open_tabs[LAST];  // _serializable_var
 	ImGuiIO* io;

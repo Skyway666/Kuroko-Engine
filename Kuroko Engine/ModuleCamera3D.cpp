@@ -11,14 +11,7 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 {
 	CalculateViewMatrix();
 
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
-
-	Position = vec3(1.0f, 1.0f, 5.0f);
-	Reference = vec3(0.0f, 0.0f, 0.0f);
-
-	LookAt(Reference);
+	Reset();
 
 	name = "camera";
 }
@@ -220,4 +213,15 @@ void ModuleCamera3D::FocusSelectedGeometry(float distance) {
 	}
 	else
 		LookAt(vec3(0, 0, 0));
+}
+
+void ModuleCamera3D::Reset() {
+	X = vec3(1.0f, 0.0f, 0.0f);
+	Y = vec3(0.0f, 1.0f, 0.0f);
+	Z = vec3(0.0f, 0.0f, 1.0f);
+
+	Position = vec3(1.0f, 1.0f, 5.0f);
+	Reference = vec3(0.0f, 0.0f, 0.0f);
+
+	LookAt(Reference);
 }

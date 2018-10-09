@@ -89,6 +89,7 @@ bool ModuleImGUI::Start()
 	io = &ImGui::GetIO();
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	docking_background = true;
+	close_app = false;
 
 	return true;
 }
@@ -129,7 +130,10 @@ update_status ModuleImGUI::Update(float dt) {
 		if (ImGui::CollapsingHeader("Hardware"))
 			DrawHardware();
 		if (ImGui::CollapsingHeader("Application"))
-			DrawApplication();;
+			DrawApplication();
+
+		if (ImGui::Button("Reset Camera"))
+			App->camera->Reset();
 		ImGui::End();
 	}
 
@@ -172,7 +176,6 @@ update_status ModuleImGUI::Update(float dt) {
 		DrawAudioTab();
 
 
-	bool close_app = false;
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -220,10 +223,7 @@ update_status ModuleImGUI::Update(float dt) {
 	}
 	ImGui::EndMainMenuBar();
 	ImGui::End();
-	if (!close_app)
-		return UPDATE_CONTINUE;
-	else
-		return UPDATE_STOP;
+	return UPDATE_CONTINUE;
 
 }
 
@@ -235,8 +235,10 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-
-	return UPDATE_CONTINUE;
+	if (!close_app)
+		return UPDATE_CONTINUE;
+	else
+		return UPDATE_STOP;
 }
 
 bool ModuleImGUI::CleanUp() {
@@ -497,11 +499,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 
 						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
 						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
-						ImGui::SameLine();
 						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
-						ImGui::SameLine();
 						ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
-						ImGui::SameLine();
 						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
 
 						ImGui::TreePop();
