@@ -48,7 +48,7 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 							   // Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	io = ImGui::GetIO();
+	
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->main_window->window, App->renderer3D->getContext());
@@ -72,7 +72,7 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable docking
+	
 	LoadConfig(config);
 
 
@@ -86,6 +86,8 @@ bool ModuleImGUI::Start()
 	if (App->importer->Import("Stop.png"), I_TEXTURE)			ui_textures[STOP] = App->importer->getLastTex();
 	if (App->importer->Import("no_texture.png"), I_TEXTURE)		ui_textures[NO_TEXTURE] = App->importer->getLastTex();
 
+	io = &ImGui::GetIO();
+	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	return true;
 }
@@ -227,7 +229,7 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 	// Rendering
 	ImGui::Render();
 	
-	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+	glViewport(0, 0, (int)io->DisplaySize.x, (int)io->DisplaySize.y);
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 

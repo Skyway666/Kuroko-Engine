@@ -45,7 +45,7 @@ public:
 private:
 	
 	bool open_tabs[LAST];  // _serializable_var
-	ImGuiIO io;
+	ImGuiIO* io;
 	std::array<Texture*, LAST_UI_TEX> ui_textures;
 };
 
