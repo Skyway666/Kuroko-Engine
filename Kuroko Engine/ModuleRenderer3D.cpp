@@ -165,7 +165,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	ProjectionMatrix = CreatePerspMat(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	ProjectionMatrix = CreatePerspMat(60.0f, (float)width / (float)height, 0.125f, 1024.0f);
 	glLoadMatrixf((GLfloat*)ProjectionMatrix.v);
 
 	glMatrixMode(GL_MODELVIEW);

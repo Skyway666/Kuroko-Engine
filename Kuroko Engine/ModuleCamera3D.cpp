@@ -64,7 +64,7 @@ update_status ModuleCamera3D::Update(float dt)
 		RotateSelectedGeometry();
 
 	// Unfinished translation
-	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT) {
+	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) {
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
 
@@ -124,8 +124,8 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
-		if (mouse_z > 0 && length(Position) > 0.5f)		Position *= 0.9f;
-		else											Position *= 1.1f;
+		if (mouse_z > 0 && length(Position) > 0.5f)		Position = Reference + Z * length(Position - Reference) * 0.9f;
+		else											Position = Reference + Z * length(Position - Reference) *1.1f;
 	}
 
 	// Recalculate matrix -------------
