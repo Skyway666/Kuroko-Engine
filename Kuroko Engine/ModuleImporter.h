@@ -20,20 +20,11 @@ public:
 	bool Init(JSON_Object* config);
 	bool CleanUp();
 
-	bool Import(const char* file, ImportType expected_filetype = I_NONE);
-
-	Texture* getLastTex() { return last_tex; };
-	GameObject* getLastGObj() { return last_gobj; };
-	AudioFile* getLastAudioFile() { return last_audio_file; };
+	void* Import(const char* file, ImportType expected_filetype = I_NONE);
 
 private:
 	uint LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
 	GameObject* LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
-	
-private:
 
-	Texture * last_tex = nullptr;
-	GameObject* last_gobj = nullptr;
-	AudioFile* last_audio_file = nullptr;
 
 };

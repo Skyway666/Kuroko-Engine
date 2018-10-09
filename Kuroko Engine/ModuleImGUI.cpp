@@ -81,10 +81,10 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 
 bool ModuleImGUI::Start()
 {
-	if (App->importer->Import("Play.png"), I_TEXTURE)			ui_textures[PLAY] = App->importer->getLastTex();
-	if (App->importer->Import("Pause.png"), I_TEXTURE)			ui_textures[PAUSE] = App->importer->getLastTex();
-	if (App->importer->Import("Stop.png"), I_TEXTURE)			ui_textures[STOP] = App->importer->getLastTex();
-	if (App->importer->Import("no_texture.png"), I_TEXTURE)		ui_textures[NO_TEXTURE] = App->importer->getLastTex();
+	ui_textures[PLAY] = (Texture*)App->importer->Import("Play.png", I_TEXTURE);
+	ui_textures[PAUSE] = (Texture*)App->importer->Import("Pause.png", I_TEXTURE);
+	ui_textures[STOP] = (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
+	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("no_texture.png", I_TEXTURE);
 
 	io = &ImGui::GetIO();
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -427,8 +427,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Dif: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(DIFFUSE, App->importer->getLastTex());
+							if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
 						}
 
 						ImGui::Text("ambient texture:  ");
@@ -442,8 +442,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Amb: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(AMBIENT, App->importer->getLastTex());
+							if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								c_mesh->getMaterial()->setTexture(AMBIENT, tex);
 						}
 
 						ImGui::Text("normals texture:  ");
@@ -457,8 +457,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Nor: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							if (App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(NORMALS, App->importer->getLastTex());
+							if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								c_mesh->getMaterial()->setTexture(NORMALS, tex);
 						}
 
 						ImGui::Text("lightmap texture:  ");
@@ -472,8 +472,8 @@ bool ModuleImGUI::DrawComponent(Component* component)
 						if (ImGui::Button("Lgm: Load texture"))
 						{
 							std::string texture_path = openFileWID();
-							if(App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(LIGHTMAP, App->importer->getLastTex());
+							if(Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+								c_mesh->getMaterial()->setTexture(LIGHTMAP, tex);
 						}
 						ImGui::TreePop();
 					}
