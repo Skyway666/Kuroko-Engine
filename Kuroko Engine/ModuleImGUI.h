@@ -1,7 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "imgui.h"
+#include "ImGui/imgui.h"
 #include <array>
 
 struct ImGuiIO;

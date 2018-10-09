@@ -10,8 +10,8 @@
 #include "ModuleAudio.h"
 #include "Applog.h"
 
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl2.h"
+#include "ImGui/imgui_impl_sdl.h"
+#include "ImGui/imgui_impl_opengl2.h"
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
@@ -72,7 +72,7 @@ bool ModuleImGUI::Init(JSON_Object* config) {
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
-
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable docking
 	LoadConfig(config);
 
 
