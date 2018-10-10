@@ -6,9 +6,7 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleDebug.h"
 #include "ModuleRenderer3D.h"
-#include "ModuleRenderer2D.h"
 #include "ModuleCamera3D.h"
-#include "ModulePhysics3D.h"
 #include "ModuleImGUI.h"
 #include "ModuleImporter.h"
 #include "AppLog.h"
@@ -28,7 +26,6 @@ Application::Application()
 	//renderer2D = new ModuleRenderer2D(this);
 	importer = new ModuleImporter(this);
 	camera = new ModuleCamera3D(this);
-	physics = new ModulePhysics3D(this);
 	gui = new ModuleImGUI(this);
 
 	// The order of calls is very important!
@@ -41,7 +38,6 @@ Application::Application()
 	list_modules.push_back(input);
 	list_modules.push_back(audio);
 	list_modules.push_back(importer);
-	list_modules.push_back(physics);
 	
 	
 	// Scenes

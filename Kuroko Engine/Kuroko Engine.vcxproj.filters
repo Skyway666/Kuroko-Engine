@@ -84,12 +84,6 @@
     <ClInclude Include="Timer.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="ModulePhysics3D.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleRenderer2D.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="ModuleImGUI.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
@@ -397,12 +391,6 @@
     </ClCompile>
     <ClCompile Include="ModuleSceneIntro.cpp">
       <Filter>Sources\Modules\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="ModulePhysics3D.cpp">
-      <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleRenderer2D.cpp">
-      <Filter>Sources\Modules</Filter>
     </ClCompile>
     <ClCompile Include="ModuleImGUI.cpp">
       <Filter>Sources\Modules</Filter>
