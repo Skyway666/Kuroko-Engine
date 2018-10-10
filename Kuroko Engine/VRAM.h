@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __VRAM
+#define __VRAM
 //----------------------------------------------------------------------------
 // File: VidMemViaDDraw.cpp
 //
@@ -45,3 +46,4 @@ float getAvaliableVRAMMb();
 float getTotalVRAMMb_NVIDIA(); // InMb (only works with NVidia)
 float getAvaliableVRAMMb_NVIDIA(); // In Mb (only works with NVidia)
 
+#endif

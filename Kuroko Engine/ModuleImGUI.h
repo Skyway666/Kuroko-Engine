@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULE_IMGUI
+#define __MODULE_IMGUI
 #include "Module.h"
 #include "Globals.h"
 #include "ImGui/imgui.h"
@@ -53,4 +54,5 @@ private:
 	ImGuiIO* io;
 	std::array<Texture*, LAST_UI_TEX> ui_textures;
 };
+#endif
 

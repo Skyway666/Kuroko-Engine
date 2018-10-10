@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef __GLOBALS
+#define __GLOBALS
 // Warning disabled ---
 #pragma warning( disable : 4577 ) // Warning that exceptions are disabled
 #pragma warning( disable : 4530 ) // Warning that exceptions are disabled
@@ -34,3 +34,5 @@ enum update_status
 #define VSYNC true
 #define TITLE "3D Physics Playground"
 #define PI       3.14159265358979323846   // pi
+
+#endif

@@ -57,8 +57,8 @@ public:
 
 	void setMasterVolume(uint volume);
 	void setMasterMusicVolume(uint volume);
-	float getMasterVolume()			{ return master_volume; };
-	float getsetMasterMusicVolume()	{ return music_volume; };
+	float getMasterVolume()	const		{ return master_volume; };
+	float getsetMasterMusicVolume()	const { return music_volume; };
 
 	void HaltMusic();
 

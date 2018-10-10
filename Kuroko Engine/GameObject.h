@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef _GAME_OBJECT_
+#define _GAME_OBJECT_
 #include <list>
 #include <string>
 #include "Component.h"
@@ -40,22 +40,22 @@ public:
 
 	Component* getComponent(Component_type type);
 	bool getComponents(Component_type type, std::list<Component*>& list_to_fill);
-	void getComponents(std::list<Component*>& list_to_fill) { list_to_fill = components; };
+	void getComponents(std::list<Component*>& list_to_fill) const { list_to_fill = components; };
 
 	GameObject* getChild(const char* name);
 	void getChildren(std::list<GameObject*>& list_to_fill) { list_to_fill = children; };
 	void addChild(GameObject* new_child) { children.push_back(new_child); };
 
-	GameObject* getParent() { return parent; };
+	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* parent) { this->parent = parent; }
 
-	float3 getCentroid() { return centroid; };	
-	float3 getHalfsize() { return half_size; };
+	float3 getCentroid() const { return centroid; };
+	float3 getHalfsize() const { return half_size; };
 
 	void getInheritedHalfsizeAndCentroid(float3& half_size, float3& centroid);
 
-	bool isActive() { return is_active; }
-	bool isStatic() { return is_static; }
+	bool isActive() const { return is_active; }
+	bool isStatic() const { return is_static; }
 	void setActive(bool state) { is_active = state; }
 	void setStatic(bool state) { is_static = state; }
 
@@ -65,3 +65,4 @@ public:
 private: 
 	void calculateCentroidandHalfsize();
 };
+#endif

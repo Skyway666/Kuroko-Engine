@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __ModuleRenderer_H__
+#define __ModuleRenderer_H__
+
 #include "Module.h"
 #include "Globals.h"
 #include "Light.h"
@@ -19,11 +21,10 @@ public:
 
 	void OnResize(int width, int height);
 
-	SDL_GLContext getContext()	{ return context; }
+	SDL_GLContext getContext() const	{ return context; }
 
 	float4x4 CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane);
-
-	void DirectDrawCube(float3 size);
+	void DirectDrawCube(float3 size) const;
 
 private:
 
@@ -36,3 +37,5 @@ private:
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 };
+
+#endif

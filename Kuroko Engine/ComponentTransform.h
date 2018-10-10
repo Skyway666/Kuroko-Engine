@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _COMPONENT_TRANSFORM
+#define _COMPONENT_TRANSFORM
 
 #include "Component.h"
 #include "Vector3.h"
@@ -25,28 +26,30 @@ public:
 	void Scale(float3 scl);
 	void setRotation(Quat rot) { rotation = rot; euler_angles = rot.ToEulerXYZ(); };
 	void setRotationEuler(float3 euler);
-	void RotateAroundAxis(float3 axis, float rot_in_degrees) { rotation.RotateAxisAngle(axis, DegToRad(rot_in_degrees)); euler_angles = rotation.ToEulerXYZ();};
+	void RotateAroundAxis(float3 axis, float rot_in_degrees) { rotation.RotateAxisAngle(axis, DegToRad(rot_in_degrees)); euler_angles = rotation.ToEulerXYZ(); };
 	float4x4 getModelViewMatrix();
 
 	void LookAt(float3 position, float3 target, float3 forward, float3 up);
 
-	float3 getPosition() { return position; };
-	float3 getScale() { return scale; };
-	float3 getRotationEuler() { return float3(euler_angles.x, euler_angles.y, euler_angles.z); };
-	Quat getRotation() { return rotation; };
 
-	float3 Forward();
-	float3 Right();
-	float3 Up();
+	float3 getPosition()const { return position; };
+	float3 getScale() const { return scale; };
+	float3 getRotationEuler()const { return float3(euler_angles.x, euler_angles.y, euler_angles.z); };
+	Quat getRotation()const { return rotation; };
+
+	float3 Forward() const;
+	float3 Right()const;
+	float3 Up()const;
 
 
 private:
 
-	float3 position = { 0.0f,0.0f,0.0f };			
-	float3 scale = { 1.0f,1.0f,1.0f };				
-	Quat rotation = { 0.0f,0.0f,0.0f,1.0f };	
+	float3 position = { 0.0f,0.0f,0.0f };
+	float3 scale = { 1.0f,1.0f,1.0f };
+	Quat rotation = { 0.0f,0.0f,0.0f,1.0f };
 
 	float3 euler_angles = { 0.0f,0.0f,0.0f };
 
 	float4x4 mat = mat.identity;
 };
+#endif

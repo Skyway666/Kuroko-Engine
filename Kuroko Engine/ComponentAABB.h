@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _COMPONENTAABB_
+#define _COMPONENTAABB_
 
 #include "Vector3.h"
 #include "Component.h"
@@ -17,8 +18,8 @@ public:
 	bool Update(float dt);
 	void Reload();
 
-	math::AABB* getAABB() { return aabb; };
-	math::OBB* getOBB() { return obb; };
+	math::AABB* getAABB() const { return aabb; };
+	math::OBB* getOBB() const { return obb; };
 
 	void DrawAABB();
 	void DrawOBB();
@@ -37,3 +38,4 @@ private:
 	ComponentTransform* transform = nullptr;
 
 };
+#endif

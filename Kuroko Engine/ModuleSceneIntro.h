@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULE_SCENE
+#define __MODULE_SCENE
 #include "Module.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include <list>
@@ -42,3 +43,4 @@ public:
 	bool global_wireframe		= false;
 	bool global_normals			= false;
 };
+#endif

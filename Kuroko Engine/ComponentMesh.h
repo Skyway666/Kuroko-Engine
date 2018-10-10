@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _COMPONENT_MESH
+#define _COMPONENT_MESH
 #include "Component.h"
 #include "Mesh.h"
 
@@ -15,10 +16,10 @@ public:
 	bool Update(float dt) { if (mesh && isActive()) Draw(); return true; };
 	void Draw();
 
-	bool getWireframe()					{ return wireframe; };
-	bool getDrawNormals()				{ return draw_normals; };
-	Material* getMaterial()				{ return mat; };
-	Mesh* getMesh()						{ return mesh; }
+	bool getWireframe() const					{ return wireframe; };
+	bool getDrawNormals()const			{ return draw_normals; };
+	Material* getMaterial()	const			{ return mat; };
+	Mesh* getMesh()	const				{ return mesh; }
 	void setWireframe(bool state)		{ wireframe = state; };
 	void setDrawNormals(bool state)		{ draw_normals = state; };
 	void setMaterial(Material* new_mat) { mat = new_mat; };
@@ -31,3 +32,4 @@ private:
 	Material* mat = nullptr;
 	Mesh* mesh = nullptr;
 };
+#endif

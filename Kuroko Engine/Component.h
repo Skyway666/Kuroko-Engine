@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef _COMPONENT_
+#define _COMPONENT_
 class GameObject;
 
 enum Component_type { NONE, MESH, TRANSFORM, C_AABB };
@@ -12,11 +12,11 @@ public:
 
 	virtual bool Update(float dt) { return true; };
 
-	bool isActive() { return is_active; }
+	bool isActive() { return is_active; } const
 	void setActive(bool state) { is_active = state; }
 
-	Component_type getType() { return type; };
-	GameObject* getParent() { return parent; };
+	Component_type getType() const { return type; };
+	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* new_parent) { parent = new_parent; }
 
 private:
@@ -25,3 +25,4 @@ private:
 	Component_type type = NONE;
 	GameObject* parent = nullptr;
 };
+#endif

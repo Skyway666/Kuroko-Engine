@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MESH
+#define _MESH
 #include "Globals.h"
 
 #include "MathGeoLib\Math\float3.h"
@@ -26,9 +27,10 @@ public:
 
 	void Draw(Material* mat);
 	void DrawNormals();
-	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
-	float3 getHalfSize() { return half_size; }
-	float3 getCentroid() { return centroid; }
+
+	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
+	float3 getHalfSize() const { return half_size; }
+	float3 getCentroid() const { return centroid; }
 
 private:
 
@@ -46,18 +48,19 @@ private:
 	uint iboId = 0;
 	uint vboId = 0;
 
-	uint num_tris				= 0;
-	uint num_vertices			= 0;
-	bool imported_normals		= false;
-	bool imported_colors		= false;
-	bool imported_tex_coords	= false;
+	uint num_tris = 0;
+	uint num_vertices = 0;
+	bool imported_normals = false;
+	bool imported_colors = false;
+	bool imported_tex_coords = false;
 
-	float3* tris		= nullptr;
-	float3* vertices	= nullptr;
-	float3* normals		= nullptr;
-	float3* colors		= nullptr;
-	float2* tex_coords	= nullptr;
+	float3* tris = nullptr;
+	float3* vertices = nullptr;
+	float3* normals = nullptr;
+	float3* colors = nullptr;
+	float2* tex_coords = nullptr;
 
-	float3 half_size	= float3::zero;
-	float3 centroid		= float3::zero;
+	float3 half_size = float3::zero;
+	float3 centroid = float3::zero;
 };
+#endif

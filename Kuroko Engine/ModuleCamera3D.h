@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MODULE_CAMERA
+#define _MODULE_CAMERA
 #include "Module.h"
 #include "Globals.h"
 #include "glmath.h"
@@ -24,7 +25,7 @@ public:
 	void FocusSelectedGeometry(float distance);
 	void RotateSelectedGeometry();
 	void Reset();
-	float* GetViewMatrix();
+	float* GetViewMatrix() const;
 
 private:
 
@@ -38,3 +39,4 @@ private:
 	
 	float4x4 ViewMatrix, ViewMatrixInverse;
 };
+#endif

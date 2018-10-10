@@ -68,7 +68,7 @@ bool GameObject::getComponents(Component_type type, std::list<Component*>& list_
 	return !list_to_fill.empty();
 }
 
-GameObject* GameObject::getChild(const char* name)
+GameObject* GameObject::getChild(const char* name) 
 {
 	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
 	{

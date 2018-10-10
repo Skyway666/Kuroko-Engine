@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULE_IMPORTER
+#define __MODULE_IMPORTER
 #include "Module.h"
 #include "Material.h"
 #include <vector>
@@ -28,3 +29,4 @@ private:
 
 
 };
+#endif

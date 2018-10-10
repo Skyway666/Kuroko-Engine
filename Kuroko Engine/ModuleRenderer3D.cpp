@@ -188,7 +188,8 @@ float4x4 ModuleRenderer3D::CreatePerspMat(float fov, float aspect_ratio, float n
 	return Perspective;
 }
 
-void ModuleRenderer3D::DirectDrawCube(float3 size)
+
+void ModuleRenderer3D::DirectDrawCube(float3 size) const
 {
 	glLineWidth(2.0f);
 
