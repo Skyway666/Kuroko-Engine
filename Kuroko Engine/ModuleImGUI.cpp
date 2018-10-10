@@ -330,7 +330,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
-			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
+			//if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
 			if (ImGui::Button("Add AABB"))  selected_obj->addComponent(C_AABB);
 		}
 
