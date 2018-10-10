@@ -4,7 +4,7 @@
 #include "glew-2.1.0\include\GL\glew.h"
 
 
-ComponentTransform::ComponentTransform(GameObject* parent, ComponentTransform& transform) : Component(parent, TRANSFORM)
+ComponentTransform::ComponentTransform(GameObject* parent, const ComponentTransform& transform) : Component(parent, TRANSFORM)
 {
 	position = transform.position; rotation = transform.rotation; scale = transform.scale;
 }
@@ -33,7 +33,7 @@ float4x4 ComponentTransform::getInheritedTransform(float3 pos, Quat rot, float3 
 
 
 
-void ComponentTransform::setRotationEuler(float3 euler) 
+void ComponentTransform::setRotationEuler(const float3& euler)
 {
 	rotation = Quat::identity;
 	rotation = rotation * rotation.RotateX(DegToRad(euler.x));
@@ -42,7 +42,7 @@ void ComponentTransform::setRotationEuler(float3 euler)
 	euler_angles = euler;
 }
 
-void ComponentTransform::LookAt(float3 position, float3 target, float3 forward, float3 up)
+void ComponentTransform::LookAt(const float3& position, const float3& target, const float3& forward, const float3& up)
 {
 	mat = mat.LookAt(position, target, forward, up, float3::unitY);
 	rotation = mat.RotatePart().ToQuat();
@@ -79,7 +79,7 @@ float3 ComponentTransform::Right() const
 	return right;
 }
 
-void ComponentTransform::setPosition(float3 pos)	{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Translate(float3 dir)		{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::setScale(float3 scl)		{ scale = scl;		getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Scale(float3 scl)			{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setPosition(const float3& pos)		{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Translate(const float3& dir)		{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setScale(const float3& scl)		{ scale = scl;		getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Scale(const float3& scl)			{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };

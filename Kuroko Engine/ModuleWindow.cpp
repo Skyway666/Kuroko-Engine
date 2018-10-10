@@ -15,7 +15,7 @@ ModuleWindow::~ModuleWindow()
 }
 
 // Called before render is available
-bool ModuleWindow::Init(JSON_Object* config)
+bool ModuleWindow::Init(const JSON_Object& config)
 {
 	app_log->AddLog("Init SDL window & surface");
 	bool ret = true;
@@ -47,7 +47,7 @@ bool ModuleWindow::Init(JSON_Object* config)
 		if(main_window->borderless) flags |= SDL_WINDOW_BORDERLESS;
 		if(main_window->fulldesk)	flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-		main_window->window = SDL_CreateWindow(json_object_get_string(config,"title"), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		main_window->window = SDL_CreateWindow(json_object_get_string(&config,"title"), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
 		if(main_window->window == NULL)
 		{
@@ -213,40 +213,40 @@ void ModuleWindow::setSize(int x, int y, uint id)
 	}
 }
 
-void ModuleWindow::fillWindowConfig(JSON_Object* config) 
+void ModuleWindow::fillWindowConfig(const JSON_Object& config) 
 {
-	main_window->borderless = json_object_get_boolean(config, "borderless");
-	main_window->fullscreen = json_object_get_boolean(config, "fullscreen");
-	main_window->resizable = json_object_get_boolean(config, "resizable");
-	main_window->fulldesk = json_object_get_boolean(config, "fulldesktop");
+	main_window->borderless = json_object_get_boolean(&config, "borderless");
+	main_window->fullscreen = json_object_get_boolean(&config, "fullscreen");
+	main_window->resizable = json_object_get_boolean(&config, "resizable");
+	main_window->fulldesk = json_object_get_boolean(&config, "fulldesktop");
 
-	main_window->width = json_object_get_number(config, "width");
-	main_window->height = json_object_get_number(config, "height");
+	main_window->width = json_object_get_number(&config, "width");
+	main_window->height = json_object_get_number(&config, "height");
 
-	main_window->brightness = json_object_get_number(config, "brightness");
+	main_window->brightness = json_object_get_number(&config, "brightness");
 }
 
-void ModuleWindow::SaveConfig(JSON_Object* config) const
+void ModuleWindow::SaveConfig(JSON_Object& config) const
 {
-	json_object_set_boolean(config, "borderless", main_window->borderless);
-	json_object_set_boolean(config, "fullscreen", main_window->fullscreen);
-	json_object_set_boolean(config, "resizable", main_window->resizable);
-	json_object_set_boolean(config, "fulldesktop", main_window->fulldesk);
+	json_object_set_boolean(&config, "borderless", main_window->borderless);
+	json_object_set_boolean(&config, "fullscreen", main_window->fullscreen);
+	json_object_set_boolean(&config, "resizable", main_window->resizable);
+	json_object_set_boolean(&config, "fulldesktop", main_window->fulldesk);
 
-	json_object_set_number(config, "width", main_window->width);
-	json_object_set_number(config, "height", main_window->height);
-	json_object_set_number(config, "brightness", main_window->brightness);
+	json_object_set_number(&config, "width", main_window->width);
+	json_object_set_number(&config, "height", main_window->height);
+	json_object_set_number(&config, "brightness", main_window->brightness);
 }
 
-void ModuleWindow::LoadConfig(JSON_Object* config) {
+void ModuleWindow::LoadConfig(const JSON_Object& config) {
 
 	fillWindowConfig(config);
-	setFullscreen(json_object_get_boolean(config, "fullscreen"));
-	setResizable(json_object_get_boolean(config, "resizable"));
-	setFullDesktop(json_object_get_boolean(config, "fulldesktop"));
-	setBorderless(json_object_get_boolean(config, "borderless"));
+	setFullscreen(json_object_get_boolean(&config, "fullscreen"));
+	setResizable(json_object_get_boolean(&config, "resizable"));
+	setFullDesktop(json_object_get_boolean(&config, "fulldesktop"));
+	setBorderless(json_object_get_boolean(&config, "borderless"));
 
-	setSize(json_object_get_number(config, "width"), json_object_get_number(config, "height"));
+	setSize(json_object_get_number(&config, "width"), json_object_get_number(&config, "height"));
 
-	setBrightness(json_object_get_number(config, "brightness"));
+	setBrightness(json_object_get_number(&config, "brightness"));
 }

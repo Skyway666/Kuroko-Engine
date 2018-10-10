@@ -28,7 +28,7 @@ ModuleRenderer3D::~ModuleRenderer3D()
 {}
 
 // Called before render is available
-bool ModuleRenderer3D::Init(JSON_Object* config)
+bool ModuleRenderer3D::Init(const JSON_Object& config)
 {
 	app_log->AddLog("Creating 3D Renderer context...\n");
 	bool ret = true;
@@ -190,7 +190,7 @@ float4x4 ModuleRenderer3D::CreatePerspMat(float fov, float aspect_ratio, float n
 }
 
 
-void ModuleRenderer3D::DirectDrawCube(float3 size) const
+void ModuleRenderer3D::DirectDrawCube(float3& size) const
 {
 	glLineWidth(2.0f);
 

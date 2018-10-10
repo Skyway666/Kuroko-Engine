@@ -41,7 +41,7 @@ ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, sta
 ModuleImGUI::~ModuleImGUI() {
 }
 
-bool ModuleImGUI::Init(JSON_Object* config) {
+bool ModuleImGUI::Init(const JSON_Object& config) {
 	
 	SDL_GL_SetSwapInterval(1); // Enable vsync
 
@@ -264,7 +264,7 @@ void ModuleImGUI::DrawHierarchyTab()
 	int id = 0;
 
 	for (std::list<GameObject*>::iterator it = App->scene_intro->game_objects.begin(); it != App->scene_intro->game_objects.end(); it++)
-		DrawHierarchyNode(*it, id);
+		DrawHierarchyNode(*(*it), id);
 
 	//Just for assignment 1
 	//DrawHierarchyNode(App->scene_intro->game_objects.back(), id);
@@ -272,24 +272,24 @@ void ModuleImGUI::DrawHierarchyTab()
 	ImGui::End();
 }
 
-void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id) const
+void ModuleImGUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 {
 	id++;
 	static int selection_mask = (1 << 2);
 	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask & (1 << id)) ? ImGuiTreeNodeFlags_Selected : 0);
 
 	std::list<GameObject*> children;
-	game_object->getChildren(children);
+	game_object.getChildren(children);
 
 	if(children.empty())
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
-	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object->getName().c_str(), id) && !children.empty();
+	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object.getName().c_str(), id) && !children.empty();
 
 	if (ImGui::IsItemClicked())
 	{
 		selection_mask = (1 << id);
-		App->scene_intro->selected_obj = game_object;
+		App->scene_intro->selected_obj = (GameObject*)&game_object;
 	}
 
 	if (node_open)
@@ -297,7 +297,7 @@ void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id) const
 		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
 
 		for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
-				DrawHierarchyNode(*it, id);
+				DrawHierarchyNode(*(*it), id);
 
 		ImGui::PopStyleVar();
 		ImGui::TreePop();
@@ -339,7 +339,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 
 		std::list<Component*> components_to_erase;
 		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
-			if (!DrawComponent(*it))
+			if (!DrawComponent(*(*it)))
 				components_to_erase.push_back(*it);
 
 		for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
@@ -368,14 +368,14 @@ void ModuleImGUI::DrawObjectInspectorTab()
 	}
 }
 
-bool ModuleImGUI::DrawComponent(Component* component)
+bool ModuleImGUI::DrawComponent(Component& component)
 {
-	switch (component->getType())
+	switch (component.getType())
 	{
 	case MESH:
 		if (ImGui::CollapsingHeader("Mesh"))
 		{
-			ComponentMesh* c_mesh = (ComponentMesh*)component;
+			ComponentMesh* c_mesh = (ComponentMesh*)&component;
 			static bool wireframe_enabled;
 			static bool mesh_active;
 			static bool draw_normals;
@@ -516,7 +516,7 @@ bool ModuleImGUI::DrawComponent(Component* component)
 		if (ImGui::CollapsingHeader("Transform"))
 		{
 			ImGui::Text("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
-			ComponentTransform* transform = (ComponentTransform*)component;
+			ComponentTransform* transform = (ComponentTransform*)&component;
 
 			static float3 position;
 			static float3 rotation;
@@ -578,7 +578,7 @@ bool ModuleImGUI::DrawComponent(Component* component)
 	case C_AABB:
 		if (ImGui::CollapsingHeader("AABB"))
 		{
-			ComponentAABB* aabb = (ComponentAABB*)component;
+			ComponentAABB* aabb = (ComponentAABB*)&component;
 
 			static bool aabb_active;
 			aabb_active = aabb->isActive();
@@ -933,31 +933,31 @@ void ModuleImGUI::DrawTimeControl()
 	ImGui::End();
 }
 
-void ModuleImGUI::SaveConfig(JSON_Object* config) const
+void ModuleImGUI::SaveConfig(JSON_Object& config) const
 {
-	json_object_set_boolean(config, "demo", open_tabs[DEMO]);
-	json_object_set_boolean(config, "test", open_tabs[TEST]);
-	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);
-	json_object_set_boolean(config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
-	json_object_set_boolean(config, "primitive", open_tabs[PRIMITIVE]);
-	json_object_set_boolean(config, "about", open_tabs[ABOUT]);
-	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
-	json_object_set_boolean(config, "log", open_tabs[LOG]);
-	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
+	json_object_set_boolean(&config, "demo", open_tabs[DEMO]);
+	json_object_set_boolean(&config, "test", open_tabs[TEST]);
+	json_object_set_boolean(&config, "hierarchy", open_tabs[HIERARCHY]);
+	json_object_set_boolean(&config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
+	json_object_set_boolean(&config, "primitive", open_tabs[PRIMITIVE]);
+	json_object_set_boolean(&config, "about", open_tabs[ABOUT]);
+	json_object_set_boolean(&config, "configuration", open_tabs[CONFIGURATION]);
+	json_object_set_boolean(&config, "log", open_tabs[LOG]);
+	json_object_set_boolean(&config, "time_control", open_tabs[TIME_CONTROL]);
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
-void ModuleImGUI::LoadConfig(JSON_Object* config) 
+void ModuleImGUI::LoadConfig(const JSON_Object& config) 
 {
-	open_tabs[DEMO]				= json_object_get_boolean(config, "demo");
-	open_tabs[CONFIGURATION]	= json_object_get_boolean(config, "configuration");
-	open_tabs[TEST]				= json_object_get_boolean(config, "test");
-	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
-	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
-	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
-	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
-	open_tabs[LOG]				= json_object_get_boolean(config, "log");
-	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
+	open_tabs[DEMO]				= json_object_get_boolean(&config, "demo");
+	open_tabs[CONFIGURATION]	= json_object_get_boolean(&config, "configuration");
+	open_tabs[TEST]				= json_object_get_boolean(&config, "test");
+	open_tabs[HIERARCHY]		= json_object_get_boolean(&config, "hierarchy");
+	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(&config, "obj_inspector");
+	open_tabs[PRIMITIVE]		= json_object_get_boolean(&config, "primitive");
+	open_tabs[ABOUT]			= json_object_get_boolean(&config, "about");
+	open_tabs[LOG]				= json_object_get_boolean(&config, "log");
+	open_tabs[TIME_CONTROL]		= json_object_get_boolean(&config, "time_control");
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 

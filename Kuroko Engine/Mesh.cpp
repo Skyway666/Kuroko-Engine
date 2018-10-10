@@ -7,10 +7,10 @@
 
 #include "Assimp\include\scene.h"
 
-Mesh::Mesh(aiMesh* imported_mesh) 
+Mesh::Mesh(const aiMesh& imported_mesh) 
 {
 	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
-	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh->mName.C_Str());
+	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
 }
 
 
@@ -129,22 +129,22 @@ void Mesh::DrawNormals() const
 	glEnd();
 }
 
-void Mesh::BuildCube(float sx, float sy, float sz)
+void Mesh::BuildCube(float3& size)
 {
-	sx *= 0.5f, sy *= 0.5f, sz *= 0.5f;
+	size.x *= 0.5f; size.y *= 0.5f; size.z *= 0.5f;
 
 	num_vertices = 8;
 	vertices = new float3[num_vertices];
 
-	vertices[0] = { -sx, -sy, -sz };
-	vertices[1] = { sx, -sy, -sz };
-	vertices[2] = { -sx, -sy, sz };
-	vertices[3] = { sx, -sy, sz };
+	vertices[0] = { -size.x, -size.y, -size.z };
+	vertices[1] = { size.x, -size.y, -size.z };
+	vertices[2] = { -size.x, -size.y, size.z };
+	vertices[3] = { size.x, -size.y, size.z };
 
-	vertices[4] = { -sx, sy, -sz };
-	vertices[5] = { sx, sy, -sz };
-	vertices[6] = { -sx, sy, sz };
-	vertices[7] = { sx, sy, sz };
+	vertices[4] = { -size.x, size.y, -size.z };
+	vertices[5] = { size.x, size.y, -size.z };
+	vertices[6] = { -size.x, size.y, size.z };
+	vertices[7] = { size.x, size.y, size.z };
 
 	num_tris = 12;
 	tris = new float3[num_tris];
@@ -354,27 +354,27 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 
 
 
-bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
+bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh)
 {
 	//vertices
-	if (imported_mesh->mNumVertices)
+	if (imported_mesh.mNumVertices)
 	{
-		num_vertices = imported_mesh->mNumVertices;
+		num_vertices = imported_mesh.mNumVertices;
 		vertices = new float3[num_vertices];
-		memcpy(vertices, imported_mesh->mVertices, sizeof(float3) * num_vertices);
+		memcpy(vertices, imported_mesh.mVertices, sizeof(float3) * num_vertices);
 	}
 	else
 		return false;
 
 	// faces
-	if (imported_mesh->HasFaces())
+	if (imported_mesh.HasFaces())
 	{
-		num_tris = imported_mesh->mNumFaces;
+		num_tris = imported_mesh.mNumFaces;
 		tris = new float3[num_tris]; // assume each face is a triangle
 		for (uint i = 0; i < num_tris; ++i)
 		{
-			if (imported_mesh->mFaces[i].mNumIndices == 3)
-				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(float3));
+			if (imported_mesh.mFaces[i].mNumIndices == 3)
+				memcpy(&tris[i], imported_mesh.mFaces[i].mIndices, sizeof(float3));
 			else
 				app_log->AddLog("WARNING, geometry face with != 3 indices!");
 		}
@@ -384,10 +384,10 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 
 	// normals
 	normals = new float3[num_vertices];
-	if (imported_mesh->HasNormals())
+	if (imported_mesh.HasNormals())
 	{
 		imported_normals = true;
-		memcpy(normals, imported_mesh->mNormals, sizeof(float3) * num_vertices);
+		memcpy(normals, imported_mesh.mNormals, sizeof(float3) * num_vertices);
 	}
 	else
 	{
@@ -397,10 +397,10 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 
 	// colors
 	colors = new float3[num_vertices];
-	if (imported_mesh->HasVertexColors(0))
+	if (imported_mesh.HasVertexColors(0))
 	{
 		imported_colors = true;
-		memcpy(normals, imported_mesh->mColors[0], sizeof(float3) * num_vertices);
+		memcpy(normals, imported_mesh.mColors[0], sizeof(float3) * num_vertices);
 	}
 	else
 	{
@@ -413,11 +413,11 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 
 	// texture coordinates
 	tex_coords = new float2[num_vertices];
-	if (imported_mesh->HasTextureCoords(0))
+	if (imported_mesh.HasTextureCoords(0))
 	{
 		imported_tex_coords = true;
 		for (int i = 0; i < num_vertices; i++)
-			tex_coords[i] = { imported_mesh->mTextureCoords[0][i].x, imported_mesh->mTextureCoords[0][i].y };
+			tex_coords[i] = { imported_mesh.mTextureCoords[0][i].x, imported_mesh.mTextureCoords[0][i].y };
 	}
 	else
 	{

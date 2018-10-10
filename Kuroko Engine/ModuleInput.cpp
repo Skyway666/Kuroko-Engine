@@ -28,7 +28,7 @@ ModuleInput::~ModuleInput()
 }
 
 // Called before render is available
-bool ModuleInput::Init(JSON_Object* config)
+bool ModuleInput::Init(const JSON_Object& config)
 {
 	app_log->AddLog("Init SDL input event system");
 	bool ret = true;

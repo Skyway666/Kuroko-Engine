@@ -41,14 +41,14 @@ public:
 	ModuleDebug(Application* app, bool start_enabled = true) : Module(app, start_enabled) { name = "debug"; };
 	~ModuleDebug() {};
 
-	bool Init(JSON_Object* config) { return true; };
+	bool Init(const JSON_Object& config) { return true; };
 	update_status Update(float dt);
 	bool CleanUp();
 
-	uint addArrow(float3 start_point, float3 end_point, Color color = Red);
-	uint addAxis(float3 position, float length = 1.0f, Quat rotation = Quat::identity);
-	uint addRay(float3 start_point, float3 end_point, Color color = Green);
-	uint addFrustum(float3 pos, Quat rotation = Quat::identity, FrustumType type = PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 10.0f, float h_fov_or_ortho_width = 90.0f, float v_fov_or_ortho_height = 59.0f, Color color = Blue);
+	uint addArrow(const float3& start_point, const float3& end_point, const Color& color = Red);
+	uint addAxis(const float3& position, float length = 1.0f, const Quat& rotation = Quat::identity);
+	uint addRay(const float3& start_point, const float3& end_point, const Color& color = Green);
+	uint addFrustum(const float3& pos, const Quat& rotation = Quat::identity, FrustumType type = PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 10.0f, float h_fov_or_ortho_width = 90.0f, float v_fov_or_ortho_height = 59.0f, const Color& color = Blue);
 
 	void removeShape(uint id);
 	void ClearShapes() { shapes.clear(); };

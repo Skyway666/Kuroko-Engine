@@ -20,7 +20,7 @@ update_status ModuleDebug::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-uint ModuleDebug::addArrow(float3 start_point, float3 end_point, Color color)
+uint ModuleDebug::addArrow(const float3& start_point, const float3& end_point, const Color& color)
 {
 	DebugShape* arrow = new DebugShape();
 	arrow->type = ARROW;
@@ -58,7 +58,7 @@ uint ModuleDebug::addArrow(float3 start_point, float3 end_point, Color color)
 	return arrow->id;
 }
 
-uint ModuleDebug::addAxis(float3 position, float length, Quat rotation)
+uint ModuleDebug::addAxis(const float3& position, float length, const Quat& rotation)
 {
 	float3 X = { length, 0.0f, 0.0f };
 	float3 Y = { 0.0f, length, 0.0f };
@@ -97,7 +97,7 @@ uint ModuleDebug::addAxis(float3 position, float length, Quat rotation)
 	return axis->id;
 }
 
-uint ModuleDebug::addRay(float3 start_point, float3 end_point, Color color)
+uint ModuleDebug::addRay(const float3& start_point, const float3& end_point, const Color& color)
 {
 	DebugShape* ray = new DebugShape();
 	ray->type = RAY;
@@ -123,7 +123,7 @@ uint ModuleDebug::addRay(float3 start_point, float3 end_point, Color color)
 	return ray->id;
 }
 
-uint  ModuleDebug::addFrustum(float3 pos,Quat rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, Color color)
+uint  ModuleDebug::addFrustum(const float3& pos, const Quat& rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, const Color& color)
 {
 	Frustum f;
 	f.pos = pos;

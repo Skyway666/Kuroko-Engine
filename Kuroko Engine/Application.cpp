@@ -78,7 +78,7 @@ bool Application::Init()
 
 	app_log->AddLog("Application Init --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
-		ret = (*it)->Init(json_object_get_object(config, (*it)->name.c_str()));
+		ret = (*it)->Init(*json_object_get_object(config, (*it)->name.c_str()));
 
 	app_log->AddLog("Application Start --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
@@ -170,7 +170,7 @@ void Application::SaveConfig_Real() {
 	// Pass one object to each module
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); it++){
 		JSON_Value* module_config = json_value_init_object();
-		(*it)->SaveConfig(json_object(module_config));
+		(*it)->SaveConfig(*json_object(module_config));
 		json_object_set_value(json_object(config), (*it)->name.c_str(), module_config);
 	}
 	// Fill file with info
@@ -190,5 +190,5 @@ void Application::LoadDefaultConfig_Real() {
 	JSON_Object* config = json_value_get_object(json_parse_file(config_file_name.c_str()));
 
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); it++)
-		(*it)->LoadConfig(json_object_get_object(config, (*it)->name.c_str()));
+		(*it)->LoadConfig(*json_object_get_object(config, (*it)->name.c_str()));
 }

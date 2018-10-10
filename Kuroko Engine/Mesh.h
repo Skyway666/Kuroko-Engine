@@ -21,7 +21,7 @@ enum PrimitiveTypes
 class Mesh {
 
 public:
-	Mesh(aiMesh* mesh);
+	Mesh(const aiMesh& mesh);
 	Mesh(PrimitiveTypes primitive);
 	~Mesh();
 
@@ -35,11 +35,11 @@ public:
 private:
 
 	void LoadDataToVRAM();
-	void BuildCube(float sx = 1.0f, float sy = 1.0f, float sz = 1.0f);
+	void BuildCube(float3& size = (float3)float3::one);
 	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	void BuildSphere(float radius = 1.0f, float sectorCount = 12.0f, float stackCount = 24.0f);
 	void BuildCylinder(float radius = 1.0f, float length = 3.0f, int steps = 30);
-	bool LoadFromAssimpMesh(aiMesh* mesh);
+	bool LoadFromAssimpMesh(const aiMesh& mesh);
 	void ClearData();
 	void calculateCentroidandHalfsize();
 

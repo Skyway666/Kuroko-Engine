@@ -20,7 +20,7 @@ public:
 	ModuleInput(Application* app, bool start_enabled = true);
 	~ModuleInput();
 
-	bool Init(JSON_Object* config);
+	bool Init(const JSON_Object& config);
 	update_status PreUpdate(float dt);
 	bool CleanUp();
 
@@ -60,14 +60,13 @@ public:
 	}
 
 private:
-	KEY_STATE* keyboard;
+	KEY_STATE* keyboard = nullptr;
 	KEY_STATE mouse_buttons[MAX_MOUSE_BUTTONS];
-	int mouse_x;
-	int mouse_y;
-	int mouse_z;
-	int mouse_x_motion;
-	int mouse_y_motion;
+	int mouse_x			= 0;
+	int mouse_y			= 0;
+	int mouse_z			= 0;
+	int mouse_x_motion  = 0;
+	int mouse_y_motion  = 0;
 
-	//int mouse_z_motion;
 };
 #endif

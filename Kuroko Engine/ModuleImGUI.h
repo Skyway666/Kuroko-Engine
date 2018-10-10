@@ -20,7 +20,7 @@ public:
 	ModuleImGUI(Application* app, bool start_enabled = true);
 	~ModuleImGUI();
 
-	bool Init(JSON_Object* config);
+	bool Init(const JSON_Object& config);
 	bool Start();
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
@@ -29,9 +29,9 @@ public:
 
 	void DrawGraphicsTab() const;
 	void DrawHierarchyTab();
-	void DrawHierarchyNode(GameObject* game_object, int& id) const;
+	void DrawHierarchyNode(const GameObject& game_object, int& id) const;
 	void DrawObjectInspectorTab();
-	bool DrawComponent(Component* component);
+	bool DrawComponent(Component& component);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab() ;
 	void DrawAboutWindow() ;
@@ -43,8 +43,8 @@ public:
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
 
-	void SaveConfig(JSON_Object* config) const;
-	void LoadConfig(JSON_Object* config);
+	void SaveConfig(JSON_Object& config) const;
+	void LoadConfig(const JSON_Object& config);
 
 private:
 	

@@ -20,7 +20,7 @@ public:
 	virtual ~Module()
 	{}
 
-	virtual bool Init(JSON_Object* config) 
+	virtual bool Init(const JSON_Object& config) 
 	{
 		return true; 
 	}
@@ -50,10 +50,8 @@ public:
 		return true; 
 	}
 
-	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2){}
-
-	virtual void SaveConfig(JSON_Object* config){}
-	virtual void LoadConfig(JSON_Object* config){}
+	virtual void SaveConfig(JSON_Object& config) const {}
+	virtual void LoadConfig(const JSON_Object& config) {}
 
 	std::string name;
 };

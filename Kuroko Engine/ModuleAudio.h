@@ -47,7 +47,7 @@ public:
 	ModuleAudio(Application* app, bool start_enabled = true);
 	~ModuleAudio();
 
-	bool Init(JSON_Object* config);
+	bool Init(const JSON_Object& config);
 	bool CleanUp();
 
 	AudioFile* LoadAudio(const char* path, const char* name, AudioType type);

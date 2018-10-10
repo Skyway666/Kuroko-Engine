@@ -47,7 +47,7 @@ ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(ap
 
 ModuleImporter::~ModuleImporter() {}
 
-bool ModuleImporter::Init(JSON_Object* config)
+bool ModuleImporter::Init(const JSON_Object& config)
 {
 
 	struct aiLogStream stream;
@@ -89,8 +89,8 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 			if (imported_scene)
 			{
 				std::vector<uint> mat_id;
-				LoadMaterials(imported_scene, mat_id);
-				GameObject* root_obj = LoadMeshRecursive(imported_scene->mRootNode, imported_scene, mat_id);
+				LoadMaterials(*imported_scene, mat_id);
+				GameObject* root_obj = LoadMeshRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
 				// Just for assignment 1
 				if(!App->scene_intro->game_objects.empty())
@@ -183,59 +183,59 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 }
 
 
-bool ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id) const
+bool ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const
 {
 	aiString path;
-	for (int i = 0; i < scene->mNumMaterials; i++)
+	for (int i = 0; i < scene.mNumMaterials; i++)
 	{
-		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
+		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
 		{
-			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+			scene.mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 			if(App->importer->Import(path.C_Str(), I_TEXTURE))
 				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
-		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
+		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
 		{
 			path.Clear();
-			scene->mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
+			scene.mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
 				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
-		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
+		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
 		{
 			path.Clear();
-			scene->mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
+			scene.mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
 				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
-		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
+		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
 		{
 			path.Clear();
-			scene->mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
+			scene.mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
 			if (App->importer->Import(path.C_Str(), I_TEXTURE))
 				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
 		}
 	}
 
-	return scene->mNumMaterials == out_mat_id.size();
+	return scene.mNumMaterials == out_mat_id.size();
 }
 
-GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent) const
+GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent) const
 {
-	GameObject* root_obj = new GameObject(node->mName.C_Str(), parent);
+	GameObject* root_obj = new GameObject(node.mName.C_Str(), parent);
 
-	for (int i = 0; i < node->mNumMeshes; i++)
+	for (int i = 0; i < node.mNumMeshes; i++)
 	{
-		Mesh* mesh = new Mesh(scene->mMeshes[node->mMeshes[i]]);
+		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]]);
 		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
-		if(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex < in_mat_id.size())
-			c_m->setMaterial(App->scene_intro->getMaterial(in_mat_id.at(scene->mMeshes[node->mMeshes[i]]->mMaterialIndex)));
+		if(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
+			c_m->setMaterial(App->scene_intro->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
 		root_obj->addComponent(c_m);
-		app_log->AddLog("New mesh with %d vertices", scene->mMeshes[node->mMeshes[i]]->mNumVertices);
+		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
-	for (int i = 0; i < node->mNumChildren; i++)
-		root_obj->addChild(LoadMeshRecursive(node->mChildren[i], scene, in_mat_id, root_obj));
+	for (int i = 0; i < node.mNumChildren; i++)
+		root_obj->addChild(LoadMeshRecursive(*node.mChildren[i], scene, in_mat_id, root_obj));
 
 	return root_obj;
 }

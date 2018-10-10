@@ -16,7 +16,7 @@ public:
 	ModuleRenderer3D(Application* app, bool start_enabled = true);
 	~ModuleRenderer3D();
 
-	bool Init(JSON_Object* config);
+	bool Init(const JSON_Object& config);
 	update_status PreUpdate(float dt);
 	update_status PostUpdate(float dt);
 	bool CleanUp();
@@ -26,7 +26,7 @@ public:
 	SDL_GLContext getContext() const	{ return context; }
 
 	float4x4 CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane);
-	void DirectDrawCube(float3 size) const;
+	void DirectDrawCube(float3& size) const;
 
 private:
 

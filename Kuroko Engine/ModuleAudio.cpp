@@ -15,7 +15,7 @@ ModuleAudio::~ModuleAudio()
 {}
 
 // Called before render is available
-bool ModuleAudio::Init(JSON_Object* config)
+bool ModuleAudio::Init(const JSON_Object& config)
 {
 	//app_log->AddLog("Loading Audio Mixer");
 	//bool ret = true;
