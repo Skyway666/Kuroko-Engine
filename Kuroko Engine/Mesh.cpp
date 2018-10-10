@@ -71,6 +71,8 @@ void Mesh::LoadDataToVRAM()
 
 void Mesh::Draw(Material* mat) 
 {
+	if (!mat)
+		return;
 	Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
 
 	if (diffuse_tex)		glEnable(GL_TEXTURE_2D);

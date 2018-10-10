@@ -17,7 +17,7 @@ public:
 
 	Component_type getType() const { return type; };
 	GameObject* getParent() const { return parent; };
-	void setParent(GameObject* new_parent) { parent = new_parent; }
+	void setParent(GameObject* new_parent) { parent = new_parent; } // Can recieve nullptr
 
 private:
 

@@ -22,8 +22,8 @@ public:
 	Mesh* getMesh()	const				{ return mesh; }
 	void setWireframe(bool state)		{ wireframe = state; };
 	void setDrawNormals(bool state)		{ draw_normals = state; };
-	void setMaterial(Material* new_mat) { mat = new_mat; };
-	void setMesh(Mesh* new_mesh)		{ mesh = new_mesh; }
+	void setMaterial(Material* new_mat) { mat = new_mat; };// Can recieve nullptr
+	void setMesh(Mesh* new_mesh)		{ mesh = new_mesh; }// Can recieve nullptr
 
 private:
 	bool wireframe = false;
