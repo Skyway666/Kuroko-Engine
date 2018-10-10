@@ -147,7 +147,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			return tex;
 			app_log->AddLog("Success loading texture: %s", file);
 		}
-	}
+	}/*
 	if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
 	{
 		if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
@@ -175,7 +175,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			else
 				app_log->AddLog("Error loading fx: %s", file);
 		}
-	}
+	}*/
 	else
 		app_log->AddLog("Error loading file [incompatible format]: %s", file);
 
