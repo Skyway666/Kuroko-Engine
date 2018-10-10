@@ -147,14 +147,14 @@ void Mesh::BuildCube(float3& size)
 	vertices[7] = { size.x, size.y, size.z };
 
 	num_tris = 12;
-	tris = new float3[num_tris];
+	tris = new Tri[num_tris];
 
-	tris[0] = {0, 1, 2};	tris[1] = {3, 2, 1};	//front
-	tris[2] = {6, 5, 4};	tris[3] = {5, 6, 7};	//back
-	tris[4] = {5, 3, 1};	tris[5] = {3, 5, 7};	//up
-	tris[6] = {0, 2, 4};	tris[7] = {6, 4, 2};	//down
-	tris[8] = {4, 1, 0};	tris[9] = {1, 4, 5};	//left
-	tris[10] = { 2, 3, 6 };	tris[11] = { 7, 6, 3 };	//right  
+	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);	//front
+	tris[2].set(6, 5, 4);	tris[3].set(5, 6, 7);	//back
+	tris[4].set(5, 3, 1);	tris[5].set(3, 5, 7);	//up
+	tris[6].set(0, 2, 4);	tris[7].set(6, 4, 2);	//down
+	tris[8].set(4, 1, 0);	tris[9].set(1, 4, 5);	//left
+	tris[10].set(2, 3, 6);	tris[11].set( 7, 6, 3 );	//right  
 
 	normals = new float3[num_vertices];
 	for (int i = 0; i < num_vertices; i++)
@@ -190,10 +190,10 @@ void Mesh::BuildPlane(float sx, float sy)
 	vertices[6] = { -sx, sy, 0 };  vertices[7] = { sx, sy, 0 };
 
 	num_tris = 4;
-	tris = new float3[num_tris];
+	tris = new Tri[num_tris];
 
-	tris[0] = {0, 1, 2};	tris[1] = {3, 2, 1};
-	tris[2] = {6, 5, 4};	tris[3] = {7, 5, 6};
+	tris[0].set( 0, 1, 2);	tris[1].set( 3, 2, 1);
+	tris[2].set( 6, 5, 4);	tris[3].set( 7, 5, 6);
 
 	normals = new float3[num_vertices];
 	for (int i = 0; i < num_vertices; i++)
@@ -235,7 +235,7 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 	vertices = new float3[num_vertices];
 	normals = new float3[num_vertices];
 	tex_coords = new float2[num_vertices];
-	tris = new float3[num_tris];
+	tris = new Tri[num_tris];
 
 	int array_pos = 0;
 	for (int i = 0; i <= stackCount; ++i) {
@@ -276,12 +276,12 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
 			// 2 triangles per sector excluding 1st and last stacks
 			if (i != 0) {
-				tris[array_pos] = { (float)k1, (float)k2, (float)k1 + 1 };
+				tris[array_pos] = { (uint)k1, (uint)k2, (uint)k1 + 1 };
 				array_pos++;
 			}
 
 			if (i != (stackCount - 1)) {
-				tris[array_pos] = { (float)k1 + 1, (float)k2, (float)k2 + 1 };
+				tris[array_pos] = { (uint)k1 + 1, (uint)k2, (uint)k2 + 1 };
 				array_pos++;
 			}
 		}
@@ -331,7 +331,7 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 	vertices[numSteps * 2 + 1] = {0.0f, 0.0f, -hl};
 
 	num_tris = 4 * numSteps * 3;
-	tris = new float3[num_tris];
+	tris = new Tri[num_tris];
 
 	for (int i = 0; i < numSteps; ++i) {
 		unsigned int i1 = i;
@@ -341,11 +341,11 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 
 		// Sides
 
-		tris[i * 6 + 0] = { (float)i1, (float)i3, (float)i2};
-		tris[i * 6 + 3] = { (float)i4, (float)i2, (float)i3};
+		tris[i * 6 + 0] = { i1, i3, i2};
+		tris[i * 6 + 3] = { i4, i2, i3};
 		// Caps
-		tris[numSteps * 6 + i * 6 + 0] = { (float)numSteps * 2 + 0, (float)i1, (float)i2};
-		tris[numSteps * 6 + i * 6 + 3] = { (float)numSteps * 2 + 1, (float)i4, (float)i3};
+		tris[numSteps * 6 + i * 6 + 0] = { (uint)numSteps * 2 + 0, i1, i2};
+		tris[numSteps * 6 + i * 6 + 3] = { (uint)numSteps * 2 + 1, i4, i3};
 	}
 
 	for (int i = 0; i < num_vertices; i++)
@@ -370,11 +370,11 @@ bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh)
 	if (imported_mesh.HasFaces())
 	{
 		num_tris = imported_mesh.mNumFaces;
-		tris = new float3[num_tris]; // assume each face is a triangle
+		tris = new Tri[num_tris]; // assume each face is a triangle
 		for (uint i = 0; i < num_tris; ++i)
 		{
 			if (imported_mesh.mFaces[i].mNumIndices == 3)
-				memcpy(&tris[i], imported_mesh.mFaces[i].mIndices, sizeof(float3));
+				memcpy(&tris[i], imported_mesh.mFaces[i].mIndices, sizeof(Tri));
 			else
 				app_log->AddLog("WARNING, geometry face with != 3 indices!");
 		}

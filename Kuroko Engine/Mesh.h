@@ -18,6 +18,11 @@ enum PrimitiveTypes
 	Primitive_Cylinder
 };
 
+struct Tri{
+	uint v1 = 0; uint v2 = 0; uint v3 = 0;
+	void set(uint v1, uint v2, uint v3) { this->v1 = v1; this->v2 = v2; this->v3 = v3; }
+};
+
 class Mesh {
 
 public:
@@ -54,7 +59,7 @@ private:
 	bool imported_colors = false;
 	bool imported_tex_coords = false;
 
-	float3* tris = nullptr;
+	Tri* tris = nullptr;
 	float3* vertices = nullptr;
 	float3* normals = nullptr;
 	float3* colors = nullptr;
