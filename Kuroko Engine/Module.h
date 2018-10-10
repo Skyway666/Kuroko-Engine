@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MODULE
+#define _MODULE
 
 class Application;
 struct PhysBody3D;
@@ -56,3 +57,4 @@ public:
 
 	std::string name;
 };
+#endif

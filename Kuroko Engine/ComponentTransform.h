@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _COMPONENT_TRANSFORM
+#define _COMPONENT_TRANSFORM
 
 #include "Component.h"
 #include "Vector3.h"
@@ -50,3 +51,4 @@ private:
 
 	float4x4 mat = mat.identity;
 };
+#endif

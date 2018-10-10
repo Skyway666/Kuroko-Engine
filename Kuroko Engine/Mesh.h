@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MESH
+#define _MESH
 #include "Globals.h"
 #include "Vector3.h"
 #include "Vector2.h"
@@ -61,3 +62,4 @@ private:
 	Vector3f half_size = Vector3f::Zero;
 	Vector3f centroid = Vector3f::Zero;
 };
+#endif

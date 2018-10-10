@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULE_DEBUG
+#define __MODULE_DEBUG
 
 #include "Vector3.h"
 #include "Vector2.h"
@@ -53,3 +54,4 @@ private:
 	std::list<DebugShape*> shapes;
 	uint last_id = 0;
 };
+#endif

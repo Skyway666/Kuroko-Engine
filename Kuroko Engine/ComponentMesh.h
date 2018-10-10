@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _COMPONENT_MESH
+#define _COMPONENT_MESH
 #include "Component.h"
 #include "Mesh.h"
 
@@ -31,3 +32,4 @@ private:
 	Material* mat = nullptr;
 	Mesh* mesh = nullptr;
 };
+#endif

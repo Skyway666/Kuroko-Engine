@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __ModuleRenderer_H__
+#define __ModuleRenderer_H__
+
 #include "Module.h"
 #include "Globals.h"
 #include "Light.h"
@@ -36,3 +38,5 @@ private:
 	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 
 };
+
+#endif

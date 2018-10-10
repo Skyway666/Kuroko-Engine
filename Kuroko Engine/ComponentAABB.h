@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _COMPONENTAABB_
+#define _COMPONENTAABB_
 
 #include "Vector3.h"
 #include "Component.h"
@@ -37,3 +38,4 @@ private:
 	ComponentTransform* transform = nullptr;
 
 };
+#endif

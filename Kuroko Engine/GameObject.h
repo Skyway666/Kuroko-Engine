@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef _GAME_OBJECT_
+#define _GAME_OBJECT_
 #include <list>
 #include <string>
 #include "Component.h"
@@ -65,3 +65,4 @@ public:
 private: 
 	void calculateCentroidandHalfsize();
 };
+#endif

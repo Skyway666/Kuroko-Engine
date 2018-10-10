@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MATERIAL
+#define _MATERIAL
 #include "Globals.h"
 
 enum Mat_Wrap { W_UNKNOWN, CLAMP, CLAMP_TO_BORDER, REPEAT, MIRRORED_REPEAT };
@@ -52,3 +53,4 @@ private:
 	Texture* lightmap = nullptr;
 
 };
+#endif

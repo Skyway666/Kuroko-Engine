@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef _COMPONENT_
+#define _COMPONENT_
 class GameObject;
 
 enum Component_type { NONE, MESH, TRANSFORM, C_AABB };
@@ -25,3 +25,4 @@ private:
 	Component_type type = NONE;
 	GameObject* parent = nullptr;
 };
+#endif
