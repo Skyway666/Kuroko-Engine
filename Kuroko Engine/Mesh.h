@@ -26,9 +26,9 @@ public:
 
 	void Draw(Material* mat);
 	void DrawNormals();
-	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
-	Vector3f getHalfSize() { return half_size; }
-	Vector3f getCentroid() { return centroid; }
+	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
+	Vector3f getHalfSize() const { return half_size; }
+	Vector3f getCentroid() const { return centroid; }
 
 private:
 

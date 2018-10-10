@@ -48,7 +48,7 @@ void ComponentTransform::LookAt(Vector3f position, Vector3f target, Vector3f for
 	rotation = mat.RotatePart().ToQuat();
 }
 
-float4x4 ComponentTransform::getModelViewMatrix()
+float4x4 ComponentTransform::getModelViewMatrix() 
 {
 	mat = float4x4::identity;
 	mat = mat * rotation;
@@ -58,21 +58,21 @@ float4x4 ComponentTransform::getModelViewMatrix()
 }
 
 
-float3 ComponentTransform::Forward()
+float3 ComponentTransform::Forward() const
 {
 	float3 forward = { 0.0f, 0.0f, 1.0f };
 	forward = rotation * forward;
 	return forward;
 }
 
-float3 ComponentTransform::Up()
+float3 ComponentTransform::Up() const
 {
 	float3 up = { 0.0f, 1.0f, 0.0f };
 	up = rotation * up;
 	return up;
 }
 
-float3 ComponentTransform::Right()
+float3 ComponentTransform::Right() const
 {
 	float3 right = { 1.0f, 0.0f, 0.0f };
 	right = rotation * right;

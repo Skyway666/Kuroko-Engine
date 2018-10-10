@@ -17,8 +17,8 @@ public:
 	bool Update(float dt);
 	void Reload();
 
-	math::AABB* getAABB() { return aabb; };
-	math::OBB* getOBB() { return obb; };
+	math::AABB* getAABB() const { return aabb; };
+	math::OBB* getOBB() const { return obb; };
 
 	void DrawAABB();
 	void DrawOBB();

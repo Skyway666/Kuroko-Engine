@@ -30,14 +30,14 @@ public:
 
 	void LookAt(Vector3f position, Vector3f target, Vector3f forward, Vector3f up);
 
-	Vector3f getPosition() { return position; };
-	Vector3f getScale() { return scale; };
-	Vector3f getRotationEuler() { return Vector3f(euler_angles.x, euler_angles.y, euler_angles.z); };
-	Quat getRotation() { return rotation; };
+	Vector3f getPosition()const { return position; };
+	Vector3f getScale() const { return scale; };
+	Vector3f getRotationEuler()const { return Vector3f(euler_angles.x, euler_angles.y, euler_angles.z); };
+	Quat getRotation()const { return rotation; };
 
-	float3 Forward();
-	float3 Right();
-	float3 Up();
+	float3 Forward() const;
+	float3 Right()const;
+	float3 Up()const;
 
 
 private:

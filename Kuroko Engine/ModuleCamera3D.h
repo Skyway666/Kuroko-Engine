@@ -24,7 +24,7 @@ public:
 	void FocusSelectedGeometry(float distance);
 	void RotateSelectedGeometry();
 	void Reset();
-	float* GetViewMatrix();
+	float* GetViewMatrix() const;
 
 private:
 

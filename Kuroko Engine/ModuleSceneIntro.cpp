@@ -61,7 +61,7 @@ update_status ModuleScene::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-Material* ModuleScene::getMaterial(uint id)
+Material* ModuleScene::getMaterial(uint id) 
 {
 	for (std::list<Material*>::iterator it = materials.begin(); it != materials.end(); it++)
 		if (id == (*it)->getId())

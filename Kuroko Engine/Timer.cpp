@@ -26,7 +26,7 @@ void Timer::Reset()
 }
 
 // ---------------------------------------------
-Uint32 Timer::Read()
+Uint32 Timer::Read() const
 {
 	if (!reset)
 	{

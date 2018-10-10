@@ -19,7 +19,7 @@ Material::~Material()
 }
 
 
-Texture* Material::getTexture(TextureType tex_type)
+Texture* Material::getTexture(TextureType tex_type) const
 {
 	switch (tex_type)
 	{

@@ -19,11 +19,11 @@ public:
 
 	void OnResize(int width, int height);
 
-	SDL_GLContext getContext()	{ return context; }
+	SDL_GLContext getContext() const	{ return context; }
 
 	float4x4 CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane);
 
-	void DirectDrawCube(Vector3f size);
+	void DirectDrawCube(Vector3f size) const;
 
 private:
 

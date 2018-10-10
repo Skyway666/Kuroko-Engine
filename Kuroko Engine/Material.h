@@ -14,8 +14,8 @@ public:
 	Texture(uint GL_id);
 	~Texture();
 
-	uint getGLid() { return gl_id; };
-	void getSize(int& x, int& y) { x = size_x; y = size_y; };
+	uint getGLid() const { return gl_id; };
+	void getSize(int& x, int& y) const { x = size_x; y = size_y; };
 
 	void setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter);
 	void LoadCheckered();
@@ -39,10 +39,10 @@ public:
 	Material();
 	~Material();
 
-	Texture* getTexture(TextureType tex_type);
+	Texture* getTexture(TextureType tex_type) const;
 	void setTexture(TextureType tex_type, Texture* texture);
 	void setCheckeredTexture(TextureType tex_type = DIFFUSE);
-	uint getId() { return id; };
+	uint getId() const { return id; };
 
 private:
 	uint id = 0;

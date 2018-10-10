@@ -458,7 +458,7 @@ void Mesh::calculateCentroidandHalfsize()
 	}
 }
 
-void Mesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords)
+void Mesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const
 {
 	vert_num = num_vertices;
 	poly_count = num_tris;
