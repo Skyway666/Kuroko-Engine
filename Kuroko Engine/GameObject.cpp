@@ -165,14 +165,14 @@ void GameObject::calculateCentroidandHalfsize()
 	std::list<Component*> meshes;
 	getComponents(MESH, meshes);
 
-	Vector3f lowest_p = Vector3f::PosInfinity;
-	Vector3f highest_p = Vector3f::NegInfinity;
+	float3 lowest_p = float3::inf;
+	float3 highest_p = -float3::inf;
 
 	for (std::list<Component*>::iterator it = meshes.begin(); it != meshes.end(); it++)
 	{
 		if (Mesh* mesh = ((ComponentMesh*)(*it))->getMesh())
 		{
-			Vector3f half_size = mesh->getHalfSize();
+			float3 half_size = mesh->getHalfSize();
 
 			if (lowest_p.x > -half_size.x) lowest_p.x = -half_size.x;
 			if (lowest_p.y > -half_size.y) lowest_p.y = -half_size.y;
@@ -186,10 +186,10 @@ void GameObject::calculateCentroidandHalfsize()
 
 	float4x4 inh_transform = ((ComponentTransform*)getComponent(TRANSFORM))->getInheritedTransform();
 
-	if (lowest_p == Vector3f::PosInfinity || highest_p == Vector3f::NegInfinity)
-		centroid = Vector3f::Zero;
+	if (lowest_p.Equals(float3::inf) || highest_p.Equals(-float3::inf))
+		centroid = float3::zero;
 	else
-		centroid = Vector3f(((lowest_p + highest_p) * 0.5f).toMathVec() + inh_transform.TranslatePart());
+		centroid = float3(((lowest_p + highest_p) * 0.5f) + inh_transform.TranslatePart());
 
 	float3 inh_scale = inh_transform.GetScale();
 	half_size = highest_p;
@@ -198,13 +198,13 @@ void GameObject::calculateCentroidandHalfsize()
 
 
 
-void GameObject::getInheritedHalfsizeAndCentroid(Vector3f& out_half_size, Vector3f& out_centroid)
+void GameObject::getInheritedHalfsizeAndCentroid(float3& out_half_size, float3& out_centroid)
 {
 	std::list<GameObject*> children;
 	getChildren(children);
 
-	Vector3f lowest_p = centroid - half_size;
-	Vector3f highest_p = centroid + half_size;
+	float3 lowest_p = centroid - half_size;
+	float3 highest_p = centroid + half_size;
 
 	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
 	{
@@ -214,8 +214,8 @@ void GameObject::getInheritedHalfsizeAndCentroid(Vector3f& out_half_size, Vector
 		temp_obb.axis[0] = transform->Right();
 		temp_obb.axis[1] = transform->Up();
 		temp_obb.axis[2] = transform->Forward();
-		temp_obb.r = (*it)->getHalfsize().toMathVec();
-		temp_obb.pos = Vector3f::Zero.toMathVec();
+		temp_obb.r = (*it)->getHalfsize();
+		temp_obb.pos = float3::zero;
 
 		float3 corners[8];
 		temp_obb.GetCornerPoints(corners);

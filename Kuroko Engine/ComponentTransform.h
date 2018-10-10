@@ -10,29 +10,29 @@ public:
 
 	friend class ModuleImGUI;
 
-	ComponentTransform(GameObject* parent, Quat rot, Vector3f pos, Vector3f scl) : position(pos), scale(scl), rotation(rot), Component(parent, TRANSFORM) {};
-	ComponentTransform(GameObject* parent, Vector3f euler_axis, Vector3f pos, Vector3f scl) : position(pos), scale(scl), Component(parent, TRANSFORM) {};
+	ComponentTransform(GameObject* parent, Quat rot, float3 pos, float3 scl) : position(pos), scale(scl), rotation(rot), Component(parent, TRANSFORM) {};
+	ComponentTransform(GameObject* parent, float3 euler_axis, float3 pos, float3 scl) : position(pos), scale(scl), Component(parent, TRANSFORM) {};
 	ComponentTransform(GameObject* parent, ComponentTransform& transform);
 	ComponentTransform(GameObject* parent) : Component(parent, TRANSFORM) { rotation = Quat::identity; };
 
 	~ComponentTransform() {};
 
-	float4x4 getInheritedTransform(Vector3f pos = Vector3f::Zero, Quat rot = { 0.0f ,0.0f ,0.0f, 1.0f }, Vector3f scl = Vector3f::One);  // DON'T set values to the args
+	float4x4 getInheritedTransform(float3 pos = float3::zero, Quat rot = { 0.0f ,0.0f ,0.0f, 1.0f }, float3 scl = float3::one);  // DON'T set values to the args
 
-	void setPosition(Vector3f pos);
-	void Translate(Vector3f dir);
-	void setScale(Vector3f scl);
-	void Scale(Vector3f scl);
+	void setPosition(float3 pos);
+	void Translate(float3 dir);
+	void setScale(float3 scl);
+	void Scale(float3 scl);
 	void setRotation(Quat rot) { rotation = rot; euler_angles = rot.ToEulerXYZ(); };
-	void setRotationEuler(Vector3f euler);
-	void RotateAroundAxis(Vector3f axis, float rot_in_degrees) { rotation.RotateAxisAngle(axis.toMathVec(), DegToRad(rot_in_degrees)); euler_angles = rotation.ToEulerXYZ();};
+	void setRotationEuler(float3 euler);
+	void RotateAroundAxis(float3 axis, float rot_in_degrees) { rotation.RotateAxisAngle(axis, DegToRad(rot_in_degrees)); euler_angles = rotation.ToEulerXYZ();};
 	float4x4 getModelViewMatrix();
 
-	void LookAt(Vector3f position, Vector3f target, Vector3f forward, Vector3f up);
+	void LookAt(float3 position, float3 target, float3 forward, float3 up);
 
-	Vector3f getPosition() { return position; };
-	Vector3f getScale() { return scale; };
-	Vector3f getRotationEuler() { return Vector3f(euler_angles.x, euler_angles.y, euler_angles.z); };
+	float3 getPosition() { return position; };
+	float3 getScale() { return scale; };
+	float3 getRotationEuler() { return float3(euler_angles.x, euler_angles.y, euler_angles.z); };
 	Quat getRotation() { return rotation; };
 
 	float3 Forward();
@@ -42,8 +42,8 @@ public:
 
 private:
 
-	Vector3f position = { 0.0f,0.0f,0.0f };			
-	Vector3f scale = { 1.0f,1.0f,1.0f };				
+	float3 position = { 0.0f,0.0f,0.0f };			
+	float3 scale = { 1.0f,1.0f,1.0f };				
 	Quat rotation = { 0.0f,0.0f,0.0f,1.0f };	
 
 	float3 euler_angles = { 0.0f,0.0f,0.0f };

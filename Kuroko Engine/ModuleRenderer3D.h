@@ -23,7 +23,7 @@ public:
 
 	float4x4 CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane);
 
-	void DirectDrawCube(Vector3f size);
+	void DirectDrawCube(float3 size);
 
 private:
 

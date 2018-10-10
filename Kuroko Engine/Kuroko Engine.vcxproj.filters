@@ -309,9 +309,6 @@
     <ClInclude Include="Color.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>Sources\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="glmath.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>

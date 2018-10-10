@@ -2,6 +2,7 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
+
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -19,34 +20,34 @@ update_status ModuleDebug::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-uint ModuleDebug::addArrow(Vector3f start_point, Vector3f end_point, Color color)
+uint ModuleDebug::addArrow(float3 start_point, float3 end_point, Color color)
 {
 	DebugShape* arrow = new DebugShape();
 	arrow->type = ARROW;
-	Vector3f aux = end_point - start_point;
+	float3 aux = end_point - start_point;
 
 	arrow->num_vertices = 6;
-	arrow->vertices = new Vector3f[6];
+	arrow->vertices = new float3[6];
 
-	float3 perp1 = aux.toMathVec().Perpendicular().Normalized() * 0.3f;
-	float3 perp2 = aux.toMathVec().AnotherPerpendicular().Normalized() * 0.3f;
+	float3 perp1 = aux.Perpendicular().Normalized() * 0.3f;
+	float3 perp2 = aux.AnotherPerpendicular().Normalized() * 0.3f;
 	arrow->vertices[0] = start_point;			arrow->vertices[1] = end_point;
 	arrow->vertices[2] = (aux* 0.95f) - (perp1); arrow->vertices[3] = (aux* 0.95f) + (perp1);
 	arrow->vertices[4] = (aux* 0.95f) - (perp2); arrow->vertices[5] = (aux* 0.95f) + (perp2);
 	
 	arrow->num_lines = 9;
-	arrow->lines = new Point2ui[9];
+	arrow->lines = new float2[9];
 	arrow->lines[0] = { 0,1 }; arrow->lines[1] = { 2,1 }; arrow->lines[2] = { 3,1 };
 	arrow->lines[3] = { 4,1 }; arrow->lines[4] = { 5,1 }; arrow->lines[5] = { 2,4 }; 
 	arrow->lines[6] = { 2,5 }; arrow->lines[7] = { 3,5 }; arrow->lines[8] = { 4,3 };
 
-	arrow->colors = new Vector3f[6];
+	arrow->colors = new float3[6];
 	for (int i = 0; i < 6; i++)
 		arrow->colors[i] = { color.r, color.g, color.b };
 
-	arrow->normals = new Vector3f[6];
+	arrow->normals = new float3[6];
 	aux.Normalize();
-	arrow->normals[0] = aux.Negate(); arrow->normals[1] = aux;
+	arrow->normals[0] = aux.Neg(); arrow->normals[1] = aux;
 	arrow->normals[2] = (arrow->vertices[2] - end_point).Normalized(); arrow->normals[3] = (arrow->vertices[3] - end_point).Normalized();
 	arrow->normals[4] = (arrow->vertices[4] - end_point).Normalized(); arrow->normals[5] = (arrow->vertices[5] - end_point).Normalized();
 
@@ -57,37 +58,37 @@ uint ModuleDebug::addArrow(Vector3f start_point, Vector3f end_point, Color color
 	return arrow->id;
 }
 
-uint ModuleDebug::addAxis(Vector3f position, float length, Quat rotation)
+uint ModuleDebug::addAxis(float3 position, float length, Quat rotation)
 {
-	Vector3f X = { length, 0.0f, 0.0f };
-	Vector3f Y = { 0.0f, length, 0.0f };
-	Vector3f Z = { 0.0f, 0.0f, length };
+	float3 X = { length, 0.0f, 0.0f };
+	float3 Y = { 0.0f, length, 0.0f };
+	float3 Z = { 0.0f, 0.0f, length };
 
 	if (!rotation.Equals(Quat::identity))
 	{
-		X = rotation * X.toMathVec();
-		Y = rotation * Y.toMathVec();
-		Z = rotation * Z.toMathVec();
+		X = rotation * X;
+		Y = rotation * Y;
+		Z = rotation * Z;
 	}
 
 	DebugShape* axis = new DebugShape();
 	axis->type = AXIS;
 
 	axis->num_vertices = 4;
-	axis->vertices = new Vector3f[4];
+	axis->vertices = new float3[4];
 	axis->vertices[0] = position; axis->vertices[1] = position + X; axis->vertices[2] = position + Y; axis->vertices[3] = position + Z;
 
 	axis->num_lines = 3;
-	axis->lines = new Point2ui[3];
+	axis->lines = new float2[3];
 	axis->lines[0] = { 0,1 }; axis->lines[1] = { 0,2 }; axis->lines[2] = { 0,3 };
 
-	axis->colors = new Vector3f[4];
+	axis->colors = new float3[4];
 	axis->colors[0] = { 1.0f, 1.0f, 1.0f }; axis->colors[1] = { 1.0f, 0.0f, 0.0f }; 
 	axis->colors[2] = { 0.0f, 1.0f, 0.0f }; axis->colors[3] = { 0.0f, 0.0f, 1.0f };
 
-	axis->normals = new Vector3f[4];
-	axis->normals[0] = Vector3f::One;			 axis->normals[1] = X.Negate().Normalized();
-	axis->normals[2] = Y.Negate().Normalized();  axis->normals[3] = Z.Negate().Normalized();
+	axis->normals = new float3[4];
+	axis->normals[0] = float3::one;			 axis->normals[1] = X.Neg().Normalized();
+	axis->normals[2] = Y.Neg().Normalized();  axis->normals[3] = Z.Neg().Normalized();
 
 	axis->id = last_id++;
 	axis->LoadDataToVRAM();
@@ -96,23 +97,23 @@ uint ModuleDebug::addAxis(Vector3f position, float length, Quat rotation)
 	return axis->id;
 }
 
-uint ModuleDebug::addRay(Vector3f start_point, Vector3f end_point, Color color)
+uint ModuleDebug::addRay(float3 start_point, float3 end_point, Color color)
 {
 	DebugShape* ray = new DebugShape();
 	ray->type = RAY;
 
 	ray->num_vertices = 2;
-	ray->vertices = new Vector3f[2];
+	ray->vertices = new float3[2];
 	ray->vertices[0] = start_point; ray->vertices[1] = end_point;
 
 	ray->num_lines = 1;
-	ray->lines = new Point2ui[1];
+	ray->lines = new float2[1];
 	ray->lines[0] = { 0,1 }; 
 
-	ray->colors = new Vector3f[2];
+	ray->colors = new float3[2];
 	ray->colors[0] = { color.r, color.g, color.b }; ray->colors[1] = { color.r, color.g, color.b };
 
-	ray->normals = new Vector3f[2];
+	ray->normals = new float3[2];
 	ray->normals[0] = (start_point - end_point).Normalized(); ray->normals[1] = (end_point - start_point).Normalized();
 
 	ray->id = last_id++;
@@ -122,12 +123,12 @@ uint ModuleDebug::addRay(Vector3f start_point, Vector3f end_point, Color color)
 	return ray->id;
 }
 
-uint  ModuleDebug::addFrustum(Vector3f pos,Quat rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, Color color)
+uint  ModuleDebug::addFrustum(float3 pos,Quat rotation, FrustumType type, float n_plane, float f_plane, float h_fov_or_ortho_width, float v_fov_or_ortho_height, Color color)
 {
 	Frustum f;
-	f.pos = pos.toMathVec();
-	f.front = rotation * Vector3f::Forward.toMathVec();
-	f.up	= rotation * Vector3f::Up.toMathVec();
+	f.pos = pos;
+	f.front = rotation * float3::unitZ;
+	f.up	= rotation * float3::unitY;
 	f.nearPlaneDistance = n_plane;
 	f.farPlaneDistance = f_plane;
 	f.type = type;
@@ -138,26 +139,26 @@ uint  ModuleDebug::addFrustum(Vector3f pos,Quat rotation, FrustumType type, floa
 	frustum->type = FRUSTUM;
 
 	frustum->num_vertices = 8;
-	frustum->vertices = new Vector3f[8];
+	frustum->vertices = new float3[8];
 	float3 corners[8];
 	f.GetCornerPoints(corners);
 	for (int i = 0; i < 8; i++)
 		frustum->vertices[i] = corners[i];
 	
 	frustum->num_lines = 12;
-	frustum->lines = new Point2ui[12];
-	frustum->lines[0].set(4, 6);	frustum->lines[1].set(4, 0);	
-	frustum->lines[6].set(2, 6);	frustum->lines[7].set(2, 0);	
-	frustum->lines[2].set(5, 1);	frustum->lines[3].set(5, 7);
-	frustum->lines[8].set(3, 1);	frustum->lines[9].set(7, 3);
-	frustum->lines[4].set(4, 5);	frustum->lines[5].set(2, 3);	
-	frustum->lines[10].set(1, 0);	frustum->lines[11].set(7, 6);	
+	frustum->lines = new float2[12];
+	frustum->lines[0] = {4, 6};	frustum->lines[1] = {4, 0};	
+	frustum->lines[6] = {2, 6};	frustum->lines[7] = {2, 0};	
+	frustum->lines[2] = {5, 1};	frustum->lines[3] = {5, 7};
+	frustum->lines[8] = {3, 1};	frustum->lines[9] = {7, 3};
+	frustum->lines[4] = {4, 5};	frustum->lines[5] = {2, 3};	
+	frustum->lines[10] = { 1, 0 };	frustum->lines[11] = { 7, 6 };
 
-	frustum->normals = new Vector3f[8];
+	frustum->normals = new float3[8];
 	for (int i = 0; i < 8; i++)
 		frustum->normals[i] = (frustum->vertices[i] - f.CenterPoint()).Normalized();
 
-	frustum->colors = new Vector3f[8];
+	frustum->colors = new float3[8];
 	for (int i = 0; i < 8; i++)
 		frustum->colors[i] = { color.r, color.g, color.b };
 
@@ -202,7 +203,7 @@ void DebugShape::Draw()
 
 	glLineWidth(3.0f);
 
-	size_t Offset = sizeof(Vector3f) * num_vertices;
+	size_t Offset = sizeof(float3) * num_vertices;
 
 	// specify vertex arrays with their offsets
 	glVertexPointer(3, GL_FLOAT, 0, (void*)0);
@@ -231,7 +232,7 @@ void DebugShape::LoadDataToVRAM()
 	glGenBuffers(1, &vboId);    // for vertex buffer
 	glGenBuffers(1, &iboId);    // for index buffer
 
-	size_t vSize = sizeof(Vector3f) * num_vertices;
+	size_t vSize = sizeof(float3) * num_vertices;
 
 	// copy vertex attribs data to VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -243,7 +244,7 @@ void DebugShape::LoadDataToVRAM()
 
 	// copy index data to VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point2ui) * num_lines, lines, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float2) * num_lines, lines, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 }

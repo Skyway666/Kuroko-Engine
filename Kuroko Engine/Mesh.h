@@ -1,7 +1,8 @@
 #pragma once
 #include "Globals.h"
-#include "Vector3.h"
-#include "Vector2.h"
+
+#include "MathGeoLib\Math\float3.h"
+#include "MathGeoLib\Math\float2.h"
 
 class aiMesh;
 class Material;
@@ -19,7 +20,6 @@ enum PrimitiveTypes
 class Mesh {
 
 public:
-
 	Mesh(aiMesh* mesh);
 	Mesh(PrimitiveTypes primitive);
 	~Mesh();
@@ -27,8 +27,8 @@ public:
 	void Draw(Material* mat);
 	void DrawNormals();
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords);
-	Vector3f getHalfSize() { return half_size; }
-	Vector3f getCentroid() { return centroid; }
+	float3 getHalfSize() { return half_size; }
+	float3 getCentroid() { return centroid; }
 
 private:
 
@@ -46,18 +46,18 @@ private:
 	uint iboId = 0;
 	uint vboId = 0;
 
-	uint num_tris = 0;
-	uint num_vertices = 0;
-	bool imported_normals = false;
-	bool imported_colors = false;
-	bool imported_tex_coords = false;
+	uint num_tris				= 0;
+	uint num_vertices			= 0;
+	bool imported_normals		= false;
+	bool imported_colors		= false;
+	bool imported_tex_coords	= false;
 
-	Point3ui* tris = nullptr;
-	Point3f* vertices = nullptr;
-	Point3f* normals = nullptr;
-	Point3f* colors = nullptr;
-	Point2f* tex_coords = nullptr;
+	float3* tris		= nullptr;
+	float3* vertices	= nullptr;
+	float3* normals		= nullptr;
+	float3* colors		= nullptr;
+	float2* tex_coords	= nullptr;
 
-	Vector3f half_size = Vector3f::Zero;
-	Vector3f centroid = Vector3f::Zero;
+	float3 half_size	= float3::zero;
+	float3 centroid		= float3::zero;
 };

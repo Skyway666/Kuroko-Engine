@@ -518,9 +518,9 @@ bool ModuleImGUI::DrawComponent(Component* component)
 			ImGui::Text("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
 			ComponentTransform* transform = (ComponentTransform*)component;
 
-			static Vector3f position;
-			static Vector3f rotation;
-			static Vector3f scale;
+			static float3 position;
+			static float3 rotation;
+			static float3 scale;
 
 			position = transform->position;
 			rotation = transform->getRotationEuler();

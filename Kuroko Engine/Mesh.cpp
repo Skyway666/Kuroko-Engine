@@ -49,8 +49,8 @@ void Mesh::LoadDataToVRAM()
 	glGenBuffers(1, &vboId);    // for vertex buffer
 	glGenBuffers(1, &iboId);    // for index buffer
 
-	size_t vSize = sizeof(Vector3f) * num_vertices;
-	size_t tSize = sizeof(Point2f) * num_vertices;
+	size_t vSize = sizeof(float3) * num_vertices;
+	size_t tSize = sizeof(float2) * num_vertices;
 
 	// copy vertex attribs data to VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -63,7 +63,7 @@ void Mesh::LoadDataToVRAM()
 
 	// copy index data to VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Point3ui) * num_tris, tris, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float3) * num_tris, tris, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
@@ -87,7 +87,7 @@ void Mesh::Draw(Material* mat)
 
 	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
-	size_t Offset = sizeof(Vector3f) * num_vertices;
+	size_t Offset = sizeof(float3) * num_vertices;
 
 	// specify vertex arrays with their offsets
 	glVertexPointer(3, GL_FLOAT, 0, (void*)0);
@@ -117,8 +117,8 @@ void Mesh::DrawNormals()
 {
 	glBegin(GL_LINES);
 
-	Vector3f centroid = Vector3f::Zero;
-	Vector3f h_s = Vector3f::Zero;
+	float3 centroid = float3::zero;
+	float3 h_s = float3::zero;
 
 	for (int i = 0; i < num_vertices; i++)
 	{
@@ -134,41 +134,41 @@ void Mesh::BuildCube(float sx, float sy, float sz)
 	sx *= 0.5f, sy *= 0.5f, sz *= 0.5f;
 
 	num_vertices = 8;
-	vertices = new Point3f[num_vertices];
+	vertices = new float3[num_vertices];
 
-	vertices[0].set(-sx, -sy, -sz);
-	vertices[1].set(sx, -sy, -sz);
-	vertices[2].set(-sx, -sy, sz);
-	vertices[3].set(sx, -sy, sz);
+	vertices[0] = { -sx, -sy, -sz };
+	vertices[1] = { sx, -sy, -sz };
+	vertices[2] = { -sx, -sy, sz };
+	vertices[3] = { sx, -sy, sz };
 
-	vertices[4].set(-sx, sy, -sz);
-	vertices[5].set(sx, sy, -sz);
-	vertices[6].set(-sx, sy, sz);
-	vertices[7].set(sx, sy, sz);
+	vertices[4] = { -sx, sy, -sz };
+	vertices[5] = { sx, sy, -sz };
+	vertices[6] = { -sx, sy, sz };
+	vertices[7] = { sx, sy, sz };
 
 	num_tris = 12;
-	tris = new Point3ui[num_tris];
+	tris = new float3[num_tris];
 
-	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);	//front
-	tris[2].set(6, 5, 4);	tris[3].set(5, 6, 7);	//back
-	tris[4].set(5, 3, 1);	tris[5].set(3, 5, 7);	//up
-	tris[6].set(0, 2, 4);	tris[7].set(6, 4, 2);	//down
-	tris[8].set(4, 1, 0);	tris[9].set(1, 4, 5);	//left
-	tris[10].set(2, 3, 6);	tris[11].set(7, 6, 3);	//right  
+	tris[0] = {0, 1, 2};	tris[1] = {3, 2, 1};	//front
+	tris[2] = {6, 5, 4};	tris[3] = {5, 6, 7};	//back
+	tris[4] = {5, 3, 1};	tris[5] = {3, 5, 7};	//up
+	tris[6] = {0, 2, 4};	tris[7] = {6, 4, 2};	//down
+	tris[8] = {4, 1, 0};	tris[9] = {1, 4, 5};	//left
+	tris[10] = { 2, 3, 6 };	tris[11] = { 7, 6, 3 };	//right  
 
-	normals = new Point3f[num_vertices];
+	normals = new float3[num_vertices];
 	for (int i = 0; i < num_vertices; i++)
 		normals[i] = vertices[i].Normalized();
 
 
-	colors = new Point3f[num_vertices];
+	colors = new float3[num_vertices];
 	Color random_color;
 	random_color.setRandom();
 
 	for (int i = 0; i < num_vertices; i++)
-		colors[i].set(random_color.r, random_color.g, random_color.b);
+		colors[i] = { random_color.r, random_color.g, random_color.b };
 
-	tex_coords = new Point2f[36];
+	tex_coords = new float2[36];
 
 	tex_coords[0] = { 0.0f, 0.0f }; tex_coords[1] = { 1.0f, 0.0f };
 	tex_coords[2] = { 0.0f, 1.0f }; tex_coords[3] = { 1.0f, 1.0f };
@@ -182,31 +182,31 @@ void Mesh::BuildPlane(float sx, float sy)
 	sx *= 0.5f, sy *= 0.5f;
 
 	num_vertices = 8;
-	vertices = new Point3f[num_vertices];
+	vertices = new float3[num_vertices];
 
-	vertices[0].set(-sx, -sy, 0); vertices[1].set(sx, -sy, 0);
-	vertices[2].set(-sx, sy, 0);  vertices[3].set(sx, sy, 0);
-	vertices[4].set(-sx, -sy, 0); vertices[5].set(sx, -sy, 0);
-	vertices[6].set(-sx, sy, 0);  vertices[7].set(sx, sy, 0);
+	vertices[0] = { -sx, -sy, 0 }; vertices[1] = { sx, -sy, 0 };
+	vertices[2] = { -sx, sy, 0 };  vertices[3] = { sx, sy, 0 };
+	vertices[4] = { -sx, -sy, 0 }; vertices[5] = { sx, -sy, 0 };
+	vertices[6] = { -sx, sy, 0 };  vertices[7] = { sx, sy, 0 };
 
 	num_tris = 4;
-	tris = new Point3ui[num_tris];
+	tris = new float3[num_tris];
 
-	tris[0].set(0, 1, 2);	tris[1].set(3, 2, 1);
-	tris[2].set(6, 5, 4);	tris[3].set(7, 5, 6);
+	tris[0] = {0, 1, 2};	tris[1] = {3, 2, 1};
+	tris[2] = {6, 5, 4};	tris[3] = {7, 5, 6};
 
-	normals = new Point3f[num_vertices];
+	normals = new float3[num_vertices];
 	for (int i = 0; i < num_vertices; i++)
 		normals[i] = vertices[i].Normalized();
 
-	colors = new Point3f[num_vertices];
+	colors = new float3[num_vertices];
 	Color random_color;
 	random_color.setRandom();
 
 	for (int i = 0; i < num_vertices; i++)
-		colors[i].set(random_color.r, random_color.g, random_color.b);
+		colors[i] = { random_color.r, random_color.g, random_color.b };
 
-	tex_coords = new Point2f[num_vertices];
+	tex_coords = new float2[num_vertices];
 	tex_coords[0] = { 0.0f, 0.0f };   tex_coords[1] = { 1.0f, 0.0f };
 	tex_coords[2] = { 0.0f, 1.0f };   tex_coords[3] = { 1.0f, 1.0f };
 	tex_coords[4] = { 0.0f, 0.0f }; tex_coords[5] = { 1.0f, 0.0f };
@@ -232,10 +232,10 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 	num_vertices = sector_size * stack_size;
 	num_tris = stackCount * sectorCount * 2 - (2 * sectorCount);
 
-	vertices = new Point3f[num_vertices];
-	normals = new Point3f[num_vertices];
-	tex_coords = new Point2f[num_vertices];
-	tris = new Point3ui[num_tris];
+	vertices = new float3[num_vertices];
+	normals = new float3[num_vertices];
+	tex_coords = new float2[num_vertices];
+	tris = new float3[num_tris];
 
 	int array_pos = 0;
 	for (int i = 0; i <= stackCount; ++i) {
@@ -251,18 +251,18 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 			// vertex position (x, y, z)
 			x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
 			y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
-			vertices[array_pos].set(x, y, z);
+			vertices[array_pos] = { x, y, z };
 
 			// vertex normal (nx, ny, nz)
 			nx = x * lengthInv;
 			ny = y * lengthInv;
 			nz = z * lengthInv;
-			normals[array_pos].set(nx, ny, nz);
+			normals[array_pos] = { nx, ny, nz };
 
 			// vertex tex coord (s, t)
 			s = (float)j / sectorCount;
 			t = (float)i / stackCount;
-			tex_coords[array_pos].set(s, t);
+			tex_coords[array_pos] = { s, t };
 			array_pos++;
 		}
 	}
@@ -276,23 +276,23 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
 			// 2 triangles per sector excluding 1st and last stacks
 			if (i != 0) {
-				tris[array_pos].set(k1, k2, k1 + 1);
+				tris[array_pos] = { (float)k1, (float)k2, (float)k1 + 1 };
 				array_pos++;
 			}
 
 			if (i != (stackCount - 1)) {
-				tris[array_pos].set(k1 + 1, k2, k2 + 1);
+				tris[array_pos] = { (float)k1 + 1, (float)k2, (float)k2 + 1 };
 				array_pos++;
 			}
 		}
 	}
 
-	colors = new Point3f[num_vertices];
+	colors = new float3[num_vertices];
 	Color random_color;
 	random_color.setRandom();
 
 	for (int i = 0; i < num_vertices; i++)
-		colors[i].set(random_color.r, random_color.g, random_color.b);
+		colors[i] = { random_color.r, random_color.g, random_color.b };
 
 
 }
@@ -303,15 +303,15 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 	// code belongs to Zakuayada https://www.gamedev.net/forums/topic/359467-draw-cylinder-with-triangle-strips/
 
 	num_vertices = numSteps * 2 + 2;
-	vertices = new Point3f[num_vertices];
-	normals = new Point3f[num_vertices];
-	tex_coords = new Point2f[num_vertices];
-	colors = new Point3f[num_vertices];
+	vertices = new float3[num_vertices];
+	normals = new float3[num_vertices];
+	tex_coords = new float2[num_vertices];
+	colors = new float3[num_vertices];
 
 	Color random_color;
 	random_color.setRandom();
 	for (int i = 0; i < num_vertices; i++)
-		colors[i].set(random_color.r, random_color.g, random_color.b);
+		colors[i] = { random_color.r, random_color.g, random_color.b };
 
 	float hl = length * 0.5f;
 	float a = 0.0f;
@@ -319,19 +319,19 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 	for (int i = 0; i < numSteps; ++i) {
 		float x = cos(a) * radius;
 		float y = sin(a) * radius;
-		vertices[i].set(x, y, hl);
+		vertices[i] = { x, y, hl };
 		tex_coords[i] = { 1.0f / numSteps * i , 1.0f };
-		vertices[i + numSteps].set(x, y, -hl);
+		vertices[i + numSteps] = { x, y, -hl };
 		tex_coords[i + numSteps] = { 1.0f / numSteps * i , 0.0f };
 
 		a += step;
 	}
 
-	vertices[numSteps * 2 + 0].set(0.0f, 0.0f, +hl);
-	vertices[numSteps * 2 + 1].set(0.0f, 0.0f, -hl);
+	vertices[numSteps * 2 + 0] = {0.0f, 0.0f, +hl};
+	vertices[numSteps * 2 + 1] = {0.0f, 0.0f, -hl};
 
 	num_tris = 4 * numSteps * 3;
-	tris = new Point3ui[num_tris];
+	tris = new float3[num_tris];
 
 	for (int i = 0; i < numSteps; ++i) {
 		unsigned int i1 = i;
@@ -341,11 +341,11 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 
 		// Sides
 
-		tris[i * 6 + 0].set(i1, i3, i2);
-		tris[i * 6 + 3].set(i4, i2, i3);
+		tris[i * 6 + 0] = { (float)i1, (float)i3, (float)i2};
+		tris[i * 6 + 3] = { (float)i4, (float)i2, (float)i3};
 		// Caps
-		tris[numSteps * 6 + i * 6 + 0].set(numSteps * 2 + 0, i1, i2);
-		tris[numSteps * 6 + i * 6 + 3].set(numSteps * 2 + 1, i4, i3);
+		tris[numSteps * 6 + i * 6 + 0] = { (float)numSteps * 2 + 0, (float)i1, (float)i2};
+		tris[numSteps * 6 + i * 6 + 3] = { (float)numSteps * 2 + 1, (float)i4, (float)i3};
 	}
 
 	for (int i = 0; i < num_vertices; i++)
@@ -360,8 +360,8 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	if (imported_mesh->mNumVertices)
 	{
 		num_vertices = imported_mesh->mNumVertices;
-		vertices = new Point3f[num_vertices];
-		memcpy(vertices, imported_mesh->mVertices, sizeof(Point3f) * num_vertices);
+		vertices = new float3[num_vertices];
+		memcpy(vertices, imported_mesh->mVertices, sizeof(float3) * num_vertices);
 	}
 	else
 		return false;
@@ -370,11 +370,11 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	if (imported_mesh->HasFaces())
 	{
 		num_tris = imported_mesh->mNumFaces;
-		tris = new Point3ui[num_tris]; // assume each face is a triangle
+		tris = new float3[num_tris]; // assume each face is a triangle
 		for (uint i = 0; i < num_tris; ++i)
 		{
 			if (imported_mesh->mFaces[i].mNumIndices == 3)
-				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(Point3ui));
+				memcpy(&tris[i], imported_mesh->mFaces[i].mIndices, sizeof(float3));
 			else
 				app_log->AddLog("WARNING, geometry face with != 3 indices!");
 		}
@@ -383,24 +383,24 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 		return false;
 
 	// normals
-	normals = new Point3f[num_vertices];
+	normals = new float3[num_vertices];
 	if (imported_mesh->HasNormals())
 	{
 		imported_normals = true;
-		memcpy(normals, imported_mesh->mNormals, sizeof(Point3f) * num_vertices);
+		memcpy(normals, imported_mesh->mNormals, sizeof(float3) * num_vertices);
 	}
 	else
 	{
 		for (int i = 0; i < num_vertices; i++)
-			normals[i].set(0.0f, 0.0f, 0.0f);
+			normals[i] = { 0.0f, 0.0f, 0.0f };
 	}
 
 	// colors
-	colors = new Point3f[num_vertices];
+	colors = new float3[num_vertices];
 	if (imported_mesh->HasVertexColors(0))
 	{
 		imported_colors = true;
-		memcpy(normals, imported_mesh->mColors[0], sizeof(Point3f) * num_vertices);
+		memcpy(normals, imported_mesh->mColors[0], sizeof(float3) * num_vertices);
 	}
 	else
 	{
@@ -408,11 +408,11 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 		random_color.setRandom();
 
 		for (int i = 0; i < num_vertices; i++)
-			colors[i].set(random_color.r, random_color.g, random_color.b);
+			colors[i] = { random_color.r, random_color.g, random_color.b };
 	}
 
 	// texture coordinates
-	tex_coords = new Point2f[num_vertices];
+	tex_coords = new float2[num_vertices];
 	if (imported_mesh->HasTextureCoords(0))
 	{
 		imported_tex_coords = true;
@@ -422,7 +422,7 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 	else
 	{
 		for (int i = 0; i < num_vertices; i++)
-			tex_coords[i].SetToZero();
+			tex_coords[i] = float2::zero;
 	}
 	calculateCentroidandHalfsize();
 
@@ -431,8 +431,8 @@ bool Mesh::LoadFromAssimpMesh(aiMesh* imported_mesh)
 
 void Mesh::calculateCentroidandHalfsize()
 {
-	Vector3f lowest_p = Vector3f::PosInfinity;
-	Vector3f highest_p = Vector3f::NegInfinity;
+	float3 lowest_p = float3::inf;
+	float3 highest_p = -float3::inf;
 
 	if (vertices)
 	{

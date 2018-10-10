@@ -17,11 +17,11 @@ void ComponentAABB::Reload()
 	if (!obb)
 		obb = new OBB();
 
-	Vector3f half_size, centroid;
+	float3 half_size, centroid;
 	getParent()->getInheritedHalfsizeAndCentroid(half_size, centroid);
 	
-	obb->pos = centroid.toMathVec();
-	obb->r = half_size.toMathVec();
+	obb->pos = centroid;
+	obb->r = half_size;
 
 	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
 
@@ -41,12 +41,12 @@ bool ComponentAABB::Update(float dt)
 	{
 		bool update = false;
 
-		Vector3f inh_half_size, inh_centroid;
+		float3 inh_half_size, inh_centroid;
 		getParent()->getInheritedHalfsizeAndCentroid(inh_half_size, inh_centroid);
 
-		if (!inh_centroid.toMathVec().Equals(obb->pos))
+		if (!inh_centroid.Equals(obb->pos))
 		{
-			obb->pos = inh_centroid.toMathVec();
+			obb->pos = inh_centroid;
 			update = true;
 		}
 
@@ -60,9 +60,9 @@ bool ComponentAABB::Update(float dt)
 		}
 
 
-		if (!inh_half_size.toMathVec().Equals(obb->r))
+		if (!inh_half_size.Equals(obb->r))
 		{
-			obb->r = inh_half_size.toMathVec();
+			obb->r = inh_half_size;
 			update = true;
 		}
 
@@ -80,8 +80,8 @@ bool ComponentAABB::Update(float dt)
 
 void ComponentAABB::DrawAABB()
 {
-	Vector3f lowest_p = { aabb->minPoint.x, aabb->minPoint.y,aabb->minPoint.z };
-	Vector3f highest_p = { aabb->maxPoint.x, aabb->maxPoint.y,aabb->maxPoint.z };
+	float3 lowest_p = { aabb->minPoint.x, aabb->minPoint.y,aabb->minPoint.z };
+	float3 highest_p = { aabb->maxPoint.x, aabb->maxPoint.y,aabb->maxPoint.z };
 
 	glLineWidth(1.5f);
 

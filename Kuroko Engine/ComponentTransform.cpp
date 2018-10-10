@@ -9,7 +9,7 @@ ComponentTransform::ComponentTransform(GameObject* parent, ComponentTransform& t
 	position = transform.position; rotation = transform.rotation; scale = transform.scale;
 }
 
-float4x4 ComponentTransform::getInheritedTransform(Vector3f pos, Quat rot, Vector3f scl)
+float4x4 ComponentTransform::getInheritedTransform(float3 pos, Quat rot, float3 scl)
 {
 	pos += position;
 	scl.x *= scale.x; scl.y *= scale.y; scl.z *= scale.z;
@@ -25,26 +25,26 @@ float4x4 ComponentTransform::getInheritedTransform(Vector3f pos, Quat rot, Vecto
 	{
 		float4x4 inh_mat = float4x4::identity;
 		inh_mat = inh_mat * rot;
-		inh_mat = inh_mat * inh_mat.Scale(scl.toMathVec());
-		inh_mat.SetTranslatePart(pos.toMathVec());
+		inh_mat = inh_mat * inh_mat.Scale(scl);
+		inh_mat.SetTranslatePart(pos);
 		return inh_mat;
 	}
 }
 
 
 
-void ComponentTransform::setRotationEuler(Vector3f euler) 
+void ComponentTransform::setRotationEuler(float3 euler) 
 {
 	rotation = Quat::identity;
 	rotation = rotation * rotation.RotateX(DegToRad(euler.x));
 	rotation = rotation * rotation.RotateY(DegToRad(euler.y));
 	rotation = rotation * rotation.RotateZ(DegToRad(euler.z));
-	euler_angles = euler.toMathVec();
+	euler_angles = euler;
 }
 
-void ComponentTransform::LookAt(Vector3f position, Vector3f target, Vector3f forward, Vector3f up)
+void ComponentTransform::LookAt(float3 position, float3 target, float3 forward, float3 up)
 {
-	mat = mat.LookAt(position.toMathVec(), target.toMathVec(), forward.toMathVec(), up.toMathVec(), position.Up.toMathVec());
+	mat = mat.LookAt(position, target, forward, up, float3::unitY);
 	rotation = mat.RotatePart().ToQuat();
 }
 
@@ -52,8 +52,8 @@ float4x4 ComponentTransform::getModelViewMatrix()
 {
 	mat = float4x4::identity;
 	mat = mat * rotation;
-	mat = mat * mat.Scale(scale.toMathVec());
-	mat.SetTranslatePart(position.toMathVec());
+	mat = mat * mat.Scale(scale);
+	mat.SetTranslatePart(position);
 	return mat;
 }
 
@@ -79,7 +79,7 @@ float3 ComponentTransform::Right()
 	return right;
 }
 
-void ComponentTransform::setPosition(Vector3f pos)	{ position = pos;										getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Translate(Vector3f dir)	{ position += dir;										getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::setScale(Vector3f scl)		{ scale = scl;											getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Scale(Vector3f scl)		{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setPosition(float3 pos)	{ position = pos;										getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Translate(float3 dir)	{ position += dir;										getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setScale(float3 scl)		{ scale = scl;											getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Scale(float3 scl)		{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };

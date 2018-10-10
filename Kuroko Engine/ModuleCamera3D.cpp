@@ -193,7 +193,7 @@ void ModuleCamera3D::CalculateViewMatrix()
 void ModuleCamera3D::RotateSelectedGeometry() {
 
 	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
-		Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));
 	}
@@ -204,9 +204,9 @@ void ModuleCamera3D::RotateSelectedGeometry() {
 
 void ModuleCamera3D::FocusSelectedGeometry(float distance) {
 	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
-		Vector3f centroid = Vector3f::Zero; Vector3f half_size = Vector3f::Zero;
+		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
-		float3 new_pos = (centroid + (half_size * distance)).toMathVec();
+		float3 new_pos = (centroid + (half_size * distance));
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
 		Move(vec3(new_pos.x, new_pos.y, new_pos.z) - Position);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));

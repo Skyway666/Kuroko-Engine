@@ -1,10 +1,13 @@
 #pragma once
 
-#include "Vector3.h"
-#include "Vector2.h"
 #include "Globals.h"
 #include "Module.h"
 #include "Color.h"
+
+#include "MathGeoLib\Math\float3.h"
+#include "MathGeoLib\Math\float2.h"
+#include "MathGeoLib\Geometry\Frustum.h"
+#include "MathGeoLib\Math\Quat.h"
 
 #include <list>
 
@@ -15,10 +18,10 @@ struct DebugShape
 	~DebugShape();
 	ShapeType type = S_UNKNOWN;
 
-	Point2ui* lines = nullptr;
-	Point3f* vertices = nullptr;
-	Point3f* normals = nullptr;
-	Point3f* colors = nullptr;
+	float2* lines = nullptr;
+	float3* vertices = nullptr;
+	float3* normals = nullptr;
+	float3* colors = nullptr;
 
 	uint id = 0;
 	uint vboId = 0;
@@ -41,10 +44,10 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	uint addArrow(Vector3f start_point, Vector3f end_point, Color color = Red);
-	uint addAxis(Vector3f position, float length = 1.0f, Quat rotation = Quat::identity);
-	uint addRay(Vector3f start_point, Vector3f end_point, Color color = Green);
-	uint addFrustum(Vector3f pos, Quat rotation = Quat::identity, FrustumType type = PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 10.0f, float h_fov_or_ortho_width = 90.0f, float v_fov_or_ortho_height = 59.0f, Color color = Blue);
+	uint addArrow(float3 start_point, float3 end_point, Color color = Red);
+	uint addAxis(float3 position, float length = 1.0f, Quat rotation = Quat::identity);
+	uint addRay(float3 start_point, float3 end_point, Color color = Green);
+	uint addFrustum(float3 pos, Quat rotation = Quat::identity, FrustumType type = PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 10.0f, float h_fov_or_ortho_width = 90.0f, float v_fov_or_ortho_height = 59.0f, Color color = Blue);
 
 	void removeShape(uint id);
 	void ClearShapes() { shapes.clear(); };

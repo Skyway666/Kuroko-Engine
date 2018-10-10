@@ -17,8 +17,8 @@ private:
 
 	GameObject* parent = nullptr;
 
-	Vector3f centroid = Vector3f::Zero;
-	Vector3f half_size = Vector3f::Zero;
+	float3 centroid = float3::zero;
+	float3 half_size = float3::zero;
 
 	uint id = 0;
 
@@ -49,10 +49,10 @@ public:
 	GameObject* getParent() { return parent; };
 	void setParent(GameObject* parent) { this->parent = parent; }
 
-	Vector3f getCentroid() { return centroid; };	
-	Vector3f getHalfsize() { return half_size; };
+	float3 getCentroid() { return centroid; };	
+	float3 getHalfsize() { return half_size; };
 
-	void getInheritedHalfsizeAndCentroid(Vector3f& half_size, Vector3f& centroid);
+	void getInheritedHalfsizeAndCentroid(float3& half_size, float3& centroid);
 
 	bool isActive() { return is_active; }
 	bool isStatic() { return is_static; }
