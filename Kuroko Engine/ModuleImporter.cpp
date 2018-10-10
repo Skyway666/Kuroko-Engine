@@ -75,7 +75,7 @@ bool ModuleImporter::CleanUp()
 }
 
 
-void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
+void* ModuleImporter::Import(const char* file, ImportType expected_filetype) const
 {
 	std::string extension = PathFindExtensionA(file);
 
@@ -183,7 +183,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 }
 
 
-bool ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id)
+bool ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id) const
 {
 	aiString path;
 	for (int i = 0; i < scene->mNumMaterials; i++)
@@ -220,7 +220,7 @@ bool ModuleImporter::LoadMaterials(const aiScene* scene, std::vector<uint>& out_
 	return scene->mNumMaterials == out_mat_id.size();
 }
 
-GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent)
+GameObject* ModuleImporter::LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent) const
 {
 	GameObject* root_obj = new GameObject(node->mName.C_Str(), parent);
 

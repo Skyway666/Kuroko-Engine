@@ -80,7 +80,7 @@ AudioFile* ModuleAudio::LoadAudio(const char* path, const char* name, AudioType 
 }
 
 
-void ModuleAudio::Play(const char* name, uint repeat)
+void ModuleAudio::Play(const char* name, uint repeat) const
 {/*
 	for (std::list<AudioFile*>::iterator it = audio_files.begin(); it != audio_files.end(); it++)
 		if ((*it)->name == name)
@@ -91,7 +91,7 @@ void ModuleAudio::Play(const char* name, uint repeat)
 		*/
 }
 
-void ModuleAudio::Play(uint id, uint repeat)
+void ModuleAudio::Play(uint id, uint repeat) const
 {
 	/*for (std::list<AudioFile*>::iterator it = audio_files.begin(); it != audio_files.end(); it++)
 		if ((*it)->id == id)

@@ -31,7 +31,7 @@ struct DebugShape
 	uint num_lines = 0;
 	uint num_vertices = 0;
 
-	void Draw();
+	void Draw() const;
 	void LoadDataToVRAM();
 };
 

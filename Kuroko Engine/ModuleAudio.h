@@ -51,8 +51,8 @@ public:
 	bool CleanUp();
 
 	AudioFile* LoadAudio(const char* path, const char* name, AudioType type);
-	void Play(uint id, uint repeat = 0);   // music always plays in loop, regardless of the value of repeat arg.
-	void Play(const char* name, uint repeat = 0); // music always plays in loop, regardless of the value of repeat arg.
+	void Play(uint id, uint repeat = 0) const;   // music always plays in loop, regardless of the value of repeat arg.
+	void Play(const char* name, uint repeat = 0) const; // music always plays in loop, regardless of the value of repeat arg.
 
 	void setMasterVolume(uint volume);
 	void setMasterMusicVolume(uint volume);

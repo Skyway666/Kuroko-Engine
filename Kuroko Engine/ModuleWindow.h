@@ -43,7 +43,7 @@ public:
 
 	void fillWindowConfig(JSON_Object* config);
 
-	void SaveConfig(JSON_Object* config);
+	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(JSON_Object* config);
 
 public:

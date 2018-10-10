@@ -27,28 +27,28 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void DrawGraphicsTab();
+	void DrawGraphicsTab() const;
 	void DrawHierarchyTab();
-	void DrawHierarchyNode(GameObject* game_object, int& id);
+	void DrawHierarchyNode(GameObject* game_object, int& id) const;
 	void DrawObjectInspectorTab();
 	bool DrawComponent(Component* component);
 	//void DrawAudioTab();
-	void DrawPrimitivesTab();
-	void DrawAboutWindow();
-	void DrawWindowConfig();
-	void DrawHardware();
-	void DrawApplication();
+	void DrawPrimitivesTab() ;
+	void DrawAboutWindow() ;
+	void DrawWindowConfig() const;
+	void DrawHardware() const;
+	void DrawApplication() const;
 	void DrawTimeControl();
 
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
 
-	void SaveConfig(JSON_Object* config);
+	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(JSON_Object* config);
 
 private:
 	
-	bool close_app;
+	bool close_app = false;
 	bool docking_background;
 	bool open_tabs[LAST];  // _serializable_var
 	ImGuiIO* io;

@@ -213,7 +213,8 @@ void ModuleWindow::setSize(int x, int y, uint id)
 	}
 }
 
-void ModuleWindow::fillWindowConfig(JSON_Object* config) {
+void ModuleWindow::fillWindowConfig(JSON_Object* config) 
+{
 	main_window->borderless = json_object_get_boolean(config, "borderless");
 	main_window->fullscreen = json_object_get_boolean(config, "fullscreen");
 	main_window->resizable = json_object_get_boolean(config, "resizable");
@@ -225,7 +226,8 @@ void ModuleWindow::fillWindowConfig(JSON_Object* config) {
 	main_window->brightness = json_object_get_number(config, "brightness");
 }
 
-void ModuleWindow::SaveConfig(JSON_Object* config) {
+void ModuleWindow::SaveConfig(JSON_Object* config) const
+{
 	json_object_set_boolean(config, "borderless", main_window->borderless);
 	json_object_set_boolean(config, "fullscreen", main_window->fullscreen);
 	json_object_set_boolean(config, "resizable", main_window->resizable);

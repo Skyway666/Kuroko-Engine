@@ -272,7 +272,7 @@ void ModuleImGUI::DrawHierarchyTab()
 	ImGui::End();
 }
 
-void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id)
+void ModuleImGUI::DrawHierarchyNode(GameObject* game_object, int& id) const
 {
 	id++;
 	static int selection_mask = (1 << 2);
@@ -639,7 +639,7 @@ bool ModuleImGUI::DrawComponent(Component* component)
 //	ImGui::End();
 //}
 
-void ModuleImGUI::DrawPrimitivesTab()
+void ModuleImGUI::DrawPrimitivesTab() 
 {
 	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
 	ImGui::Text("Use this tab to add primitives to the scene");
@@ -683,7 +683,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 }
 
 
-void ModuleImGUI::DrawAboutWindow() {
+void ModuleImGUI::DrawAboutWindow(){
 	ImGui::Begin("About", &open_tabs[ABOUT]);
 	ImGui::Text("Kuroko Engine");
 	ImGui::Separator();
@@ -732,7 +732,7 @@ void ModuleImGUI::DrawAboutWindow() {
 	ImGui::End();
 }
 
-void ModuleImGUI::DrawGraphicsTab() {
+void ModuleImGUI::DrawGraphicsTab() const {
 	//starting values
 
 	static bool depth_test = glIsEnabled(GL_DEPTH_TEST);
@@ -813,7 +813,7 @@ void ModuleImGUI::DrawGraphicsTab() {
 	}
 }
 
-void ModuleImGUI::DrawWindowConfig() {
+void ModuleImGUI::DrawWindowConfig() const{
 	Window* window = App->window->main_window;
 	if(ImGui::SliderFloat("Brightness", &window->brightness, 0, 1.0f))
 		App->window->setBrightness(window->brightness);
@@ -841,7 +841,7 @@ void ModuleImGUI::DrawWindowConfig() {
 
 }
 
-void ModuleImGUI::DrawHardware() {
+void ModuleImGUI::DrawHardware() const {
 	//CPUs
 		ImGui::Text("CPUs");
 		ImGui::SameLine();
@@ -899,7 +899,8 @@ void ModuleImGUI::DrawHardware() {
 		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
 }
 
-void ModuleImGUI::DrawApplication(){
+void ModuleImGUI::DrawApplication() const 
+{
 	// HARDCODED (?)
 	ImGui::Text("App name: Kuroko Engine");
 	ImGui::Text("Organization: UPC CITM");
@@ -932,7 +933,7 @@ void ModuleImGUI::DrawTimeControl()
 	ImGui::End();
 }
 
-void ModuleImGUI::SaveConfig(JSON_Object* config) 
+void ModuleImGUI::SaveConfig(JSON_Object* config) const
 {
 	json_object_set_boolean(config, "demo", open_tabs[DEMO]);
 	json_object_set_boolean(config, "test", open_tabs[TEST]);

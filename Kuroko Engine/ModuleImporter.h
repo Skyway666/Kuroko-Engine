@@ -21,11 +21,11 @@ public:
 	bool Init(JSON_Object* config);
 	bool CleanUp();
 
-	void* Import(const char* file, ImportType expected_filetype = I_NONE);
+	void* Import(const char* file, ImportType expected_filetype = I_NONE) const;
 
 private:
-	bool LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id);
-	GameObject* LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
+	bool LoadMaterials(const aiScene* scene, std::vector<uint>& out_mat_id) const;
+	GameObject* LoadMeshRecursive(aiNode* node, const aiScene* scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr) const;
 
 
 };

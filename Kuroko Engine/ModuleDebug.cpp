@@ -187,7 +187,7 @@ void ModuleDebug::removeShape(uint id)
 }
 
 
-void DebugShape::Draw()
+void DebugShape::Draw() const
 {
 	// bind VBOs before drawing
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
