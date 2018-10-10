@@ -113,6 +113,8 @@ Component* GameObject::addComponent(Component_type type)
 
 void GameObject::addComponent(Component* component)
 {
+	if (!component)
+		return;
 	switch (component->getType())
 	{
 	case MESH:	

@@ -44,10 +44,10 @@ public:
 
 	GameObject* getChild(const char* name);
 	void getChildren(std::list<GameObject*>& list_to_fill) { list_to_fill = children; };
-	void addChild(GameObject* new_child) { children.push_back(new_child); };
+	void addChild(GameObject* new_child) {if(new_child) children.push_back(new_child); };
 
 	GameObject* getParent() const { return parent; };
-	void setParent(GameObject* parent) { this->parent = parent; }
+	void setParent(GameObject* parent) { this->parent = parent; }// Can recieve nullptr
 
 	Vector3f getCentroid() const { return centroid; };
 	Vector3f getHalfsize() const { return half_size; };

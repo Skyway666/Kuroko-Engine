@@ -41,7 +41,7 @@ public:
 	~Material();
 
 	Texture* getTexture(TextureType tex_type) const;
-	void setTexture(TextureType tex_type, Texture* texture);
+	void setTexture(TextureType tex_type, Texture* texture); // Can recieve nullptr
 	void setCheckeredTexture(TextureType tex_type = DIFFUSE);
 	uint getId() const { return id; };
 
