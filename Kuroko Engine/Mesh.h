@@ -25,8 +25,8 @@ public:
 	Mesh(PrimitiveTypes primitive);
 	~Mesh();
 
-	void Draw(Material* mat);
-	void DrawNormals();
+	void Draw(Material* mat) const;
+	void DrawNormals() const;
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
 	float3 getHalfSize() const { return half_size; }

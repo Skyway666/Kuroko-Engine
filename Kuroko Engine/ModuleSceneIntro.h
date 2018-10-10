@@ -23,11 +23,11 @@ public:
 	void Pause() { game_state = PAUSED; };
 	void Stop() { game_state = STOPPED; };
 
-	Material* getMaterial(uint id);
+	Material* getMaterial(uint id) const;
 
 private:
 	
-	void DrawGrid();
+	void DrawGrid() const;
 
 public:
 

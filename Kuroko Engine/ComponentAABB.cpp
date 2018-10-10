@@ -78,7 +78,7 @@ bool ComponentAABB::Update(float dt)
 	return true;
 }
 
-void ComponentAABB::DrawAABB()
+void ComponentAABB::DrawAABB() const
 {
 	float3 lowest_p = { aabb->minPoint.x, aabb->minPoint.y,aabb->minPoint.z };
 	float3 highest_p = { aabb->maxPoint.x, aabb->maxPoint.y,aabb->maxPoint.z };
@@ -109,7 +109,7 @@ void ComponentAABB::DrawAABB()
 	glLineWidth(1.0f);
 }
 
-void ComponentAABB::DrawOBB()
+void ComponentAABB::DrawOBB() const
 {
 	glLineWidth(1.5f);
 

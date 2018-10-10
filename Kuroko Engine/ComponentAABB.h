@@ -1,11 +1,13 @@
 #ifndef _COMPONENTAABB_
 #define _COMPONENTAABB_
 
-#include "Vector3.h"
 #include "Component.h"
 #include "Color.h"
 
 #include <list>
+
+#include "MathGeoLib\Geometry\AABB.h"
+#include "MathGeoLib\Geometry\OBB.h"
 
 class ComponentTransform;
 
@@ -21,8 +23,8 @@ public:
 	math::AABB* getAABB() const { return aabb; };
 	math::OBB* getOBB() const { return obb; };
 
-	void DrawAABB();
-	void DrawOBB();
+	void DrawAABB() const;
+	void DrawOBB() const;
 
 
 public:

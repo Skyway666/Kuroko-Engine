@@ -2,7 +2,6 @@
 #define _COMPONENT_TRANSFORM
 
 #include "Component.h"
-#include "Vector3.h"
 #include "MathGeoLib\MathGeoLib.h"
 
 
@@ -18,7 +17,7 @@ public:
 
 	~ComponentTransform() {};
 
-	float4x4 getInheritedTransform(float3 pos = float3::zero, Quat rot = { 0.0f ,0.0f ,0.0f, 1.0f }, float3 scl = float3::one);  // DON'T set values to the args
+	float4x4 getInheritedTransform(float3 pos = float3::zero, Quat rot = { 0.0f ,0.0f ,0.0f, 1.0f }, float3 scl = float3::one) const;  // DON'T set values to the args
 
 	void setPosition(float3 pos);
 	void Translate(float3 dir);

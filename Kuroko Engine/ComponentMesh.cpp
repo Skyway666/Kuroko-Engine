@@ -11,7 +11,7 @@ ComponentMesh::~ComponentMesh()
 	if (mesh)		delete mesh;
 }
 
-void ComponentMesh::Draw()
+void ComponentMesh::Draw() const
 {
 	ComponentTransform* transform = nullptr;
 	float4x4 view_mat = float4x4::identity;

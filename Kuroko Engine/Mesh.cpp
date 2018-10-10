@@ -69,10 +69,8 @@ void Mesh::LoadDataToVRAM()
 
 
 
-void Mesh::Draw(Material* mat) 
+void Mesh::Draw(Material* mat)  const
 {
-	if (!mat)
-		return;
 	Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
 
 	if (diffuse_tex)		glEnable(GL_TEXTURE_2D);
@@ -115,7 +113,7 @@ void Mesh::Draw(Material* mat)
 }
 
 
-void Mesh::DrawNormals()
+void Mesh::DrawNormals() const
 {
 	glBegin(GL_LINES);
 

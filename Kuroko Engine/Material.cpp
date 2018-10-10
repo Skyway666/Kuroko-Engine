@@ -6,10 +6,8 @@
 #include "Applog.h"
 
 
-Material::Material()
-{
-	id = ++App->scene_intro->last_mat_id;
-}
+Material::Material() : id(++App->scene_intro->last_mat_id) {};
+
 Material::~Material()
 {
 	if (diffuse) delete diffuse;

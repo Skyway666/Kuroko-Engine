@@ -172,7 +172,6 @@
     <ClInclude Include="PCG Random\pcg_basic.h" />
     <ClInclude Include="RNG.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="Vector3.h" />
     <ClInclude Include="VRAM.h" />
     <ClInclude Include="WinItemDialog.h" />
   </ItemGroup>

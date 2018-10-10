@@ -27,7 +27,7 @@ public:
 
 private:
 
-	uint id				= 0;
+	const uint id		= 0;
 	uint channel		= 0;
 	AudioType type		= A_UNKNOWN;
 	float volume		= 1.0f;

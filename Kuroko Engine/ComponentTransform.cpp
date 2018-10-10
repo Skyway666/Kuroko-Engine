@@ -9,7 +9,7 @@ ComponentTransform::ComponentTransform(GameObject* parent, ComponentTransform& t
 	position = transform.position; rotation = transform.rotation; scale = transform.scale;
 }
 
-float4x4 ComponentTransform::getInheritedTransform(float3 pos, Quat rot, float3 scl)
+float4x4 ComponentTransform::getInheritedTransform(float3 pos, Quat rot, float3 scl) const 
 {
 	pos += position;
 	scl.x *= scale.x; scl.y *= scale.y; scl.z *= scale.z;
@@ -79,7 +79,7 @@ float3 ComponentTransform::Right() const
 	return right;
 }
 
-void ComponentTransform::setPosition(float3 pos)	{ position = pos;										getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Translate(float3 dir)	{ position += dir;										getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::setScale(float3 scl)		{ scale = scl;											getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Scale(float3 scl)		{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setPosition(float3 pos)	{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Translate(float3 dir)		{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setScale(float3 scl)		{ scale = scl;		getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::Scale(float3 scl)			{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };

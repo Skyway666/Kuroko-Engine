@@ -46,7 +46,7 @@ public:
 	uint getId() const { return id; };
 
 private:
-	uint id = 0;
+	const uint id = 0;
 	Texture* diffuse = nullptr;
 	Texture* ambient = nullptr;
 	Texture* normals = nullptr;

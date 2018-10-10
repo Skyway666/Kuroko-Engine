@@ -4,7 +4,9 @@
 #include "Module.h"
 #include "Globals.h"
 #include "Light.h"
-#include "Vector3.h"
+
+#include "MathGeoLib\Math\float3x3.h"
+#include "MathGeoLib\Math\float4x4.h"
 
 #define MAX_LIGHTS 8
 

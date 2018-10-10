@@ -61,16 +61,16 @@ update_status ModuleScene::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-Material* ModuleScene::getMaterial(uint id) 
+Material* ModuleScene::getMaterial(uint id)  const
 {
-	for (std::list<Material*>::iterator it = materials.begin(); it != materials.end(); it++)
+	for (std::list<Material*>::const_iterator it = materials.begin(); it != materials.end(); it++)
 		if (id == (*it)->getId())
 			return *it;
 
 	return nullptr;
 }
 
-void ModuleScene::DrawGrid()
+void ModuleScene::DrawGrid() const
 {
 	glLineWidth(1.0f);
 	glColor3f(0.5f, 0.5f, 0.5f);

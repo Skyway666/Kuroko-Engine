@@ -4,10 +4,9 @@
 #include "Globals.h"
 #include "glmath.h"
 
-#include "Vector3.h"
-
 class vec3;
-class btVector3;
+
+#include "MathGeoLib\Math\float4x4.h"
 
 class ModuleCamera3D : public Module
 {

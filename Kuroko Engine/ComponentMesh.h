@@ -14,11 +14,11 @@ public:
 	~ComponentMesh();
 
 	bool Update(float dt) { if (mesh && isActive()) Draw(); return true; };
-	void Draw();
+	void Draw() const;
 
-	bool getWireframe() const					{ return wireframe; };
+	bool getWireframe() const			{ return wireframe; };
 	bool getDrawNormals()const			{ return draw_normals; };
-	Material* getMaterial()	const			{ return mat; };
+	Material* getMaterial()	const		{ return mat; };
 	Mesh* getMesh()	const				{ return mesh; }
 	void setWireframe(bool state)		{ wireframe = state; };
 	void setDrawNormals(bool state)		{ draw_normals = state; };

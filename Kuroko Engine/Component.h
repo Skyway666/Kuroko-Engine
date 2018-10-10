@@ -22,7 +22,7 @@ public:
 private:
 
 	bool is_active = true;
-	Component_type type = NONE;
+	const Component_type type = NONE;
 	GameObject* parent = nullptr;
 };
 #endif

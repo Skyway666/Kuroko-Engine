@@ -8,10 +8,9 @@
 #include "Applog.h"
 
 
-GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent)
+GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(++App->scene_intro->last_gobj_id)
 {
 	addComponent(TRANSFORM);
-	id = ++App->scene_intro->last_gobj_id;
 
 	//Just for assignment 1
 	App->scene_intro->selected_obj = this;
@@ -46,9 +45,9 @@ bool GameObject::Update(float dt)
 }
 
 
-Component* GameObject::getComponent(Component_type type)
+Component* GameObject::getComponent(Component_type type) const
 {
-	for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
+	for (std::list<Component*>::const_iterator it = components.begin(); it != components.end(); it++)
 	{
 		if ((*it)->getType() == type)
 			return *it;
@@ -57,9 +56,9 @@ Component* GameObject::getComponent(Component_type type)
 	return nullptr;
 }
 
-bool GameObject::getComponents(Component_type type, std::list<Component*>& list_to_fill)
+bool GameObject::getComponents(Component_type type, std::list<Component*>& list_to_fill) const
 {
-	for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
+	for (std::list<Component*>::const_iterator it = components.begin(); it != components.end(); it++)
 	{
 		if ((*it)->getType() == type)
 			list_to_fill.push_back(*it);
@@ -68,9 +67,9 @@ bool GameObject::getComponents(Component_type type, std::list<Component*>& list_
 	return !list_to_fill.empty();
 }
 
-GameObject* GameObject::getChild(const char* name) 
+GameObject* GameObject::getChild(const char* name) const
 {
-	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
+	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); it++)
 	{
 		if ((*it)->getName() == name)
 			return *it;
