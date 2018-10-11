@@ -13,9 +13,9 @@ struct Window
 	SDL_Window* window = nullptr;
 	SDL_Surface* screen_surface = nullptr;
 
-	int width = 0; int height = 0;
+	int width = 0; int height = 0; int adaptable_offsetx = 0; int adaptable_offsety = 0;
 	float brightness = 1.0f;
-	bool resizable = false; bool fullscreen = false; bool borderless = false; bool fulldesk = false;
+	bool resizable = false; bool fullscreen = false; bool borderless = false; bool fulldesk = false; bool adapt_screen = false;
 	uint id = 0;
 };
 

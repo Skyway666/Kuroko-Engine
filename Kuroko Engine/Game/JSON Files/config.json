@@ -4,6 +4,9 @@
     "fullscreen": false,
     "resizable": false,
     "fulldesktop": false,
+    "adapt_screen": true,
+    "adaptable_offsetx": 200,
+    "adaptable_offsety": 200,
     "width": 1545,
     "height": 999,
     "brightness": 1

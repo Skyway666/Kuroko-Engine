@@ -47,6 +47,13 @@ bool ModuleWindow::Init(const JSON_Object& config)
 		if(main_window->borderless) flags |= SDL_WINDOW_BORDERLESS;
 		if(main_window->fulldesk)	flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
+		if(main_window->adapt_screen) {
+		SDL_DisplayMode DM;
+		SDL_GetCurrentDisplayMode(0, &DM);
+		width = DM.w - main_window->adaptable_offsetx;
+		height = DM.h - main_window->adaptable_offsety;
+		}
+		
 		main_window->window = SDL_CreateWindow(json_object_get_string(&config,"title"), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
 		if(main_window->window == NULL)
@@ -219,9 +226,12 @@ void ModuleWindow::fillWindowConfig(const JSON_Object& config)
 	main_window->fullscreen = json_object_get_boolean(&config, "fullscreen");
 	main_window->resizable = json_object_get_boolean(&config, "resizable");
 	main_window->fulldesk = json_object_get_boolean(&config, "fulldesktop");
+	main_window->adapt_screen = json_object_get_boolean(&config, "adapt_screen");
 
 	main_window->width = json_object_get_number(&config, "width");
 	main_window->height = json_object_get_number(&config, "height");
+	main_window->adaptable_offsetx = json_object_get_number(&config, "adaptable_offsetx");
+	main_window->adaptable_offsety = json_object_get_number(&config, "adaptable_offsety");
 
 	main_window->brightness = json_object_get_number(&config, "brightness");
 }
@@ -232,9 +242,12 @@ void ModuleWindow::SaveConfig(JSON_Object& config) const
 	json_object_set_boolean(&config, "fullscreen", main_window->fullscreen);
 	json_object_set_boolean(&config, "resizable", main_window->resizable);
 	json_object_set_boolean(&config, "fulldesktop", main_window->fulldesk);
+	json_object_set_boolean(&config, "adapt_screen", main_window->adapt_screen);
 
 	json_object_set_number(&config, "width", main_window->width);
 	json_object_set_number(&config, "height", main_window->height);
+	json_object_set_number(&config, "adaptable_offsetx", main_window->adaptable_offsetx);
+	json_object_set_number(&config, "adaptable_offsety", main_window->adaptable_offsety);
 	json_object_set_number(&config, "brightness", main_window->brightness);
 }
 
