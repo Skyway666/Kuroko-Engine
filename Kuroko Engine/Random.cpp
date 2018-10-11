@@ -1,4 +1,4 @@
-#include "RNG.h"
+#include "Random.h"
 #include <iostream>
 #include <random>
 

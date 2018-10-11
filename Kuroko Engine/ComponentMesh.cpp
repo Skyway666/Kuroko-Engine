@@ -1,7 +1,7 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "GameObject.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleScene.h"
 #include "Application.h"
 #include "glew-2.1.0\include\GL\glew.h"
 

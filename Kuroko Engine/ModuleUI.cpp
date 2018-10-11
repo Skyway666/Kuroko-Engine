@@ -1,7 +1,7 @@
- #include "ModuleImGUI.h"
+ #include "ModuleUI.h"
 #include "Globals.h"
 #include "Application.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleScene.h"
 #include "ModuleCamera3D.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleInput.h"
@@ -18,7 +18,7 @@
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 
-#include "RNG.h"
+#include "Random.h"
 #include "VRAM.h"
 #include "WinItemDialog.h" 
 

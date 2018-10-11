@@ -2,7 +2,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
 #include "ModuleWindow.h"
-#include "ModuleImGUI.h"
+#include "ModuleUI.h"
 #include "Globals.h"
 #include "Applog.h"
 

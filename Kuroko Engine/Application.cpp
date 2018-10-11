@@ -3,11 +3,11 @@
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
 //#include "ModuleAudio.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleScene.h"
 #include "ModuleDebug.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
-#include "ModuleImGUI.h"
+#include "ModuleUI.h"
 #include "ModuleImporter.h"
 #include "AppLog.h"
 #include <iostream>

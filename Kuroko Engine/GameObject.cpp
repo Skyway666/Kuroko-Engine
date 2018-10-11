@@ -3,8 +3,8 @@
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 #include "Application.h"
-#include "ModuleImGUI.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleUI.h"
+#include "ModuleScene.h"
 #include "Applog.h"
 
 

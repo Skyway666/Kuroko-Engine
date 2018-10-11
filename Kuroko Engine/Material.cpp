@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "Application.h"
-#include "ModuleSceneIntro.h"
-#include "ModuleImGUI.h"
+#include "ModuleScene.h"
+#include "ModuleUI.h"
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Applog.h"
 

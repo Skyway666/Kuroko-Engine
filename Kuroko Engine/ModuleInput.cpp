@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleInput.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleScene.h"
 #include "ModuleImporter.h"
 #include "ModuleRenderer3D.h"
 
