@@ -6,6 +6,8 @@
 
 class vec3;
 
+#define EXTRA_DIST 3.0f
+
 #include "MathGeoLib\Math\float4x4.h"
 
 class ModuleCamera3D : public Module
@@ -21,7 +23,7 @@ public:
 	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
 	void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
-	void FocusSelectedGeometry(float distance);
+	void FocusSelectedGeometry(float extra_distance = EXTRA_DIST);
 	void RotateSelectedGeometry();
 	void Reset();
 	float* GetViewMatrix() const;

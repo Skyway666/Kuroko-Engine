@@ -11,9 +11,6 @@
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(++App->scene_intro->last_gobj_id)
 {
 	addComponent(TRANSFORM);
-
-	//Just for assignment 1
-	App->scene_intro->selected_obj = this;
 }
 
 GameObject::~GameObject()
@@ -76,6 +73,17 @@ GameObject* GameObject::getChild(const char* name) const
 	}
 
 	return nullptr;
+}
+
+void GameObject::getAllDescendants(std::list<GameObject*>& list_to_fill) const
+{
+	for (auto it = children.begin(); it != children.end(); it++)
+		list_to_fill.push_back(*it);
+
+	for (auto it = children.begin(); it != children.end(); it++)
+		(*it)->getAllDescendants(list_to_fill);
+
+	return;
 }
 
 Component* GameObject::addComponent(Component_type type)
@@ -201,13 +209,13 @@ void GameObject::calculateCentroidandHalfsize()
 
 void GameObject::getInheritedHalfsizeAndCentroid(float3& out_half_size, float3& out_centroid)
 {
-	std::list<GameObject*> children;
-	getChildren(children);
+	std::list<GameObject*> descendants;
+	getAllDescendants(descendants);
 
 	float3 lowest_p = centroid - half_size;
 	float3 highest_p = centroid + half_size;
 
-	for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
+	for (std::list<GameObject*>::iterator it = descendants.begin(); it != descendants.end(); it++)
 	{
 		ComponentTransform* transform = (ComponentTransform*)(*it)->getComponent(TRANSFORM);
 		math::OBB temp_obb;

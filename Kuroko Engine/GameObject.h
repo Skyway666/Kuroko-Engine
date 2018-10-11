@@ -28,6 +28,7 @@ public:
 
 	GameObject* getChild(const char* name) const;
 	void getChildren(std::list<GameObject*>& list_to_fill) const { list_to_fill = children; };
+	void getAllDescendants(std::list<GameObject*>& list_to_fill) const;
 	void addChild(GameObject* new_child) {if(new_child) children.push_back(new_child); };
 
 	GameObject* getParent() const { return parent; };
