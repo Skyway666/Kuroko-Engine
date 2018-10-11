@@ -8,7 +8,21 @@
 #include "MathGeoLib\Math\float3x3.h"
 #include "MathGeoLib\Math\float4x4.h"
 
+#include <list>
+
 #define MAX_LIGHTS 8
+
+class Texture;
+
+struct FrameBuffer
+{
+	Texture* tex = nullptr;
+	uint id = 0;
+	uint depthbuffer_id = 0;
+
+	uint size_x = 0;
+	uint size_y = 0;
+};
 
 class ModuleRenderer3D : public Module
 {
@@ -26,15 +40,15 @@ public:
 
 	SDL_GLContext getContext() const	{ return context; }
 
-	float4x4 CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane);
 	void DirectDrawCube(float3& size) const;
+	FrameBuffer* initFrameBuffer(uint size_x = 1024, uint size_y = 768);
 
 private:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	float3x3 NormalMatrix;
-	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+public:
+	std::list<FrameBuffer*> frame_buffers;
 };
 
 #endif

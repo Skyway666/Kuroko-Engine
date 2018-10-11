@@ -6,15 +6,13 @@
 #include "Applog.h"
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "ModuleRenderer3D.h"
 
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	CalculateViewMatrix();
-
-	Reset();
-
 	name = "camera";
+	editor_camera = new Camera(CreatePerspMat());
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -24,9 +22,8 @@ ModuleCamera3D::~ModuleCamera3D()
 bool ModuleCamera3D::Init(const JSON_Object& config)
 {
 	app_log->AddLog("Setting up the camera");
-	bool ret = true;
 
-	return ret;
+	return true;
 }
 
 // -----------------------------------------------------------------
@@ -51,18 +48,18 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) newPos.y += speed;
 	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) newPos.y -= speed;
 
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= Z * speed;
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += Z * speed;
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= editor_camera->Z * speed;
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += editor_camera->Z * speed;
 
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= X * speed;
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= editor_camera->X * speed;
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += editor_camera->X * speed;
 
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		FocusSelectedGeometry();
+		editor_camera->FocusSelectedGeometry();
 
 	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
-		RotateSelectedGeometry();
+		editor_camera->RotateSelectedGeometry();
 
 	// Unfinished translation
 	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) {
@@ -73,15 +70,15 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (dx != 0) {
 			float DeltaX = (float)dx * Sensitivity;
-			newPos += X * DeltaX;
+			newPos += editor_camera->X * DeltaX;
 		}
 
 		if (dy != 0) {
 			float DeltaY = (float)dy * Sensitivity;
 			newPos.y -= DeltaY;
 		}
-		Position += newPos;
-		Reference += newPos;
+		editor_camera->Position += newPos;
+		editor_camera->Reference += newPos;
 	}
 
 
@@ -94,49 +91,85 @@ update_status ModuleCamera3D::Update(float dt)
 
 		float Sensitivity = 0.25f;
 
-		Position -= Reference;
+		editor_camera->Position -= editor_camera->Reference;
 
 		if (dx != 0)
 		{
 			float DeltaX = (float)dx * Sensitivity;
 
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			editor_camera->X = rotate(editor_camera->X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			editor_camera->Y = rotate(editor_camera->Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			editor_camera->Z = rotate(editor_camera->Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
 		}
 
 		if (dy != 0)
 		{
 			float DeltaY = (float)dy * Sensitivity;
 
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
+			editor_camera->Y = rotate(editor_camera->Y, DeltaY, editor_camera->X);
+			editor_camera->Z = rotate(editor_camera->Z, DeltaY, editor_camera->X);
 
-			if (Y.y < 0.0f)
+			if (editor_camera->Y.y < 0.0f)
 			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
+				editor_camera->Z = vec3(0.0f, editor_camera->Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				editor_camera->Y = cross(editor_camera->Z, editor_camera->X);
 			}
 		}
 
-		Position = Reference + Z * length(Position);
+		editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
 	}
 
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
-		if (mouse_z > 0 && length(Position) > 0.5f)		Position = Reference + Z * length(Position - Reference) * 0.9f;
-		else											Position = Reference + Z * length(Position - Reference) *1.1f;
+		if (mouse_z > 0 && length(editor_camera->Position) > 0.5f)		
+			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position - editor_camera->Reference) * 0.9f;
+		else															
+			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position - editor_camera->Reference) *1.1f;
 	}
 
 	// Recalculate matrix -------------
-	CalculateViewMatrix();
+	editor_camera->CalculateViewMatrix();
 
 	return UPDATE_CONTINUE;	
 }
 
+
+float4x4 ModuleCamera3D::CreatePerspMat(float fov, float width, float height, float near_plane, float far_plane)
+{
+	float4x4 Perspective = float4x4::zero;
+	float aspect_ratio = width / height;
+
+	float coty = 1.0f / tan(fov * (float)M_PI / 360.0f);
+
+	Perspective.v[0][0] = coty / aspect_ratio;
+	Perspective.v[1][1] = coty;
+	Perspective.v[2][2] = (near_plane + far_plane) / (near_plane - far_plane);
+	Perspective.v[2][3] = -1.0f;
+	Perspective.v[3][2] = 2.0f * near_plane * far_plane / (near_plane - far_plane);
+	Perspective.v[3][3] = 0.0f;
+
+	return Perspective;
+}
+
+Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)
+{
+	ProjectionMatrix = projection_matrix;
+	Position = { position.x, position.y, position.z };
+	LookAt(vec3(reference.x, reference.y, reference.z ));
+}
+
+Camera::~Camera()
+{
+	if (frame_buffer)
+	{
+		App->renderer3D->frame_buffers.remove(frame_buffer);
+		delete frame_buffer;
+	}
+}
+
 // -----------------------------------------------------------------
-void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
+void Camera::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
 {
 	this->Position = Position;
 	this->Reference = Reference;
@@ -155,7 +188,7 @@ void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool Rota
 }
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::LookAt( const vec3 &Spot)
+void Camera::LookAt( const vec3 &Spot)
 {
 	Reference = Spot;
 
@@ -169,7 +202,7 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::Move(const vec3 &Movement)
+void Camera::Move(const vec3 &Movement)
 {
 	Position += Movement;
 	Reference += Movement;
@@ -178,20 +211,19 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 }
 
 // -----------------------------------------------------------------
-float* ModuleCamera3D::GetViewMatrix() const
+float* Camera::GetViewMatrix() const
 {
 	return (float*)ViewMatrix.v;
 }
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::CalculateViewMatrix()
+void Camera::CalculateViewMatrix()
 {
-	float4x4 test(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
-	ViewMatrix = test;
-	ViewMatrixInverse = ViewMatrix.Inverted();
+	float4x4 matrix(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
+	ViewMatrix = matrix;
 }
 
-void ModuleCamera3D::RotateSelectedGeometry() {
+void Camera::RotateSelectedGeometry() {
 
 	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
 		float3 centroid = float3::zero; float3 half_size = float3::zero;
@@ -203,7 +235,7 @@ void ModuleCamera3D::RotateSelectedGeometry() {
 
 }
 
-void ModuleCamera3D::FocusSelectedGeometry(float distance) {
+void Camera::FocusSelectedGeometry(float distance) {
 	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
 		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
@@ -216,7 +248,7 @@ void ModuleCamera3D::FocusSelectedGeometry(float distance) {
 		LookAt(vec3(0, 0, 0));
 }
 
-void ModuleCamera3D::Reset() {
+void Camera::Reset() {
 	X = vec3(1.0f, 0.0f, 0.0f);
 	Y = vec3(0.0f, 1.0f, 0.0f);
 	Z = vec3(0.0f, 0.0f, 1.0f);

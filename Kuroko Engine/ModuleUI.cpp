@@ -117,6 +117,7 @@ update_status ModuleImGUI::Update(float dt) {
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
 
+
 	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
 		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
 
@@ -133,7 +134,7 @@ update_status ModuleImGUI::Update(float dt) {
 			DrawApplication();
 
 		if (ImGui::Button("Reset Camera"))
-			App->camera->Reset();
+			App->camera->editor_camera->Reset();
 		ImGui::End();
 	}
 
@@ -614,6 +615,18 @@ bool ModuleImGUI::DrawComponent(Component& component)
 	}
 
 	return true;
+}
+
+void ModuleImGUI::DrawCameraTab(Camera* camera)
+{
+	if (camera->frame_buffer)
+	{
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize;
+		ImGui::SetNextWindowSize(ImVec2(camera->frame_buffer->size_x + 10, camera->frame_buffer->size_y + 40));
+		ImGui::Begin("Game", nullptr, flags);
+		ImGui::ImageButton((void*)camera->frame_buffer->tex->gl_id, ImVec2(camera->frame_buffer->size_x, camera->frame_buffer->size_y), ImVec2(0, 1), ImVec2(1, 0), 2);
+		ImGui::End();
+	}
 }
 //
 //void ModuleImGUI::DrawAudioTab()

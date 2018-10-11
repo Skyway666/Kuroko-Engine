@@ -114,7 +114,7 @@ bool ModuleRenderer3D::Init(const JSON_Object& config)
 	}
 	// Projection matrix for
 	OnResize(App->window->main_window->width, App->window->main_window->height);
-
+	initFrameBuffer();
 	return ret;
 }
 
@@ -127,23 +127,16 @@ bool ModuleRenderer3D::Start()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-
-
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetViewMatrix());
+	glLoadMatrixf(App->camera->editor_camera->GetViewMatrix());
 	
+	lights[0].SetPos(App->camera->editor_camera->Position.x, App->camera->editor_camera->Position.y, App->camera->editor_camera->Position.z);
 
-	// light 0 on cam pos
-
-
-	//lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
-
-	//for(uint i = 0; i < MAX_LIGHTS; ++i)
-	//	lights[i].Render();
+	for(uint i = 0; i < MAX_LIGHTS; ++i)
+		lights[i].Render();
 
 	return UPDATE_CONTINUE;
 }
@@ -173,27 +166,50 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	ProjectionMatrix = CreatePerspMat(60.0f, (float)width / (float)height, 0.125f, 1024.0f);
-	glLoadMatrixf((GLfloat*)ProjectionMatrix.v);
+	App->camera->editor_camera->setProjMatrix(App->camera->CreatePerspMat(60.0f, width ,height, 0.125f, 1250.0f));
+	glLoadMatrixf((GLfloat*)App->camera->editor_camera->GetProjMatrix().v);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
 
-float4x4 ModuleRenderer3D::CreatePerspMat(float fov, float aspect_ratio, float near_plane, float far_plane)
+
+FrameBuffer* ModuleRenderer3D::initFrameBuffer(uint size_x, uint size_y)
 {
-	float4x4 Perspective = float4x4::zero;
-	
-	float coty = 1.0f / tan(fov * (float)M_PI / 360.0f);
+	FrameBuffer* fb = new FrameBuffer();
+	fb->size_x = size_x; fb->size_y = size_y;
+	// set frame buffer
+	glGenFramebuffers(1, &fb->id);
+	glBindFramebuffer(GL_FRAMEBUFFER, fb->id);
 
-	Perspective.v[0][0] = coty / aspect_ratio;
-	Perspective.v[1][1] = coty;
-	Perspective.v[2][2] = (near_plane + far_plane) / (near_plane - far_plane);
-	Perspective.v[2][3] = -1.0f;
-	Perspective.v[3][2] = 2.0f * near_plane * far_plane / (near_plane - far_plane);
-	Perspective.v[3][3] = 0.0f;
+	// set frame buffer texture
+	fb->tex = new Texture();
+	glGenTextures(1, &fb->tex->gl_id);
+	glBindTexture(GL_TEXTURE_2D, fb->tex->gl_id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size_x, size_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
-	return Perspective;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	//set depth renderer
+	glGenRenderbuffers(1, &fb->depthbuffer_id);
+	glBindRenderbuffer(GL_RENDERBUFFER, fb->depthbuffer_id);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size_x, size_y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb->depthbuffer_id);
+
+	// init frame buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);
+
+	// Set the list of draw buffers.
+	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, DrawBuffers);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	frame_buffers.push_back(fb);
+	return fb;
 }
 
 

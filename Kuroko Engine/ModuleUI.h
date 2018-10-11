@@ -10,6 +10,7 @@ class GameObject;
 class Component;
 class Texture;
 class Material;
+class Camera;
 
 enum GUI_Tabs { DEMO, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, /*AUDIO,*/ LAST};  // LAST is an utility value to store the max num of tabs.
 enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
@@ -32,6 +33,7 @@ public:
 	void DrawHierarchyNode(const GameObject& game_object, int& id) const;
 	void DrawObjectInspectorTab();
 	bool DrawComponent(Component& component);
+	void DrawCameraTab(Camera* camera);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab() ;
 	void DrawAboutWindow() ;
