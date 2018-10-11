@@ -28,6 +28,7 @@ ModuleScene::~ModuleScene(){}
 // Load assets
 bool ModuleScene::Start()
 {
+
 	return true;
 }
 

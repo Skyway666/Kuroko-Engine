@@ -50,8 +50,8 @@ bool ModuleWindow::Init(const JSON_Object& config)
 		if(main_window->adapt_screen) {
 		SDL_DisplayMode DM;
 		SDL_GetCurrentDisplayMode(0, &DM);
-		width = DM.w - main_window->adaptable_offsetx;
-		height = DM.h - main_window->adaptable_offsety;
+		main_window->width = width = DM.w - main_window->adaptable_offsetx;
+		main_window->height = height = DM.h - main_window->adaptable_offsety;
 		}
 		
 		main_window->window = SDL_CreateWindow(json_object_get_string(&config,"title"), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
