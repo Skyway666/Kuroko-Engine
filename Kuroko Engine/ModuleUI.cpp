@@ -70,7 +70,6 @@ bool ModuleImGUI::Init(const JSON_Object& config) {
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 	
 	LoadConfig(config);
@@ -81,12 +80,19 @@ bool ModuleImGUI::Init(const JSON_Object& config) {
 
 bool ModuleImGUI::Start()
 {
-	ui_textures[PLAY] = (Texture*)App->importer->Import("Play.png", I_TEXTURE);
-	ui_textures[PAUSE] = (Texture*)App->importer->Import("Pause.png", I_TEXTURE);
-	ui_textures[STOP] = (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
+	io = &ImGui::GetIO();
+
+	ui_textures[PLAY]		= (Texture*)App->importer->Import("Play.png", I_TEXTURE);
+	ui_textures[PAUSE]		= (Texture*)App->importer->Import("Pause.png", I_TEXTURE);
+	ui_textures[STOP]		= (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
 	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("no_texture.png", I_TEXTURE);
 
-	io = &ImGui::GetIO();
+	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
+	ui_fonts[REGULAR]				= io->Fonts->AddFontFromFileTTF("Fonts/regular.ttf", 18.0f);
+	ui_fonts[REGULAR_BOLD]			= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold.ttf", 18.0f);
+	ui_fonts[REGULAR_ITALIC]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_italic.ttf", 18.0f);
+	ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
+	
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	docking_background = true;
 	close_app = false;
@@ -108,22 +114,15 @@ update_status ModuleImGUI::Update(float dt) {
 
 
 	InvisibleDockingBegin();
-	// 1. Show a simple window.
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-	if(open_tabs[TEST])
-	{
-
-	}
-
-	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-
 
 	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
 		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
 
 
-	if (open_tabs[CONFIGURATION]) {
+	if (open_tabs[CONFIGURATION]) 
+	{
 		ImGui::Begin("Configuration", &open_tabs[CONFIGURATION]);
+
 		if (ImGui::CollapsingHeader("Graphics")) 
 			DrawGraphicsTab();
 		if (ImGui::CollapsingHeader("Window"))
@@ -133,39 +132,24 @@ update_status ModuleImGUI::Update(float dt) {
 		if (ImGui::CollapsingHeader("Application"))
 			DrawApplication();
 
+
 		if (ImGui::Button("Reset Camera"))
 			App->camera->editor_camera->Reset();
+
 		ImGui::End();
 	}
 
-	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-	if (open_tabs[DEMO]) {
-		ImGui::SetNextWindowPos(ImVec2(650, 320), ImGuiCond_FirstUseEver); 
-		ImGui::ShowDemoWindow(&open_tabs[DEMO]);
-	}
-
 	if (open_tabs[HIERARCHY])
-	{
-		ImGui::SetNextWindowPos(ImVec2(0, 220), ImGuiCond_FirstUseEver); 
 		DrawHierarchyTab();
-	}
 
 	if (open_tabs[OBJ_INSPECTOR])
-	{
-		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
 		DrawObjectInspectorTab();
-	}
 
 	if (open_tabs[PRIMITIVE])
-	{
-		ImGui::SetNextWindowPos(ImVec2(400, 320), ImGuiCond_FirstUseEver);
 		DrawPrimitivesTab();
-	}
+
 	if (open_tabs[ABOUT])
-	{
-		//ImGui::SetNextWindowPos(ImVec2(?, ?), ImGuiCond_FirstUseEver);
 		DrawAboutWindow();
-	}
 	
 	if (open_tabs[LOG])
 		app_log->Draw("App log",&open_tabs[LOG]);
@@ -199,8 +183,6 @@ update_status ModuleImGUI::Update(float dt) {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
-			ImGui::MenuItem("Demo", NULL, &open_tabs[DEMO]);
-			ImGui::MenuItem("Test", NULL, &open_tabs[TEST]);
 			ImGui::MenuItem("Hierarchy", NULL, &open_tabs[HIERARCHY]);
 			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[OBJ_INSPECTOR]);
 			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
@@ -261,6 +243,8 @@ bool ModuleImGUI::CleanUp() {
 void ModuleImGUI::DrawHierarchyTab()
 {
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
+	ImGui::PushFont(ui_fonts[REGULAR]);
+
 	ImGui::Text("Use this tab to set the hierarchy of the scene objects");
 	int id = 0;
 
@@ -270,6 +254,7 @@ void ModuleImGUI::DrawHierarchyTab()
 	//Just for assignment 1
 	//DrawHierarchyNode(App->scene_intro->game_objects.back(), id);
 
+	ImGui::PopFont();
 	ImGui::End();
 }
 
@@ -308,6 +293,8 @@ void ModuleImGUI::DrawHierarchyNode(const GameObject& game_object, int& id) cons
 void ModuleImGUI::DrawObjectInspectorTab()
 {
 	ImGui::Begin("Object inspector", &open_tabs[OBJ_INSPECTOR]);
+	ImGui::PushFont(ui_fonts[REGULAR]);
+
 	ImGui::Text("Use this tab to add, edit and remove components of gameobjects");
 
 	static bool show_rename = false;
@@ -349,12 +336,15 @@ void ModuleImGUI::DrawObjectInspectorTab()
 	else if (show_rename)
 		show_rename = false;
 
+	ImGui::PopFont();
 	ImGui::End();
 	
 	if (show_rename)
 	{
 		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
 		ImGui::Begin("Rename object");
+		ImGui::PushFont(ui_fonts[REGULAR]);
+
 		static char rename_buffer[64];
 		ImGui::InputText("Rename to", rename_buffer, 64);
 
@@ -365,6 +355,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 			show_rename = false;
 		}
 
+		ImGui::PopFont();
 		ImGui::End();
 	}
 }
@@ -632,6 +623,7 @@ void ModuleImGUI::DrawCameraTab(Camera* camera)
 //void ModuleImGUI::DrawAudioTab()
 //{
 //	ImGui::Begin("Audio", &open_tabs[AUDIO]);
+//	ImGui::PushFont(ui_fonts[REGULAR]);
 //	ImGui::Text("Use this tab to check and play loaded audio files");
 //	
 //	for (auto it = App->audio->audio_files.begin(); it != App->audio->audio_files.end(); it++)
@@ -649,12 +641,14 @@ void ModuleImGUI::DrawCameraTab(Camera* camera)
 //		}
 //	}
 //
+//  ImGui::PopFont();
 //	ImGui::End();
 //}
 
 void ModuleImGUI::DrawPrimitivesTab() 
 {
 	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
+	ImGui::PushFont(ui_fonts[REGULAR]);
 	ImGui::Text("Use this tab to add primitives to the scene");
 
 	if (ImGui::Button("Add cube"))
@@ -692,12 +686,16 @@ void ModuleImGUI::DrawPrimitivesTab()
 		App->scene_intro->game_objects.push_back(cylinder);
 	}
 
+	ImGui::PopFont();
 	ImGui::End();
 }
 
 
-void ModuleImGUI::DrawAboutWindow(){
-	ImGui::Begin("About", &open_tabs[ABOUT]);
+void ModuleImGUI::DrawAboutWindow()
+{
+	ImGui::Begin("About", &open_tabs[ABOUT]); 
+	ImGui::PushFont(ui_fonts[REGULAR]);
+
 	ImGui::Text("Kuroko Engine");
 	ImGui::Separator();
 	ImGui::Text("An engine to make videogames");
@@ -742,11 +740,13 @@ void ModuleImGUI::DrawAboutWindow(){
 	if (ImGui::Button("Learn more##pcg_random"))
 		App->requestBrowser("http://www.pcg-random.org");
 	
+	ImGui::PopFont();
 	ImGui::End();
 }
 
 void ModuleImGUI::DrawGraphicsTab() const {
 	//starting values
+	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	static bool depth_test = glIsEnabled(GL_DEPTH_TEST);
 	static bool face_culling = glIsEnabled(GL_CULL_FACE);
@@ -824,9 +824,13 @@ void ModuleImGUI::DrawGraphicsTab() const {
 		ImGui::Checkbox("N Enabled", &App->scene_intro->global_normals);
 		ImGui::TreePop();
 	}
+	ImGui::PopFont();
 }
 
-void ModuleImGUI::DrawWindowConfig() const{
+void ModuleImGUI::DrawWindowConfig() const
+{
+	ImGui::PushFont(ui_fonts[REGULAR]);
+
 	Window* window = App->window->main_window;
 	if(ImGui::SliderFloat("Brightness", &window->brightness, 0, 1.0f))
 		App->window->setBrightness(window->brightness);
@@ -852,69 +856,79 @@ void ModuleImGUI::DrawWindowConfig() const{
 	if (ImGui::Checkbox("FullDesktop", &window->fulldesk))
 		App->window->setFullDesktop(window->fulldesk);
 
+	ImGui::PopFont();
 }
 
-void ModuleImGUI::DrawHardware() const {
+void ModuleImGUI::DrawHardware() const 
+{
+	ImGui::PushFont(ui_fonts[REGULAR]);
+	
 	//CPUs
-		ImGui::Text("CPUs");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255),"%i", SDL_GetCPUCount());
+	ImGui::Text("CPUs");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255),"%i", SDL_GetCPUCount());
+
 	// RAM
-		ImGui::Text("System RAM");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Gb", SDL_GetSystemRAM());
+	ImGui::Text("System RAM");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%i Gb", SDL_GetSystemRAM());
+
 	// Caps
-		ImGui::Text("Caps:");
-		ImGui::SameLine();
-		if(SDL_HasRDTSC())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "RDTSC, ");
-		ImGui::SameLine();
-		if (SDL_HasMMX())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "MMX, ");
-		ImGui::SameLine();
-		if (SDL_HasSSE())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE, ");
-		ImGui::SameLine();
-		if (SDL_HasSSE2())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE2, ");
-		if (SDL_HasSSE3())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE3, ");
-		ImGui::SameLine();
-		if (SDL_HasSSE41())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE41, ");
-		ImGui::SameLine();
-		if (SDL_HasSSE42())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE42, ");
-		ImGui::SameLine();
-		if (SDL_HasAVX())
-			ImGui::TextColored(ImVec4(0, 255, 0, 255), "AVX.");
-		ImGui::SameLine();
+	ImGui::Text("Caps:");
+	ImGui::SameLine();
+	if(SDL_HasRDTSC())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "RDTSC, ");
+	ImGui::SameLine();
+	if (SDL_HasMMX())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "MMX, ");
+	ImGui::SameLine();
+	if (SDL_HasSSE())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE, ");
+	ImGui::SameLine();
+	if (SDL_HasSSE2())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE2, ");
+	if (SDL_HasSSE3())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE3, ");
+	ImGui::SameLine();
+	if (SDL_HasSSE41())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE41, ");
+	ImGui::SameLine();
+	if (SDL_HasSSE42())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "SSE42, ");
+	ImGui::SameLine();
+	if (SDL_HasAVX())
+		ImGui::TextColored(ImVec4(0, 255, 0, 255), "AVX.");
+	ImGui::SameLine();
 
 	ImGui::Separator();
 	//GPU
-		ImGui::Text("Caps:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_VENDOR));
-		ImGui::Text("Brand:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_RENDERER));
-		ImGui::Text("VRAM Budget:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getTotalVRAMMb_NVIDIA());
-		ImGui::Text("VRAM Usage:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getTotalVRAMMb_NVIDIA() - getAvaliableVRAMMb_NVIDIA());
-		ImGui::Text("VRAM Avaliable:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getAvaliableVRAMMb_NVIDIA());
-		ImGui::Text("VRAM Reserved:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
+	ImGui::Text("Caps:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_VENDOR));
+	ImGui::Text("Brand:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", glGetString(GL_RENDERER));
+	ImGui::Text("VRAM Budget:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getTotalVRAMMb_NVIDIA());
+	ImGui::Text("VRAM Usage:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getTotalVRAMMb_NVIDIA() - getAvaliableVRAMMb_NVIDIA());
+	ImGui::Text("VRAM Avaliable:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", getAvaliableVRAMMb_NVIDIA());
+	ImGui::Text("VRAM Reserved:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 255, 0, 255), "%f Mb", 0);
+		
+	ImGui::PopFont();
 }
 
 void ModuleImGUI::DrawApplication() const 
 {
 	// HARDCODED (?)
+	ImGui::PushFont(ui_fonts[REGULAR]);
+	
 	ImGui::Text("App name: Kuroko Engine");
 	ImGui::Text("Organization: UPC CITM");
 	char title[25];
@@ -922,6 +936,8 @@ void ModuleImGUI::DrawApplication() const
 	ImGui::PlotHistogram("##framerate", &App->fps_log[0], App->fps_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 	sprintf_s(title, 25, "Milliseconds %.1f", App->ms_log[App->ms_log.size() - 1]);
 	ImGui::PlotHistogram("##milliseconds", &App->ms_log[0], App->ms_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
+	
+	ImGui::PopFont();
 }
 
 void ModuleImGUI::DrawTimeControl()
@@ -948,8 +964,6 @@ void ModuleImGUI::DrawTimeControl()
 
 void ModuleImGUI::SaveConfig(JSON_Object& config) const
 {
-	json_object_set_boolean(&config, "demo", open_tabs[DEMO]);
-	json_object_set_boolean(&config, "test", open_tabs[TEST]);
 	json_object_set_boolean(&config, "hierarchy", open_tabs[HIERARCHY]);
 	json_object_set_boolean(&config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
 	json_object_set_boolean(&config, "primitive", open_tabs[PRIMITIVE]);
@@ -962,9 +976,7 @@ void ModuleImGUI::SaveConfig(JSON_Object& config) const
 
 void ModuleImGUI::LoadConfig(const JSON_Object& config) 
 {
-	open_tabs[DEMO]				= json_object_get_boolean(&config, "demo");
 	open_tabs[CONFIGURATION]	= json_object_get_boolean(&config, "configuration");
-	open_tabs[TEST]				= json_object_get_boolean(&config, "test");
 	open_tabs[HIERARCHY]		= json_object_get_boolean(&config, "hierarchy");
 	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(&config, "obj_inspector");
 	open_tabs[PRIMITIVE]		= json_object_get_boolean(&config, "primitive");

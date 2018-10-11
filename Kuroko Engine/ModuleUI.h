@@ -12,8 +12,9 @@ class Texture;
 class Material;
 class Camera;
 
-enum GUI_Tabs { DEMO, TEST, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, /*AUDIO,*/ LAST};  // LAST is an utility value to store the max num of tabs.
+enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, /*AUDIO,*/ LAST_UI_TAB};  // LAST is an utility value to store the max num of tabs.
 enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
+enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
 
 class ModuleImGUI :
 	public Module {
@@ -35,8 +36,8 @@ public:
 	bool DrawComponent(Component& component);
 	void DrawCameraTab(Camera* camera);
 	//void DrawAudioTab();
-	void DrawPrimitivesTab() ;
-	void DrawAboutWindow() ;
+	void DrawPrimitivesTab();
+	void DrawAboutWindow();
 	void DrawWindowConfig() const;
 	void DrawHardware() const;
 	void DrawApplication() const;
@@ -52,9 +53,10 @@ private:
 	
 	bool close_app = false;
 	bool docking_background;
-	bool open_tabs[LAST];  // _serializable_var
+	bool open_tabs[LAST_UI_TAB];  // _serializable_var
 	ImGuiIO* io;
 	std::array<Texture*, LAST_UI_TEX> ui_textures;
+	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
 };
 #endif
 

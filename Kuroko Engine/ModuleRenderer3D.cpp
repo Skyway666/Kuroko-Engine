@@ -166,7 +166,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	App->camera->editor_camera->setProjMatrix(App->camera->CreatePerspMat(60.0f, width ,height, 0.125f, 1250.0f));
+	App->camera->editor_camera->setProjMatrix(App->camera->CreatePerspMat(60.0, width, height, 0.125f, 1250.0f));
 	glLoadMatrixf((GLfloat*)App->camera->editor_camera->GetProjMatrix().v);
 
 	glMatrixMode(GL_MODELVIEW);
