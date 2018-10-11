@@ -258,8 +258,19 @@ void ModuleWindow::LoadConfig(const JSON_Object& config) {
 	setResizable(json_object_get_boolean(&config, "resizable"));
 	setFullDesktop(json_object_get_boolean(&config, "fulldesktop"));
 	setBorderless(json_object_get_boolean(&config, "borderless"));
+	int width, height = 0;
+	if (!main_window->adapt_screen){
+		width = json_object_get_number(&config, "width");
+		height = json_object_get_number(&config, "height");
+	}
+	else {
+		SDL_DisplayMode DM;
+		SDL_GetCurrentDisplayMode(0, &DM);
+		width = DM.w - json_object_get_number(&config, "adaptable_offsetx");
+		height = DM.h - json_object_get_number(&config, "adaptable_offsety");
 
-	setSize(json_object_get_number(&config, "width"), json_object_get_number(&config, "height"));
+	}
+	setSize(width, height);
 
 	setBrightness(json_object_get_number(&config, "brightness"));
 }
