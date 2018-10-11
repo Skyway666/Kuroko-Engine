@@ -51,9 +51,9 @@ bool ModuleImporter::Init(const JSON_Object& config)
 {
 
 	struct aiLogStream stream;
-	stream = aiGetPredefinedLogStream(aiDefaultLogStream_FILE, "log.txt");
+	stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, "log.txt");
+	stream.callback = logAssimp;
 	aiAttachLogStream(&stream);
-
 
 	ilutRenderer(ILUT_OPENGL);
 	ilInit();
@@ -100,17 +100,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 				App->camera->FocusSelectedGeometry(3); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
 
-				// Read file and log info
-				std::ifstream file_stream;
-				std::string file_content;
-				file_stream.open("log.txt");
-				while (std::getline(file_stream, file_content))
-					app_log->AddLog("%s", file_content.c_str());
-				file_stream.close();
-				//Clear the file 
-				std::ofstream ofs;
-				ofs.open("log.txt", std::ofstream::trunc);
-				ofs.close();
 
 				return root_obj;
 			}
@@ -240,3 +229,6 @@ GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene&
 	return root_obj;
 }
 
+void logAssimp(const char* message, char* user) {
+	app_log->AddLog("%s", message);
+}
