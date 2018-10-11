@@ -16,14 +16,13 @@ Features of the engine:
 
 
 Libraries used:
-- Assimp
-- Glew
-- DevIL
-- MathGeoLib
-- SDL
-- OpenGL
-- GLSL
-- Parson
-- PCG Random
+- Assimp 	(http://www.assimp.org/)
+- Glew		(http://glew.sourceforge.net/)
+- DevIL		(http://openil.sourceforge.net/)
+- MathGeoLib	(http://clb.demon.fi/MathGeoLib/)
+- SDL		(https://wiki.libsdl.org/FrontPage)
+- OpenGL, GLSL	(https://www.opengl.org/
+- Parson	(https://github.com/kgabis/parson)
+- PCG Random	(http://www.pcg-random.org)
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine

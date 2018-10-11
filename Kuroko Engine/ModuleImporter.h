@@ -21,6 +21,7 @@ public:
 	bool Init(const JSON_Object& config);
 	bool CleanUp();
 
+
 	void* Import(const char* file, ImportType expected_filetype = I_NONE) const;
 
 private:
@@ -29,4 +30,5 @@ private:
 
 
 };
+void logAssimp(const char* message, char* user);
 #endif
