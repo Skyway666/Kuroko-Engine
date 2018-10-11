@@ -230,7 +230,6 @@ void ModuleImGUI::DrawHierarchyTab()
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
-	ImGui::Text("Use this tab to set the hierarchy of the scene objects");
 	int id = 0;
 
 	for (std::list<GameObject*>::iterator it = App->scene_intro->game_objects.begin(); it != App->scene_intro->game_objects.end(); it++)
@@ -279,8 +278,6 @@ void ModuleImGUI::DrawObjectInspectorTab()
 {
 	ImGui::Begin("Object inspector", &open_tabs[OBJ_INSPECTOR]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
-
-	ImGui::Text("Use this tab to add, edit and remove components of gameobjects");
 
 	static bool show_rename = false;
 	GameObject* selected_obj = App->scene_intro->selected_obj;
@@ -369,7 +366,7 @@ bool ModuleImGUI::DrawComponent(Component& component)
 
 				if (ImGui::Checkbox("Wireframe", &wireframe_enabled))
 					c_mesh->setWireframe(wireframe_enabled);
-
+				ImGui::SameLine();
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
 					c_mesh->setDrawNormals(draw_normals);
 				
@@ -378,8 +375,16 @@ bool ModuleImGUI::DrawComponent(Component& component)
 				{
 					if (ImGui::TreeNode("Material"))
 					{
-						static int preview_size = 64;
+						static int preview_size = 128;
 						ImGui::Text("Id: %d", material->getId());
+						ImGui::SameLine();
+						if (ImGui::Button("remove material"))
+						{
+							c_mesh->setMaterial(nullptr);
+							ImGui::TreePop();
+							return true;
+						}
+
 						ImGui::Text("preview size");
 						ImGui::SameLine();
 						if (ImGui::Button("64")) preview_size = 64;
@@ -388,71 +393,70 @@ bool ModuleImGUI::DrawComponent(Component& component)
 						ImGui::SameLine();
 						if (ImGui::Button("256")) preview_size = 256;
 
-						if (ImGui::Button("remove material"))
+						
+
+						if(ImGui::TreeNode("diffuse"))
 						{
-							c_mesh->setMaterial(nullptr);
+							ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+							if (ImGui::Button("Dif: Load checkered "))
+								material->setCheckeredTexture(DIFFUSE);
+							ImGui::SameLine();
+							if (ImGui::Button("Dif: Load "))
+							{
+								std::string texture_path = openFileWID();
+								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+									c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
+							}
 							ImGui::TreePop();
-							return true;
 						}
 
-						ImGui::Text("diffuse texture:  ");
-						ImGui::SameLine();
-
-						ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-
-						if (ImGui::Button("Dif: Load checkered texture"))
-							material->setCheckeredTexture(DIFFUSE);
-						ImGui::SameLine();
-						if (ImGui::Button("Dif: Load texture"))
+						if (ImGui::TreeNode("ambient"))
 						{
-							std::string texture_path = openFileWID();
-							if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
+							ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+							if (ImGui::Button("Amb: Load checkered texture"))
+								material->setCheckeredTexture(AMBIENT);
+							ImGui::SameLine();
+							if (ImGui::Button("Amb: Load texture"))
+							{
+								std::string texture_path = openFileWID();
+								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+									c_mesh->getMaterial()->setTexture(AMBIENT, tex);
+							}
+							ImGui::TreePop();
 						}
 
-						ImGui::Text("ambient texture:  ");
-
-						ImGui::SameLine();
-						ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-
-						if (ImGui::Button("Amb: Load checkered texture"))
-							material->setCheckeredTexture(AMBIENT);
-						ImGui::SameLine();
-						if (ImGui::Button("Amb: Load texture"))
+						if (ImGui::TreeNode("normals"))
 						{
-							std::string texture_path = openFileWID();
-							if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(AMBIENT, tex);
+							ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+
+							if (ImGui::Button("Nor: Load checkered texture"))
+								material->setCheckeredTexture(NORMALS);
+							ImGui::SameLine();
+							if (ImGui::Button("Nor: Load texture"))
+							{
+								std::string texture_path = openFileWID();
+								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+									c_mesh->getMaterial()->setTexture(NORMALS, tex);
+							}
+							ImGui::TreePop();
 						}
 
-						ImGui::Text("normals texture:  ");
-
-						ImGui::SameLine();
-						ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-
-						if (ImGui::Button("Nor: Load checkered texture"))
-							material->setCheckeredTexture(NORMALS);
-						ImGui::SameLine();
-						if (ImGui::Button("Nor: Load texture"))
+						if (ImGui::TreeNode("lightmap"))
 						{
-							std::string texture_path = openFileWID();
-							if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(NORMALS, tex);
-						}
+							ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-						ImGui::Text("lightmap texture:  ");
-
-						ImGui::SameLine();
-						ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-
-						if (ImGui::Button("Lgm: Load checkered texture"))
-							material->setCheckeredTexture(LIGHTMAP);
-						ImGui::SameLine();
-						if (ImGui::Button("Lgm: Load texture"))
-						{
-							std::string texture_path = openFileWID();
-							if(Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-								c_mesh->getMaterial()->setTexture(LIGHTMAP, tex);
+							if (ImGui::Button("Lgm: Load checkered texture"))
+								material->setCheckeredTexture(LIGHTMAP);
+							ImGui::SameLine();
+							if (ImGui::Button("Lgm: Load texture"))
+							{
+								std::string texture_path = openFileWID();
+								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+									c_mesh->getMaterial()->setTexture(LIGHTMAP, tex);
+							}
+							ImGui::TreePop();
 						}
 						ImGui::TreePop();
 					}
@@ -634,7 +638,6 @@ void ModuleImGUI::DrawPrimitivesTab()
 {
 	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
-	ImGui::Text("Use this tab to add primitives to the scene");
 
 	if (ImGui::Button("Add cube"))
 	{
@@ -645,6 +648,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front()); // Just for asignment 1
 		App->scene_intro->game_objects.push_back(cube);
 	}
+	ImGui::SameLine();
 	if (ImGui::Button("Add plane"))
 	{
 		GameObject* plane = new GameObject("Plane");
@@ -662,6 +666,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		App->scene_intro->game_objects.push_back(sphere);
 	}
+	ImGui::SameLine();
 	if (ImGui::Button("Add cylinder")) {
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
