@@ -567,7 +567,10 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags
 
 bool ImGui::Button(const char* label, const ImVec2& size_arg)
 {
-    return ButtonEx(label, size_arg, 0);
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3);
+    bool ret = ButtonEx(label, size_arg, 0);
+	ImGui::PopStyleVar();
+	return ret;
 }
 
 // Small buttons fits within text without additional vertical spacing.
