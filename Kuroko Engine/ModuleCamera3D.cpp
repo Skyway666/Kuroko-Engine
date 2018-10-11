@@ -59,7 +59,7 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += X * speed;
 
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		FocusSelectedGeometry(1.5f);
+		FocusSelectedGeometry();
 
 	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
 		RotateSelectedGeometry();
@@ -207,7 +207,7 @@ void ModuleCamera3D::FocusSelectedGeometry(float distance) {
 	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
 		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
-		float3 new_pos = (centroid + (half_size * distance));
+		float3 new_pos = centroid + half_size + float3(distance, distance, distance);
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
 		Move(vec3(new_pos.x, new_pos.y, new_pos.z) - Position);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));

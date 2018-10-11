@@ -97,7 +97,8 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 					App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());
 
 				App->scene_intro->game_objects.push_back(root_obj);
-				App->camera->FocusSelectedGeometry(3); // Hardcoded value
+				App->scene_intro->selected_obj = root_obj;
+				App->camera->FocusSelectedGeometry(); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
 
 				// Read file and log info
