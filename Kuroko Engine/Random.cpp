@@ -18,7 +18,7 @@ float randomFloat(){
 	return ldexp(pcg32_random(), -32);
 }
 
-void randomizeSeed(pcg32_random_t* seed) {
+void randomizeSeed() {
 	// Get random 64 bit values
 	std::random_device rd;
 	std::default_random_engine generator(rd());

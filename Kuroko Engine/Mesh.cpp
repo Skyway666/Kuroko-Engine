@@ -2,6 +2,8 @@
 #include "Color.h"
 #include "Applog.h"
 #include "Material.h"
+#include "ModuleScene.h"
+#include "Application.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include "glew-2.1.0\include\GL\glew.h"
 
@@ -11,6 +13,8 @@ Mesh::Mesh(const aiMesh& imported_mesh)
 {
 	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
 	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
+	id = ++App->scene->last_mesh_id;
+
 }
 
 
@@ -33,8 +37,10 @@ Mesh::Mesh(PrimitiveTypes primitive)
 
 Mesh::~Mesh()
 {
-	glDeleteBuffers(1, &iboId);
-	glDeleteBuffers(1, &vboId);
+	if(iboId != 0)
+		glDeleteBuffers(1, &iboId);
+	if (vboId != 0)
+		glDeleteBuffers(1, &vboId);
 
 	if (vertices)	delete vertices;
 	if (tris)		delete tris;

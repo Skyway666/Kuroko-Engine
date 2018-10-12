@@ -6,6 +6,7 @@
 
 class GameObject; 
 class Material;
+class Mesh;
 
 enum GameState { STOPPED, PAUSED, PLAYING};
 
@@ -24,6 +25,8 @@ public:
 	void Stop() { game_state = STOPPED; };
 
 	Material* getMaterial(uint id) const;
+	Material* getGameObject(uint id) const;
+	Material* getMaterial(uint id) const;
 
 private:
 	
@@ -34,11 +37,16 @@ public:
 	std::list<GameObject*> game_objects;
 	std::list<GameObject*> game_objs_to_delete;
 	std::list<Material*> materials;
+	std::list<Material*> game_objs_to_delete;
+	std::list<Mesh*> meshes;
+	std::list<Mesh*> meshes_to_delete;
+
 	GameObject* selected_obj	= nullptr;
 	bool draw_grid				= true;
 	GameState game_state		= STOPPED;
 	uint last_mat_id			= 0;
 	uint last_gobj_id			= 0;
+	uint last_mesh_id			= 0;
 
 	bool global_wireframe		= false;
 	bool global_normals			= false;

@@ -5,12 +5,6 @@
 #include "Application.h"
 #include "glew-2.1.0\include\GL\glew.h"
 
-ComponentMesh::~ComponentMesh()
-{
-	if (mat)		delete mat;
-	if (mesh)		delete mesh;
-}
-
 void ComponentMesh::Draw() const
 {
 	ComponentTransform* transform = nullptr;

@@ -11,7 +11,6 @@ public:
 
 	ComponentMesh(GameObject* gameobject) : Component(gameobject, MESH) {};   // empty constructor
 	ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), mesh(mesh) {};
-	~ComponentMesh();
 
 	bool Update(float dt) { if (mesh && isActive()) Draw(); return true; };
 	void Draw() const;
