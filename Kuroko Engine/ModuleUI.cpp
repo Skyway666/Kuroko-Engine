@@ -34,15 +34,15 @@
 #pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
 
 
-ModuleImGUI::ModuleImGUI(Application* app, bool start_enabled) : Module(app, start_enabled) {
+ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_enabled) {
 	name = "gui";
 }
 
 
-ModuleImGUI::~ModuleImGUI() {
+ModuleUI::~ModuleUI() {
 }
 
-bool ModuleImGUI::Init(const JSON_Object& config) {
+bool ModuleUI::Init(const JSON_Object& config) {
 	
 	SDL_GL_SetSwapInterval(1); // Enable vsync
 
@@ -64,7 +64,7 @@ bool ModuleImGUI::Init(const JSON_Object& config) {
 	return true;
 }
 
-bool ModuleImGUI::Start()
+bool ModuleUI::Start()
 {
 	io = &ImGui::GetIO();
 
@@ -86,7 +86,7 @@ bool ModuleImGUI::Start()
 	return true;
 }
 
-update_status ModuleImGUI::PreUpdate(float dt) {
+update_status ModuleUI::PreUpdate(float dt) {
 
 	// Start the ImGui frame
 	ImGui_ImplOpenGL2_NewFrame();
@@ -96,7 +96,7 @@ update_status ModuleImGUI::PreUpdate(float dt) {
 	return UPDATE_CONTINUE;
 }
 
-update_status ModuleImGUI::Update(float dt) {
+update_status ModuleUI::Update(float dt) {
 
 
 	InvisibleDockingBegin();
@@ -195,7 +195,7 @@ update_status ModuleImGUI::Update(float dt) {
 
 }
 
-update_status ModuleImGUI::PostUpdate(float dt) {
+update_status ModuleUI::PostUpdate(float dt) {
 	// Rendering
 	ImGui::Render();
 	
@@ -209,7 +209,7 @@ update_status ModuleImGUI::PostUpdate(float dt) {
 		return UPDATE_STOP;
 }
 
-bool ModuleImGUI::CleanUp() {
+bool ModuleUI::CleanUp() {
 	// Cleanup
 	for (int i = 0; i < LAST_UI_TEX; i++)
 	{
@@ -226,24 +226,21 @@ bool ModuleImGUI::CleanUp() {
 
 
 
-void ModuleImGUI::DrawHierarchyTab()
+void ModuleUI::DrawHierarchyTab()
 {
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	int id = 0;
 
-	for (std::list<GameObject*>::iterator it = App->scene_intro->game_objects.begin(); it != App->scene_intro->game_objects.end(); it++)
+	for (std::list<GameObject*>::iterator it = App->scene->game_objects.begin(); it != App->scene->game_objects.end(); it++)
 		DrawHierarchyNode(*(*it), id);
-
-	//Just for assignment 1
-	//DrawHierarchyNode(App->scene_intro->game_objects.back(), id);
 
 	ImGui::PopFont();
 	ImGui::End();
 }
 
-void ModuleImGUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
+void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 {
 	id++;
 	static int selection_mask = (1 << 2);
@@ -260,7 +257,7 @@ void ModuleImGUI::DrawHierarchyNode(const GameObject& game_object, int& id) cons
 	if (ImGui::IsItemClicked())
 	{
 		selection_mask = (1 << id);
-		App->scene_intro->selected_obj = (GameObject*)&game_object;
+		App->scene->selected_obj = (GameObject*)&game_object;
 	}
 
 	if (node_open)
@@ -275,13 +272,13 @@ void ModuleImGUI::DrawHierarchyNode(const GameObject& game_object, int& id) cons
 	}
 }
 
-void ModuleImGUI::DrawObjectInspectorTab()
+void ModuleUI::DrawObjectInspectorTab()
 {
 	ImGui::Begin("Object inspector", &open_tabs[OBJ_INSPECTOR]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	static bool show_rename = false;
-	GameObject* selected_obj = App->scene_intro->selected_obj;
+	GameObject* selected_obj = App->scene->selected_obj;
 
 	if (selected_obj)
 	{
@@ -293,7 +290,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 
 		ImGui::SameLine();
 		if (ImGui::Button("Delete"))
-			App->scene_intro->deleteGameObject(selected_obj);
+			App->scene->deleteGameObject(selected_obj);
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
 		ImGui::SameLine();
@@ -343,7 +340,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 	}
 }
 
-bool ModuleImGUI::DrawComponent(Component& component)
+bool ModuleUI::DrawComponent(Component& component)
 {
 	switch (component.getType())
 	{
@@ -467,8 +464,7 @@ bool ModuleImGUI::DrawComponent(Component& component)
 					if (ImGui::Button("Add material"))
 					{
 						Material* mat = new Material();
-						c_mesh->setMaterial(mat);
-						App->scene_intro->addMaterial(mat);
+						App->scene->addMaterial(mat);
 					}
 				}
 
@@ -598,7 +594,7 @@ bool ModuleImGUI::DrawComponent(Component& component)
 	return true;
 }
 
-void ModuleImGUI::DrawCameraTab(Camera* camera)
+void ModuleUI::DrawCameraTab(Camera* camera)
 {
 	if (camera->frame_buffer)
 	{
@@ -610,7 +606,7 @@ void ModuleImGUI::DrawCameraTab(Camera* camera)
 	}
 }
 //
-//void ModuleImGUI::DrawAudioTab()
+//void ModuleUI::DrawAudioTab()
 //{
 //	ImGui::Begin("Audio", &open_tabs[AUDIO]);
 //	ImGui::PushFont(ui_fonts[REGULAR]);
@@ -635,7 +631,7 @@ void ModuleImGUI::DrawCameraTab(Camera* camera)
 //	ImGui::End();
 //}
 
-void ModuleImGUI::DrawPrimitivesTab() 
+void ModuleUI::DrawPrimitivesTab() 
 {
 	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
@@ -645,6 +641,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* cube = new GameObject("Cube");
 		Mesh* mesh = new Mesh(Primitive_Cube);
 		cube->addComponent(new ComponentMesh(cube, mesh));
+
 		//if (!App->scene_intro->game_objects.empty())
 		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front()); // Just for asignment 1
 		//App->scene_intro->game_objects.push_back(cube);
@@ -655,6 +652,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* plane = new GameObject("Plane");
 		Mesh* mesh = new Mesh(Primitive_Plane);
 		plane->addComponent(new ComponentMesh(plane, mesh));
+
 		//if (!App->scene_intro->game_objects.empty())
 		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		//App->scene_intro->game_objects.push_back(plane);
@@ -663,6 +661,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* sphere = new GameObject("Sphere");
 		Mesh* mesh = new Mesh(Primitive_Sphere);
 		sphere->addComponent(new ComponentMesh(sphere, mesh));
+
 		//if (!App->scene_intro->game_objects.empty())
 		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		//App->scene_intro->game_objects.push_back(sphere);
@@ -671,6 +670,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 	if (ImGui::Button("Add cylinder")) {
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
+
 		//cylinder->addComponent(new ComponentMesh(cylinder, mesh));
 		//if(!App->scene_intro->game_objects.empty())
 		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
@@ -682,7 +682,7 @@ void ModuleImGUI::DrawPrimitivesTab()
 }
 
 
-void ModuleImGUI::DrawAboutWindow()
+void ModuleUI::DrawAboutWindow()
 {
 	ImGui::Begin("About", &open_tabs[ABOUT]); 
 	ImGui::PushFont(ui_fonts[REGULAR]);
@@ -735,7 +735,7 @@ void ModuleImGUI::DrawAboutWindow()
 	ImGui::End();
 }
 
-void ModuleImGUI::DrawGraphicsTab() const {
+void ModuleUI::DrawGraphicsTab() const {
 	//starting values
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
@@ -808,17 +808,17 @@ void ModuleImGUI::DrawGraphicsTab() const {
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Wireframe")) {
-		ImGui::Checkbox("WF Enabled", &App->scene_intro->global_wireframe);
+		ImGui::Checkbox("WF Enabled", &App->scene->global_wireframe);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Normals")) {
-		ImGui::Checkbox("N Enabled", &App->scene_intro->global_normals);
+		ImGui::Checkbox("N Enabled", &App->scene->global_normals);
 		ImGui::TreePop();
 	}
 	ImGui::PopFont();
 }
 
-void ModuleImGUI::DrawWindowConfig() const
+void ModuleUI::DrawWindowConfig() const
 {
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
@@ -850,7 +850,7 @@ void ModuleImGUI::DrawWindowConfig() const
 	ImGui::PopFont();
 }
 
-void ModuleImGUI::DrawHardware() const 
+void ModuleUI::DrawHardware() const 
 {
 	ImGui::PushFont(ui_fonts[REGULAR]);
 	
@@ -915,7 +915,7 @@ void ModuleImGUI::DrawHardware() const
 	ImGui::PopFont();
 }
 
-void ModuleImGUI::DrawApplication() const 
+void ModuleUI::DrawApplication() const 
 {
 	// HARDCODED (?)
 	ImGui::PushFont(ui_fonts[REGULAR]);
@@ -931,29 +931,29 @@ void ModuleImGUI::DrawApplication() const
 	ImGui::PopFont();
 }
 
-void ModuleImGUI::DrawTimeControl()
+void ModuleUI::DrawTimeControl()
 {
 	ImGui::Begin("Time control", &open_tabs[TIME_CONTROL]);
 
 	int w, h;
 	ui_textures[PLAY]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->getGameState() == PLAYING ? 1.0f : 0.0f)))
-		App->scene_intro->Play();
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGameState() == PLAYING ? 1.0f : 0.0f)))
+		App->scene->Play();
 
 	ImGui::SameLine();
 	ui_textures[PAUSE]->getSize(w, h);
-	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->getGameState() == PAUSED ? 1.0f : 0.0f)))
-		App->scene_intro->Pause();
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGameState() == PAUSED ? 1.0f : 0.0f)))
+		App->scene->Pause();
 
 	ImGui::SameLine();
 	ui_textures[STOP]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->getGameState() == STOPPED ? 1.0f : 0.0f)))
-		App->scene_intro->Stop();
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGameState() == STOPPED ? 1.0f : 0.0f)))
+		App->scene->Stop();
 
 	ImGui::End();
 }
 
-void ModuleImGUI::SaveConfig(JSON_Object& config) const
+void ModuleUI::SaveConfig(JSON_Object& config) const
 {
 	json_object_set_boolean(&config, "hierarchy", open_tabs[HIERARCHY]);
 	json_object_set_boolean(&config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
@@ -965,7 +965,7 @@ void ModuleImGUI::SaveConfig(JSON_Object& config) const
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
-void ModuleImGUI::LoadConfig(const JSON_Object& config) 
+void ModuleUI::LoadConfig(const JSON_Object& config) 
 {
 	open_tabs[CONFIGURATION]	= json_object_get_boolean(&config, "configuration");
 	open_tabs[HIERARCHY]		= json_object_get_boolean(&config, "hierarchy");
@@ -977,7 +977,7 @@ void ModuleImGUI::LoadConfig(const JSON_Object& config)
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 
-void ModuleImGUI::InvisibleDockingBegin() {
+void ModuleUI::InvisibleDockingBegin() {
 	ImGuiWindowFlags window = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
@@ -1001,6 +1001,6 @@ void ModuleImGUI::InvisibleDockingBegin() {
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), optional);
 }
 
-void ModuleImGUI::InvisibleDockingEnd() {
+void ModuleUI::InvisibleDockingEnd() {
 	ImGui::End();
 }

@@ -21,13 +21,13 @@ Application::Application()
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	//audio = new ModuleAudio(this, true);   // dummy module until further implementation
-	scene_intro = new ModuleScene(this);
+	scene = new ModuleScene(this);
 	debug = new ModuleDebug(this);
 	renderer3D = new ModuleRenderer3D(this);
 	//renderer2D = new ModuleRenderer2D(this);
 	importer = new ModuleImporter(this);
 	camera = new ModuleCamera3D(this);
-	gui = new ModuleImGUI(this);
+	gui = new ModuleUI(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -42,7 +42,7 @@ Application::Application()
 	
 	
 	// Scenes
-	list_modules.push_back(scene_intro);
+	list_modules.push_back(scene);
 	list_modules.push_back(debug);
 
 	// Renderer last!

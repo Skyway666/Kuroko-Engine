@@ -14,7 +14,7 @@ enum GameState { STOPPED, PAUSED, PLAYING};
 class ModuleScene : public Module
 {
 
-	friend class ModuleImGUI;
+	friend class ModuleUI;
 public:
 	ModuleScene(Application* app, bool start_enabled = true);
 	~ModuleScene();

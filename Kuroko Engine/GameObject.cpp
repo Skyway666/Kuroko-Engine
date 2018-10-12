@@ -8,10 +8,10 @@
 #include "Applog.h"
 
 
-GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene_intro->last_gobj_id++)
+GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++)
 {
 	addComponent(TRANSFORM);
-	App->scene_intro->addGameObject(this);
+	App->scene->addGameObject(this);
 }
 
 GameObject::~GameObject()
