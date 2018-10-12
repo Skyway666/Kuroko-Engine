@@ -666,8 +666,8 @@ void ModuleUI::DrawPrimitivesTab()
 	if (ImGui::Button("Add cylinder")) {
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
+		cylinder->addComponent(new ComponentMesh(cylinder, mesh));
 
-		//cylinder->addComponent(new ComponentMesh(cylinder, mesh));
 		//if(!App->scene_intro->game_objects.empty())
 		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
 		//App->scene_intro->game_objects.push_back(cylinder);
