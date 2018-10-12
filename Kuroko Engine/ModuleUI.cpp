@@ -405,7 +405,7 @@ bool ModuleUI::DrawComponent(Component& component)
 							ImGui::TreePop();
 						}
 
-						if (ImGui::TreeNode("ambient"))
+						if (ImGui::TreeNode("ambient (feature not avaliable yet)"))
 						{
 							ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
@@ -421,7 +421,7 @@ bool ModuleUI::DrawComponent(Component& component)
 							ImGui::TreePop();
 						}
 
-						if (ImGui::TreeNode("normals"))
+						if (ImGui::TreeNode("normals (feature not avaliable yet)"))
 						{
 							ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
@@ -437,7 +437,7 @@ bool ModuleUI::DrawComponent(Component& component)
 							ImGui::TreePop();
 						}
 
-						if (ImGui::TreeNode("lightmap"))
+						if (ImGui::TreeNode("lightmap (feature not avaliable yet)"))
 						{
 							ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
