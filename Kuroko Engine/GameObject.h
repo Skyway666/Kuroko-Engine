@@ -17,6 +17,8 @@ public:
 	~GameObject();
 
 	bool Update(float dt);
+	
+	uint getId() { return id; }
 
 	void addComponent(Component* component);
 	Component* addComponent(Component_type type);

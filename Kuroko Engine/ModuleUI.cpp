@@ -293,7 +293,7 @@ void ModuleImGUI::DrawObjectInspectorTab()
 
 		ImGui::SameLine();
 		if (ImGui::Button("Delete"))
-			App->scene_intro->game_objs_to_delete.push_back(selected_obj);
+			App->scene_intro->deleteGameObject(selected_obj);
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
 		ImGui::SameLine();
@@ -468,7 +468,7 @@ bool ModuleImGUI::DrawComponent(Component& component)
 					{
 						Material* mat = new Material();
 						c_mesh->setMaterial(mat);
-						App->scene_intro->materials.push_back(mat);
+						App->scene_intro->addMaterial(mat);
 					}
 				}
 
@@ -645,9 +645,9 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* cube = new GameObject("Cube");
 		Mesh* mesh = new Mesh(Primitive_Cube);
 		cube->addComponent(new ComponentMesh(cube, mesh));
-		if (!App->scene_intro->game_objects.empty())
-			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front()); // Just for asignment 1
-		App->scene_intro->game_objects.push_back(cube);
+		//if (!App->scene_intro->game_objects.empty())
+		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front()); // Just for asignment 1
+		//App->scene_intro->game_objects.push_back(cube);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add plane"))
@@ -655,26 +655,26 @@ void ModuleImGUI::DrawPrimitivesTab()
 		GameObject* plane = new GameObject("Plane");
 		Mesh* mesh = new Mesh(Primitive_Plane);
 		plane->addComponent(new ComponentMesh(plane, mesh));
-		if (!App->scene_intro->game_objects.empty())
-			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
-		App->scene_intro->game_objects.push_back(plane);
+		//if (!App->scene_intro->game_objects.empty())
+		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
+		//App->scene_intro->game_objects.push_back(plane);
 	}
 	if (ImGui::Button("Add sphere")) {
 		GameObject* sphere = new GameObject("Sphere");
 		Mesh* mesh = new Mesh(Primitive_Sphere);
 		sphere->addComponent(new ComponentMesh(sphere, mesh));
-		if (!App->scene_intro->game_objects.empty())
-			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
-		App->scene_intro->game_objects.push_back(sphere);
+		//if (!App->scene_intro->game_objects.empty())
+		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
+		//App->scene_intro->game_objects.push_back(sphere);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add cylinder")) {
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
-		cylinder->addComponent(new ComponentMesh(cylinder, mesh));
-		if(!App->scene_intro->game_objects.empty())
-			App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
-		App->scene_intro->game_objects.push_back(cylinder);
+		//cylinder->addComponent(new ComponentMesh(cylinder, mesh));
+		//if(!App->scene_intro->game_objects.empty())
+		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
+		//App->scene_intro->game_objects.push_back(cylinder);
 	}
 
 	ImGui::PopFont();
@@ -937,17 +937,17 @@ void ModuleImGUI::DrawTimeControl()
 
 	int w, h;
 	ui_textures[PLAY]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->game_state == PLAYING ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->getGameState() == PLAYING ? 1.0f : 0.0f)))
 		App->scene_intro->Play();
 
 	ImGui::SameLine();
 	ui_textures[PAUSE]->getSize(w, h);
-	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->game_state == PAUSED ? 1.0f : 0.0f)))
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->getGameState() == PAUSED ? 1.0f : 0.0f)))
 		App->scene_intro->Pause();
 
 	ImGui::SameLine();
 	ui_textures[STOP]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->game_state == STOPPED ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene_intro->getGameState() == STOPPED ? 1.0f : 0.0f)))
 		App->scene_intro->Stop();
 
 	ImGui::End();

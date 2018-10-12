@@ -14,7 +14,7 @@ Mesh::Mesh(const aiMesh& imported_mesh) : id(App->scene_intro->last_mesh_id++)
 	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
 	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
 	
-	App->scene_intro->meshes.push_back(this);
+	App->scene_intro->addMesh(this);
 }
 
 
@@ -33,7 +33,7 @@ Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene_intro->last_mesh_id++)
 	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
 
-	App->scene_intro->meshes.push_back(this);
+	App->scene_intro->addMesh(this);
 }
 
 

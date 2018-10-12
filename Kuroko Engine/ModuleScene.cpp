@@ -3,6 +3,7 @@
 #include "ModuleCamera3D.h"
 #include "ImGui\imgui.h"
 #include "Material.h"
+#include "Mesh.h"
 #include "ModuleInput.h"
 
 #include "GameObject.h"			// <--  testing purposes
@@ -33,8 +34,8 @@ bool ModuleScene::Start()
 }
 
 // Load assets
-bool ModuleScene::CleanUp(){
-
+bool ModuleScene::CleanUp()
+{
 	game_objects.clear();
 	materials.clear();
 	meshes.clear();
@@ -49,6 +50,31 @@ bool ModuleScene::CleanUp(){
 	return true;
 }
 
+update_status ModuleScene::PreUpdate(float dt)
+{
+	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
+	{
+		if (selected_obj == *it) selected_obj = nullptr;
+		game_objects.remove(*it);
+	}
+
+	for (auto it = materials_to_delete.begin(); it != materials_to_delete.end(); it++)
+		materials.remove(*it);
+
+	for (auto it = textures_to_delete.begin(); it != textures_to_delete.end(); it++)
+		textures.remove(*it);
+
+	for (auto it = meshes_to_delete.begin(); it != meshes_to_delete.end(); it++)
+		meshes.remove(*it);
+
+	game_objs_to_delete.clear();
+	materials_to_delete.clear();
+	textures_to_delete.clear();
+	meshes_to_delete.clear();
+
+	return UPDATE_CONTINUE;
+}
+
 // Update
 update_status ModuleScene::Update(float dt)
 {
@@ -56,13 +82,8 @@ update_status ModuleScene::Update(float dt)
 	if (draw_grid)
 		DrawGrid();
 
-	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
-	{
-		if (selected_obj == *it) selected_obj = nullptr;
-		game_objects.remove(*it);
-	}
 
-	for (std::list<GameObject*>::iterator it = game_objects.begin(); it != game_objects.end(); it++)
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Update(dt);
 
 	//Just for assigment one
@@ -73,12 +94,54 @@ update_status ModuleScene::Update(float dt)
 
 Material* ModuleScene::getMaterial(uint id)  const
 {
-	for (std::list<Material*>::const_iterator it = materials.begin(); it != materials.end(); it++)
+	for (auto it = materials_to_delete.begin(); it != materials_to_delete.end(); it++)
+		if (id == (*it)->getId())
+			return nullptr;
+
+	for (auto it = materials.begin(); it != materials.end(); it++)
 		if (id == (*it)->getId())
 			return *it;
 
 	return nullptr;
 }
+
+GameObject* ModuleScene::getGameObject(uint id) const
+{
+	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
+		if (id == (*it)->getId())
+			return *it;
+
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+		if (id == (*it)->getId())
+			return *it;
+
+	return nullptr;
+}
+Mesh* ModuleScene::getMesh(uint id) const
+{
+	for (auto it = meshes_to_delete.begin(); it != meshes_to_delete.end(); it++)
+		if (id == (*it)->getId())
+			return nullptr;
+
+	for (auto it = meshes.begin(); it != meshes.end(); it++)
+		if (id == (*it)->getId())
+			return *it;
+
+	return nullptr;
+}
+Texture* ModuleScene::getTexture(uint id) const
+{
+	for (auto it = textures_to_delete.begin(); it != textures_to_delete.end(); it++)
+		if (id == (*it)->getId())
+			return nullptr;
+
+	for (auto it = textures.begin(); it != textures.end(); it++)
+		if (id == (*it)->getId())
+			return *it;
+
+	return nullptr;
+}
+
 
 void ModuleScene::DrawGrid() const
 {

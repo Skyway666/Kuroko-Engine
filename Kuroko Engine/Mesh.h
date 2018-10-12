@@ -36,6 +36,7 @@ public:
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
 	float3 getHalfSize() const { return half_size; }
 	float3 getCentroid() const { return centroid; }
+	uint getId() const { return id; };
 
 private:
 

@@ -7,6 +7,10 @@
 #pragma comment( lib, "SDL/lib/SDL2.lib" )
 #pragma comment( lib, "SDL/lib/SDL2main.lib" )
 
+#define _CRTDBG_MAP_ALLOC  
+#include <stdlib.h>  
+#include <crtdbg.h>  
+
 enum main_states
 {
 	MAIN_CREATION,
@@ -26,6 +30,9 @@ int main(int argc, char ** argv)
 
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 
 	while (state != MAIN_EXIT)
 	{
@@ -89,5 +96,8 @@ int main(int argc, char ** argv)
 	delete App;
 	app_log->AddLog("Exiting game '%s'...\n", TITLE);
 	delete app_log;
+
+	_CrtDumpMemoryLeaks();
+
 	return main_return;
 }

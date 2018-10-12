@@ -11,7 +11,7 @@
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene_intro->last_gobj_id++)
 {
 	addComponent(TRANSFORM);
-	App->scene_intro->game_objects.push_back(this);
+	App->scene_intro->addGameObject(this);
 }
 
 GameObject::~GameObject()

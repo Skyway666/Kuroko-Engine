@@ -16,13 +16,13 @@ public:
 	~Texture();
 
 	uint getGLid() const { return gl_id; };
+	uint getId() const { return id; };
 	void getSize(int& x, int& y) const { x = size_x; y = size_y; };
 
 	void setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter);
 	void LoadCheckered();
 
 public:
-	const uint id	= 0;
 	uint gl_id		= 0;
 
 	Mat_Wrap wrap_mode				= W_UNKNOWN;
@@ -30,6 +30,7 @@ public:
 	Mat_MinMagFilter mag_filter_mode = M_UNKNOWN;
 
 private:
+	const uint id	= 0;
 	int size_x = 0;
 	int size_y = 0;
 };
