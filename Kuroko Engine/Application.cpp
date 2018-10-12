@@ -10,13 +10,14 @@
 #include "ModuleUI.h"
 #include "ModuleImporter.h"
 #include "AppLog.h"
+#include "Random.h"
 #include <iostream>
 #include <fstream>
 
 
 Application::Application()
 {
-
+	randomizeSeed();
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	//audio = new ModuleAudio(this, true);   // dummy module until further implementation

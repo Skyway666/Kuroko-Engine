@@ -50,6 +50,7 @@ private:
 
 private:
 
+	uint id = 0;
 	uint iboId = 0;
 	uint vboId = 0;
 

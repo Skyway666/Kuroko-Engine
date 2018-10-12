@@ -1,13 +1,12 @@
 
 #include "Color.h"
-#include "Math.h"
+#include "Random.h"
 
 void Color::setRandom()
 {
-	RNG rng;
-	r = rng.Zero_to_One();
-	g = rng.Zero_to_One();
-	b = rng.Zero_to_One();
+	r = randomFromTo(0, 1);
+	g = randomFromTo(0, 1);
+	b = randomFromTo(0, 1);
 	a = 1.0f;
 }
 

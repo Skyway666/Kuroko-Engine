@@ -15,10 +15,10 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 
 GameObject::~GameObject()
 {
-	for (auto it = children.begin(); it != children.end(); it++)
+	for (auto it = components.begin(); it != components.end(); it++)
 		delete *it;
 
-	for (auto it = components.begin(); it != components.end(); it++)
+	for (auto it = children.begin(); it != children.end(); it++)
 		delete *it;
 }
 
