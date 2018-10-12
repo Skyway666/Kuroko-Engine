@@ -4,9 +4,9 @@
 
 void Color::setRandom()
 {
-	r = (float)randomFromTo(0, 100) / 100;
-	g = (float)randomFromTo(0, 100) / 100;
-	b = (float)randomFromTo(0, 100) / 100;
+	r = randomFloat();
+	g = randomFloat();
+	b = randomFloat();
 	a = 1.0f;
 }
 
