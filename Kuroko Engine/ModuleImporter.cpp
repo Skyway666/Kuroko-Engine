@@ -88,6 +88,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 
 			if (imported_scene)
 			{
+				App->scene->CleanUp();
 				std::vector<uint> mat_id;
 				LoadMaterials(*imported_scene, mat_id);
 				GameObject* root_obj = LoadMeshRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
@@ -111,25 +112,20 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 		{
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file));
 
-			////Just for assignment 1
-			//if (!App->scene_intro->game_objects.empty()) {
-			//	std::list<GameObject*>::iterator it = App->scene_intro->game_objects.end();
-			//	it--;
-			//	//Get last game object and assign the material if they have a mesh
-			//	GameObject* object = *it;
-			//	ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
-			//	if(mesh) mesh->setMaterial(mat);
-			//	//Get children and assign the material if they have a mesh
-			//	std::list<GameObject*> children;
-			//	object->getChildren(children);
-			//	for (auto it = children.begin(); it != children.end(); it++) {
-			//		GameObject* object = *it;
-			//		ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
-			//		if (mesh) mesh->setMaterial(mat);
-			//	}
-			//}
-			return tex;
+			//Just for assignment 1
+
+			for (auto it = App->scene->game_objects.begin(); it != App->scene->game_objects.end(); it++) {
+				GameObject* object = *it;
+				ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
+				if (!mesh)
+					continue;
+				else{
+					Material* mat = mesh->getMaterial();
+					if (mat) mat->setTexture(DIFFUSE, tex);
+				}
+			}
 			app_log->AddLog("Success loading texture: %s", file);
+			return tex;
 		}
 	}/*
 	if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
