@@ -232,8 +232,10 @@ void ModuleUI::DrawHierarchyTab()
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	int id = 0;
+	std::list<GameObject*> root_objs;
+	App->scene->getRootObjs(root_objs);
 
-	for (std::list<GameObject*>::iterator it = App->scene->game_objects.begin(); it != App->scene->game_objects.end(); it++)
+	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
 		DrawHierarchyNode(*(*it), id);
 
 	ImGui::PopFont();

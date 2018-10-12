@@ -82,8 +82,10 @@ update_status ModuleScene::Update(float dt)
 	if (draw_grid)
 		DrawGrid();
 
+	std::list<GameObject*> root_objs;
+	getRootObjs(root_objs);
 
-	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
 		(*it)->Update(dt);
 
 	//Just for assigment one
@@ -140,6 +142,18 @@ Texture* ModuleScene::getTexture(uint id) const
 			return *it;
 
 	return nullptr;
+}
+
+void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
+{
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+		if (!(*it)->getParent())
+			list_to_fill.push_back(*it);
+
+	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
+		for (auto it2 = list_to_fill.begin(); it2 != list_to_fill.end(); it2++)
+			if (*it == *it2)
+				list_to_fill.remove(*it);
 }
 
 
