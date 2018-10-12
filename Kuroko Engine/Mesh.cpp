@@ -9,7 +9,7 @@
 
 #include "Assimp\include\scene.h"
 
-Mesh::Mesh(const aiMesh& imported_mesh) : id(++App->scene_intro->last_mesh_id)
+Mesh::Mesh(const aiMesh& imported_mesh) : id(App->scene_intro->last_mesh_id++)
 {
 	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
 	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
@@ -18,7 +18,7 @@ Mesh::Mesh(const aiMesh& imported_mesh) : id(++App->scene_intro->last_mesh_id)
 }
 
 
-Mesh::Mesh(PrimitiveTypes primitive) : id(++App->scene_intro->last_mesh_id)
+Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene_intro->last_mesh_id++)
 {
 	switch (primitive)
 	{

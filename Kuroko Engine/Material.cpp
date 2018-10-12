@@ -7,7 +7,7 @@
 #include "Applog.h"
 
 
-Material::Material() : id(++App->scene_intro->last_mat_id) 
+Material::Material() : id(App->scene_intro->last_mat_id++) 
 {
 	App->scene_intro->materials.push_back(this);
 };
@@ -50,12 +50,12 @@ void Material::setCheckeredTexture(TextureType tex_type)
 	}
 }
 
-Texture::Texture() : id(++App->scene_intro->last_tex_id)
+Texture::Texture() : id(App->scene_intro->last_tex_id++)
 {
 	App->scene_intro->textures.push_back(this);
 }
 
-Texture::Texture(uint GL_id) : id(++App->scene_intro->last_tex_id)
+Texture::Texture(uint GL_id) : id(App->scene_intro->last_tex_id++)
 { 
 	gl_id = GL_id;
 
