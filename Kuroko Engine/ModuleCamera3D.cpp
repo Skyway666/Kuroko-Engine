@@ -42,24 +42,30 @@ update_status ModuleCamera3D::Update(float dt)
 
 	vec3 newPos(0, 0, 0);
 	float speed = 1.0f * dt;
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+
+
+	bool fps = false;
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
 		speed = 8.0f * dt;
+		fps = true;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) {newPos.y += speed; fps = true;}
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) {newPos.y -= speed; fps = true;}
 
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) newPos.y += speed;
-	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) newPos.y -= speed;
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos -= editor_camera->Z * speed;
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos += editor_camera->Z * speed;
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {newPos -= editor_camera->Z * speed; fps = true;}
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {newPos += editor_camera->Z * speed; fps = true; }
 
 
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos -= editor_camera->X * speed;
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos += editor_camera->X * speed;
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {newPos -= editor_camera->X * speed; fps = true; }
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {newPos += editor_camera->X * speed; fps = true; }
 
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		editor_camera->FocusSelectedGeometry();
 
-	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) 
 		editor_camera->RotateSelectedGeometry();
+	
+		
 
 	// Unfinished translation
 	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) {
@@ -77,8 +83,6 @@ update_status ModuleCamera3D::Update(float dt)
 			float DeltaY = (float)dy * Sensitivity;
 			newPos.y -= DeltaY;
 		}
-		editor_camera->Position += newPos;
-		editor_camera->Reference += newPos;
 	}
 
 
@@ -91,7 +95,11 @@ update_status ModuleCamera3D::Update(float dt)
 
 		float Sensitivity = 0.25f;
 
-		editor_camera->Position -= editor_camera->Reference;
+		float module = 0;
+		if(!fps)
+			editor_camera->Position -= editor_camera->Reference;
+		else
+			module = calculateModule(editor_camera->Reference - editor_camera->Position);
 
 		if (dx != 0)
 		{
@@ -116,7 +124,10 @@ update_status ModuleCamera3D::Update(float dt)
 			}
 		}
 
-		editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
+		if(!fps)
+			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
+		else
+			editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
 	}
 
 
@@ -129,7 +140,7 @@ update_status ModuleCamera3D::Update(float dt)
 	}
 
 	// Recalculate matrix -------------
-	editor_camera->CalculateViewMatrix();
+	editor_camera->Move(newPos);
 
 	return UPDATE_CONTINUE;	
 }
@@ -150,6 +161,11 @@ float4x4 ModuleCamera3D::CreatePerspMat(float fov, float width, float height, fl
 	Perspective.v[3][3] = 0.0f;
 
 	return Perspective;
+}
+
+float ModuleCamera3D::calculateModule(vec3 vec) {
+
+	return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
 Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)

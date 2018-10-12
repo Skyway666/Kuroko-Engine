@@ -64,6 +64,7 @@ public:
 
 	Camera* editor_camera = nullptr;
 	std::list<Camera*> game_cameras;
+	float calculateModule(vec3);
 };
 
 #endif
