@@ -36,6 +36,18 @@ bool ModuleScene::Start()
 // Load assets
 bool ModuleScene::CleanUp()
 {
+	for (auto it = game_objects.begin(); it != game_objects.end();it++)
+		delete *it;
+
+	for (auto it = materials.begin(); it != materials.end(); it++)
+		delete *it;
+
+	for (auto it = meshes.begin(); it != meshes.end(); it++)
+		delete *it;
+
+	for (auto it = textures.begin(); it != textures.end(); it++)
+		delete *it;
+
 	game_objects.clear();
 	materials.clear();
 	meshes.clear();
@@ -54,18 +66,28 @@ update_status ModuleScene::PreUpdate(float dt)
 {
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
-		if (selected_obj == *it) selected_obj = nullptr;
+		if (*it == selected_obj) selected_obj = nullptr;
 		game_objects.remove(*it);
+		delete *it;
 	}
 
 	for (auto it = materials_to_delete.begin(); it != materials_to_delete.end(); it++)
+	{
 		materials.remove(*it);
+		delete *it;
+	}
 
 	for (auto it = textures_to_delete.begin(); it != textures_to_delete.end(); it++)
+	{
 		textures.remove(*it);
+		delete *it;
+	}
 
 	for (auto it = meshes_to_delete.begin(); it != meshes_to_delete.end(); it++)
+	{
 		meshes.remove(*it);
+		delete *it;
+	}
 
 	game_objs_to_delete.clear();
 	materials_to_delete.clear();

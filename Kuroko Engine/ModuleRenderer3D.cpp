@@ -26,7 +26,13 @@ ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Modul
 
 // Destructor
 ModuleRenderer3D::~ModuleRenderer3D()
-{}
+{
+	for (auto it = frame_buffers.begin(); it != frame_buffers.end(); it++)
+		delete *it;
+
+	frame_buffers.clear();
+	frame_buffers_to_delete.clear();
+}
 
 // Called before render is available
 bool ModuleRenderer3D::Init(const JSON_Object& config)

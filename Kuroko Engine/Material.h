@@ -40,7 +40,7 @@ class Material
 public:
 
 	Material();
-	~Material();
+	~Material() {};
 
 	Texture* getTexture(TextureType tex_type) const;
 	void setTexture(TextureType tex_type, Texture* texture); // Can recieve nullptr

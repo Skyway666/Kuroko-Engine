@@ -20,7 +20,7 @@ GameObject::~GameObject()
 		delete *it;
 
 	for (auto it = children.begin(); it != children.end(); it++)
-		delete *it;
+		(*it)->parent = parent;
 }
 
 bool GameObject::Update(float dt)

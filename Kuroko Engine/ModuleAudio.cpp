@@ -52,6 +52,9 @@ bool ModuleAudio::CleanUp()
 {
 	/*app_log->AddLog("Freeing sound FX, closing Mixer and Audio subsystem");
 
+	for(auto it = audio_files.begin(); it != audio_files.end(); it++)
+		delete *it;
+
 	audio_files.clear();
 	Mix_CloseAudio();
 	Mix_Quit();

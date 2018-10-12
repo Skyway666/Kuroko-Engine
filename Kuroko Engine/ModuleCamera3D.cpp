@@ -30,6 +30,10 @@ bool ModuleCamera3D::Init(const JSON_Object& config)
 bool ModuleCamera3D::CleanUp()
 {
 	if (editor_camera) delete editor_camera;
+
+	for (auto it = game_cameras.begin(); it != game_cameras.end(); it++)
+		delete *it;
+
 	game_cameras.clear();
 	app_log->AddLog("Cleaning camera");
 	return true;

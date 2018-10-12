@@ -8,6 +8,9 @@
 
 bool ModuleDebug::CleanUp()
 {
+	for (auto it = shapes.begin(); it != shapes.end(); it++)
+		delete *it;
+
 	shapes.clear();
 	return true;
 }

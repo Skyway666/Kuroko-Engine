@@ -88,6 +88,10 @@ bool ModuleWindow::CleanUp()
 	}
 
 	delete main_window;
+
+	for (auto it = aux_windows.begin(); it != aux_windows.end(); it++)
+		delete *it;
+
 	aux_windows.clear();
 
 	//Quit SDL subsystems

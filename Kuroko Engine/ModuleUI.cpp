@@ -209,14 +209,8 @@ update_status ModuleUI::PostUpdate(float dt) {
 		return UPDATE_STOP;
 }
 
-bool ModuleUI::CleanUp() {
-	// Cleanup
-	for (int i = 0; i < LAST_UI_TEX; i++)
-	{
-		delete ui_textures[i];
-		ui_textures[i] = nullptr;
-	}
-	
+bool ModuleUI::CleanUp() 
+{	
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
