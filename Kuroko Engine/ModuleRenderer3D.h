@@ -49,6 +49,7 @@ private:
 	SDL_GLContext context;
 public:
 	std::list<FrameBuffer*> frame_buffers;
+	std::list<FrameBuffer*> frame_buffers_to_delete;
 };
 
 #endif

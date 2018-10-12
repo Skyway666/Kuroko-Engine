@@ -9,16 +9,16 @@
 
 #include "Assimp\include\scene.h"
 
-Mesh::Mesh(const aiMesh& imported_mesh) 
+Mesh::Mesh(const aiMesh& imported_mesh) : id(++App->scene_intro->last_mesh_id)
 {
 	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
 	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
-	id = ++App->scene->last_mesh_id;
-
+	
+	App->scene_intro->meshes.push_back(this);
 }
 
 
-Mesh::Mesh(PrimitiveTypes primitive) 
+Mesh::Mesh(PrimitiveTypes primitive) : id(++App->scene_intro->last_mesh_id)
 {
 	switch (primitive)
 	{
@@ -32,6 +32,8 @@ Mesh::Mesh(PrimitiveTypes primitive)
 
 	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
+
+	App->scene_intro->meshes.push_back(this);
 }
 
 

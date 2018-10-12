@@ -92,11 +92,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 				LoadMaterials(*imported_scene, mat_id);
 				GameObject* root_obj = LoadMeshRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
-				// Just for assignment 1
-				if(!App->scene_intro->game_objects.empty())
-					App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());
 
-				App->scene_intro->game_objects.push_back(root_obj);
 				App->scene_intro->selected_obj = root_obj;
 				App->camera->editor_camera->FocusSelectedGeometry(); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
@@ -116,7 +112,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 			Material* mat = new Material();
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file));
 			mat->setTexture(DIFFUSE, tex);
-			App->scene_intro->materials.push_back(mat);
+
 			//Just for assignment 1
 			if (!App->scene_intro->game_objects.empty()) {
 				std::list<GameObject*>::iterator it = App->scene_intro->game_objects.end();
@@ -181,29 +177,29 @@ bool ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
 		{
 			scene.mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			if(App->importer->Import(path.C_Str(), I_TEXTURE))
-				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
+			if(Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
+				out_mat_id.push_back(tex->id);
 		}
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
 		{
 			path.Clear();
 			scene.mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
-			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
+			if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
+				out_mat_id.push_back(tex->id);
 		}
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
 		{
 			path.Clear();
 			scene.mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
-			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
+			if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
+				out_mat_id.push_back(tex->id);
 		}
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
 		{
 			path.Clear();
 			scene.mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
-			if (App->importer->Import(path.C_Str(), I_TEXTURE))
-				out_mat_id.push_back(App->scene_intro->materials.back()->getId());
+			if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
+				out_mat_id.push_back(tex->id);
 		}
 	}
 

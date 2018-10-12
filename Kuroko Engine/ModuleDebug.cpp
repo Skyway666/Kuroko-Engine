@@ -51,7 +51,7 @@ uint ModuleDebug::addArrow(const float3& start_point, const float3& end_point, c
 	arrow->normals[2] = (arrow->vertices[2] - end_point).Normalized(); arrow->normals[3] = (arrow->vertices[3] - end_point).Normalized();
 	arrow->normals[4] = (arrow->vertices[4] - end_point).Normalized(); arrow->normals[5] = (arrow->vertices[5] - end_point).Normalized();
 
-	arrow->id = last_id++;
+	arrow->id = last_shape_id++;
 	arrow->LoadDataToVRAM();
 
 	shapes.push_back(arrow);
@@ -90,7 +90,7 @@ uint ModuleDebug::addAxis(const float3& position, float length, const Quat& rota
 	axis->normals[0] = float3::one;			 axis->normals[1] = X.Neg().Normalized();
 	axis->normals[2] = Y.Neg().Normalized();  axis->normals[3] = Z.Neg().Normalized();
 
-	axis->id = last_id++;
+	axis->id = last_shape_id++;
 	axis->LoadDataToVRAM();
 
 	shapes.push_back(axis);
@@ -116,7 +116,7 @@ uint ModuleDebug::addRay(const float3& start_point, const float3& end_point, con
 	ray->normals = new float3[2];
 	ray->normals[0] = (start_point - end_point).Normalized(); ray->normals[1] = (end_point - start_point).Normalized();
 
-	ray->id = last_id++;
+	ray->id = last_shape_id++;
 	ray->LoadDataToVRAM();
 
 	shapes.push_back(ray);
@@ -162,7 +162,7 @@ uint  ModuleDebug::addFrustum(const float3& pos, const Quat& rotation, FrustumTy
 	for (int i = 0; i < 8; i++)
 		frustum->colors[i] = { color.r, color.g, color.b };
 
-	frustum->id = last_id++;
+	frustum->id = last_shape_id++;
 	frustum->LoadDataToVRAM();
 
 	shapes.push_back(frustum);
@@ -251,8 +251,10 @@ void DebugShape::LoadDataToVRAM()
 
 DebugShape::~DebugShape()
 {
-	glDeleteBuffers(1, &iboId);
-	glDeleteBuffers(1, &vboId);
+	if(iboId != 0)
+		glDeleteBuffers(1, &iboId);
+	if (vboId != 0)
+		glDeleteBuffers(1, &vboId);
 
 	if (vertices)	delete vertices;
 	if (lines)		delete lines;

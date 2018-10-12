@@ -29,6 +29,8 @@ bool ModuleCamera3D::Init(const JSON_Object& config)
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
+	if (editor_camera) delete editor_camera;
+	game_cameras.clear();
 	app_log->AddLog("Cleaning camera");
 	return true;
 }
@@ -161,11 +163,7 @@ Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)
 
 Camera::~Camera()
 {
-	if (frame_buffer)
-	{
-		App->renderer3D->frame_buffers.remove(frame_buffer);
-		delete frame_buffer;
-	}
+	App->renderer3D->frame_buffers_to_delete.push_back(frame_buffer);
 }
 
 // -----------------------------------------------------------------

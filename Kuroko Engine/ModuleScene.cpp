@@ -37,6 +37,15 @@ bool ModuleScene::CleanUp(){
 
 	game_objects.clear();
 	materials.clear();
+	meshes.clear();
+	textures.clear();
+
+	game_objs_to_delete.clear();
+	materials_to_delete.clear();
+	meshes_to_delete.clear();
+	textures_to_delete.clear();
+
+	selected_obj = nullptr;
 	return true;
 }
 

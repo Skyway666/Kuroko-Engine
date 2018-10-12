@@ -2,19 +2,15 @@
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleUI.h"
+#include "ModuleScene.h"
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Applog.h"
 
 
-Material::Material() : id(++App->scene_intro->last_mat_id) {};
-
-Material::~Material()
+Material::Material() : id(++App->scene_intro->last_mat_id) 
 {
-	if (diffuse) delete diffuse;
-	if (ambient) delete ambient;
-	if (normals) delete normals;
-	if (lightmap) delete lightmap;
-}
+	App->scene_intro->materials.push_back(this);
+};
 
 
 Texture* Material::getTexture(TextureType tex_type) const
@@ -33,10 +29,10 @@ void Material::setTexture(TextureType tex_type, Texture* texture)
 {
 	switch (tex_type)
 	{
-	case DIFFUSE: if (diffuse && diffuse != texture) delete diffuse; diffuse = texture; break;
-	case AMBIENT: if (ambient && ambient != texture) delete ambient; ambient = texture; break;
-	case NORMALS: if (normals && normals != texture) delete normals; normals = texture; break;
-	case LIGHTMAP: if (lightmap && lightmap != texture) delete lightmap; lightmap = texture; break;
+	case DIFFUSE: diffuse = texture; break;
+	case AMBIENT: ambient = texture; break;
+	case NORMALS: normals = texture; break;
+	case LIGHTMAP:  lightmap = texture; break;
 	}
 }
 
@@ -47,14 +43,19 @@ void Material::setCheckeredTexture(TextureType tex_type)
 
 	switch (tex_type)
 	{
-	case DIFFUSE: if (diffuse && diffuse != texture) delete diffuse; diffuse = texture; break;
-	case AMBIENT: if (ambient && ambient != texture) delete ambient; ambient = texture; break;
-	case NORMALS: if (normals && normals != texture) delete normals; normals = texture; break;
-	case LIGHTMAP: if (lightmap && lightmap != texture) delete lightmap; lightmap = texture; break;
+	case DIFFUSE: diffuse = texture; break;
+	case AMBIENT: ambient = texture; break;
+	case NORMALS: normals = texture; break;
+	case LIGHTMAP: lightmap = texture; break;
 	}
 }
 
-Texture::Texture(uint GL_id)
+Texture::Texture() : id(++App->scene_intro->last_tex_id)
+{
+	App->scene_intro->textures.push_back(this);
+}
+
+Texture::Texture(uint GL_id) : id(++App->scene_intro->last_tex_id)
 { 
 	gl_id = GL_id;
 
@@ -62,12 +63,15 @@ Texture::Texture(uint GL_id)
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, (GLint*)&size_x);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&size_y);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	App->scene_intro->textures.push_back(this);
 }
 
 Texture::~Texture()
 {
 	glDeleteTextures(1, &gl_id);
 }
+
 void Texture::setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter)
 {
 	bool incompatible_parameter = false;

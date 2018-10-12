@@ -55,6 +55,6 @@ public:
 
 private:
 	std::list<DebugShape*> shapes;
-	uint last_id = 0;
+	uint last_shape_id = 0;
 };
 #endif

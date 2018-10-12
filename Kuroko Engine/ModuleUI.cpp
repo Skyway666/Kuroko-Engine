@@ -216,6 +216,12 @@ bool ModuleImGUI::CleanUp() {
 		delete ui_textures[i];
 		ui_textures[i] = nullptr;
 	}
+	for (int i = 0; i < LAST_UI_FONT; i++)
+	{
+		delete ui_fonts[i];
+		ui_fonts[i] = nullptr;
+	}
+	
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();

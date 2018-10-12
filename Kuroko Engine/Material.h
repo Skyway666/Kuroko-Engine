@@ -11,7 +11,7 @@ enum TextureType { DIFFUSE, AMBIENT, NORMALS, LIGHTMAP};
 struct Texture
 {
 public:
-	Texture() {};
+	Texture();
 	Texture(uint GL_id);
 	~Texture();
 
@@ -22,9 +22,10 @@ public:
 	void LoadCheckered();
 
 public:
-	uint gl_id = 0;
+	const uint id	= 0;
+	uint gl_id		= 0;
 
-	Mat_Wrap wrap_mode = W_UNKNOWN;
+	Mat_Wrap wrap_mode				= W_UNKNOWN;
 	Mat_MinMagFilter min_filter_mode = M_UNKNOWN;
 	Mat_MinMagFilter mag_filter_mode = M_UNKNOWN;
 
@@ -46,7 +47,7 @@ public:
 	uint getId() const { return id; };
 
 private:
-	const uint id = 0;
+	uint id = 0;
 	Texture* diffuse = nullptr;
 	Texture* ambient = nullptr;
 	Texture* normals = nullptr;
