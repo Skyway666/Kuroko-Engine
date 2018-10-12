@@ -460,7 +460,7 @@ bool ModuleUI::DrawComponent(Component& component)
 					if (ImGui::Button("Add material"))
 					{
 						Material* mat = new Material();
-						App->scene->addMaterial(mat);
+						c_mesh->setMaterial(mat);
 					}
 				}
 
@@ -632,45 +632,47 @@ void ModuleUI::DrawPrimitivesTab()
 	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
-	if (ImGui::Button("Add cube"))
-	{
+	if (ImGui::Button("Add cube")){
+		App->scene->CleanUp();// Just for asignment 1
+
 		GameObject* cube = new GameObject("Cube");
 		Mesh* mesh = new Mesh(Primitive_Cube);
 		cube->addComponent(new ComponentMesh(cube, mesh));
-
-		//if (!App->scene_intro->game_objects.empty())
-		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front()); // Just for asignment 1
-		//App->scene_intro->game_objects.push_back(cube);
+		Material* mat = new Material();
+		ComponentMesh* comp_mesh = (ComponentMesh*)cube->getComponent(MESH);
+		comp_mesh->setMaterial(mat);
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Add plane"))
-	{
+	if (ImGui::Button("Add plane")){
+		App->scene->CleanUp();// Just for asignment 1
+
 		GameObject* plane = new GameObject("Plane");
 		Mesh* mesh = new Mesh(Primitive_Plane);
 		plane->addComponent(new ComponentMesh(plane, mesh));
-
-		//if (!App->scene_intro->game_objects.empty())
-		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
-		//App->scene_intro->game_objects.push_back(plane);
+		Material* mat = new Material();
+		ComponentMesh* comp_mesh = (ComponentMesh*)plane->getComponent(MESH);
+		comp_mesh->setMaterial(mat);
 	}
 	if (ImGui::Button("Add sphere")) {
+		App->scene->CleanUp();// Just for asignment 1
+
 		GameObject* sphere = new GameObject("Sphere");
 		Mesh* mesh = new Mesh(Primitive_Sphere);
 		sphere->addComponent(new ComponentMesh(sphere, mesh));
-
-		//if (!App->scene_intro->game_objects.empty())
-		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
-		//App->scene_intro->game_objects.push_back(sphere);
+		Material* mat = new Material();
+		ComponentMesh* comp_mesh = (ComponentMesh*)sphere->getComponent(MESH);
+		comp_mesh->setMaterial(mat);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add cylinder")) {
+		App->scene->CleanUp();// Just for asignment 1
+
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
 		cylinder->addComponent(new ComponentMesh(cylinder, mesh));
-
-		//if(!App->scene_intro->game_objects.empty())
-		//	App->scene_intro->game_objs_to_delete.push_back(App->scene_intro->game_objects.front());// Just for asignment 1
-		//App->scene_intro->game_objects.push_back(cylinder);
+		Material* mat = new Material();
+		ComponentMesh* comp_mesh = (ComponentMesh*)cylinder->getComponent(MESH);
+		comp_mesh->setMaterial(mat);
 	}
 
 	ImGui::PopFont();

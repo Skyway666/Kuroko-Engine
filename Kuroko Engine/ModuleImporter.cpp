@@ -211,6 +211,10 @@ GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene&
 		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
 		if(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
 			c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
+		else {
+			Material* mat = new Material();
+			c_m->setMaterial(mat);
+		}
 		root_obj->addComponent(c_m);
 		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
