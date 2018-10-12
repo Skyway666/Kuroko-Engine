@@ -101,11 +101,11 @@ update_status ModuleCamera3D::Update(float dt)
 
 		float Sensitivity = 0.25f;
 
-		float module = 0;
-		if(!fps)
+		//float module = 0;
+		//if(!fps)
 			editor_camera->Position -= editor_camera->Reference;
-		else
-			module = calculateModule(editor_camera->Reference - editor_camera->Position);
+		//else
+		//	module = calculateModule(editor_camera->Reference - editor_camera->Position);
 
 		if (dx != 0)
 		{
@@ -130,10 +130,10 @@ update_status ModuleCamera3D::Update(float dt)
 			}
 		}
 
-		if(!fps)
+		//if(!fps)
 			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
-		else
-			editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
+		//else
+		//	editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
 	}
 
 
