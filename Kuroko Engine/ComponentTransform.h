@@ -8,7 +8,7 @@
 class ComponentTransform : public Component {
 public:
 
-	friend class ModuleImGUI;
+	friend class ModuleUI;
 
 	ComponentTransform(GameObject* parent, const Quat& rot, const float3& pos, const float3& scl) : position(pos), scale(scl), rotation(rot), Component(parent, TRANSFORM) {};
 	ComponentTransform(GameObject* parent, const float3& euler_axis, const float3& pos, const float3& scl) : position(pos), scale(scl), Component(parent, TRANSFORM) {};

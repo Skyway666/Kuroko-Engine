@@ -16,11 +16,11 @@ enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, C
 enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
 
-class ModuleImGUI :
+class ModuleUI :
 	public Module {
 public:
-	ModuleImGUI(Application* app, bool start_enabled = true);
-	~ModuleImGUI();
+	ModuleUI(Application* app, bool start_enabled = true);
+	~ModuleUI();
 
 	bool Init(const JSON_Object& config);
 	bool Start();

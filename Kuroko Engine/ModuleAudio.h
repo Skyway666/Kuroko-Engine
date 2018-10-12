@@ -12,7 +12,7 @@ enum AudioType { A_UNKNOWN, MUSIC, FX};
 class AudioFile
 {
 	friend class ModuleAudio;
-	friend class ModuleImGUI;
+	friend class ModuleUI;
 public:
 	AudioFile(const char* name, uint id, void* data, AudioType type, float volume = 1.0f, float fade_time = DEFAULT_MUSIC_FADE_TIME)
 		: name(name), data(data), type(type), volume(volume), fade_time(fade_time), id(id) {};
@@ -40,7 +40,7 @@ private:
 
 class ModuleAudio : public Module
 {
-	friend class ModuleImGUI;
+	friend class ModuleUI;
 public:
 
 

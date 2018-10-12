@@ -20,10 +20,10 @@ void ComponentMesh::Draw() const
 		glLoadMatrixf((GLfloat*)(transform->getInheritedTransform().Transposed() * view_mat).v);
 	}
 
-	if (draw_normals || App->scene_intro->global_normals)
+	if (draw_normals || App->scene->global_normals)
 		mesh->DrawNormals();
 
-	if (wireframe || App->scene_intro->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else													glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	mesh->Draw(mat);

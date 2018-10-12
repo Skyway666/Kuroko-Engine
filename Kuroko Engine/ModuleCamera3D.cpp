@@ -239,7 +239,7 @@ void Camera::CalculateViewMatrix()
 
 void Camera::RotateSelectedGeometry() {
 
-	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
+	if (GameObject* selected_obj = App->scene->selected_obj) {
 		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));
@@ -250,7 +250,7 @@ void Camera::RotateSelectedGeometry() {
 }
 
 void Camera::FocusSelectedGeometry(float distance) {
-	if (GameObject* selected_obj = App->scene_intro->selected_obj) {
+	if (GameObject* selected_obj = App->scene->selected_obj) {
 		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
 		float3 new_pos = centroid + half_size + float3(distance, distance, distance);

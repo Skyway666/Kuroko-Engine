@@ -13,7 +13,7 @@ class ModuleInput;
 class ModuleScene;
 class ModuleRenderer3D;
 class ModuleCamera3D;
-class ModuleImGUI;
+class ModuleUI;
 class ModuleImporter;
 class ModuleDebug;
 
@@ -23,11 +23,11 @@ public:
 	ModuleWindow* window;
 	ModuleInput* input;
 	//ModuleAudio* audio;
-	ModuleScene* scene_intro;
+	ModuleScene* scene;
 	ModuleDebug* debug;
 	ModuleRenderer3D* renderer3D;
 	ModuleCamera3D* camera;
-	ModuleImGUI* gui;
+	ModuleUI* gui;
 	ModuleImporter* importer;
 
 private:
