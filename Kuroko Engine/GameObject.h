@@ -32,6 +32,7 @@ public:
 	void getChildren(std::list<GameObject*>& list_to_fill) const { list_to_fill = children; };
 	void getAllDescendants(std::list<GameObject*>& list_to_fill) const;
 	void addChild(GameObject* new_child) {if(new_child) children.push_back(new_child); };
+	bool unbindChild(GameObject* child_to_delete);
 
 	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* parent) { this->parent = parent; }// Can recieve nullptr
