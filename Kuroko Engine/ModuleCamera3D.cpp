@@ -8,7 +8,7 @@
 #include "ComponentTransform.h"
 #include "ModuleRenderer3D.h"
 
-#define CAM_SPEED_CONST 1.0f
+#define CAM_SPEED_CONST 1.5f
 #define CAM_ROT_SPEED_CONST 0.25f
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
