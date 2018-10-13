@@ -44,7 +44,3 @@ Models provided:
 - Toothbrush and tube
 "Toothpaste and Brish Autodesk FBX.fbx", "Paste Diffuse.dds" for tube and "Brush Diffuse.dds" for brush.
 
-With drag and drop, the textures will be applyed to all the meshes, so in order to apply each texture to the 
-appropiated mesh, it has to be done by navigating the hierarchy and assigning the correct texture to the material
-of each mesh.
-
