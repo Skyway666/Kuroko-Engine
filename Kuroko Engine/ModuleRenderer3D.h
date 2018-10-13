@@ -40,7 +40,7 @@ public:
 
 	SDL_GLContext getContext() const	{ return context; }
 
-	void DirectDrawCube(float3& size) const;
+	void DirectDrawCube(float3& size, float3& pos) const;
 	FrameBuffer* initFrameBuffer(uint size_x = 1024, uint size_y = 768);
 
 private:

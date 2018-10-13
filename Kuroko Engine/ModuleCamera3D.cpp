@@ -114,7 +114,7 @@ update_status ModuleCamera3D::Update(float dt)
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
+			editor_camera->Reference = editor_camera->Position - editor_camera->Z * module;
 		else
 			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
 	}
@@ -123,15 +123,20 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
-		if (mouse_z > 0)		
-			editor_camera->Position -= editor_camera->Z;
+		if (mouse_z > 0)
+		{
+			if(length(editor_camera->Reference - editor_camera->Position) > 1.0f)
+				editor_camera->Position -= editor_camera->Z * (0.3f + (length(editor_camera->Reference - editor_camera->Position) / 20));
+		}
 		else															
-			editor_camera->Position += editor_camera->Z;
+			editor_camera->Position += editor_camera->Z * (0.3f + (length(editor_camera->Reference - editor_camera->Position) / 20));
 	}
 	
 	// Focus 
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		editor_camera->FitToSizeSelectedGeometry();
+
+	App->renderer3D->DirectDrawCube(float3(0.2f, 0.2f, 0.2f), float3(editor_camera->Reference.x, editor_camera->Reference.y, editor_camera->Reference.z));
 
 	// Recalculate matrix -------------
 	editor_camera->CalculateViewMatrix();
@@ -233,9 +238,6 @@ void Camera::LookAtSelectedGeometry()
 		selected_obj->getInheritedHalfsizeAndCentroid(float3(), centroid);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));
 	}
-	else
-		LookAt(vec3(0, 0, 0));
-
 }
 
 void Camera::FitToSizeSelectedGeometry(float distance)

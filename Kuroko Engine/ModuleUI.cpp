@@ -232,6 +232,12 @@ void ModuleUI::DrawHierarchyTab()
 	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
 		DrawHierarchyNode(*(*it), id);
 
+	if (ImGui::IsWindowHovered())
+	{
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+			App->scene->selected_obj = nullptr;
+	}
+
 	ImGui::PopFont();
 	ImGui::End();
 }
@@ -250,11 +256,13 @@ void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 
 	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object.getName().c_str(), id) && !children.empty();
 
-	if (ImGui::IsItemClicked())
-	{
+	if(App->scene->selected_obj == (GameObject*)&game_object)
 		selection_mask = (1 << id);
+	else if (App->scene->selected_obj == nullptr)
+		selection_mask = (1 >> id);
+
+	if (ImGui::IsItemClicked())
 		App->scene->selected_obj = (GameObject*)&game_object;
-	}
 
 	if (node_open)
 	{
