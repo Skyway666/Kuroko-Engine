@@ -87,6 +87,17 @@ void GameObject::getAllDescendants(std::list<GameObject*>& list_to_fill) const
 	return;
 }
 
+bool GameObject::unbindChild(GameObject * child_to_delete) {
+
+	for (auto it = children.begin(); it != children.end(); it++) {
+		if (*it == child_to_delete) {
+			children.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
 Component* GameObject::addComponent(Component_type type)
 {
 	Component* new_component = nullptr;
