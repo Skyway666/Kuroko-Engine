@@ -1,4 +1,4 @@
-Kuroko Engine 0.451
+Kuroko Engine 0.452
 
 This is a videogame engine in process, developed by Rodrigo de Pedro Lombao and Lucas García Mateu.
 
