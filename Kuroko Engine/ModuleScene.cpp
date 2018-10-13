@@ -62,12 +62,16 @@ bool ModuleScene::CleanUp()
 	return true;
 }
 
-update_status ModuleScene::PreUpdate(float dt)
+update_status ModuleScene::PostUpdate(float dt)
 {
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
 		if (*it == selected_obj) selected_obj = nullptr;
 		game_objects.remove(*it);
+
+		if (GameObject* parent = (*it)->getParent())
+			parent->removeChild(*it);
+
 		delete *it;
 	}
 
