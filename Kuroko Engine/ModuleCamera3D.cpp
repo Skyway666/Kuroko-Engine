@@ -136,8 +136,6 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		editor_camera->FitToSizeSelectedGeometry();
 
-	App->renderer3D->DirectDrawCube(float3(0.2f, 0.2f, 0.2f), float3(editor_camera->Reference.x, editor_camera->Reference.y, editor_camera->Reference.z));
-
 	// Recalculate matrix -------------
 	editor_camera->CalculateViewMatrix();
 
