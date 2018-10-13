@@ -73,11 +73,11 @@ bool ModuleUI::Start()
 	ui_textures[STOP]		= (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
 	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("no_texture.png", I_TEXTURE);
 
-	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
+	//ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
 	ui_fonts[REGULAR]				= io->Fonts->AddFontFromFileTTF("Fonts/regular.ttf", 18.0f);
-	ui_fonts[REGULAR_BOLD]			= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold.ttf", 18.0f);
-	ui_fonts[REGULAR_ITALIC]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_italic.ttf", 18.0f);
-	ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
+	//ui_fonts[REGULAR_BOLD]			= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold.ttf", 18.0f);
+	//ui_fonts[REGULAR_ITALIC]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_italic.ttf", 18.0f);
+	//ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
 	
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	docking_background = true;
