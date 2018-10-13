@@ -392,6 +392,13 @@ bool ModuleUI::DrawComponent(Component& component)
 						if(ImGui::TreeNode("diffuse"))
 						{
 							ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							ImGui::SameLine();
+
+							int w = 0; int h = 0;
+							if(material->getTexture(DIFFUSE))
+								material->getTexture(DIFFUSE)->getSize(w, h);
+
+							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
 							if (ImGui::Button("Dif: Load checkered "))
 								material->setCheckeredTexture(DIFFUSE);
