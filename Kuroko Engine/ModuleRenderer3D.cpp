@@ -220,49 +220,48 @@ FrameBuffer* ModuleRenderer3D::initFrameBuffer(uint size_x, uint size_y)
 }
 
 
-void ModuleRenderer3D::DirectDrawCube(float3& size) const
+void ModuleRenderer3D::DirectDrawCube(float3& size, float3& pos) const
 {
 	glLineWidth(2.0f);
 
 	size.x *= 0.5f; size.y *= 0.5f; size.z *= 0.5f;
-
 	glBegin(GL_QUADS);
 
 	glNormal3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(-size.x, -size.y, size.z);
-	glVertex3f(size.x, -size.y, size.z);
-	glVertex3f(size.x, size.y, size.z);
-	glVertex3f(-size.x, size.y, size.z);
+	glVertex3f(-size.x + pos.x, -size.y + pos.y, size.z + pos.z);
+	glVertex3f(size.x + pos.x, -size.y + pos.y, size.z + pos.z);
+	glVertex3f(size.x + pos.x, size.y + pos.y, size.z + pos.z);
+	glVertex3f(-size.x + pos.x, size.y + pos.y, size.z + pos.z);
 
 	glNormal3f(0.0f, 0.0f, -1.0f);
-	glVertex3f(size.x, -size.y, -size.z);
-	glVertex3f(-size.x, -size.y, -size.z);
-	glVertex3f(-size.x, size.y, -size.z);
-	glVertex3f(size.x, size.y, -size.z);
+	glVertex3f(size.x + pos.x, -size.y + pos.y, -size.z + pos.z);
+	glVertex3f(-size.x + pos.x, -size.y + pos.y, -size.z + pos.z);
+	glVertex3f(-size.x + pos.x, size.y + pos.y, -size.z + pos.z);
+	glVertex3f(size.x + pos.x, size.y + pos.y, -size.z + pos.z);
 
 	glNormal3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(size.x, -size.y, size.z);
-	glVertex3f(size.x, -size.y, -size.z);
-	glVertex3f(size.x, size.y, -size.z);
-	glVertex3f(size.x, size.y, size.z);
+	glVertex3f(size.x + pos.x, -size.y + pos.y, size.z + pos.z);
+	glVertex3f(size.x + pos.x, -size.y + pos.y, -size.z + pos.z);
+	glVertex3f(size.x + pos.x, size.y + pos.y, -size.z + pos.z);
+	glVertex3f(size.x + pos.x, size.y + pos.y, size.z + pos.z);
 
 	glNormal3f(-1.0f, 0.0f, 0.0f);
-	glVertex3f(-size.x, -size.y, -size.z);
-	glVertex3f(-size.x, -size.y, size.z);
-	glVertex3f(-size.x, size.y, size.z);
-	glVertex3f(-size.x, size.y, -size.z);
+	glVertex3f(-size.x + pos.x, -size.y + pos.y, -size.z + pos.z);
+	glVertex3f(-size.x + pos.x, -size.y + pos.y, size.z + pos.z);
+	glVertex3f(-size.x + pos.x, size.y + pos.y, size.z + pos.z);
+	glVertex3f(-size.x + pos.x, size.y + pos.y, -size.z + pos.z);
 
 	glNormal3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(-size.x, size.y, size.z);
-	glVertex3f(size.x, size.y, size.z);
-	glVertex3f(size.x, size.y, -size.z);
-	glVertex3f(-size.x, size.y, -size.z);
+	glVertex3f(-size.x + pos.x, size.y + pos.y, size.z + pos.z);
+	glVertex3f(size.x + pos.x, size.y + pos.y, size.z + pos.z);
+	glVertex3f(size.x + pos.x, size.y + pos.y, -size.z + pos.z);
+	glVertex3f(-size.x + pos.x, size.y + pos.y, -size.z + pos.z);
 
 	glNormal3f(0.0f, -1.0f, 0.0f);
-	glVertex3f(-size.x, -size.y, -size.z);
-	glVertex3f(size.x, -size.y, -size.z);
-	glVertex3f(size.x, -size.y, size.z);
-	glVertex3f(-size.x, -size.y, size.z);
+	glVertex3f(-size.x + pos.x, -size.y + pos.y, -size.z + pos.z);
+	glVertex3f(size.x + pos.x, -size.y + pos.y, -size.z + pos.z);
+	glVertex3f(size.x + pos.x, -size.y + pos.y, size.z + pos.z);
+	glVertex3f(-size.x + pos.x, -size.y + pos.y, size.z + pos.z);
 
 	glEnd();
 

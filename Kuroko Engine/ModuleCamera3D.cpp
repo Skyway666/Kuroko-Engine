@@ -49,6 +49,7 @@ update_status ModuleCamera3D::Update(float dt)
 		return UPDATE_CONTINUE;
 
 	// Movement
+	Camera aux = *editor_camera;
 
 	vec3 newPos(0, 0, 0);
 	float speed = CAM_SPEED_CONST * dt;
@@ -85,6 +86,7 @@ update_status ModuleCamera3D::Update(float dt)
 		int dy = -App->input->GetMouseYMotion();
 
 		float module = 0.0f;
+		vec3 X = editor_camera->X; vec3 Y = editor_camera->Y; vec3 Z = editor_camera->Z;
 
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
 			module = length(editor_camera->Reference - editor_camera->Position);
@@ -96,25 +98,30 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (dx)
 		{
-			editor_camera->X = rotate(editor_camera->X, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
-			editor_camera->Y = rotate(editor_camera->Y, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
-			editor_camera->Z = rotate(editor_camera->Z, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+			X = rotate(X, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+			Y = rotate(Y, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+			Z = rotate(Z, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
 		}
 
 		if (dy)
 		{
-			editor_camera->Y = rotate(editor_camera->Y, dy * CAM_ROT_SPEED_CONST, editor_camera->X);
-			editor_camera->Z = rotate(editor_camera->Z, dy * CAM_ROT_SPEED_CONST, editor_camera->X);
+			Y = rotate(Y, dy * CAM_ROT_SPEED_CONST, X);
+			Z = rotate(Z, dy * CAM_ROT_SPEED_CONST, X);
 
-			if (editor_camera->Y.y < 0.0f)
+			if (Y.y < 0.0f)
 			{
-				editor_camera->Z = vec3(0.0f, editor_camera->Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				editor_camera->Y = cross(editor_camera->Z, editor_camera->X);
+				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				Y = cross(Z, X);
 			}
 		}
 
+		if (!IsNan(-X.x) && !IsNan(-Y.x) && !IsNan(-Z.x))
+		{
+			editor_camera->X = X; editor_camera->Y = Y; editor_camera->Z = Z;
+		}
+
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
+			editor_camera->Reference = editor_camera->Position - editor_camera->Z * module;
 		else
 			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
 	}
@@ -123,10 +130,13 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
-		if (mouse_z > 0)		
-			editor_camera->Position -= editor_camera->Z;
+		if (mouse_z > 0)
+		{
+			if(length(editor_camera->Reference - editor_camera->Position) > 1.0f)
+				editor_camera->Position -= editor_camera->Z * (0.3f + (length(editor_camera->Reference - editor_camera->Position) / 20));
+		}
 		else															
-			editor_camera->Position += editor_camera->Z;
+			editor_camera->Position += editor_camera->Z * (0.3f + (length(editor_camera->Reference - editor_camera->Position) / 20));
 	}
 	
 	// Focus 
@@ -233,9 +243,6 @@ void Camera::LookAtSelectedGeometry()
 		selected_obj->getInheritedHalfsizeAndCentroid(float3(), centroid);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));
 	}
-	else
-		LookAt(vec3(0, 0, 0));
-
 }
 
 void Camera::FitToSizeSelectedGeometry(float distance)
