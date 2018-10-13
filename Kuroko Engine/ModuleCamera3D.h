@@ -22,8 +22,8 @@ public:
 	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
 	void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
-	void FocusSelectedGeometry(float extra_distance = EXTRA_DIST);
-	void RotateSelectedGeometry();
+	void FitToSizeSelectedGeometry(float extra_distance = EXTRA_DIST);
+	void LookAtSelectedGeometry();
 	void Reset();
 
 	float* GetViewMatrix() const;
@@ -64,7 +64,6 @@ public:
 
 	Camera* editor_camera = nullptr;
 	std::list<Camera*> game_cameras;
-	float calculateModule(vec3);
 };
 
 #endif

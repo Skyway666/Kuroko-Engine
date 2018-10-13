@@ -138,9 +138,9 @@ update_status ModuleUI::Update(float dt) {
 	
 	if (open_tabs[LOG])
 		app_log->Draw("App log",&open_tabs[LOG]);
-
+/*
 	if (open_tabs[TIME_CONTROL])
-		DrawTimeControl();
+		DrawTimeControl();*/
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -173,7 +173,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
 			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
-			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
+			//ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}

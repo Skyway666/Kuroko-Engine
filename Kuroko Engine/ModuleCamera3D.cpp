@@ -8,6 +8,8 @@
 #include "ComponentTransform.h"
 #include "ModuleRenderer3D.h"
 
+#define CAM_SPEED_CONST 1.0f
+#define CAM_ROT_SPEED_CONST 0.25f
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -46,82 +48,63 @@ update_status ModuleCamera3D::Update(float dt)
 	if (ImGui::IsMouseHoveringAnyWindow())
 		return UPDATE_CONTINUE;
 
+	// Movement
+
 	vec3 newPos(0, 0, 0);
-	float speed = 1.0f * dt;
+	float speed = CAM_SPEED_CONST * dt;
 
-
-	bool fps = false;
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
-		speed = 8.0f * dt;
-		fps = true;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) {newPos.y += speed; fps = true;}
-	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) {newPos.y -= speed; fps = true;}
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {newPos -= editor_camera->Z * speed; fps = true;}
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {newPos += editor_camera->Z * speed; fps = true; }
-
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {newPos -= editor_camera->X * speed; fps = true; }
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {newPos += editor_camera->X * speed; fps = true; }
-
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		editor_camera->FocusSelectedGeometry();
-
-	if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) 
-		editor_camera->RotateSelectedGeometry();
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) 
+		speed = 2.0f * speed;
 	
-		
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { newPos.y += speed; };
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { newPos.y -= speed; };
 
-	// Unfinished translation
-	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) {
-		int dx = -App->input->GetMouseXMotion();
-		int dy = -App->input->GetMouseYMotion();
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) { newPos -= editor_camera->Z * speed; };
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) { newPos += editor_camera->Z * speed; };
 
-		float Sensitivity = 0.01f;
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { newPos -= editor_camera->X * speed; };
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { newPos += editor_camera->X * speed; };
 
-		if (dx != 0) {
-			float DeltaX = (float)dx * Sensitivity;
-			newPos += editor_camera->X * DeltaX;
-		}
+	// panning
+	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) 
+	{
+		int dx = App->input->GetMouseXMotion();
+		int dy = App->input->GetMouseYMotion();
 
-		if (dy != 0) {
-			float DeltaY = (float)dy * Sensitivity;
-			newPos.y -= DeltaY;
-		}
+		if (dx)		newPos -= editor_camera->X * dx * speed;
+		if (dy)		newPos += editor_camera->Y * dy * speed;
 	}
 
+	editor_camera->Move(newPos);
 
-	// Mouse motion ----------------
+	// Rotation / Orbit
 
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT || (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT))
 	{
 		int dx = -App->input->GetMouseXMotion();
 		int dy = -App->input->GetMouseYMotion();
 
-		float Sensitivity = 0.25f;
+		float module = 0.0f;
 
-		//float module = 0;
-		//if(!fps)
-			editor_camera->Position -= editor_camera->Reference;
-		//else
-		//	module = calculateModule(editor_camera->Reference - editor_camera->Position);
-
-		if (dx != 0)
+		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
+			module = length(editor_camera->Reference - editor_camera->Position);
+		else
 		{
-			float DeltaX = (float)dx * Sensitivity;
-
-			editor_camera->X = rotate(editor_camera->X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			editor_camera->Y = rotate(editor_camera->Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			editor_camera->Z = rotate(editor_camera->Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			editor_camera->LookAtSelectedGeometry();
+			editor_camera->Position -= editor_camera->Reference;
 		}
 
-		if (dy != 0)
+		if (dx)
 		{
-			float DeltaY = (float)dy * Sensitivity;
+			editor_camera->X = rotate(editor_camera->X, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+			editor_camera->Y = rotate(editor_camera->Y, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+			editor_camera->Z = rotate(editor_camera->Z, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+		}
 
-			editor_camera->Y = rotate(editor_camera->Y, DeltaY, editor_camera->X);
-			editor_camera->Z = rotate(editor_camera->Z, DeltaY, editor_camera->X);
+		if (dy)
+		{
+			editor_camera->Y = rotate(editor_camera->Y, dy * CAM_ROT_SPEED_CONST, editor_camera->X);
+			editor_camera->Z = rotate(editor_camera->Z, dy * CAM_ROT_SPEED_CONST, editor_camera->X);
 
 			if (editor_camera->Y.y < 0.0f)
 			{
@@ -130,12 +113,13 @@ update_status ModuleCamera3D::Update(float dt)
 			}
 		}
 
-		//if(!fps)
+		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
+			editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
+		else
 			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
-		//else
-		//	editor_camera->Reference = editor_camera->Position + editor_camera->Z * module;
 	}
 
+	// Zooming
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
@@ -144,9 +128,13 @@ update_status ModuleCamera3D::Update(float dt)
 		else															
 			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position - editor_camera->Reference) *1.1f;
 	}
+	
+	// Focus 
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+		editor_camera->FitToSizeSelectedGeometry();
 
 	// Recalculate matrix -------------
-	editor_camera->Move(newPos);
+	editor_camera->CalculateViewMatrix();
 
 	return UPDATE_CONTINUE;	
 }
@@ -169,10 +157,6 @@ float4x4 ModuleCamera3D::CreatePerspMat(float fov, float width, float height, fl
 	return Perspective;
 }
 
-float ModuleCamera3D::calculateModule(vec3 vec) {
-
-	return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-}
 
 Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)
 {
@@ -241,11 +225,12 @@ void Camera::CalculateViewMatrix()
 	ViewMatrix = matrix;
 }
 
-void Camera::RotateSelectedGeometry() {
-
-	if (GameObject* selected_obj = App->scene->selected_obj) {
-		float3 centroid = float3::zero; float3 half_size = float3::zero;
-		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+void Camera::LookAtSelectedGeometry()
+{
+	if (GameObject* selected_obj = App->scene->selected_obj) 
+	{
+		float3 centroid = float3::zero;
+		selected_obj->getInheritedHalfsizeAndCentroid(float3(), centroid);
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));
 	}
 	else
@@ -253,20 +238,25 @@ void Camera::RotateSelectedGeometry() {
 
 }
 
-void Camera::FocusSelectedGeometry(float distance) {
-	if (GameObject* selected_obj = App->scene->selected_obj) {
+void Camera::FitToSizeSelectedGeometry(float distance)
+{
+	if (GameObject* selected_obj = App->scene->selected_obj) 
+	{
 		float3 centroid = float3::zero; float3 half_size = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
+
 		float3 new_pos = centroid + half_size + float3(distance, distance, distance);
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
-		Move(vec3(new_pos.x, new_pos.y, new_pos.z) - Position);
+
+		Position = { new_pos.x, new_pos.y, new_pos.z };
 		LookAt(vec3(centroid.x, centroid.y, centroid.z));
 	}
 	else
 		LookAt(vec3(0, 0, 0));
 }
 
-void Camera::Reset() {
+void Camera::Reset() 
+{
 	X = vec3(1.0f, 0.0f, 0.0f);
 	Y = vec3(0.0f, 1.0f, 0.0f);
 	Z = vec3(0.0f, 0.0f, 1.0f);

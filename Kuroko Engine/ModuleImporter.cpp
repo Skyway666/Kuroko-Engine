@@ -95,7 +95,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 				aiReleaseImport(imported_scene);
 
 				App->scene->selected_obj = root_obj;
-				App->camera->editor_camera->FocusSelectedGeometry(); // Hardcoded value
+				App->camera->editor_camera->FitToSizeSelectedGeometry(); // Hardcoded value
 				app_log->AddLog("Success loading file: %s", file);
 
 
