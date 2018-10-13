@@ -293,13 +293,8 @@ void ModuleUI::DrawObjectInspectorTab()
 			show_rename = true;
 
 		ImGui::SameLine();
-		if (ImGui::Button("Delete")) {
-			GameObject* parent = selected_obj->getParent();
-			if (parent)
-				parent->unbindChild(selected_obj);
-
+		if (ImGui::Button("Delete")) 
 			App->scene->deleteGameObject(selected_obj);
-		}
 
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
