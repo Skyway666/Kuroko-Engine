@@ -226,7 +226,7 @@ void ModuleRenderer3D::DirectDrawCube(float3& size) const
 
 	size.x *= 0.5f; size.y *= 0.5f; size.z *= 0.5f;
 
-	glBegin(GL_TRIANGLES);
+	glBegin(GL_QUADS);
 
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(-size.x, -size.y, size.z);

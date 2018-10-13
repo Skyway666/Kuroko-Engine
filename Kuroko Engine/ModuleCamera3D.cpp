@@ -123,10 +123,10 @@ update_status ModuleCamera3D::Update(float dt)
 
 	if (int mouse_z = App->input->GetMouseZ())
 	{
-		if (mouse_z > 0 && length(editor_camera->Position) > 0.5f)		
-			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position - editor_camera->Reference) * 0.9f;
+		if (mouse_z > 0)		
+			editor_camera->Position -= editor_camera->Z;
 		else															
-			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position - editor_camera->Reference) *1.1f;
+			editor_camera->Position += editor_camera->Z;
 	}
 	
 	// Focus 
