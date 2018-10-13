@@ -10,9 +10,10 @@ Features of the engine:
 - Primitive shapes (Plane, Cube, Sphere and Cylinder)
 - Game object system, with parenting and components
 - Load and Save of the editor configuration through JSON
-- File importation through windows explorer or drag and drop
+- File importation(meshes and textures) through windows explorer(file->import file) or drag and drop
 - About tab with information about the engine and links to the used libraries
 - Docking
+- Inspector with information about the transform, mesh and material used by the gameobject.
 
 
 Libraries used:
@@ -25,4 +26,22 @@ Libraries used:
 - Parson	(https://github.com/kgabis/parson)
 - PCG Random	(http://www.pcg-random.org)
 
+Models provided:
+
+- Baker house:
+"BakerHouse.fbx" and "Baker_house.png"
+
+- Penguin
+"PenguinBaseMesh.fbx" and "Penguin Diffuse.dds"
+
+- Toothbrush and tube
+"Toothpaste and Brish Autodesk FBX.fbx", "Paste Diffuse.dds" for tube and "Brush Diffuse.dds" for brush.
+
+With drag and drop, the textures will be applyed to all the meshes, so in order to apply each texture to the 
+appropiated mesh, it has to be done by navigating the hierarchy and assigning the correct texture to the material
+of each mesh.
+
+
+
 Link to github: https://github.com/Skyway666/Kuroko-Engine
+
