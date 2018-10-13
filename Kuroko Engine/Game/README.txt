@@ -42,5 +42,5 @@ Models provided:
 "PenguinBaseMesh.fbx" and "Penguin Diffuse.dds"
 
 - Toothbrush and tube
-"Toothpaste and Brish Autodesk FBX.fbx", "Paste Diffuse.dds" for tube and "Brush Diffuse.dds" for brush.
+"Paste Tube.fbx" and "Paste Diffuse.dds"
 
