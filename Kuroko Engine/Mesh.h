@@ -34,6 +34,7 @@ public:
 	void DrawNormals() const;
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
+	void getNumbers(float3*& vertices, Tri*& tris, float3*& normals, float3*& colors, float2*& tex_coords) const;
 	float3 getHalfSize() const { return half_size; }
 	float3 getCentroid() const { return centroid; }
 	uint getId() const { return id; };
@@ -55,14 +56,14 @@ private:
 	uint iboId = 0;
 	uint vboId = 0;
 
-	uint num_tris = 0;
 	uint num_vertices = 0;
+	uint num_tris = 0;
 	bool imported_normals = false;
 	bool imported_colors = false;
 	bool imported_tex_coords = false;
 
-	Tri* tris = nullptr;
 	float3* vertices = nullptr;
+	Tri* tris = nullptr;
 	float3* normals = nullptr;
 	float3* colors = nullptr;
 	float2* tex_coords = nullptr;

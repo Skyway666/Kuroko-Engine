@@ -8,7 +8,7 @@
 #include "Application.h"
 #include "Applog.h"
 #include "ModuleAudio.h"
-#include "Assimp\include\DefaultLogger.hpp"
+#include "FileSystem.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -75,7 +75,7 @@ bool ModuleImporter::CleanUp()
 }
 
 
-void* ModuleImporter::Import(const char* file, ImportType expected_filetype) const
+void* ModuleImporter::Import(const char* file, ImportType expected_filetype) 
 {
 	std::string extension = PathFindExtensionA(file);
 
@@ -95,8 +95,20 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 				aiReleaseImport(imported_scene);
 
 				App->scene->selected_obj = root_obj;
-				App->camera->editor_camera->FitToSizeSelectedGeometry(); // Hardcoded value
+				App->camera->editor_camera->FitToSizeSelectedGeometry(); 
 				app_log->AddLog("Success loading file: %s", file);
+
+				//Load to own file format
+				std::list<GameObject*> childs;
+				root_obj->getChildren(childs);
+				for(auto it = childs.begin(); it != childs.end(); it++){
+				Mesh* mesh = nullptr;
+				ComponentMesh* c_mesh = (ComponentMesh*)(*it)->getComponent(MESH);
+				if (c_mesh)
+					mesh = c_mesh->getMesh();
+				if (mesh)
+					ExportMeshToKR(file, mesh);
+				}
 
 
 				return root_obj;
@@ -163,6 +175,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype) con
 }
 
 
+
 void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const
 {
 	aiString path;
@@ -227,4 +240,111 @@ GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene&
 
 void logAssimp(const char* message, char* user) {
 	app_log->AddLog("%s", message);
+}
+
+void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
+	//Create a header for vertices, tris, normals, colors and tex coords
+	uint header[5]; 
+	uint vert_num, poly_count = 0;
+	bool has_normals, has_colors, has_texcoords = false;
+
+	// Get the data
+	mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
+
+	// Fill the header with data
+	header[0] = vert_num;
+	header[1] = poly_count;
+	if (has_normals)
+		header[2] = poly_count;
+	else
+		header[2] = 0;
+	if (has_colors)
+		header[3] = poly_count;
+	else
+		header[3] = 0;
+	if (has_texcoords)
+		header[4] = poly_count;
+	else
+		header[4] = 0;
+
+	// Knowing the size of the file, we can create the buffer in which it all will be stored
+	uint size = sizeof(header) + sizeof(float3)*vert_num + sizeof(Tri)*poly_count;
+	if (has_normals)
+		size += sizeof(float3)*poly_count;
+	if (has_colors)
+		size += sizeof(float3)*poly_count;
+	if (has_texcoords)
+		size += sizeof(float2)*poly_count;
+	char* data = new char[size];
+	char* cursor = data;
+
+	// Get the data
+	float3* vertices = nullptr;
+	Tri* tris = nullptr;
+	float3* normals = nullptr;
+	float3* colors = nullptr;
+	float2* tex_coords = nullptr;
+	mesh->getNumbers(vertices, tris, normals, colors, tex_coords);
+
+	// First we store the header
+	uint bytes = sizeof(header);
+	memcpy(cursor, header, bytes);
+	cursor += bytes;
+
+	// Vertices
+	bytes = sizeof(header[0]);
+	memcpy(cursor, vertices, bytes);
+	cursor += bytes;
+
+	// Tris
+	bytes = sizeof(header[1]);
+	memcpy(cursor, vertices, bytes);
+	cursor += bytes;
+
+	// Normals
+	if (has_normals) {
+		bytes = sizeof(header[2]);
+		memcpy(cursor, normals, bytes);
+		cursor += bytes;
+	}
+
+	// Colors
+	if (has_colors) {
+		bytes = sizeof(header[3]);
+		memcpy(cursor, colors, bytes);
+		cursor += bytes;
+	}
+
+	// Tex coords
+	if (has_texcoords) {
+		bytes = sizeof(header[4]);
+		memcpy(cursor, tex_coords, bytes);
+		cursor += bytes;
+	}
+	
+	std::string filename = file;
+	getFileNameFromPath(filename);
+	filename.append(".kr"); // This is the file extension of this engine TODO: Store it in a variable
+	App->fs->ExportBuffer(data, size, filename.c_str());
+}
+
+bool ModuleImporter::removeExtension(std::string& str) {
+	size_t lastdot = str.find_last_of(".");
+	if (lastdot == std::string::npos)
+		return false;
+	str = str.substr(0, lastdot);
+	return true;
+}
+
+bool ModuleImporter::removePath(std::string& str) {
+	const size_t last_slash_idx = str.find_last_of("\\/");
+	if (last_slash_idx == std::string::npos ) 
+		return false;
+	str = str.erase(0, last_slash_idx + 1);
+	return true;
+}
+
+void ModuleImporter::getFileNameFromPath(std::string & str) {
+	removeExtension(str);
+	removePath(str);
 }

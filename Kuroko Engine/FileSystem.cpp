@@ -11,7 +11,8 @@ FileSystem::FileSystem(Application* app, bool start_enabled):Module(app, start_e
 FileSystem::~FileSystem() {
 }
 
-void FileSystem::ExportBuffer(char * data, int size, char * file_name) {
+void FileSystem::ExportBuffer(char * data, int size, const char * file_name) {
+	//TODO: Be able to export the file to a certain folder (Library->meshes, Library->Materials...)
 	std::ofstream file;
 	file.open(file_name);
 	file.write(data, size);

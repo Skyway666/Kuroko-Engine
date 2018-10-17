@@ -9,6 +9,7 @@ class ComponentMesh;
 class aiNode;
 class aiScene;
 class AudioFile;
+class Mesh;
 
 enum ImportType { I_NONE, I_GOBJ, I_TEXTURE, I_FX, I_MUSIC};
 
@@ -22,7 +23,15 @@ public:
 	bool CleanUp();
 
 
-	void* Import(const char* file, ImportType expected_filetype = I_NONE) const;
+	void* Import(const char* file, ImportType expected_filetype = I_NONE);
+	//Own file format
+	void ExportMeshToKR(const char* file, Mesh* mesh);
+
+
+	// Useful functions to work with paths
+	bool removeExtension(std::string& str);
+	bool removePath(std::string& str);
+	void getFileNameFromPath(std::string& str);
 
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;

@@ -475,6 +475,14 @@ void Mesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& ha
 	has_texcoords = imported_tex_coords;
 }
 
+void Mesh::getNumbers(float3*& _vertices, Tri*& _tris, float3*& _normals, float3*& _colors, float2*& _tex_coords) const {
+	_vertices = vertices;
+	_tris = tris;
+	_normals = normals;
+	_colors = colors;
+	_tex_coords = tex_coords;
+}
+
 void Mesh::ClearData()
 {
 	glDeleteBuffers(1, &iboId);
