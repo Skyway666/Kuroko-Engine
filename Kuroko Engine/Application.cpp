@@ -11,6 +11,7 @@
 #include "ModuleImporter.h"
 #include "AppLog.h"
 #include "Random.h"
+#include "FileSystem.h"
 #include <iostream>
 #include <fstream>
 
@@ -28,6 +29,7 @@ Application::Application()
 	importer = new ModuleImporter(this);
 	camera = new ModuleCamera3D(this);
 	gui = new ModuleUI(this);
+	fs = new FileSystem(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order

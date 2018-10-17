@@ -16,6 +16,7 @@ class ModuleCamera3D;
 class ModuleUI;
 class ModuleImporter;
 class ModuleDebug;
+class FileSystem;
 
 class Application
 {
@@ -29,6 +30,7 @@ public:
 	ModuleCamera3D* camera;
 	ModuleUI* gui;
 	ModuleImporter* importer;
+	FileSystem* fs;
 
 private:
 

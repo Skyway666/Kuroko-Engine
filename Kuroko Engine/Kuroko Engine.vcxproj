@@ -80,6 +80,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentAABB.h" />
     <ClInclude Include="ComponentTransform.h" />
+    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew-2.1.0\include\GL\eglew.h" />
     <ClInclude Include="glew-2.1.0\include\GL\glew.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ComponentAABB.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glmath.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
