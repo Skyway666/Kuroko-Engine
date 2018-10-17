@@ -26,6 +26,7 @@ public:
 	void* Import(const char* file, ImportType expected_filetype = I_NONE);
 	//Own file format
 	void ExportMeshToKR(const char* file, Mesh* mesh);
+	void ExportTextureToKR(const char* file, Texture* tex);
 
 
 	// Useful functions to work with paths

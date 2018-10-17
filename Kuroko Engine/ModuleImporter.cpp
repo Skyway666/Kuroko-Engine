@@ -292,32 +292,32 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	cursor += bytes;
 
 	// Vertices
-	bytes = sizeof(header[0]);
+	bytes = sizeof(float3)*vert_num;
 	memcpy(cursor, vertices, bytes);
 	cursor += bytes;
 
 	// Tris
-	bytes = sizeof(header[1]);
+	bytes = sizeof(Tri)*poly_count;
 	memcpy(cursor, vertices, bytes);
 	cursor += bytes;
 
 	// Normals
 	if (has_normals) {
-		bytes = sizeof(header[2]);
+		bytes = sizeof(float3)*poly_count;
 		memcpy(cursor, normals, bytes);
 		cursor += bytes;
 	}
 
 	// Colors
 	if (has_colors) {
-		bytes = sizeof(header[3]);
+		bytes = sizeof(float3)*poly_count;
 		memcpy(cursor, colors, bytes);
 		cursor += bytes;
 	}
 
 	// Tex coords
 	if (has_texcoords) {
-		bytes = sizeof(header[4]);
+		bytes = sizeof(float2)*poly_count;
 		memcpy(cursor, tex_coords, bytes);
 		cursor += bytes;
 	}
@@ -326,6 +326,12 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	getFileNameFromPath(filename);
 	filename.append(".kr"); // This is the file extension of this engine TODO: Store it in a variable
 	App->fs->ExportBuffer(data, size, filename.c_str());
+
+	delete data;
+}
+
+void ModuleImporter::ExportTextureToKR(const char * file, Texture * tex) {
+
 }
 
 bool ModuleImporter::removeExtension(std::string& str) {
