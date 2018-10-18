@@ -28,6 +28,7 @@ class Mesh {
 public:
 	Mesh(const aiMesh& mesh);
 	Mesh(PrimitiveTypes primitive);
+	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords);
 	~Mesh();
 
 	void Draw(Material* mat) const;

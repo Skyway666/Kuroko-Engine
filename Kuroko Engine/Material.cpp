@@ -5,6 +5,7 @@
 #include "ModuleScene.h"
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Applog.h"
+#include "ModuleImporter.h"
 
 
 Material::Material() : id(App->scene->last_mat_id++) 
@@ -60,6 +61,7 @@ Texture::Texture(uint GL_id) : id(App->scene->last_tex_id++)
 	gl_id = GL_id;
 
 	glBindTexture(GL_TEXTURE_2D, gl_id);
+	App->importer->ExportTextureToDDS();
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, (GLint*)&size_x);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&size_y);
 	glBindTexture(GL_TEXTURE_2D, 0);

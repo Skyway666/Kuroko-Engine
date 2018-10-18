@@ -98,7 +98,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				App->camera->editor_camera->FitToSizeSelectedGeometry(); 
 				app_log->AddLog("Success loading file: %s", file);
 
-				//Load to own file format
+				//Load childs to own file format (maybe it should be done in loadmeshrecursive)
 				std::list<GameObject*> childs;
 				root_obj->getChildren(childs);
 				for(auto it = childs.begin(); it != childs.end(); it++){
@@ -115,6 +115,15 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			}
 			else
 				app_log->AddLog("Error loading scene %s", file);
+		}
+		// Import own file format
+		if (extension == ".kr"){
+			Mesh* mesh = ImportMeshFromKR(file);
+			if (mesh) {
+				GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
+				ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
+			}
+
 		}
 	}
 	if (expected_filetype == I_NONE || expected_filetype == I_TEXTURE)
@@ -330,8 +339,97 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	delete data;
 }
 
-void ModuleImporter::ExportTextureToKR(const char * file, Texture * tex) {
+void ModuleImporter::ExportTextureToDDS() {
+	ILuint size;
+	char *data;
+	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
+	size = ilSaveL(IL_DDS, NULL, 0); // Get the size of the data buffer
+	if (size > 0) {
+		data = new char[size]; // allocate data buffer
+		if (ilSaveL(IL_DDS, data, size) > 0) // Save to buffer with the ilSaveIL function
+			App->fs->ExportBuffer(data, size, "texture.dds");
+		delete data; 
+	}
+}
 
+Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
+{
+	uint num_vertices = 0;
+	uint num_tris = 0;
+	bool imported_normals = false;
+	bool imported_colors = false;
+	bool imported_tex_coords = false;
+
+	float3* vertices = nullptr;
+	Tri* tris = nullptr;
+	float3* normals = nullptr;
+	float3* colors = nullptr;
+	float2* tex_coords = nullptr;
+
+	// Import buffer from file
+	char* buffer = App->fs->ImportFile(file);
+	char* cursor = buffer;
+
+	// Read the header
+	uint header[5];
+	uint bytes = sizeof(header);
+	memcpy(header, buffer, bytes);
+	num_vertices = header[0];
+	num_tris = header[1];
+	if (header[2] > 0)
+		imported_normals = true;
+	if (header[3] > 0)
+		imported_colors = true;
+	if (header[4] > 0)
+		imported_tex_coords = true;
+	// Increment cursor
+	cursor += bytes;
+
+	// Read vertices
+	bytes = sizeof(float3)*num_vertices;
+	vertices = new float3[num_vertices];
+	memcpy(vertices, cursor, bytes);
+	// Increment cursor
+	cursor += bytes;
+
+	// Read tris
+	bytes = sizeof(Tri)*num_tris;
+	tris = new Tri[num_tris];
+	memcpy(tris, cursor, bytes);
+	// Increment cursor
+	cursor += bytes;
+
+	// Read normals (if any)
+	if(imported_normals){
+	// Read tris
+	bytes = sizeof(float3)*num_tris;
+	normals = new float3[num_tris];
+	memcpy(normals, cursor, bytes);
+	// Increment cursor
+	cursor += bytes;
+	}
+
+	// Read colors (if any)
+	if (imported_colors) {
+		// Read tris
+		bytes = sizeof(float3)*num_tris;
+		colors = new float3[num_tris];
+		memcpy(colors, cursor, bytes);
+		// Increment cursor
+		cursor += bytes;
+	}
+
+	// Read tex_coords (if any)
+	if (imported_normals) {
+		// Read tris
+		bytes = sizeof(float2)*num_tris;
+		tex_coords = new float2[num_tris];
+		memcpy(tex_coords, cursor, bytes);
+		// Increment cursor
+		cursor += bytes;
+	}
+
+	return new Mesh(vertices,tris,normals,colors,tex_coords);
 }
 
 bool ModuleImporter::removeExtension(std::string& str) {

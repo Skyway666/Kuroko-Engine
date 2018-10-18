@@ -12,14 +12,14 @@ FileSystem::~FileSystem() {
 }
 
 void FileSystem::ExportBuffer(char * data, int size, const char * file_name) {
-	//TODO: Be able to export the file to a certain folder (Library->meshes, Library->Materials...)
+	// TODO: Be able to export the file to a certain folder (Library->meshes, Library->Materials...)
 	std::ofstream file;
 	file.open(file_name);
 	file.write(data, size);
 	file.close();
 }
 
-char * FileSystem::ImportFile(char * file_name) {
+char * FileSystem::ImportFile(const char * file_name) {
 	std::ifstream file;
 	file.open(file_name);
 	// get length of file:

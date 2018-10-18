@@ -16,7 +16,13 @@ Mesh::Mesh(const aiMesh& imported_mesh) : id(App->scene->last_mesh_id++)
 	
 	App->scene->addMesh(this);
 }
-
+Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, float2* _tex_coords) {
+	vertices = _vertices;
+	tris = _tris;
+	normals = _normals;
+	colors = _colors;
+	tex_coords = _tex_coords;
+}
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
 {
