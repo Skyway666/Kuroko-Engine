@@ -304,7 +304,6 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	if (has_texcoords) {
 		bytes = sizeof(float2)*vert_num;
 		memcpy(cursor, tex_coords, bytes);
-		cursor += bytes;
 	}
 	
 	std::string filename = file;
@@ -350,7 +349,7 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read the header
 	uint header[5];
 	uint bytes = sizeof(header);
-	memcpy(header, buffer, bytes);
+	memcpy(header, cursor, bytes);
 	num_vertices = header[0];
 	num_tris = header[1];
 	if (header[2] > 0)
