@@ -28,7 +28,8 @@ class Mesh {
 public:
 	Mesh(const aiMesh& mesh);
 	Mesh(PrimitiveTypes primitive);
-	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords);
+	// Maybe a "MeshDef" could be created?
+	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords, uint num_vertices, uint num_tris); 
 	~Mesh();
 
 	void Draw(Material* mat) const;

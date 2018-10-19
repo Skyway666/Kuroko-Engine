@@ -27,7 +27,7 @@ char * FileSystem::ImportFile(const char * file_name) {
 	int size = file.tellg();
 	file.seekg(0, file.beg);
 	char* ret = new char[size];
-	file.readsome(ret, size);
+	file.read(ret, size);
 
 	return ret;
 }

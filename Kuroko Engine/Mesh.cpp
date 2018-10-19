@@ -16,12 +16,21 @@ Mesh::Mesh(const aiMesh& imported_mesh) : id(App->scene->last_mesh_id++)
 	
 	App->scene->addMesh(this);
 }
-Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, float2* _tex_coords) {
+Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, float2* _tex_coords, uint _num_vertices, uint _num_tris): id(App->scene->last_mesh_id++) {
 	vertices = _vertices;
 	tris = _tris;
 	normals = _normals;
 	colors = _colors;
 	tex_coords = _tex_coords;
+	num_vertices = _num_vertices;
+	num_tris = _num_tris;
+
+	if (normals) imported_normals = true;
+	if (colors) imported_colors = true;
+	if (tex_coords) imported_tex_coords = true;
+
+	LoadDataToVRAM();
+
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
@@ -108,7 +117,6 @@ void Mesh::Draw(Material* mat)  const
 	glNormalPointer(GL_FLOAT, 0, (void*)Offset);
 	glColorPointer(3, GL_FLOAT, 0, (void*)(Offset * 2));
 	glTexCoordPointer(2, GL_FLOAT, 0, (void*)(Offset * 3));
-
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
 	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, 0);

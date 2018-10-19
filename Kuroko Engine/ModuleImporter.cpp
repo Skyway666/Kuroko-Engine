@@ -122,6 +122,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			if (mesh) {
 				GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
 				ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
+				mesh_object->addComponent(c_mesh);
 			}
 
 		}
@@ -429,7 +430,7 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 		cursor += bytes;
 	}
 
-	return new Mesh(vertices,tris,normals,colors,tex_coords);
+	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
 }
 
 bool ModuleImporter::removeExtension(std::string& str) {
