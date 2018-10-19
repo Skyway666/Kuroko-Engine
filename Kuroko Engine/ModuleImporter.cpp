@@ -240,26 +240,26 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	header[0] = vert_num;
 	header[1] = poly_count;
 	if (has_normals)
-		header[2] = poly_count;
+		header[2] = vert_num;
 	else
 		header[2] = 0;
 	if (has_colors)
-		header[3] = poly_count;
+		header[3] = vert_num;
 	else
 		header[3] = 0;
 	if (has_texcoords)
-		header[4] = poly_count;
+		header[4] = vert_num;
 	else
 		header[4] = 0;
 
 	// Knowing the size of the file, we can create the buffer in which it all will be stored
 	uint size = sizeof(header) + sizeof(float3)*vert_num + sizeof(Tri)*poly_count;
 	if (has_normals)
-		size += sizeof(float3)*poly_count;
+		size += sizeof(float3)*vert_num;
 	if (has_colors)
-		size += sizeof(float3)*poly_count;
+		size += sizeof(float3)*vert_num;
 	if (has_texcoords)
-		size += sizeof(float2)*poly_count;
+		size += sizeof(float2)*vert_num;
 	char* data = new char[size];
 	char* cursor = data;
 
@@ -288,21 +288,21 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 
 	// Normals
 	if (has_normals) {
-		bytes = sizeof(float3)*poly_count;
+		bytes = sizeof(float3)*vert_num;
 		memcpy(cursor, normals, bytes);
 		cursor += bytes;
 	}
 
 	// Colors
 	if (has_colors) {
-		bytes = sizeof(float3)*poly_count;
+		bytes = sizeof(float3)*vert_num;
 		memcpy(cursor, colors, bytes);
 		cursor += bytes;
 	}
 
 	// Tex coords
 	if (has_texcoords) {
-		bytes = sizeof(float2)*poly_count;
+		bytes = sizeof(float2)*vert_num;
 		memcpy(cursor, tex_coords, bytes);
 		cursor += bytes;
 	}
@@ -379,8 +379,8 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read normals (if any)
 	if(imported_normals){
 	// Read tris
-	bytes = sizeof(float3)*num_tris;
-	normals = new float3[num_tris];
+	bytes = sizeof(float3)*num_vertices;
+	normals = new float3[num_vertices];
 	memcpy(normals, cursor, bytes);
 	// Increment cursor
 	cursor += bytes;
@@ -389,8 +389,8 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read colors (if any)
 	if (imported_colors) {
 		// Read tris
-		bytes = sizeof(float3)*num_tris;
-		colors = new float3[num_tris];
+		bytes = sizeof(float3)*num_vertices;
+		colors = new float3[num_vertices];
 		memcpy(colors, cursor, bytes);
 		// Increment cursor
 		cursor += bytes;
