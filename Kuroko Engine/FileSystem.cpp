@@ -13,6 +13,8 @@ FileSystem::~FileSystem() {
 
 void FileSystem::ExportBuffer(char * data, int size, const char * file_name) {
 	// TODO: Be able to export the file to a certain folder (Library->meshes, Library->Materials...)
+
+	// use CreateDirectory() to create folders at the beggining of the app
 	std::ofstream file;
 	std::string path = "Library\\Meshes\\";
 	path.append(file_name);
