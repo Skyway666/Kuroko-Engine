@@ -649,8 +649,6 @@ void ModuleUI::DrawPrimitivesTab()
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	if (ImGui::Button("Add cube")){
-		App->scene->CleanUp();// Just for asignment 1
-
 		GameObject* cube = new GameObject("Cube");
 		Mesh* mesh = new Mesh(Primitive_Cube);
 		cube->addComponent(new ComponentMesh(cube, mesh));
@@ -660,8 +658,6 @@ void ModuleUI::DrawPrimitivesTab()
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add plane")){
-		App->scene->CleanUp();// Just for asignment 1
-
 		GameObject* plane = new GameObject("Plane");
 		Mesh* mesh = new Mesh(Primitive_Plane);
 		plane->addComponent(new ComponentMesh(plane, mesh));
@@ -670,8 +666,6 @@ void ModuleUI::DrawPrimitivesTab()
 		comp_mesh->setMaterial(mat);
 	}
 	if (ImGui::Button("Add sphere")) {
-		App->scene->CleanUp();// Just for asignment 1
-
 		GameObject* sphere = new GameObject("Sphere");
 		Mesh* mesh = new Mesh(Primitive_Sphere);
 		sphere->addComponent(new ComponentMesh(sphere, mesh));
@@ -681,8 +675,6 @@ void ModuleUI::DrawPrimitivesTab()
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add cylinder")) {
-		App->scene->CleanUp();// Just for asignment 1
-
 		GameObject* cylinder = new GameObject("Cylinder");
 		Mesh* mesh = new Mesh(Primitive_Cylinder);
 		cylinder->addComponent(new ComponentMesh(cylinder, mesh));

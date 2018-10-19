@@ -133,19 +133,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
 		{
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file));
-
-			//Just for assignment 1
-
-			for (auto it = App->scene->game_objects.begin(); it != App->scene->game_objects.end(); it++) {
-				GameObject* object = *it;
-				ComponentMesh* mesh = (ComponentMesh*)object->getComponent(MESH);
-				if (!mesh)
-					continue;
-				else{
-					Material* mat = mesh->getMaterial();
-					if (mat) mat->setTexture(DIFFUSE, tex);
-				}
-			}
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}
@@ -421,7 +408,7 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	}
 
 	// Read tex_coords (if any)
-	if (imported_normals) {
+	if (imported_tex_coords) {
 		// Read tris
 		bytes = sizeof(float2)*num_tris;
 		tex_coords = new float2[num_tris];
