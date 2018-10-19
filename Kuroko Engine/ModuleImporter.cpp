@@ -283,7 +283,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 
 	// Tris
 	bytes = sizeof(Tri)*poly_count;
-	memcpy(cursor, vertices, bytes);
+	memcpy(cursor, tris, bytes);
 	cursor += bytes;
 
 	// Normals
@@ -402,8 +402,6 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 		bytes = sizeof(float2)*num_vertices;
 		tex_coords = new float2[num_vertices];
 		memcpy(tex_coords, cursor, bytes);
-		// Increment cursor
-		cursor += bytes;
 	}
 	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
