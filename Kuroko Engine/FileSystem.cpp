@@ -11,13 +11,26 @@ FileSystem::FileSystem(Application* app, bool start_enabled):Module(app, start_e
 FileSystem::~FileSystem() {
 }
 
-void FileSystem::ExportBuffer(char * data, int size, const char * file_name) {
-	// TODO: Be able to export the file to a certain folder (Library->meshes, Library->Materials...)
+void FileSystem::ExportBuffer(char * data, int size, const char * file_name, lib_dir lib) {
 
 	// use CreateDirectory() to create folders at the beggining of the app
-	std::ofstream file;
-	std::string path = "Library\\Meshes\\";
+	std::string path = "";
+	switch (lib) {
+		case LIBRARY_MESHES:
+			path = "Library\\Meshes\\";
+			break;
+		case LIBRARY_MATERIALS:
+			path = "Library\\Materials\\";
+			break;
+		case LIBRARY_ANIMATIONS:
+			path = "Library\\Animations\\";
+			break;
+		case NO_LIB:
+			path = "";
+			break;
+	}
 	path.append(file_name);
+	std::ofstream file;
 	file.open(path);
 	file.write(data, size);
 	file.close();

@@ -12,6 +12,7 @@
 #include "AppLog.h"
 #include "Random.h"
 #include "FileSystem.h"
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
 
@@ -19,6 +20,13 @@
 Application::Application()
 {
 	randomizeSeed();
+
+	// Create library directory if it does not exist
+	CreateDirectory("Library", NULL);
+	CreateDirectory("Library\\Meshes", NULL);
+	CreateDirectory("Library\\Materials", NULL);
+	CreateDirectory("Library\\Animation", NULL);
+
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	//audio = new ModuleAudio(this, true);   // dummy module until further implementation
