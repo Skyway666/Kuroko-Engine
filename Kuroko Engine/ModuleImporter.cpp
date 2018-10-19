@@ -98,19 +98,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				App->camera->editor_camera->FitToSizeSelectedGeometry(); 
 				app_log->AddLog("Success loading file: %s", file);
 
-				//Load childs to own file format (maybe it should be done in loadmeshrecursive)
-				std::list<GameObject*> childs;
-				root_obj->getChildren(childs);
-				for(auto it = childs.begin(); it != childs.end(); it++){
-				Mesh* mesh = nullptr;
-				ComponentMesh* c_mesh = (ComponentMesh*)(*it)->getComponent(MESH);
-				if (c_mesh)
-					mesh = c_mesh->getMesh();
-				if (mesh)
-					ExportMeshToKR(file, mesh);
-				}
-
-
 				return root_obj;
 			}
 			else
@@ -211,7 +198,7 @@ void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_
 
 }
 
-GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent) const
+GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent) 
 {
 	GameObject* root_obj = new GameObject(node.mName.C_Str(), parent);
 
@@ -226,6 +213,7 @@ GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene&
 			c_m->setMaterial(mat);
 		}
 		root_obj->addComponent(c_m);
+		ExportMeshToKR(node.mName.C_Str(), mesh);
 		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
