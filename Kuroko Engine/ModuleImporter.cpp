@@ -323,6 +323,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	getFileNameFromPath(filename);
 	filename.append(".kr"); // This is the file extension of this engine TODO: Store it in a variable
 	App->fs->ExportBuffer(data, size, filename.c_str());
+	app_log->AddLog("Saved %s as own file format", filename.c_str()); // TODO: Tell in which folder was it loaded
 
 	delete data;
 }
@@ -410,13 +411,13 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read tex_coords (if any)
 	if (imported_tex_coords) {
 		// Read tris
-		bytes = sizeof(float2)*num_tris;
-		tex_coords = new float2[num_tris];
+		bytes = sizeof(float2)*num_vertices;
+		tex_coords = new float2[num_vertices];
 		memcpy(tex_coords, cursor, bytes);
 		// Increment cursor
 		cursor += bytes;
 	}
-
+	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
 }
 
