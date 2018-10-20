@@ -360,6 +360,12 @@
     <ClInclude Include="Skybox.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -552,6 +558,12 @@
       <Filter>Sources\Modules</Filter>
     </ClCompile>
     <ClCompile Include="Skybox.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Game</Filter>
     </ClCompile>
   </ItemGroup>

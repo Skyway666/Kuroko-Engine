@@ -8,6 +8,7 @@
 #include "Application.h"
 #include "Applog.h"
 #include "ModuleAudio.h"
+#include "Camera.h"
 #include "FileSystem.h"
 
 #include "glew-2.1.0\include\GL\glew.h"

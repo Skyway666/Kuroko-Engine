@@ -4,9 +4,11 @@
 #include "ModuleInput.h"
 #include "ModuleScene.h"
 #include "Applog.h"
-#include "GameObject.h"
 #include "ComponentTransform.h"
-#include "ModuleRenderer3D.h"
+#include "Camera.h"
+#include "Material.h"
+
+#include "glew-2.1.0\include\GL\glew.h"
 
 #define CAM_SPEED_CONST 2.5f
 #define CAM_ROT_SPEED_CONST 0.25f
@@ -169,108 +171,51 @@ float4x4 ModuleCamera3D::CreatePerspMat(float fov, float width, float height, fl
 }
 
 
-Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)
+FrameBuffer* ModuleCamera3D::initFrameBuffer(uint size_x, uint size_y)
 {
-	ProjectionMatrix = projection_matrix;
-	Position = { position.x, position.y, position.z };
-	LookAt(vec3(reference.x, reference.y, reference.z ));
+	FrameBuffer* fb = new FrameBuffer();
+	fb->size_x = size_x; fb->size_y = size_y;
+	// set frame buffer
+	glGenFramebuffers(1, &fb->id);
+	glBindFramebuffer(GL_FRAMEBUFFER, fb->id);
+
+	// set frame buffer texture
+	fb->tex = new Texture();
+	glGenTextures(1, &fb->tex->gl_id);
+	glBindTexture(GL_TEXTURE_2D, fb->tex->gl_id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size_x, size_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	// set depth texture
+	fb->depth_tex = new Texture();
+	glGenTextures(1, &fb->depth_tex->gl_id);
+	glBindTexture(GL_TEXTURE_2D, fb->depth_tex->gl_id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size_x, size_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	//set depth renderer
+	glGenRenderbuffers(1, &fb->depth_tex->gl_id);
+	glBindRenderbuffer(GL_RENDERBUFFER, fb->depth_tex->gl_id);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size_x, size_y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb->depth_tex->gl_id);
+
+	// init frame buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);
+	glFramebufferTexture2D(GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->depth_tex->gl_id, 0);
+
+	// Set the list of draw buffers.
+	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, DrawBuffers);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	frame_buffers.push_back(fb);
+	return fb;
 }
 
-Camera::~Camera()
-{
-	App->renderer3D->frame_buffers_to_delete.push_back(frame_buffer);
-}
-
-// -----------------------------------------------------------------
-void Camera::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
-{
-	this->Position = Position;
-	this->Reference = Reference;
-
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
-
-	if(!RotateAroundReference)
-	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
-	}
-
-	CalculateViewMatrix();
-}
-
-// -----------------------------------------------------------------
-void Camera::LookAt( const vec3 &Spot)
-{
-	Reference = Spot;
-
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
-
-	CalculateViewMatrix();
-	
-}
-
-
-// -----------------------------------------------------------------
-void Camera::Move(const vec3 &Movement)
-{
-	Position += Movement;
-	Reference += Movement;
-
-	CalculateViewMatrix();
-}
-
-// -----------------------------------------------------------------
-float* Camera::GetViewMatrix() const
-{
-	return (float*)ViewMatrix.v;
-}
-
-// -----------------------------------------------------------------
-void Camera::CalculateViewMatrix()
-{
-	float4x4 matrix(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
-	ViewMatrix = matrix;
-}
-
-void Camera::LookAtSelectedGeometry()
-{
-	if (GameObject* selected_obj = App->scene->selected_obj) 
-	{
-		float3 centroid = float3::zero;
-		selected_obj->getInheritedHalfsizeAndCentroid(float3(), centroid);
-		LookAt(vec3(centroid.x, centroid.y, centroid.z));
-	}
-}
-
-void Camera::FitToSizeSelectedGeometry(float distance)
-{
-	if (GameObject* selected_obj = App->scene->selected_obj) 
-	{
-		float3 centroid = float3::zero; float3 half_size = float3::zero;
-		selected_obj->getInheritedHalfsizeAndCentroid(half_size, centroid);
-
-		float3 new_pos = centroid + half_size + float3(distance, distance, distance);
-		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
-
-		Position = { new_pos.x, new_pos.y, new_pos.z };
-		LookAt(vec3(centroid.x, centroid.y, centroid.z));
-	}
-	else
-		LookAt(vec3(0, 0, 0));
-}
-
-void Camera::Reset() 
-{
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
-
-	Position = vec3(1.0f, 1.0f, 5.0f);
-	Reference = vec3(0.0f, 0.0f, 0.0f);
-
-	LookAt(Reference);
-}

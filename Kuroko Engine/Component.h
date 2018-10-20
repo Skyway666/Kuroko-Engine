@@ -2,7 +2,7 @@
 #define _COMPONENT_
 class GameObject;
 
-enum Component_type { NONE, MESH, TRANSFORM, C_AABB };
+enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA };
 
 class Component
 {

@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "ModuleInput.h"
 #include "GameObject.h"		
+#include "Camera.h"
 #include "Skybox.h"
 
 #include "glmath.h"

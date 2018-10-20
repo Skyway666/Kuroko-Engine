@@ -18,6 +18,7 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
+#include "Camera.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -46,7 +47,7 @@ bool ModuleUI::Init(const JSON_Object& config) {
 	
 	SDL_GL_SetSwapInterval(1); // Enable vsync
 
-							   // Setup Dear ImGui binding
+	// Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	
@@ -75,7 +76,7 @@ bool ModuleUI::Start()
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
 	ui_fonts[REGULAR]				= io->Fonts->AddFontFromFileTTF("Fonts/regular.ttf", 18.0f);
-	//ui_fonts[REGULAR_BOLD]			= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold.ttf", 18.0f);
+	//ui_fonts[REGULAR_BOLD]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold.ttf", 18.0f);
 	//ui_fonts[REGULAR_ITALIC]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_italic.ttf", 18.0f);
 	//ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
 	
@@ -138,14 +139,12 @@ update_status ModuleUI::Update(float dt) {
 	
 	if (open_tabs[LOG])
 		app_log->Draw("App log",&open_tabs[LOG]);
-/*
+
 	if (open_tabs[TIME_CONTROL])
-		DrawTimeControl();*/
+		DrawTimeControl();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
-
-
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -173,7 +172,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
 			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
-			//ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
+			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -613,9 +612,10 @@ void ModuleUI::DrawCameraTab(Camera* camera)
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize;
 		ImGui::SetNextWindowSize(ImVec2(camera->frame_buffer->size_x + 10, camera->frame_buffer->size_y + 40));
 		ImGui::Begin("Game", nullptr, flags);
-		ImGui::ImageButton((void*)camera->frame_buffer->tex->gl_id, ImVec2(camera->frame_buffer->size_x, camera->frame_buffer->size_y), ImVec2(0, 1), ImVec2(1, 0), 2);
+		ImGui::ImageButton((void*)camera->frame_buffer->depth_tex->gl_id, ImVec2(camera->frame_buffer->size_x, camera->frame_buffer->size_y), ImVec2(0, 1), ImVec2(1, 0), 2);
 		ImGui::End();
 	}
+	else camera->frame_buffer = App->camera->initFrameBuffer();
 }
 //
 //void ModuleUI::DrawAudioTab()

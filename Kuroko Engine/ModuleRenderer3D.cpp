@@ -1,11 +1,12 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-#include "ModuleCamera3D.h"
 #include "ModuleWindow.h"
 #include "ModuleUI.h"
 #include "Globals.h"
 #include "Applog.h"
 #include "ModuleImporter.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -22,16 +23,6 @@
 ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "renderer3d";
-}
-
-// Destructor
-ModuleRenderer3D::~ModuleRenderer3D()
-{
-	for (auto it = frame_buffers.begin(); it != frame_buffers.end(); it++)
-		delete *it;
-
-	frame_buffers.clear();
-	frame_buffers_to_delete.clear();
 }
 
 // Called before render is available
@@ -120,7 +111,7 @@ bool ModuleRenderer3D::Init(const JSON_Object& config)
 	}
 	// Projection matrix for
 	OnResize(App->window->main_window->width, App->window->main_window->height);
-	initFrameBuffer();
+
 	return ret;
 }
 
@@ -179,44 +170,6 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glLoadIdentity();
 }
 
-
-FrameBuffer* ModuleRenderer3D::initFrameBuffer(uint size_x, uint size_y)
-{
-	FrameBuffer* fb = new FrameBuffer();
-	fb->size_x = size_x; fb->size_y = size_y;
-	// set frame buffer
-	glGenFramebuffers(1, &fb->id);
-	glBindFramebuffer(GL_FRAMEBUFFER, fb->id);
-
-	// set frame buffer texture
-	fb->tex = new Texture();
-	glGenTextures(1, &fb->tex->gl_id);
-	glBindTexture(GL_TEXTURE_2D, fb->tex->gl_id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size_x, size_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	//set depth renderer
-	glGenRenderbuffers(1, &fb->depthbuffer_id);
-	glBindRenderbuffer(GL_RENDERBUFFER, fb->depthbuffer_id);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size_x, size_y);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb->depthbuffer_id);
-
-	// init frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);
-
-	// Set the list of draw buffers.
-	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, DrawBuffers);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	frame_buffers.push_back(fb);
-	return fb;
-}
 
 
 void ModuleRenderer3D::DirectDrawCube(float3& size, float3& pos) const
