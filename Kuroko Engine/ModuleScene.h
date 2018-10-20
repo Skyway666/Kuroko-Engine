@@ -8,6 +8,7 @@ class GameObject;
 class Material;
 class Mesh;
 class Texture;
+class Skybox;
 
 enum GameState { STOPPED, PAUSED, PLAYING};
 
@@ -45,14 +46,13 @@ public:
 	void deleteTexture(Texture* tex)		{ textures_to_delete.push_back(tex); };
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
-	std::list<GameObject*>	game_objects; // To set texture from importer
 private:
 	
 	void DrawGrid() const;
 
 private:
 
-
+	std::list<GameObject*>	game_objects; 
 	std::list<Material*>	materials;
 	std::list<Mesh*>		meshes;
 	std::list<Texture*>		textures;
@@ -62,12 +62,13 @@ private:
 	std::list<Mesh*>		meshes_to_delete;
 	std::list<Texture*>		textures_to_delete;
 
+	Skybox* skybox			= nullptr;
 	GameState game_state	= STOPPED;
 public:
 
-
 	GameObject* selected_obj	= nullptr;
 	bool draw_grid				= true;
+
 	uint last_mat_id			= 0;
 	uint last_gobj_id			= 0;
 	uint last_mesh_id			= 0;

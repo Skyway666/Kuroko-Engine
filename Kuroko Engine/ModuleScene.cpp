@@ -5,19 +5,18 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "ModuleInput.h"
+#include "GameObject.h"		
+#include "Skybox.h"
 
-#include "GameObject.h"			// <--  testing purposes
-#include "ModuleImporter.h"	// <--  testing purposes
-#include "ModuleDebug.h" // <--  testing purposes
 #include "glmath.h"
-
+#include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
-
+#include <array>
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -29,7 +28,15 @@ ModuleScene::~ModuleScene(){}
 // Load assets
 bool ModuleScene::Start()
 {
-
+	skybox = new Skybox();
+	std::array<Texture*, 6> skybox_texs;
+	skybox_texs[LEFT]	= (Texture*)App->importer->Import("skybox_default_left.png", I_TEXTURE);
+	skybox_texs[RIGHT]	= (Texture*)App->importer->Import("skybox_default_right.png", I_TEXTURE);
+	skybox_texs[UP]		= (Texture*)App->importer->Import("skybox_default_up.png", I_TEXTURE);
+	skybox_texs[DOWN]	= (Texture*)App->importer->Import("skybox_default_down.png", I_TEXTURE);
+	skybox_texs[FRONT]	= (Texture*)App->importer->Import("skybox_default_front.png", I_TEXTURE);
+	skybox_texs[BACK]	= (Texture*)App->importer->Import("skybox_default_back.png", I_TEXTURE);
+	skybox->setAllTextures(skybox_texs);
 	return true;
 }
 
@@ -104,9 +111,13 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
+	if (skybox)
+	{
+		skybox->updatePosition(float3(App->camera->editor_camera->Position.x , App->camera->editor_camera->Position.y, App->camera->editor_camera->Position.z));
+		skybox->Draw();
+	}
 
-	if (draw_grid)
-		DrawGrid();
+	if (draw_grid)	DrawGrid();
 
 	std::list<GameObject*> root_objs;
 	getRootObjs(root_objs);
@@ -114,8 +125,6 @@ update_status ModuleScene::Update(float dt)
 	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
 		(*it)->Update(dt);
 
-	//Just for assigment one
-	//game_objects.back()->Update(dt);
 
 	return UPDATE_CONTINUE;
 }

@@ -8,7 +8,7 @@
 #include "ComponentTransform.h"
 #include "ModuleRenderer3D.h"
 
-#define CAM_SPEED_CONST 1.5f
+#define CAM_SPEED_CONST 2.5f
 #define CAM_ROT_SPEED_CONST 0.25f
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -152,6 +152,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 float4x4 ModuleCamera3D::CreatePerspMat(float fov, float width, float height, float near_plane, float far_plane)
 {
+	far_plane = 2500.0f;
 	float4x4 Perspective = float4x4::zero;
 	float aspect_ratio = width / height;
 

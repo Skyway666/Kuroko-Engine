@@ -91,7 +91,7 @@ bool ModuleRenderer3D::Init(const JSON_Object& config)
 			ret = false;
 		}
 		
-		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat LightModelAmbient[] = {0.75f, 0.75f, 0.75f, 1.0f};
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
 		
 		lights[0].ref = GL_LIGHT0;
@@ -113,8 +113,7 @@ bool ModuleRenderer3D::Init(const JSON_Object& config)
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		lights[0].Active(true);
-		//glEnable(GL_LIGHTING);
-		glDisable(GL_LIGHTING);
+		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
 		glEnable(GL_TEXTURE_2D);
 

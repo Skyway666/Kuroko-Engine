@@ -196,14 +196,19 @@ void GameObject::calculateCentroidandHalfsize()
 
 	float4x4 inh_transform = ((ComponentTransform*)getComponent(TRANSFORM))->getInheritedTransform();
 
-	if (lowest_p.Equals(float3::inf) || highest_p.Equals(-float3::inf))
+	if (!lowest_p.IsFinite() || !highest_p.IsFinite())
+	{
 		centroid = float3::zero;
+		half_size = float3::zero;
+	}
 	else
+	{
 		centroid = float3(((lowest_p + highest_p) * 0.5f) + inh_transform.TranslatePart());
+		half_size = highest_p;
+		float3 inh_scale = inh_transform.GetScale();
+		half_size = { half_size.x * inh_scale.x, half_size.y * inh_scale.y , half_size.z * inh_scale.z };
+	}
 
-	float3 inh_scale = inh_transform.GetScale();
-	half_size = highest_p;
-	half_size = { half_size.x * inh_scale.x, half_size.y * inh_scale.y , half_size.z * inh_scale.z };
 }
 
 
@@ -218,27 +223,31 @@ void GameObject::getInheritedHalfsizeAndCentroid(float3& out_half_size, float3& 
 
 	for (std::list<GameObject*>::iterator it = descendants.begin(); it != descendants.end(); it++)
 	{
-		ComponentTransform* transform = (ComponentTransform*)(*it)->getComponent(TRANSFORM);
+		float4x4 mat = ((ComponentTransform*)(*it)->getComponent(TRANSFORM))->getInheritedTransform();
 		math::OBB temp_obb;
+		
+		float3x3 rot = mat.RotatePart();
+		temp_obb.axis[0] = rot * float3(1.0f, 0.0f, 0.0f);
+		temp_obb.axis[1] = rot * float3(0.0f, 1.0f, 0.0f);
+		temp_obb.axis[2] = rot * float3(0.0f, 0.0f, 1.0f);
 
-		temp_obb.axis[0] = transform->Right();
-		temp_obb.axis[1] = transform->Up();
-		temp_obb.axis[2] = transform->Forward();
 		temp_obb.r = (*it)->getHalfsize();
-		temp_obb.pos = float3::zero;
+		float3 scl = mat.GetScale();
+		temp_obb.r = { temp_obb.r.x * scl.x, temp_obb.r.y * scl.y, temp_obb.r.z * scl.z};
+		temp_obb.pos = mat.TranslatePart();
 
 		float3 corners[8];
 		temp_obb.GetCornerPoints(corners);
 
 		for (int i = 0; i < 8; i++)
 		{
-			if (lowest_p.x > ((*it)->getCentroid().x - corners[i].x))  lowest_p.x = (*it)->getCentroid().x - corners[i].x;
-			if (lowest_p.y > ((*it)->getCentroid().y - corners[i].y))  lowest_p.y = (*it)->getCentroid().y - corners[i].y;
-			if (lowest_p.z > ((*it)->getCentroid().z - corners[i].z))  lowest_p.z = (*it)->getCentroid().z - corners[i].z;
+			if (lowest_p.x > corners[i].x)  lowest_p.x = corners[i].x;
+			if (lowest_p.y > corners[i].y)  lowest_p.y = corners[i].y;
+			if (lowest_p.z > corners[i].z)  lowest_p.z = corners[i].z;
 
-			if (highest_p.x < ((*it)->getCentroid().x + corners[i].x)) highest_p.x = (*it)->getCentroid().x + corners[i].x;
-			if (highest_p.y < ((*it)->getCentroid().y + corners[i].y)) highest_p.y = (*it)->getCentroid().y + corners[i].y;
-			if (highest_p.z < ((*it)->getCentroid().z + corners[i].z)) highest_p.z = (*it)->getCentroid().z + corners[i].z;
+			if (highest_p.x < corners[i].x) highest_p.x = corners[i].x;
+			if (highest_p.y < corners[i].y) highest_p.y = corners[i].y;
+			if (highest_p.z < corners[i].z) highest_p.z = corners[i].z;
 
 		}
 	}

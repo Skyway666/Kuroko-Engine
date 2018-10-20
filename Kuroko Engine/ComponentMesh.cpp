@@ -24,7 +24,7 @@ void ComponentMesh::Draw() const
 		mesh->DrawNormals();
 
 	if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else													glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	mesh->Draw(mat);
 

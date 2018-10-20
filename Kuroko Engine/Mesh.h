@@ -24,7 +24,8 @@ struct Tri{
 };
 
 class Mesh {
-
+	
+	friend class Skybox;
 public:
 	Mesh(const aiMesh& mesh);
 	Mesh(PrimitiveTypes primitive);

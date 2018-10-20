@@ -88,7 +88,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 
 			if (imported_scene)
 			{
-				App->scene->CleanUp();
 				std::vector<uint> mat_id;
 				LoadMaterials(*imported_scene, mat_id);
 				GameObject* root_obj = LoadMeshRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
