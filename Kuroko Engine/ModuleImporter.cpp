@@ -10,6 +10,7 @@
 #include "ModuleAudio.h"
 #include "Camera.h"
 #include "FileSystem.h"
+#include "Timer.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -79,6 +80,8 @@ bool ModuleImporter::CleanUp()
 void* ModuleImporter::Import(const char* file, ImportType expected_filetype) 
 {
 	std::string extension = PathFindExtensionA(file);
+	Timer load_time;
+	load_time.Start();
 
 	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
 	{
@@ -96,7 +99,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 
 				App->scene->selected_obj = root_obj;
 				App->camera->editor_camera->FitToSizeSelectedGeometry(); 
-				app_log->AddLog("Success loading file: %s", file);
+				app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
 
 				return root_obj;
 			}
@@ -110,6 +113,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
 				ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
 				mesh_object->addComponent(c_mesh);
+				app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
 			}
 
 		}
