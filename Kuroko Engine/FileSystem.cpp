@@ -31,14 +31,14 @@ void FileSystem::ExportBuffer(char * data, int size, const char * file_name, lib
 	}
 	path.append(file_name);
 	std::ofstream file;
-	file.open(path);
+	file.open(path, std::fstream::out | std::fstream::binary);
 	file.write(data, size);
 	file.close();
 }
 
 char * FileSystem::ImportFile(const char * file_name) {
 	std::ifstream file;
-	file.open(file_name);
+	file.open(file_name, std::fstream::out | std::fstream::binary);
 	// get length of file:
 	file.seekg(0, file.end);
 	int size = file.tellg();
