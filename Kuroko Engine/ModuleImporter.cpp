@@ -97,19 +97,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				App->camera->editor_camera->FitToSizeSelectedGeometry(); 
 				app_log->AddLog("Success loading file: %s", file);
 
-				//Load childs to own file format (maybe it should be done in loadmeshrecursive)
-				std::list<GameObject*> childs;
-				root_obj->getChildren(childs);
-				for(auto it = childs.begin(); it != childs.end(); it++){
-				Mesh* mesh = nullptr;
-				ComponentMesh* c_mesh = (ComponentMesh*)(*it)->getComponent(MESH);
-				if (c_mesh)
-					mesh = c_mesh->getMesh();
-				if (mesh)
-					ExportMeshToKR(file, mesh);
-				}
-
-
 				return root_obj;
 			}
 			else
@@ -210,7 +197,7 @@ void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_
 
 }
 
-GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent) const
+GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent) 
 {
 	GameObject* root_obj = new GameObject(node.mName.C_Str(), parent);
 
@@ -225,6 +212,7 @@ GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene&
 			c_m->setMaterial(mat);
 		}
 		root_obj->addComponent(c_m);
+		ExportMeshToKR(node.mName.C_Str(), mesh);
 		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
@@ -251,26 +239,26 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	header[0] = vert_num;
 	header[1] = poly_count;
 	if (has_normals)
-		header[2] = poly_count;
+		header[2] = vert_num;
 	else
 		header[2] = 0;
 	if (has_colors)
-		header[3] = poly_count;
+		header[3] = vert_num;
 	else
 		header[3] = 0;
 	if (has_texcoords)
-		header[4] = poly_count;
+		header[4] = vert_num;
 	else
 		header[4] = 0;
 
 	// Knowing the size of the file, we can create the buffer in which it all will be stored
 	uint size = sizeof(header) + sizeof(float3)*vert_num + sizeof(Tri)*poly_count;
 	if (has_normals)
-		size += sizeof(float3)*poly_count;
+		size += sizeof(float3)*vert_num;
 	if (has_colors)
-		size += sizeof(float3)*poly_count;
+		size += sizeof(float3)*vert_num;
 	if (has_texcoords)
-		size += sizeof(float2)*poly_count;
+		size += sizeof(float2)*vert_num;
 	char* data = new char[size];
 	char* cursor = data;
 
@@ -294,34 +282,33 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 
 	// Tris
 	bytes = sizeof(Tri)*poly_count;
-	memcpy(cursor, vertices, bytes);
+	memcpy(cursor, tris, bytes);
 	cursor += bytes;
 
 	// Normals
 	if (has_normals) {
-		bytes = sizeof(float3)*poly_count;
+		bytes = sizeof(float3)*vert_num;
 		memcpy(cursor, normals, bytes);
 		cursor += bytes;
 	}
 
 	// Colors
 	if (has_colors) {
-		bytes = sizeof(float3)*poly_count;
+		bytes = sizeof(float3)*vert_num;
 		memcpy(cursor, colors, bytes);
 		cursor += bytes;
 	}
 
 	// Tex coords
 	if (has_texcoords) {
-		bytes = sizeof(float2)*poly_count;
+		bytes = sizeof(float2)*vert_num;
 		memcpy(cursor, tex_coords, bytes);
-		cursor += bytes;
 	}
 	
 	std::string filename = file;
 	getFileNameFromPath(filename);
 	filename.append(".kr"); // This is the file extension of this engine TODO: Store it in a variable
-	App->fs->ExportBuffer(data, size, filename.c_str());
+	App->fs->ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES);
 	app_log->AddLog("Saved %s as own file format", filename.c_str()); // TODO: Tell in which folder was it loaded
 
 	delete data;
@@ -361,7 +348,7 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read the header
 	uint header[5];
 	uint bytes = sizeof(header);
-	memcpy(header, buffer, bytes);
+	memcpy(header, cursor, bytes);
 	num_vertices = header[0];
 	num_tris = header[1];
 	if (header[2] > 0)
@@ -390,8 +377,8 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read normals (if any)
 	if(imported_normals){
 	// Read tris
-	bytes = sizeof(float3)*num_tris;
-	normals = new float3[num_tris];
+	bytes = sizeof(float3)*num_vertices;
+	normals = new float3[num_vertices];
 	memcpy(normals, cursor, bytes);
 	// Increment cursor
 	cursor += bytes;
@@ -400,8 +387,8 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	// Read colors (if any)
 	if (imported_colors) {
 		// Read tris
-		bytes = sizeof(float3)*num_tris;
-		colors = new float3[num_tris];
+		bytes = sizeof(float3)*num_vertices;
+		colors = new float3[num_vertices];
 		memcpy(colors, cursor, bytes);
 		// Increment cursor
 		cursor += bytes;
@@ -413,8 +400,6 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 		bytes = sizeof(float2)*num_vertices;
 		tex_coords = new float2[num_vertices];
 		memcpy(tex_coords, cursor, bytes);
-		// Increment cursor
-		cursor += bytes;
 	}
 	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);

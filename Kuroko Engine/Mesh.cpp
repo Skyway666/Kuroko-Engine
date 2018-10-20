@@ -494,8 +494,11 @@ void Mesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& ha
 void Mesh::getNumbers(float3*& _vertices, Tri*& _tris, float3*& _normals, float3*& _colors, float2*& _tex_coords) const {
 	_vertices = vertices;
 	_tris = tris;
-	_normals = normals;
+	if(imported_normals)
+		_normals = normals;
+	if(imported_colors)
 	_colors = colors;
+	if(imported_tex_coords)
 	_tex_coords = tex_coords;
 }
 
