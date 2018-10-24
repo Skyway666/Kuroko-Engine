@@ -2,11 +2,6 @@
 
 
 // Quadtree
-template<class PRIMITIVE>
-Quadtree<PRIMITIVE>::Quadtree() {
-}
-
-
 template<typename PRIMITIVE>
 Quadtree<PRIMITIVE>::Quadtree(AABB limits) {
 }
@@ -42,11 +37,10 @@ void Quadtree<PRIMITIVE>::Intersect(std::list<GameObject*> objects, PRIMITIVE pr
 
 }
 
-
 // Quadtree node
 template<class PRIMITIVE>
 QuadTreeNode<PRIMITIVE>::QuadTreeNode(AABB limits) {
-
+	box = limits;
 }
 
 
@@ -56,14 +50,12 @@ QuadTreeNode<PRIMITIVE>::QuadTreeNode(AABB limits, std::list<GameObject*> object
 }
 
 template<class PRIMITIVE>
-QuadTreeNode<PRIMITIVE>::CollectIntersections(std::list<GameObject*> objects, PRIMITIVE primitive) {
+void QuadTreeNode<PRIMITIVE>::CollectIntersections(std::list<GameObject*> objects, const PRIMITIVE& primitive) {
 
 }
 
 
 template<class PRIMITIVE>
-QuadTreeNode<PRIMITIVE>::Split() {
+void QuadTreeNode<PRIMITIVE>::Split() {
 
 }
-
-
