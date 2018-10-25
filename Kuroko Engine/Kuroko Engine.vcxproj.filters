@@ -52,6 +52,9 @@
     <Filter Include="Sources\Helpers\PCG Random">
       <UniqueIdentifier>{281b94b6-c907-4efb-b15a-94a6ca675fe5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers">
+      <UniqueIdentifier>{77481df1-a35f-4080-a7c6-fc4670d02993}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -366,7 +369,9 @@
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="Quadtree.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -567,7 +572,9 @@
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="Quadtree.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Math\Matrix.inl">
