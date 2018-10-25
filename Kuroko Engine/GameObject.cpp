@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Random.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
@@ -8,10 +9,11 @@
 #include "Applog.h"
 
 
-GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++)
+GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits())
 {
 	addComponent(TRANSFORM);
 	App->scene->addGameObject(this);
+	
 }
 
 GameObject::~GameObject()

@@ -65,6 +65,7 @@ private:
 	float3 half_size = float3::zero;
 
 	const uint id = 0;
+	const uint uuid = 0;
 
 public:
 
