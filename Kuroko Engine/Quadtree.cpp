@@ -104,7 +104,7 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
 	if (!box.Contains(obj->getCentroid()))
 		return false;
 
-	if (objects.size() < bucket_size)
+	if (objects.size() < bucket_size) // WARNING: Should be checking if "is_leaf" before trying to add anything
 		objects.push_back(obj);				// If the bucket size accepts another object we add it
 	else {
 		if (is_leaf) {							// If it has no children, create and make it not be a leaf
