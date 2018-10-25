@@ -5,8 +5,7 @@
 #include "Globals.h"
 #include "Light.h"
 
-#include "MathGeoLib\Math\float3x3.h"
-#include "MathGeoLib\Math\float4x4.h"
+#include "Math.h"
 
 #include <list>
 
@@ -29,6 +28,7 @@ public:
 	SDL_GLContext getContext() const	{ return context; }
 
 	void DirectDrawCube(float3& size, float3& pos) const;
+	void DrawDirectAABB(AABB aabb) const;
 
 private:
 

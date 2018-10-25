@@ -219,3 +219,34 @@ void ModuleRenderer3D::DirectDrawCube(float3& size, float3& pos) const
 
 }
 
+void ModuleRenderer3D::DrawDirectAABB(AABB aabb) const {
+
+	float3 lowest_p = { aabb.minPoint.x, aabb.minPoint.y,aabb.minPoint.z };
+	float3 highest_p = { aabb.maxPoint.x, aabb.maxPoint.y,aabb.maxPoint.z };
+
+	glLineWidth(1.5f);
+
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINES);
+
+	glVertex3f(lowest_p.x, lowest_p.y, lowest_p.z);		glVertex3f(highest_p.x, lowest_p.y, lowest_p.z);
+	glVertex3f(lowest_p.x, lowest_p.y, lowest_p.z);		glVertex3f(lowest_p.x, highest_p.y, lowest_p.z);
+	glVertex3f(highest_p.x, lowest_p.y, lowest_p.z);	glVertex3f(highest_p.x, highest_p.y, lowest_p.z);
+	glVertex3f(lowest_p.x, highest_p.y, lowest_p.z);	glVertex3f(highest_p.x, highest_p.y, lowest_p.z);
+
+	glVertex3f(highest_p.x, highest_p.y, highest_p.z);  glVertex3f(lowest_p.x, highest_p.y, highest_p.z);
+	glVertex3f(highest_p.x, highest_p.y, highest_p.z);  glVertex3f(highest_p.x, lowest_p.y, highest_p.z);
+	glVertex3f(lowest_p.x, highest_p.y, highest_p.z);	glVertex3f(lowest_p.x, lowest_p.y, highest_p.z);
+	glVertex3f(highest_p.x, lowest_p.y, highest_p.z);	glVertex3f(lowest_p.x, lowest_p.y, highest_p.z);
+
+	glVertex3f(lowest_p.x, lowest_p.y, lowest_p.z);		glVertex3f(lowest_p.x, lowest_p.y, highest_p.z);
+	glVertex3f(highest_p.x, highest_p.y, lowest_p.z);	glVertex3f(highest_p.x, highest_p.y, highest_p.z);
+	glVertex3f(highest_p.x, lowest_p.y, lowest_p.z);	glVertex3f(highest_p.x, lowest_p.y, highest_p.z);
+	glVertex3f(lowest_p.x, highest_p.y, lowest_p.z);	glVertex3f(lowest_p.x, highest_p.y, highest_p.z);
+
+	glEnd();
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glLineWidth(1.0f);
+}
+

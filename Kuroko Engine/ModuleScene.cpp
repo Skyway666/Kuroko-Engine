@@ -8,6 +8,7 @@
 #include "GameObject.h"		
 #include "Camera.h"
 #include "Skybox.h"
+#include "Quadtree.h"
 
 #include "glmath.h"
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
@@ -30,6 +31,7 @@ ModuleScene::~ModuleScene(){}
 bool ModuleScene::Start()
 {
 	skybox = new Skybox();
+
 	std::array<Texture*, 6> skybox_texs;
 	skybox_texs[LEFT]	= (Texture*)App->importer->Import("skybox_default_left.png", I_TEXTURE);
 	skybox_texs[RIGHT]	= (Texture*)App->importer->Import("skybox_default_right.png", I_TEXTURE);
@@ -38,6 +40,10 @@ bool ModuleScene::Start()
 	skybox_texs[FRONT]	= (Texture*)App->importer->Import("skybox_default_front.png", I_TEXTURE);
 	skybox_texs[BACK]	= (Texture*)App->importer->Import("skybox_default_back.png", I_TEXTURE);
 	skybox->setAllTextures(skybox_texs);
+
+	// TEST FOR QUADTREE
+	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)));
+	// TEST FOR QUADTREE
 	return true;
 }
 
@@ -72,6 +78,9 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::PostUpdate(float dt)
 {
+	// TEST FOR QUADTREE
+	quadtree->DebugDraw();
+	// TEST FOR QUADTREE
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
 		if (*it == selected_obj) selected_obj = nullptr;

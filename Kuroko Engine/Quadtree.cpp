@@ -1,76 +1,70 @@
 #include "Quadtree.h"
 #include "GameObject.h"
+#include "Application.h"
+#include "ModuleRenderer3D.h"
 
 
 // Quadtree
-template<typename PRIMITIVE>
-Quadtree<PRIMITIVE>::Quadtree(AABB limits, int max_splits, int bucket_size): max_splits(max_splits), bucket_size(bucket_size) {
+
+Quadtree::Quadtree(AABB limits, int max_splits, int bucket_size): max_splits(max_splits), bucket_size(bucket_size) {
 	Create(limits);
 }
 
-template<typename PRIMITIVE> // Adaptive (not for now)
-Quadtree<PRIMITIVE>::Quadtree(std::list<GameObject*> objects) {
+
+Quadtree::Quadtree(std::list<GameObject*> objects) { // Adaptive (not for now)
 
 }
 
-template<class PRIMITIVE>
-Quadtree<PRIMITIVE>::~Quadtree() {
+
+Quadtree::~Quadtree() {
 	delete root; // Make sure to delete childs if any when had
 }
 
-template<class PRIMITIVE>
-void Quadtree<PRIMITIVE>::Create(AABB limits) {
-	root = new QuadTreeNode<PRIMITIVE>(limits);
+
+void Quadtree::Create(AABB limits) {
+	root = new QuadTreeNode(limits);
 }
 
-template<class PRIMITIVE> // Adaptive (not for now)
-void Quadtree<PRIMITIVE>::Create(std::list<GameObject*> objects) {
+void Quadtree::Create(std::list<GameObject*> objects) { // Adaptive (not for now)
 }
 
-template<class PRIMITIVE>
-bool Quadtree<PRIMITIVE>::Insert(GameObject* object) {
-	return root->AddObject(object);
+
+bool Quadtree::Insert(GameObject* object) {
+	return root->AddObject(object, bucket_size);
 }
 
-template<class PRIMITIVE>
-void Quadtree<PRIMITIVE>::Fill(std::list<GameObject*> objects) {
+
+void Quadtree::Fill(std::list<GameObject*> objects) {
 	for (auto it = objects.begin(); it != objects.end(); it++)
 		Insert(*it);
 }
+//
+//template<class PRIMITIVE>
+//void Quadtree::Intersect(std::list<GameObject*>& objects, PRIMITIVE primitive) {
+//
+//}
 
-template<class PRIMITIVE>
-void Quadtree<PRIMITIVE>::Intersect(std::list<GameObject*>& objects, PRIMITIVE primitive) {
 
-}
-
-template<class PRIMITIVE>
-void Quadtree<PRIMITIVE>::DebugDraw() {
-
+void Quadtree::DebugDraw() {
+	root->Draw();
 }
 
 // Quadtree node
-template<class PRIMITIVE>
-QuadTreeNode<PRIMITIVE>::QuadTreeNode(AABB limits) {
+QuadTreeNode::QuadTreeNode(AABB limits) {
 	box = limits;
 	is_leaf = true;
+	for (int i = 0; i < 4; i++)
+		childs[i] = nullptr;
 }
 
-
-template<class PRIMITIVE> // Constructor to create childs
-QuadTreeNode<PRIMITIVE>::QuadTreeNode(AABB limits, std::list<GameObject*> objects) {
-
-
-}
-
-template<class PRIMITIVE>
-void QuadTreeNode<PRIMITIVE>::CollectIntersections(std::list<GameObject*>& objects, const PRIMITIVE& primitive) {
+//template<class PRIMITIVE>
+//void QuadTreeNode<PRIMITIVE>::CollectIntersections(std::list<GameObject*>& objects, const PRIMITIVE& primitive) {
+//
+//
+//}
 
 
-}
-
-
-template<class PRIMITIVE>
-void QuadTreeNode<PRIMITIVE>::Split() {
+void QuadTreeNode::Split() {
 
 	// Top left
 	float quarter_x = box.HalfSize().x / 2;
@@ -82,28 +76,27 @@ void QuadTreeNode<PRIMITIVE>::Split() {
 	float3 new_centre;
 
 	// Top left
-	new_centre = box.Centroid + float3(-quarter_x, 0, quarter_y);
+	new_centre = box.Centroid() + float3(-quarter_x, 0, quarter_y);
 	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
-	childs[0] = new QuadTreeNode<PRIMITIVE>(split_box);
+	childs[0] = new QuadTreeNode(split_box);
 
 	// Top right
-	new_centre = box.Centroid + float3(quarter_x, 0, quarter_y);
+	new_centre = box.Centroid() + float3(quarter_x, 0, quarter_y);
 	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
-	childs[1] = new QuadTreeNode<PRIMITIVE>(split_box);
+	childs[1] = new QuadTreeNode(split_box);
 
 	//Bottom left
-	new_centre = box.Centroid + float3(-quarter_x, 0, -quarter_y);
+	new_centre = box.Centroid() + float3(-quarter_x, 0, -quarter_y);
 	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
-	childs[2] = new QuadTreeNode<PRIMITIVE>(split_box);
+	childs[2] = new QuadTreeNode(split_box);
 
 	//Bottom right
-	new_centre = box.Centroid + float3(quarter_x, 0, -quarter_y);
+	new_centre = box.Centroid() + float3(quarter_x, 0, -quarter_y);
 	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
-	childs[3] = new QuadTreeNode<PRIMITIVE>(split_box);
+	childs[3] = new QuadTreeNode(split_box);
 }
 
-template<class PRIMITIVE>
-bool QuadTreeNode<PRIMITIVE>::AddObject(GameObject * obj, int bucket_size) {
+bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
 
 	// If the gameobject is not in this node we do nothing
 	if (!box.Contains(obj->getCentroid()))
@@ -112,7 +105,7 @@ bool QuadTreeNode<PRIMITIVE>::AddObject(GameObject * obj, int bucket_size) {
 	if (objects.size() < bucket_size)
 		objects.push_back(obj);				// If the bucket size accepts another object we add it
 	else {
-		is_leaf = false						
+		is_leaf = false;
 		Split();							// If not we split the node, which makes it not be a leaf anymore, 
 
 		for (auto it = objects.begin(); it != objects.end(); it++) 
@@ -131,7 +124,14 @@ bool QuadTreeNode<PRIMITIVE>::AddObject(GameObject * obj, int bucket_size) {
 
 }
 
-template<class PRIMITIVE>
-int QuadTreeNode<PRIMITIVE>::getNumObj() {
+int QuadTreeNode::getNumObj() {
 	return objects.size();
+}
+
+void QuadTreeNode::Draw() {
+	App->renderer3D->DrawDirectAABB(box);
+
+	for (int i = 0; i < 4; i++)
+		if (childs[i]) childs[i]->Draw();
+	
 }

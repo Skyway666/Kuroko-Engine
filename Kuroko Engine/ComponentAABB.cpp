@@ -1,6 +1,8 @@
 #include "ComponentAABB.h"
 #include "ComponentMesh.h"
 #include "GameObject.h"
+#include "Application.h"
+#include "ModuleRenderer3D.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ComponentTransform.h"
@@ -80,33 +82,7 @@ bool ComponentAABB::Update(float dt)
 
 void ComponentAABB::DrawAABB() const
 {
-	float3 lowest_p = { aabb->minPoint.x, aabb->minPoint.y,aabb->minPoint.z };
-	float3 highest_p = { aabb->maxPoint.x, aabb->maxPoint.y,aabb->maxPoint.z };
-
-	glLineWidth(1.5f);
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_LINES);
-
-	glVertex3f(lowest_p.x, lowest_p.y, lowest_p.z);		glVertex3f(highest_p.x, lowest_p.y, lowest_p.z);
-	glVertex3f(lowest_p.x, lowest_p.y, lowest_p.z);		glVertex3f(lowest_p.x, highest_p.y, lowest_p.z);
-	glVertex3f(highest_p.x, lowest_p.y, lowest_p.z);	glVertex3f(highest_p.x, highest_p.y, lowest_p.z);
-	glVertex3f(lowest_p.x, highest_p.y, lowest_p.z);	glVertex3f(highest_p.x, highest_p.y, lowest_p.z);
-
-	glVertex3f(highest_p.x, highest_p.y, highest_p.z);  glVertex3f(lowest_p.x, highest_p.y, highest_p.z);
-	glVertex3f(highest_p.x, highest_p.y, highest_p.z);  glVertex3f(highest_p.x, lowest_p.y, highest_p.z);
-	glVertex3f(lowest_p.x, highest_p.y, highest_p.z);	glVertex3f(lowest_p.x, lowest_p.y, highest_p.z);
-	glVertex3f(highest_p.x, lowest_p.y, highest_p.z);	glVertex3f(lowest_p.x, lowest_p.y, highest_p.z);
-
-	glVertex3f(lowest_p.x, lowest_p.y, lowest_p.z);		glVertex3f(lowest_p.x, lowest_p.y, highest_p.z);
-	glVertex3f(highest_p.x, highest_p.y, lowest_p.z);	glVertex3f(highest_p.x, highest_p.y, highest_p.z);
-	glVertex3f(highest_p.x, lowest_p.y, lowest_p.z);	glVertex3f(highest_p.x, lowest_p.y, highest_p.z);
-	glVertex3f(lowest_p.x, highest_p.y, lowest_p.z);	glVertex3f(lowest_p.x, highest_p.y, highest_p.z);
-
-	glEnd();
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-	glLineWidth(1.0f);
+	App->renderer3D->DrawDirectAABB(*aabb);
 }
 
 void ComponentAABB::DrawOBB() const

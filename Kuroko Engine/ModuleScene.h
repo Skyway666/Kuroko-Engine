@@ -2,6 +2,7 @@
 #define __MODULE_SCENE
 #include "Module.h"
 #include "MathGeoLib\MathGeoLib.h"
+#include "MathGeoLib\Geometry\Frustum.h"
 #include <list>
 
 class GameObject; 
@@ -9,6 +10,7 @@ class Material;
 class Mesh;
 class Texture;
 class Skybox;
+class Quadtree;
 
 enum GameState { STOPPED, PAUSED, PLAYING};
 
@@ -63,6 +65,7 @@ private:
 	std::list<Texture*>		textures_to_delete;
 
 	Skybox* skybox			= nullptr;
+	Quadtree * quadtree		= nullptr;
 	GameState game_state	= STOPPED;
 public:
 
