@@ -107,8 +107,10 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
 	if (objects.size() < bucket_size)
 		objects.push_back(obj);				// If the bucket size accepts another object we add it
 	else {
-		is_leaf = false;
-		Split();							// If not we split the node, which makes it not be a leaf anymore, 
+		if (is_leaf) {							// If it has no children, create and make it not be a leaf
+			is_leaf = false;
+			Split();			
+		}
 
 		for (auto it = objects.begin(); it != objects.end(); it++) 
 			for (int i = 0; i < 4; i++)
