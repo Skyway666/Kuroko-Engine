@@ -17,6 +17,7 @@ Quadtree::Quadtree(std::list<GameObject*> objects) { // Adaptive (not for now)
 
 
 Quadtree::~Quadtree() {
+	
 	delete root; // Make sure to delete childs if any when had
 }
 
@@ -71,28 +72,29 @@ void QuadTreeNode::Split() {
 	float quarter_y = box.HalfSize().z / 2;
 	float3 centre = box.CenterPoint();
 
-	
+
 	AABB split_box;
 	float3 new_centre;
+	float3 new_box_size = float3(box.HalfSize().x, box.HalfSize().y * 2, box.HalfSize().z);
 
 	// Top left
 	new_centre = box.Centroid() + float3(-quarter_x, 0, quarter_y);
-	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
+	split_box.SetFromCenterAndSize(new_centre, new_box_size);
 	childs[0] = new QuadTreeNode(split_box);
 
 	// Top right
 	new_centre = box.Centroid() + float3(quarter_x, 0, quarter_y);
-	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
+	split_box.SetFromCenterAndSize(new_centre, new_box_size);
 	childs[1] = new QuadTreeNode(split_box);
 
 	//Bottom left
 	new_centre = box.Centroid() + float3(-quarter_x, 0, -quarter_y);
-	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
+	split_box.SetFromCenterAndSize(new_centre, new_box_size);
 	childs[2] = new QuadTreeNode(split_box);
 
 	//Bottom right
 	new_centre = box.Centroid() + float3(quarter_x, 0, -quarter_y);
-	split_box.SetFromCenterAndSize(new_centre, box.HalfSize());
+	split_box.SetFromCenterAndSize(new_centre, new_box_size);
 	childs[3] = new QuadTreeNode(split_box);
 }
 
