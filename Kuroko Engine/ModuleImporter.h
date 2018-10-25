@@ -29,10 +29,7 @@ public:
 	void ExportTextureToDDS();
 	Mesh* ImportMeshFromKR(const char* file);
 
-	// Useful functions to work with paths
-	bool removeExtension(std::string& str);
-	bool removePath(std::string& str);
-	void getFileNameFromPath(std::string& str);
+
 
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;

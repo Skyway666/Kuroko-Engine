@@ -311,9 +311,8 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	}
 	
 	std::string filename = file;
-	getFileNameFromPath(filename);
-	filename.append(".kr"); // This is the file extension of this engine TODO: Store it in a variable
-	App->fs->ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES);
+	App->fs->getFileNameFromPath(filename);
+	App->fs->ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
 	app_log->AddLog("Saved %s as own file format", filename.c_str()); // TODO: Tell in which folder was it loaded
 
 	delete data;
@@ -410,23 +409,4 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
 }
 
-bool ModuleImporter::removeExtension(std::string& str) {
-	size_t lastdot = str.find_last_of(".");
-	if (lastdot == std::string::npos)
-		return false;
-	str = str.substr(0, lastdot);
-	return true;
-}
 
-bool ModuleImporter::removePath(std::string& str) {
-	const size_t last_slash_idx = str.find_last_of("\\/");
-	if (last_slash_idx == std::string::npos ) 
-		return false;
-	str = str.erase(0, last_slash_idx + 1);
-	return true;
-}
-
-void ModuleImporter::getFileNameFromPath(std::string & str) {
-	removeExtension(str);
-	removePath(str);
-}
