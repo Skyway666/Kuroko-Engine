@@ -294,7 +294,7 @@ void ModuleUI::DrawObjectInspectorTab()
 			show_rename = true;
 
 		ImGui::SameLine();
-		if (ImGui::Button("Delete")) 
+		if (ImGui::Button("Delete") || App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 			App->scene->deleteGameObject(selected_obj);
 
 
