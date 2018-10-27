@@ -2,20 +2,29 @@
 #define _COMPONENT_CAMERA_H_
 
 #include "Component.h"
+#include "MathGeoLib\Math\float3.h"
 
 class Camera;
+class ComponentTransform;
 
 class ComponentCamera : public Component
 {
 public:
-	ComponentCamera(GameObject* parent, Camera* camera) : Component(parent, C_AABB) {};
-	~ComponentCamera();
+	ComponentCamera(GameObject* parent, Camera* camera);
+	~ComponentCamera() {};
 
-	bool Update(float dt);
+	//bool Update(float dt);
+	Camera* getCamera() const { return camera; };
+
+public:
+
+	bool inherit_rotation = false;
+	float3 offset = float3::zero;
 
 private:
 
 	Camera* camera = nullptr;
+	ComponentTransform* transform = nullptr;
 
 };
 

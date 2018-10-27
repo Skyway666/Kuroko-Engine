@@ -57,27 +57,27 @@ float4x4 ComponentTransform::getModelViewMatrix()
 	return mat;
 }
 
+float3 ComponentTransform::Right() const
+{
+	float3 right = float3::unitX;
+	right = rotation * right;
+	return right;
+}
 
 float3 ComponentTransform::Forward() const
 {
-	float3 forward = { 0.0f, 0.0f, 1.0f };
+	float3 forward = float3::unitZ;
 	forward = rotation * forward;
 	return forward;
 }
 
 float3 ComponentTransform::Up() const
 {
-	float3 up = { 0.0f, 1.0f, 0.0f };
+	float3 up = float3::unitY;
 	up = rotation * up;
 	return up;
 }
 
-float3 ComponentTransform::Right() const
-{
-	float3 right = { 1.0f, 0.0f, 0.0f };
-	right = rotation * right;
-	return right;
-}
 
 void ComponentTransform::setPosition(const float3& pos)		{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
 void ComponentTransform::Translate(const float3& dir)		{ position += dir;	getParent()->calculateCentroidandHalfsize(); };

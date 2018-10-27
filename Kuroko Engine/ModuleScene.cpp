@@ -10,7 +10,6 @@
 #include "Skybox.h"
 #include "Quadtree.h"
 
-#include "glmath.h"
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 
 #include "SDL\include\SDL_opengl.h"

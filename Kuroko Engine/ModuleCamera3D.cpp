@@ -16,7 +16,7 @@
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "camera";
-	editor_camera = new Camera(CreatePerspMat());
+	editor_camera = new Camera(CreatePerspMat(),  float3(0.0, 2.0f, 5.0f), float3::zero);
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -53,7 +53,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Movement
 	Camera aux = *editor_camera;
 
-	vec3 newPos(0, 0, 0);
+	float3 newPos = float3::zero;
 	float speed = CAM_SPEED_CONST * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) 
@@ -88,10 +88,10 @@ update_status ModuleCamera3D::Update(float dt)
 		int dy = -App->input->GetMouseYMotion();
 
 		float module = 0.0f;
-		vec3 X = editor_camera->X; vec3 Y = editor_camera->Y; vec3 Z = editor_camera->Z;
+		float3 X = editor_camera->X; float3 Y = editor_camera->Y; float3 Z = editor_camera->Z;
 
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			module = length(editor_camera->Reference - editor_camera->Position);
+			module = (editor_camera->Reference - editor_camera->Position).Length();
 		else
 		{
 			editor_camera->LookAtSelectedGeometry();
@@ -100,23 +100,23 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (dx)
 		{
-			X = rotate(X, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, dx * CAM_ROT_SPEED_CONST, vec3(0.0f, 1.0f, 0.0f));
+			X = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * X;
+			Y = Quat::RotateY( dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
+			Z = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
 		}
 
 		if (dy)
 		{
-			Y = rotate(Y, dy * CAM_ROT_SPEED_CONST, X);
-			Z = rotate(Z, dy * CAM_ROT_SPEED_CONST, X);
-
+			Y = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
+			Z = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
+			
 			if (Y.y < 0.0f)
 			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
+				Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				Y = Z.Cross(X);
 			}
 		}
-
+		
 		if (!IsNan(-X.x) && !IsNan(-Y.x) && !IsNan(-Z.x))
 		{
 			editor_camera->X = X; editor_camera->Y = Y; editor_camera->Z = Z;
@@ -125,7 +125,7 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
 			editor_camera->Reference = editor_camera->Position - editor_camera->Z * module;
 		else
-			editor_camera->Position = editor_camera->Reference + editor_camera->Z * length(editor_camera->Position);
+			editor_camera->Position = editor_camera->Reference + editor_camera->Z * editor_camera->Position.Length();
 	}
 
 	// Zooming
@@ -134,11 +134,11 @@ update_status ModuleCamera3D::Update(float dt)
 	{
 		if (mouse_z > 0)
 		{
-			if(length(editor_camera->Reference - editor_camera->Position) > 1.0f)
-				editor_camera->Position -= editor_camera->Z * (0.3f + (length(editor_camera->Reference - editor_camera->Position) / 20));
+			if((editor_camera->Reference - editor_camera->Position).Length() > 1.0f)
+				editor_camera->Position -= editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->Position).Length() / 20));
 		}
 		else															
-			editor_camera->Position += editor_camera->Z * (0.3f + (length(editor_camera->Reference - editor_camera->Position) / 20));
+			editor_camera->Position += editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->Position).Length() / 20));
 	}
 	
 	// Focus 

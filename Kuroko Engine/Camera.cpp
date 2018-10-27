@@ -8,20 +8,20 @@
 Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)
 {
 	ProjectionMatrix = projection_matrix;
-	Position = { position.x, position.y, position.z };
-	LookAt(vec3(reference.x, reference.y, reference.z));
+	Position = position;
+	LookAt(reference);
 }
 
 
 // -----------------------------------------------------------------
-void Camera::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
+void Camera::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
 {
 	this->Position = Position;
 	this->Reference = Reference;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	Z = (Position - Reference).Normalized();
+	X = float3::unitY.Cross(Z).Normalized();
+	Y = Z.Cross(X);
 
 	if (!RotateAroundReference)
 	{
@@ -33,13 +33,13 @@ void Camera::Look(const vec3 &Position, const vec3 &Reference, bool RotateAround
 }
 
 // -----------------------------------------------------------------
-void Camera::LookAt(const vec3 &Spot)
+void Camera::LookAt(const float3 &Spot)
 {
 	Reference = Spot;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	Z = (Position - Reference).Normalized();
+	X = float3::unitY.Cross(Z).Normalized();
+	Y = Z.Cross(X);
 
 	CalculateViewMatrix();
 
@@ -47,7 +47,7 @@ void Camera::LookAt(const vec3 &Spot)
 
 
 // -----------------------------------------------------------------
-void Camera::Move(const vec3 &Movement)
+void Camera::Move(const float3 &Movement)
 {
 	Position += Movement;
 	Reference += Movement;
@@ -64,7 +64,7 @@ float* Camera::GetViewMatrix() const
 // -----------------------------------------------------------------
 void Camera::CalculateViewMatrix()
 {
-	float4x4 matrix(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
+	float4x4 matrix(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -Position.Dot(X), -Position.Dot(Y), -Position.Dot(Z), 1.0f);
 	ViewMatrix = matrix;
 }
 
@@ -74,7 +74,7 @@ void Camera::LookAtSelectedGeometry()
 	{
 		float3 centroid = float3::zero;
 		selected_obj->getInheritedHalfsizeAndCentroid(float3(), centroid);
-		LookAt(vec3(centroid.x, centroid.y, centroid.z));
+		LookAt(centroid);
 	}
 }
 
@@ -89,20 +89,20 @@ void Camera::FitToSizeSelectedGeometry(float distance)
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
 
 		Position = { new_pos.x, new_pos.y, new_pos.z };
-		LookAt(vec3(centroid.x, centroid.y, centroid.z));
+		LookAt(centroid);
 	}
 	else
-		LookAt(vec3(0, 0, 0));
+		LookAt(float3::zero);
 }
 
 void Camera::Reset()
 {
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
+	Position = float3(1.0f, 1.0f, 5.0f);
+	Reference = float3(0.0f, 0.0f, 0.0f);
 
-	Position = vec3(1.0f, 1.0f, 5.0f);
-	Reference = vec3(0.0f, 0.0f, 0.0f);
+	Z = (Position - Reference).Normalized();
+	X = float3::unitY.Cross(Z).Normalized();
+	Y = Z.Cross(X);
 
 	LookAt(Reference);
 }
