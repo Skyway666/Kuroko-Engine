@@ -18,7 +18,7 @@ Quadtree::Quadtree(std::list<GameObject*> objects) { // Adaptive (not for now)
 
 Quadtree::~Quadtree() {
 	
-	CleanUp();// Make sure to delete childs if any when had
+	delete root;
 }
 
 
@@ -39,16 +39,15 @@ void Quadtree::Fill(std::list<GameObject*> objects) {
 	for (auto it = objects.begin(); it != objects.end(); it++)
 		Insert(*it);
 }
-void Quadtree::CleanUp() {
-	delete root;
-}
 void Quadtree::Empty() {
 	root->objects.clear();
 	if (!root->is_leaf) {
 		for (int i = 0; i < 4; i++) {
 			delete root->childs[i];
+			root->childs[i] = nullptr;
 		}
 	}
+	root->is_leaf = true;
 }
 
 template<class PRIMITIVE>

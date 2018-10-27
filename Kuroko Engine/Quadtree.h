@@ -34,7 +34,6 @@ public:
 	void Create(std::list<GameObject*> objects);	  // Adaptive(not for now)
 	bool Insert(GameObject* object);			  // Insert an object into the quadtree so it blends to fit it
 	void Fill(std::list<GameObject*> objects);    //Multiple "Inserts" at once
-	void CleanUp();
 	void Empty();
 	void DebugDraw();
 	QuadTreeNode* root; // Root of the quadtree

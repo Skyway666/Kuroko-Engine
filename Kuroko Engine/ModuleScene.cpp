@@ -42,7 +42,7 @@ bool ModuleScene::Start()
 	skybox->setAllTextures(skybox_texs);
 
 	// TEST FOR QUADTREE
-	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)), 8, 2);
+	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)));
 	// TEST FOR QUADTREE
 	return true;
 }
@@ -87,6 +87,10 @@ update_status ModuleScene::PostUpdate(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
 		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 			quadtree->Insert(*it);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) {
+		quadtree->Empty();
 	}
 	// TEST FOR QUADTREE
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
