@@ -41,6 +41,8 @@ bool GameObject::Update(float dt)
 			app_log->AddLog("error in gameobject %s", name.c_str());
 	}
 
+	
+
 	return ret;
 }
 

@@ -18,8 +18,8 @@ struct QuadTreeNode {
 	bool is_leaf = true;
 	std::list<GameObject*> objects;
 
-/*	template<class PRIMITIVE>
-	void CollectIntersections(std::list<GameObject*>& found_obj, const PRIMITIVE& primitive); */// See what intersections the nodes have
+	template<class PRIMITIVE>
+	void CollectIntersections(std::list<GameObject*>& found_obj, const PRIMITIVE& primitive); // See what intersections the nodes have
 };
 
 
@@ -40,9 +40,9 @@ public:
 	QuadTreeNode* root; // Root of the quadtree
 	int max_splits; 	// How many splits allowed (not used for now)
 	int bucket_size;	// How much items can be held in a QuadTreeNode
-/*
+
 	template<class PRIMITIVE>
-	void Intersect(std::list<GameObject*>& objects, PRIMITIVE primitive); */	// objects: List to be filled
+	void Intersect(std::list<GameObject*>& found_obj, PRIMITIVE primitive); 	// objects: List to be filled
 };
 
 
