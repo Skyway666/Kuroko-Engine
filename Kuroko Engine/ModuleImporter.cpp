@@ -313,7 +313,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	std::string filename = file;
 	App->fs->getFileNameFromPath(filename);
 	App->fs->ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
-	app_log->AddLog("Saved %s as own file format", filename.c_str()); // TODO: Tell in which folder was it loaded
+	app_log->AddLog("Saved %s as own file format", filename.c_str());
 
 	delete data;
 }

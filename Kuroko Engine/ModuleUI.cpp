@@ -300,11 +300,8 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
 		ImGui::SameLine();
-		if (ImGui::Checkbox("Static", &selected_obj->is_static)) {
-			// TEST FOR QUADTREE
-			App->scene->quadtree->Insert(selected_obj);
-			// TEST FOR QUADTREE
-		}
+		ImGui::Checkbox("Static", &selected_obj->is_static);
+		
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
@@ -508,7 +505,7 @@ bool ModuleUI::DrawComponent(Component& component)
 		}
 		break;
 	case TRANSFORM:
-		if (ImGui::CollapsingHeader("Transform"))
+		if (ImGui::CollapsingHeader("Transform") && !component.getParent()->isStatic()) // Don't allow to modify transform if the object is static
 		{
 			ImGui::Text("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
 			ComponentTransform* transform = (ComponentTransform*)&component;

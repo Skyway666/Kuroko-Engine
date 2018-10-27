@@ -17,7 +17,6 @@ Quadtree::Quadtree(std::list<GameObject*> objects) { // Adaptive (not for now)
 
 
 Quadtree::~Quadtree() {
-	
 	delete root;
 }
 
@@ -151,9 +150,7 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
 			if (childs[i]->AddObject(obj, bucket_size))				// If a child can already hold the object break the loop
 				break;												
 		
-		// TODO 1: Make that when the maximum number of splits is reach, the bucket size stop mattering
-
-		// TODO 2: This function could be optimized ignoring the nodes which can contain the gameobject before calling the function
+		// TODO : Make that when the maximum number of splits is reach, the bucket size stop mattering
 	}
 	return true;
 
