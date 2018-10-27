@@ -104,21 +104,23 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
 	if (!box.Contains(obj->getCentroid()))
 		return false;
 
-	if (objects.size() < bucket_size) // WARNING: Should be checking if "is_leaf" before trying to add anything
-		objects.push_back(obj);				// If the bucket size accepts another object we add it
+	if(is_leaf && objects.size() < bucket_size)// If the bucket size accepts another object and it is a leaf
+		objects.push_back(obj);				
 	else {
-		if (is_leaf) {							// If it has no children, create and make it not be a leaf
+		if (is_leaf) {						// If it is a leaf with its bucket size full, we crate children and empty the object list into them
 			is_leaf = false;
-			Split();			
-		}
+			Split();		
+			for (auto it = objects.begin(); it != objects.end(); it++)
+				for (int i = 0; i < 4; i++)
+					if (childs[i]->AddObject(*it, bucket_size))		// If a child can already hold the object break the loop
+						break;
 
-		for (auto it = objects.begin(); it != objects.end(); it++) 
-			for (int i = 0; i < 4; i++)
-				childs[i]->AddObject(*it, bucket_size);				// We first fill the childs with the objects that this node contained
-		objects.clear();											// And clean the list
-		
+			objects.clear();
+		}
+											
 		for (int i = 0; i < 4; i++)									// We fill childs with the original object we wanted to add.
-			childs[i]->AddObject(obj, bucket_size);					// If not possible, the process will repeat again until it is.
+			if (childs[i]->AddObject(obj, bucket_size))				// If a child can already hold the object break the loop
+				break;												
 		
 		// TODO 1: Make that when the maximum number of splits is reach, the bucket size stop mattering
 

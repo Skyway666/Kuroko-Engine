@@ -31,6 +31,8 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
+#include "Quadtree.h"
+
 #pragma comment( lib, "glew-2.1.0/lib/glew32.lib")
 #pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
 
@@ -298,7 +300,11 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
 		ImGui::SameLine();
-		ImGui::Checkbox("Static", &selected_obj->is_static);
+		if (ImGui::Checkbox("Static", &selected_obj->is_static)) {
+			// TEST FOR QUADTREE
+			App->scene->quadtree->Insert(selected_obj);
+			// TEST FOR QUADTREE
+		}
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{

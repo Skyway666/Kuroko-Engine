@@ -117,7 +117,6 @@ bool ModuleRenderer3D::Init(const JSON_Object& config)
 
 bool ModuleRenderer3D::Start()
 {
-	App->importer->Import("BakerHouse.fbx");
 	return true;
 }
 
