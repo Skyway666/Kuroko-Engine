@@ -42,7 +42,7 @@ bool ModuleScene::Start()
 	skybox->setAllTextures(skybox_texs);
 
 	// TEST FOR QUADTREE
-	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)));
+	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)), 8, 2);
 	// TEST FOR QUADTREE
 	return true;
 }
@@ -71,6 +71,9 @@ bool ModuleScene::CleanUp()
 	materials_to_delete.clear();
 	meshes_to_delete.clear();
 	textures_to_delete.clear();
+
+	delete skybox;
+	delete quadtree;
 
 	selected_obj = nullptr;
 	return true;

@@ -18,7 +18,7 @@ Quadtree::Quadtree(std::list<GameObject*> objects) { // Adaptive (not for now)
 
 Quadtree::~Quadtree() {
 	
-	delete root; // Make sure to delete childs if any when had
+	CleanUp();// Make sure to delete childs if any when had
 }
 
 
@@ -39,6 +39,17 @@ void Quadtree::Fill(std::list<GameObject*> objects) {
 	for (auto it = objects.begin(); it != objects.end(); it++)
 		Insert(*it);
 }
+void Quadtree::CleanUp() {
+	delete root;
+}
+void Quadtree::Empty() {
+	root->objects.clear();
+	if (!root->is_leaf) {
+		for (int i = 0; i < 4; i++) {
+			delete root->childs[i];
+		}
+	}
+}
 //
 //template<class PRIMITIVE>
 //void Quadtree::Intersect(std::list<GameObject*>& objects, PRIMITIVE primitive) {
@@ -56,6 +67,15 @@ QuadTreeNode::QuadTreeNode(AABB limits) {
 	is_leaf = true;
 	for (int i = 0; i < 4; i++)
 		childs[i] = nullptr;
+}
+
+QuadTreeNode::~QuadTreeNode() {
+	// Make sure to delete children of deleted nodes
+	if (!is_leaf) {
+		for (int i = 0; i < 4; i++) {
+			delete childs[i];
+		}
+	}
 }
 
 //template<class PRIMITIVE>

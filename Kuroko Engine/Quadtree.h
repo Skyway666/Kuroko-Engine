@@ -7,7 +7,8 @@ class GameObject;
 
 struct QuadTreeNode {
 
-	QuadTreeNode(AABB limits); // Create nodes with no objects
+	QuadTreeNode(AABB limits); // Create nodes with no objectsç
+	~QuadTreeNode();
 	void Split(); // creates childs and passes them the objects contained on this one
 	bool AddObject(GameObject* obj, int bucket_size);
 	int getNumObj();
@@ -33,6 +34,8 @@ public:
 	void Create(std::list<GameObject*> objects);	  // Adaptive(not for now)
 	bool Insert(GameObject* object);			  // Insert an object into the quadtree so it blends to fit it
 	void Fill(std::list<GameObject*> objects);    //Multiple "Inserts" at once
+	void CleanUp();
+	void Empty();
 	void DebugDraw();
 	QuadTreeNode* root; // Root of the quadtree
 	int max_splits; 	// How many splits allowed (not used for now)
