@@ -3,6 +3,7 @@
 #include <fstream>
 
 
+
 FileSystem::FileSystem(Application* app, bool start_enabled):Module(app, start_enabled){
 	name = "FileSystem";
 }
@@ -15,22 +16,7 @@ void FileSystem::ExportBuffer(char * data, int size, const char * file_name, lib
 
 	// use CreateDirectory() to create folders at the beggining of the app
 	std::string path = "";
-	switch (lib) {
-		case LIBRARY_MESHES:
-			path = MESHES_FOLDER;
-			break;
-		case LIBRARY_MATERIALS:
-			path = MATERIALS_FOLDER;
-			break;
-		case LIBRARY_ANIMATIONS:
-			path = ANIMATIONS_FOLDER;
-			break;
-		case NO_LIB:
-			path = "";
-			break;
-	}
-	path.append(file_name);
-	path.append(extension);
+	FormFullPath(path, file_name, lib, extension);
 	std::ofstream file;
 	file.open(path, std::fstream::out | std::fstream::binary);
 	file.write(data, size);
@@ -48,6 +34,57 @@ char * FileSystem::ImportFile(const char * file_name) {
 	file.read(ret, size);
 
 	return ret;
+}
+
+
+void FileSystem::CreateEmptyFile(const char* file_name, lib_dir lib, const char* extension) {
+
+	std::string path = "";
+	FormFullPath(path, file_name, lib, extension);
+
+	std::ofstream file;
+	file.open(path);
+	file.close();
+}
+
+void FileSystem::DestroyFile(const char * file_name, lib_dir lib, const char * extension) {
+	std::string path = "";
+	FormFullPath(path, file_name, lib, extension);
+
+	remove(path.c_str());
+}
+
+bool FileSystem::ExistisFile(const char * file_name, lib_dir lib, const char * extension) {
+	std::string path = "";
+	FormFullPath(path, file_name, lib, extension);
+
+	std::ifstream file(path);
+	bool ret = file.good();
+	file.close();
+	return ret;
+}
+
+void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_dir lib, const char * extension) {
+
+	switch (lib) {
+	case LIBRARY_MESHES:
+		path = MESHES_FOLDER;
+		break;
+	case LIBRARY_MATERIALS:
+		path = MATERIALS_FOLDER;
+		break;
+	case LIBRARY_ANIMATIONS:
+		path = ANIMATIONS_FOLDER;
+		break;
+	case SETTINGS:
+		path = SETTINGS_FOLDER;
+		break;
+	case NO_LIB:
+		path = "";
+		break;
+	}
+	path.append(file_name);
+	path.append(extension);
 }
 
 bool FileSystem::removeExtension(std::string& str) {

@@ -76,13 +76,16 @@ bool Application::Init()
 	//JASON Stuff
 	JSON_Object* config;
 
-	config_file_name = "JSON Files/config.json";
-	custom_config_file_name = "JSON Files/custom_config.json";
+
+	config_file_name = "Settings/config.json";
+	custom_config_file_name = "Settings/custom_config.json";
+
+	bool custom_config = App->fs->ExistisFile("custom_config", SETTINGS, JSON_EXTENSION);
 
 	App = this;
 
 	// Check if there is editor saved data, load custom if there is, load default if there isn't
-	if (json_object_get_boolean(json_value_get_object(json_parse_file(custom_config_file_name.c_str())), "saved_data"))
+	if (custom_config)
 		config = json_value_get_object(json_parse_file(custom_config_file_name.c_str()));
 	else
 		config = json_value_get_object(json_parse_file(config_file_name.c_str()));
@@ -174,9 +177,11 @@ void Application::LoadDefaultConfig() {
 }
 
 void Application::SaveConfig_Real() {
-	JSON_Value* config = json_parse_file(custom_config_file_name.c_str());
 
-	json_object_set_boolean(json_object(config), "saved_data", true);
+	if (!App->fs->ExistisFile("custom_config", SETTINGS, JSON_EXTENSION))
+		App->fs->CreateEmptyFile(custom_config_file_name.c_str());
+
+	JSON_Value* config = json_value_init_object();
 
 	// Pass one object to each module
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); it++){
@@ -189,12 +194,7 @@ void Application::SaveConfig_Real() {
 }
 
 void Application::DeleteConfig_Real() {
-	JSON_Value* config = json_parse_file(custom_config_file_name.c_str());
-
-	json_object_clear(json_object(config));
-	json_object_set_boolean(json_object(config), "saved_data", false);
-
-	json_serialize_to_file(config, custom_config_file_name.c_str());
+	App->fs->DestroyFile(custom_config_file_name.c_str());
 }
 
 void Application::LoadDefaultConfig_Real() {
