@@ -165,24 +165,12 @@ bool Application::CleanUp()
 void Application::requestBrowser(std::string link) {
 	ShellExecute(NULL, "open", link.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
-
-void Application::SaveConfig() {
-	want_to_save_config = true;
-}
-void Application::DeleteConfig() {
-	want_to_delete_config = true;
-}
-void Application::LoadDefaultConfig() {
-	want_to_load_default_config = true;
-}
-
 void Application::SaveConfig_Real() {
 
 	if (!App->fs->ExistisFile("custom_config", SETTINGS, JSON_EXTENSION))
 		App->fs->CreateEmptyFile(custom_config_file_name.c_str());
 
 	JSON_Value* config = json_value_init_object();
-
 	// Pass one object to each module
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end(); it++){
 		JSON_Value* module_config = json_value_init_object();

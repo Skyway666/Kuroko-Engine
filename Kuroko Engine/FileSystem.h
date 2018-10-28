@@ -22,13 +22,14 @@ public:
 	FileSystem(Application* app, bool start_enabled = true);
 	~FileSystem();
 
-	// Pass the file only with extension and name
+	public:
 	void ExportBuffer(char* data,int size, const char* file_name, lib_dir lib = NO_LIB, const char* extension = ""); // get buffer from a file
 	char* ImportFile(const char* file_name); // recieve buffer from a file
 
 	void CreateEmptyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	void DestroyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	bool ExistisFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
+	private: 
 	// Useful functions to work with paths
 	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
 	bool removeExtension(std::string& str);

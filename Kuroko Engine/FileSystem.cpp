@@ -14,7 +14,6 @@ FileSystem::~FileSystem() {
 
 void FileSystem::ExportBuffer(char * data, int size, const char * file_name, lib_dir lib, const char* extension) {
 
-	// use CreateDirectory() to create folders at the beggining of the app
 	std::string path = "";
 	FormFullPath(path, file_name, lib, extension);
 	std::ofstream file;
@@ -30,6 +29,7 @@ char * FileSystem::ImportFile(const char * file_name) {
 	file.seekg(0, file.end);
 	int size = file.tellg();
 	file.seekg(0, file.beg);
+
 	char* ret = new char[size];
 	file.read(ret, size);
 
@@ -41,7 +41,6 @@ void FileSystem::CreateEmptyFile(const char* file_name, lib_dir lib, const char*
 
 	std::string path = "";
 	FormFullPath(path, file_name, lib, extension);
-
 	std::ofstream file;
 	file.open(path);
 	file.close();
@@ -50,7 +49,6 @@ void FileSystem::CreateEmptyFile(const char* file_name, lib_dir lib, const char*
 void FileSystem::DestroyFile(const char * file_name, lib_dir lib, const char * extension) {
 	std::string path = "";
 	FormFullPath(path, file_name, lib, extension);
-
 	remove(path.c_str());
 }
 

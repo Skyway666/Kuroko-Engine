@@ -32,6 +32,8 @@ ModuleScene::~ModuleScene(){}
 bool ModuleScene::Start()
 {
 	skybox = new Skybox();
+	want_save_scene = false;
+	want_load_scene = false;
 
 	std::array<Texture*, 6> skybox_texs;
 	skybox_texs[LEFT]	= (Texture*)App->importer->Import("skybox_default_left.png", I_TEXTURE);
@@ -142,6 +144,8 @@ update_status ModuleScene::PostUpdate(float dt)
 	textures_to_delete.clear();
 	meshes_to_delete.clear();
 
+	ManageSceneSaveLoad();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -247,6 +251,25 @@ void ModuleScene::DrawGrid() const
 
 	glEnd();
 
+}
+
+void ModuleScene::ManageSceneSaveLoad() {
+	if (want_save_scene) {
+		SaveScene();
+		want_save_scene = false;
+	}
+	if (want_load_scene) {
+		LoadScene();
+		want_load_scene = false;
+	}
+}
+
+void ModuleScene::SaveScene() {
+
+}
+
+void ModuleScene::LoadScene() {
+	
 }
 
 

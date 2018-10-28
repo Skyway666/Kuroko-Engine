@@ -46,9 +46,9 @@ public:
 	bool Init();
 	update_status Update();
 	bool CleanUp();
-	void SaveConfig();
-	void DeleteConfig();
-	void LoadDefaultConfig();
+	void SaveConfig() { want_to_save_config = true; }
+	void DeleteConfig() { want_to_delete_config = true; }
+	void LoadDefaultConfig() { want_to_load_default_config = true; }
 
 
 	void requestBrowser(std::string link);

@@ -51,7 +51,11 @@ public:
 private:
 	
 	void DrawGrid() const;
-
+	void AskSceneSave() {want_save_scene = true;}
+	void AskSceneLoad() {want_load_scene = true; }
+	void ManageSceneSaveLoad();
+	void SaveScene();
+	void LoadScene();
 private:
 
 	std::list<GameObject*>	game_objects; 
@@ -67,6 +71,8 @@ private:
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
 	GameState game_state	= STOPPED;
+	bool want_save_scene	= false;
+	bool want_load_scene	= false;
 public:
 
 	GameObject* selected_obj	= nullptr;
