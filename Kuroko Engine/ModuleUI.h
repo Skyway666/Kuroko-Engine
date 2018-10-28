@@ -34,7 +34,6 @@ public:
 	void DrawHierarchyNode(const GameObject& game_object, int& id) const;
 	void DrawObjectInspectorTab();
 	bool DrawComponent(Component& component);
-	void DrawCameraTab(Camera* camera);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab();
 	void DrawAboutWindow();

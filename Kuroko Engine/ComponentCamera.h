@@ -13,12 +13,14 @@ public:
 	ComponentCamera(GameObject* parent, Camera* camera);
 	~ComponentCamera() {};
 
-	//bool Update(float dt);
+	bool Update(float dt);
 	Camera* getCamera() const { return camera; };
 
 public:
 
-	bool inherit_rotation = false;
+	bool lock_rotationX = false;
+	bool lock_rotationY = false;
+	bool lock_rotationZ = false;
 	float3 offset = float3::zero;
 
 private:

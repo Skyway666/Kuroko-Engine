@@ -5,67 +5,44 @@
 #include "ComponentTransform.h"
 #include "ModuleScene.h"
 
-Camera::Camera(float4x4 projection_matrix, float3 position, float3 reference)
+Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, float hor_fov, float ver_fov)
 {
-	ProjectionMatrix = projection_matrix;
-	Position = position;
+
+	frustum = new Frustum();
+	frustum->pos = position;
+	frustum->front = float3::unitZ;
+	frustum->up = float3::unitY;
+	frustum->nearPlaneDistance = n_plane;
+	frustum->farPlaneDistance = f_plane;
+	frustum->type = PerspectiveFrustum;
+	frustum->orthographicHeight = ver_fov;				frustum->orthographicWidth = hor_fov;
+	frustum->verticalFov = DEGTORAD * ver_fov;			frustum->horizontalFov = DEGTORAD * hor_fov;
+
 	LookAt(reference);
+	updateFrustum();
 }
 
-
-// -----------------------------------------------------------------
-void Camera::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
-{
-	this->Position = Position;
-	this->Reference = Reference;
-
-	Z = (Position - Reference).Normalized();
-	X = float3::unitY.Cross(Z).Normalized();
-	Y = Z.Cross(X);
-
-	if (!RotateAroundReference)
-	{
-		this->Reference = this->Position;
-		this->Position += Z * 0.05f;
-	}
-
-	CalculateViewMatrix();
-}
 
 // -----------------------------------------------------------------
 void Camera::LookAt(const float3 &Spot)
 {
 	Reference = Spot;
 
-	Z = (Position - Reference).Normalized();
+	Z = (frustum->pos - Reference).Normalized();
 	X = float3::unitY.Cross(Z).Normalized();
 	Y = Z.Cross(X);
 
-	CalculateViewMatrix();
+	updateFrustum();
 
 }
 
 
-// -----------------------------------------------------------------
 void Camera::Move(const float3 &Movement)
 {
-	Position += Movement;
+	frustum->pos += Movement;
 	Reference += Movement;
 
-	CalculateViewMatrix();
-}
-
-// -----------------------------------------------------------------
-float* Camera::GetViewMatrix() const
-{
-	return (float*)ViewMatrix.v;
-}
-
-// -----------------------------------------------------------------
-void Camera::CalculateViewMatrix()
-{
-	float4x4 matrix(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -Position.Dot(X), -Position.Dot(Y), -Position.Dot(Z), 1.0f);
-	ViewMatrix = matrix;
+	updateFrustum();
 }
 
 void Camera::LookAtSelectedGeometry()
@@ -76,6 +53,8 @@ void Camera::LookAtSelectedGeometry()
 		selected_obj->getInheritedHalfsizeAndCentroid(float3(), centroid);
 		LookAt(centroid);
 	}
+
+	updateFrustum();
 }
 
 void Camera::FitToSizeSelectedGeometry(float distance)
@@ -88,21 +67,42 @@ void Camera::FitToSizeSelectedGeometry(float distance)
 		float3 new_pos = centroid + half_size + float3(distance, distance, distance);
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
 
-		Position = { new_pos.x, new_pos.y, new_pos.z };
+		frustum->pos = new_pos;
 		LookAt(centroid);
 	}
 	else
 		LookAt(float3::zero);
+
+	updateFrustum();
 }
 
 void Camera::Reset()
 {
-	Position = float3(1.0f, 1.0f, 5.0f);
+	frustum->pos = float3(1.0f, 1.0f, 5.0f);
 	Reference = float3(0.0f, 0.0f, 0.0f);
 
-	Z = (Position - Reference).Normalized();
+	Z = (frustum->pos - Reference).Normalized();
 	X = float3::unitY.Cross(Z).Normalized();
 	Y = Z.Cross(X);
 
 	LookAt(Reference);
+
+	updateFrustum();
+}
+
+
+void Camera::updateFrustum()
+{
+	frustum->front = -Z;
+	frustum->up = Y;
+}
+
+void  Camera::setFov(float hor_fov, float ver_fov)
+{
+	frustum->horizontalFov = hor_fov; frustum->verticalFov = ver_fov;
+}
+
+void  Camera::setPlaneDistance(float n_plane, float f_plane)
+{
+	frustum->nearPlaneDistance = n_plane; frustum->farPlaneDistance = f_plane;
 }

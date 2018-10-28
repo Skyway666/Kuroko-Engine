@@ -29,7 +29,6 @@ public:
 	bool Init(const JSON_Object& config);
 	update_status Update(float dt);
 	bool CleanUp();
-	float4x4 CreatePerspMat(float fov = 60.0f, float width = 1024.0f, float height = 768.0f, float near_plane = 0.125f, float far_plane = 1250.0f);
 	FrameBuffer* initFrameBuffer(uint size_x = 1024, uint size_y = 768);
 
 public:

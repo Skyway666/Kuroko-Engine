@@ -16,7 +16,7 @@
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "camera";
-	editor_camera = new Camera(CreatePerspMat(),  float3(0.0, 2.0f, 5.0f), float3::zero);
+	editor_camera = new Camera(float3(0.0, 2.0f, 5.0f), float3::zero);
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -91,11 +91,11 @@ update_status ModuleCamera3D::Update(float dt)
 		float3 X = editor_camera->X; float3 Y = editor_camera->Y; float3 Z = editor_camera->Z;
 
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			module = (editor_camera->Reference - editor_camera->Position).Length();
+			module = (editor_camera->Reference - editor_camera->getFrustum()->pos).Length();
 		else
 		{
 			editor_camera->LookAtSelectedGeometry();
-			editor_camera->Position -= editor_camera->Reference;
+			editor_camera->getFrustum()->pos -= editor_camera->Reference;
 		}
 
 		if (dx)
@@ -123,9 +123,9 @@ update_status ModuleCamera3D::Update(float dt)
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			editor_camera->Reference = editor_camera->Position - editor_camera->Z * module;
+			editor_camera->Reference = editor_camera->getFrustum()->pos - editor_camera->Z * module;
 		else
-			editor_camera->Position = editor_camera->Reference + editor_camera->Z * editor_camera->Position.Length();
+			editor_camera->getFrustum()->pos = editor_camera->Reference + editor_camera->Z * editor_camera->getFrustum()->pos.Length();
 	}
 
 	// Zooming
@@ -134,11 +134,11 @@ update_status ModuleCamera3D::Update(float dt)
 	{
 		if (mouse_z > 0)
 		{
-			if((editor_camera->Reference - editor_camera->Position).Length() > 1.0f)
-				editor_camera->Position -= editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->Position).Length() / 20));
+			if((editor_camera->Reference - editor_camera->getFrustum()->pos).Length() > 1.0f)
+				editor_camera->getFrustum()->pos -= editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->getFrustum()->pos).Length() / 20));
 		}
 		else															
-			editor_camera->Position += editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->Position).Length() / 20));
+			editor_camera->getFrustum()->pos += editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->getFrustum()->pos).Length() / 20));
 	}
 	
 	// Focus 
@@ -146,28 +146,9 @@ update_status ModuleCamera3D::Update(float dt)
 		editor_camera->FitToSizeSelectedGeometry();
 
 	// Recalculate matrix -------------
-	editor_camera->CalculateViewMatrix();
+	editor_camera->updateFrustum();
 
 	return UPDATE_CONTINUE;	
-}
-
-
-float4x4 ModuleCamera3D::CreatePerspMat(float fov, float width, float height, float near_plane, float far_plane)
-{
-	far_plane = 2500.0f;
-	float4x4 Perspective = float4x4::zero;
-	float aspect_ratio = width / height;
-
-	float coty = 1.0f / tan(fov * (float)M_PI / 360.0f);
-
-	Perspective.v[0][0] = coty / aspect_ratio;
-	Perspective.v[1][1] = coty;
-	Perspective.v[2][2] = (near_plane + far_plane) / (near_plane - far_plane);
-	Perspective.v[2][3] = -1.0f;
-	Perspective.v[3][2] = 2.0f * near_plane * far_plane / (near_plane - far_plane);
-	Perspective.v[3][3] = 0.0f;
-
-	return Perspective;
 }
 
 

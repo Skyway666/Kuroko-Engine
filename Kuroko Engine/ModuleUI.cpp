@@ -18,6 +18,7 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
+#include "ComponentCamera.h"
 #include "Camera.h"
 
 #include "Random.h"
@@ -306,7 +307,8 @@ void ModuleUI::DrawObjectInspectorTab()
 		if (ImGui::CollapsingHeader("Add component"))
 		{
 			//if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
-			if (ImGui::Button("Add AABB"))  selected_obj->addComponent(C_AABB);
+			if (ImGui::Button("Add AABB"))    selected_obj->addComponent(C_AABB);
+			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 		}
 
 		std::list<Component*> components;
@@ -511,7 +513,7 @@ bool ModuleUI::DrawComponent(Component& component)
 			ComponentTransform* transform = (ComponentTransform*)&component;
 
 			static float3 position;
-			static float3 rotation;
+			static float3 rotation;;
 			static float3 scale;
 
 			position = transform->position;
@@ -575,7 +577,6 @@ bool ModuleUI::DrawComponent(Component& component)
 			static bool aabb_active;
 			aabb_active = aabb->isActive();
 
-
 			if (ImGui::Checkbox("active AABB", &aabb_active))
 				aabb->setActive(aabb_active);
 
@@ -601,6 +602,63 @@ bool ModuleUI::DrawComponent(Component& component)
 				return false;
 		}
 		break;
+	case CAMERA:
+		if (ImGui::CollapsingHeader("Camera"))
+		{
+			ComponentCamera* camera = (ComponentCamera*)&component;
+
+			static bool camera_active;
+			camera_active = camera->isActive();
+
+
+			if (ImGui::Checkbox("active camera", &camera_active))
+				camera->setActive(camera_active);
+
+			if (camera_active)
+			{
+				static bool camera_lock_x_rot;		camera_lock_x_rot = camera->lock_rotationX;
+				static bool camera_lock_y_rot;		camera_lock_y_rot = camera->lock_rotationY;
+				static bool camera_lock_z_rot;		camera_lock_z_rot = camera->lock_rotationZ;
+
+				if (ImGui::Checkbox("Lock X rot", &camera_lock_x_rot))
+					camera->lock_rotationX = camera_lock_x_rot;
+
+				ImGui::SameLine();
+				if (ImGui::Checkbox("Lock Y rot", &camera_lock_y_rot))
+					camera->lock_rotationY = camera_lock_y_rot;
+
+				ImGui::SameLine();
+				if (ImGui::Checkbox("Lock Z rot", &camera_lock_z_rot))
+					camera->lock_rotationZ = camera_lock_z_rot;
+
+				static float3 offset;
+				offset = camera->offset;
+				ImGui::Text("Offset:");
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::DragFloat("o x", &offset.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::DragFloat("o y", &offset.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::DragFloat("o z", &offset.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
+
+				camera->offset = offset;
+
+				if (FrameBuffer* frame_buffer = camera->getCamera()->getFrameBuffer())
+				{
+					uint size_factor = frame_buffer->size_x / 256;
+					ImGui::ImageButton((void*)frame_buffer->depth_tex->gl_id, ImVec2(frame_buffer->size_x / size_factor, frame_buffer->size_y / size_factor), ImVec2(0, 1), ImVec2(1, 0), 2);
+				}
+				else camera->getCamera()->setFrameBuffer(App->camera->initFrameBuffer());
+			}
+
+			if (ImGui::Button("Remove camera"))
+				return false;
+		}
 	default:
 		break;
 	}
@@ -608,19 +666,7 @@ bool ModuleUI::DrawComponent(Component& component)
 	return true;
 }
 
-void ModuleUI::DrawCameraTab(Camera* camera)
-{
-	if (camera->frame_buffer)
-	{
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize;
-		ImGui::SetNextWindowSize(ImVec2(camera->frame_buffer->size_x + 10, camera->frame_buffer->size_y + 40));
-		ImGui::Begin("Game", nullptr, flags);
-		ImGui::ImageButton((void*)camera->frame_buffer->depth_tex->gl_id, ImVec2(camera->frame_buffer->size_x, camera->frame_buffer->size_y), ImVec2(0, 1), ImVec2(1, 0), 2);
-		ImGui::End();
-	}
-	else camera->frame_buffer = App->camera->initFrameBuffer();
-}
-//
+
 //void ModuleUI::DrawAudioTab()
 //{
 //	ImGui::Begin("Audio", &open_tabs[AUDIO]);

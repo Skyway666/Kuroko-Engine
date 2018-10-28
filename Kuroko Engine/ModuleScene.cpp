@@ -134,7 +134,7 @@ update_status ModuleScene::Update(float dt)
 {
 	if (skybox)
 	{
-		skybox->updatePosition(float3(App->camera->editor_camera->Position.x , App->camera->editor_camera->Position.y, App->camera->editor_camera->Position.z));
+		skybox->updatePosition(App->camera->editor_camera->getFrustum()->pos);
 		skybox->Draw();
 	}
 

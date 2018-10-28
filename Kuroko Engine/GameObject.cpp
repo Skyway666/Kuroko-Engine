@@ -3,9 +3,12 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
+#include "ComponentCamera.h"
+#include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
 #include "ModuleScene.h"
+#include "ModuleCamera3D.h"
 #include "Applog.h"
 
 
@@ -110,12 +113,22 @@ Component* GameObject::addComponent(Component_type type)
 			new_component = new ComponentAABB(this);
 			components.push_back(new_component);
 		}
+		break;
 	case TRANSFORM:
 		if (!getComponent(TRANSFORM))
 		{
 			new_component = new ComponentTransform(this);
 			components.push_back(new_component);
 		}
+		break;
+	case CAMERA:
+		if (!getComponent(CAMERA))
+		{
+			Camera* camera = new Camera();
+			new_component = new ComponentCamera(this, camera);
+			components.push_back(new_component);
+		}
+		break;
 	default:
 		break;
 	}
@@ -143,6 +156,10 @@ void GameObject::addComponent(Component* component)
 		break;
 	case TRANSFORM:
 		if (!getComponent(TRANSFORM))
+			components.push_back(component);
+		break;
+	case CAMERA:
+		if (!getComponent(CAMERA))
 			components.push_back(component);
 		break;
 	default:
