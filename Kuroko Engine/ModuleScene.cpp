@@ -9,6 +9,8 @@
 #include "Camera.h"
 #include "Skybox.h"
 #include "Quadtree.h"
+#include "ModuleRenderer3D.h"
+#include "Applog.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 
@@ -90,6 +92,20 @@ update_status ModuleScene::PostUpdate(float dt)
 
 	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) {
 		quadtree->Empty();
+	}
+
+	AABB coll_test;
+
+	coll_test.SetFromCenterAndSize(float3(20, 0, 20), float3(10, 10, 10));
+	App->renderer3D->DrawDirectAABB(coll_test);
+
+	std::list<GameObject*> collected;
+
+	quadtree->Intersect(collected, coll_test);
+
+	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+		for (auto it = collected.begin(); it != collected.end(); it++)
+			app_log->AddLog("Found %s in quadtree \n", (*it)->getName().c_str());
 	}
 	// TEST FOR QUADTREE
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
