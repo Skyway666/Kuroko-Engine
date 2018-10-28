@@ -6,7 +6,7 @@
 
 // Quadtree
 
-Quadtree::Quadtree(AABB limits, int max_splits, int bucket_size): max_splits(max_splits), bucket_size(bucket_size) {
+Quadtree::Quadtree(AABB limits, int bucket_size, int max_splits): bucket_size(bucket_size), max_splits(max_splits) {
 	root = new QuadTreeNode(limits);
 }
 
@@ -30,7 +30,7 @@ void Quadtree::Create(std::list<GameObject*> objects) { // Adaptive (not for now
 
 
 bool Quadtree::Insert(GameObject* object) {
-	return root->AddObject(object, bucket_size);
+	return root->AddObject(object, bucket_size, max_splits);
 }
 
 
@@ -63,6 +63,7 @@ void Quadtree::DebugDraw() {
 QuadTreeNode::QuadTreeNode(AABB limits) {
 	box = limits;
 	is_leaf = true;
+	node_depth = 0;
 	for (int i = 0; i < 4; i++)
 		childs[i] = nullptr;
 }
@@ -121,15 +122,21 @@ void QuadTreeNode::Split() {
 	new_centre = box.Centroid() + float3(quarter_x, 0, -quarter_y);
 	split_box.SetFromCenterAndSize(new_centre, new_box_size);
 	childs[3] = new QuadTreeNode(split_box);
+
+	// Set their node depth
+	for (int i = 0; i < 4; i++) {
+		childs[i]->node_depth = node_depth + 1;
+	}
+
 }
 
-bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
+bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size, int max_splits) {
 
 	// If the gameobject is not in this node we do nothing
 	if (!box.Contains(obj->getCentroid()))
 		return false;
 
-	if(is_leaf && objects.size() < bucket_size)// If the bucket size accepts another object and it is a leaf
+	if(is_leaf && (objects.size() < bucket_size || node_depth >= max_splits))// If the node is a leaf bucket size accepts another object or has reached its maximum depth
 		objects.push_back(obj);				
 	else {
 		if (is_leaf) {						// If it is a leaf with its bucket size full, we crate children and empty the object list into them
@@ -137,14 +144,14 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size) {
 			Split();		
 			for (auto it = objects.begin(); it != objects.end(); it++)
 				for (int i = 0; i < 4; i++)
-					if (childs[i]->AddObject(*it, bucket_size))		// If a child can already hold the object break the loop
+					if (childs[i]->AddObject(*it, bucket_size, max_splits))		// If a child can already hold the object break the loop
 						break;
 
 			objects.clear();
 		}
 											
 		for (int i = 0; i < 4; i++)									// We fill childs with the original object we wanted to add.
-			if (childs[i]->AddObject(obj, bucket_size))				// If a child can already hold the object break the loop
+			if (childs[i]->AddObject(obj, bucket_size, max_splits))				// If a child can already hold the object break the loop
 				break;												
 		
 		// TODO : Make that when the maximum number of splits is reach, the bucket size stop mattering

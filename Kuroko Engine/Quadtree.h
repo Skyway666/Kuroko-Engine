@@ -10,12 +10,13 @@ struct QuadTreeNode {
 	QuadTreeNode(AABB limits); // Create nodes with no objectsç
 	~QuadTreeNode();
 	void Split(); // creates childs and passes them the objects contained on this one
-	bool AddObject(GameObject* obj, int bucket_size);
+	bool AddObject(GameObject* obj, int bucket_size, int max_splits);
 	int getNumObj();
 	void Draw();
 	QuadTreeNode* childs[4];
 	AABB box;
 	bool is_leaf = true;
+	int node_depth = 0;
 	std::list<GameObject*> objects;
 
 	void CollectIntersections(std::list<GameObject*>& found_obj, const AABB& primitive); // See what intersections the nodes have //TODO: Use template
@@ -26,7 +27,7 @@ struct QuadTreeNode {
 
 class Quadtree {
 public:
-	Quadtree(AABB limits, int max_splits = 8, int bucket_size = 1);
+	Quadtree(AABB limits, int bucket_size = 1, int max_splits = 8);
 	Quadtree(std::list<GameObject*> objects);	  // Adaptive(not for now)
 	~Quadtree();
 	void Create(AABB limits); 	
