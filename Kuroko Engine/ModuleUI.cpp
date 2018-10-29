@@ -598,8 +598,6 @@ bool ModuleUI::DrawComponent(Component& component)
 					aabb->Reload();
 			}
 
-			if (ImGui::Button("Remove AABB"))
-				return false;
 		}
 		break;
 	case CAMERA:

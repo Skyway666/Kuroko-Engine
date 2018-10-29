@@ -16,6 +16,7 @@
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits())
 {
 	addComponent(TRANSFORM);
+	addComponent(C_AABB);
 	App->scene->addGameObject(this);
 	
 }
@@ -104,9 +105,7 @@ Component* GameObject::addComponent(Component_type type)
 	case MESH:		
 		new_component = new ComponentMesh(this); 
 		components.push_back(new_component);
-		calculateCentroidandHalfsize();
-		if (ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB))
-			aabb->Reload();
+		((ComponentAABB*)getComponent(C_AABB))->Reload();
 		break;
 	case C_AABB:	
 		if (!getComponent(C_AABB))
@@ -145,11 +144,7 @@ void GameObject::addComponent(Component* component)
 	{
 	case MESH:	
 		components.push_back(component);
-		calculateCentroidandHalfsize();
-		if(Mesh* mesh = ((ComponentMesh*)component)->getMesh())
-			((ComponentTransform*)getComponent(TRANSFORM))->setPosition((mesh->getCentroid()));
-		if (ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB))
-			aabb->Reload();
+		((ComponentAABB*)getComponent(C_AABB))->Reload();
 		break;
 	case C_AABB:
 		if (!getComponent(C_AABB))
@@ -173,108 +168,18 @@ void GameObject::removeComponent(Component* component)
 {
 	for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
 	{
-		if (component->getType() == TRANSFORM)
+		if (component->getType() == TRANSFORM || component->getType() == C_AABB)
 			continue;
-		if (*it == component)
+		else if (*it == component)
 		{
 			bool mesh = (component->getType() == MESH);
 			components.remove(component);
-			if (getComponent(C_AABB) && mesh)
-			{
-				calculateCentroidandHalfsize();
-				ComponentAABB* aabb = (ComponentAABB*)getComponent(C_AABB);
-				aabb->Reload();
-			}
+
+			if (component->getType() == MESH)
+				((ComponentAABB*)getComponent(C_AABB))->Reload();
+			
 			break;
 		}
 	}
 	
-}
-
-
-void GameObject::calculateCentroidandHalfsize()
-{
-	std::list<Component*> meshes;
-	getComponents(MESH, meshes);
-
-	float3 lowest_p = float3::inf;
-	float3 highest_p = -float3::inf;
-
-	for (std::list<Component*>::iterator it = meshes.begin(); it != meshes.end(); it++)
-	{
-		if (Mesh* mesh = ((ComponentMesh*)(*it))->getMesh())
-		{
-			float3 half_size = mesh->getHalfSize();
-
-			if (lowest_p.x > -half_size.x) lowest_p.x = -half_size.x;
-			if (lowest_p.y > -half_size.y) lowest_p.y = -half_size.y;
-			if (lowest_p.z > -half_size.z) lowest_p.z = -half_size.z;
-
-			if (highest_p.x < half_size.x) highest_p.x = half_size.x;
-			if (highest_p.y < half_size.y) highest_p.y = half_size.y;
-			if (highest_p.z < half_size.z) highest_p.z = half_size.z;
-		}
-	}
-
-	float4x4 inh_transform = ((ComponentTransform*)getComponent(TRANSFORM))->getInheritedTransform();
-
-	if (!lowest_p.IsFinite() || !highest_p.IsFinite())
-	{
-		centroid = float3::zero;
-		half_size = float3::zero;
-	}
-	else
-	{
-		centroid = float3(((lowest_p + highest_p) * 0.5f) + inh_transform.TranslatePart());
-		half_size = highest_p;
-		float3 inh_scale = inh_transform.GetScale();
-		half_size = { half_size.x * inh_scale.x, half_size.y * inh_scale.y , half_size.z * inh_scale.z };
-	}
-
-}
-
-
-
-void GameObject::getInheritedHalfsizeAndCentroid(float3& out_half_size, float3& out_centroid)
-{
-	std::list<GameObject*> descendants;
-	getAllDescendants(descendants);
-
-	float3 lowest_p = centroid - half_size;
-	float3 highest_p = centroid + half_size;
-
-	for (std::list<GameObject*>::iterator it = descendants.begin(); it != descendants.end(); it++)
-	{
-		float4x4 mat = ((ComponentTransform*)(*it)->getComponent(TRANSFORM))->getInheritedTransform();
-		math::OBB temp_obb;
-		
-		float3x3 rot = mat.RotatePart();
-		temp_obb.axis[0] = rot * float3(1.0f, 0.0f, 0.0f);
-		temp_obb.axis[1] = rot * float3(0.0f, 1.0f, 0.0f);
-		temp_obb.axis[2] = rot * float3(0.0f, 0.0f, 1.0f);
-
-		temp_obb.r = (*it)->getHalfsize();
-		float3 scl = mat.GetScale();
-		temp_obb.r = { temp_obb.r.x * scl.x, temp_obb.r.y * scl.y, temp_obb.r.z * scl.z};
-		temp_obb.pos = mat.TranslatePart();
-
-		float3 corners[8];
-		temp_obb.GetCornerPoints(corners);
-
-		for (int i = 0; i < 8; i++)
-		{
-			if (lowest_p.x > corners[i].x)  lowest_p.x = corners[i].x;
-			if (lowest_p.y > corners[i].y)  lowest_p.y = corners[i].y;
-			if (lowest_p.z > corners[i].z)  lowest_p.z = corners[i].z;
-
-			if (highest_p.x < corners[i].x) highest_p.x = corners[i].x;
-			if (highest_p.y < corners[i].y) highest_p.y = corners[i].y;
-			if (highest_p.z < corners[i].z) highest_p.z = corners[i].z;
-
-		}
-	}
-
-	out_centroid = (lowest_p + highest_p) * 0.5f;
-	out_half_size = highest_p - centroid;
-
 }

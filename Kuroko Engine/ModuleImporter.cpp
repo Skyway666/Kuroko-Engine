@@ -268,12 +268,11 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	char* cursor = data;
 
 	// Get the data
-	float3* vertices = nullptr;
-	Tri* tris = nullptr;
-	float3* normals = nullptr;
-	float3* colors = nullptr;
-	float2* tex_coords = nullptr;
-	mesh->getNumbers(vertices, tris, normals, colors, tex_coords);
+	const float3* vertices = mesh->getVertices();
+	const Tri* tris = mesh->getTris();
+	const float3* normals = mesh->getNormals();
+	const float3* colors = mesh->getColors();
+	const float2* tex_coords = mesh->getTexCoords();
 
 	// First we store the header
 	uint bytes = sizeof(header);

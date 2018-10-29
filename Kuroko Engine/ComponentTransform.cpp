@@ -79,7 +79,7 @@ float3 ComponentTransform::Up() const
 }
 
 
-void ComponentTransform::setPosition(const float3& pos)		{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Translate(const float3& dir)		{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::setScale(const float3& scl)		{ scale = scl;		getParent()->calculateCentroidandHalfsize(); };
-void ComponentTransform::Scale(const float3& scl)			{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z; getParent()->calculateCentroidandHalfsize(); };
+void ComponentTransform::setPosition(const float3& pos) { position = pos; };
+void ComponentTransform::Translate(const float3& dir)	{ position += dir; };
+void ComponentTransform::setScale(const float3& scl)	{ scale = scl; };
+void ComponentTransform::Scale(const float3& scl)		{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z;};

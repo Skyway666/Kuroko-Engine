@@ -37,10 +37,18 @@ public:
 	void DrawNormals() const;
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
-	void getNumbers(float3*& vertices, Tri*& tris, float3*& normals, float3*& colors, float2*& tex_coords) const;
 	float3 getHalfSize() const { return half_size; }
 	float3 getCentroid() const { return centroid; }
 	uint getId() const { return id; };
+
+	const float3* getVertices()		{ return vertices; }
+	const Tri* getTris()			{ return tris; }
+	const float3* getNormals()		{ return normals; }
+	const float3* getColors()		{ return colors; }
+	const float2* getTexCoords()	{ return tex_coords; }
+
+	uint getNumVertices() { return num_vertices; }
+	uint getNumTris() { return num_tris; }
 
 private:
 

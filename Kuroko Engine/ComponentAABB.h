@@ -14,7 +14,7 @@ class ComponentTransform;
 class ComponentAABB : public Component
 {
 public:
-	ComponentAABB(GameObject* parent) : Component(parent, C_AABB) { Reload(); };
+	ComponentAABB(GameObject* parent);
 	~ComponentAABB();
 
 	bool Update(float dt);

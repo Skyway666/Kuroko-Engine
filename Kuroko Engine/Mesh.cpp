@@ -475,11 +475,6 @@ void Mesh::calculateCentroidandHalfsize()
 	centroid = ((lowest_p + highest_p) * 0.5f);
 	half_size = highest_p - centroid;
 
-	if (vertices)
-	{
-		for (int i = 0; i < num_vertices; i++)
-			vertices[i] -= centroid;
-	}
 }
 
 void Mesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const
@@ -489,17 +484,6 @@ void Mesh::getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& ha
 	has_normals = imported_normals;
 	has_colors = imported_colors;
 	has_texcoords = imported_tex_coords;
-}
-
-void Mesh::getNumbers(float3*& _vertices, Tri*& _tris, float3*& _normals, float3*& _colors, float2*& _tex_coords) const {
-	_vertices = vertices;
-	_tris = tris;
-	if(imported_normals)
-		_normals = normals;
-	if(imported_colors)
-	_colors = colors;
-	if(imported_tex_coords)
-	_tex_coords = tex_coords;
 }
 
 void Mesh::ClearData()

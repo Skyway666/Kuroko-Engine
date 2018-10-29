@@ -152,16 +152,6 @@ update_status ModuleScene::Update(float dt)
 	{
 		skybox->updatePosition(App->camera->editor_camera->getFrustum()->pos);
 		skybox->Draw();
-
-		for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
-		{
-			if ((*it)->getFrameBuffer())
-			{
-				glBindFramebuffer(GL_FRAMEBUFFER, (*it)->getFrameBuffer()->id);
-				skybox->Draw();
-			}
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	if (draw_grid)	DrawGrid();

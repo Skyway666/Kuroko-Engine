@@ -10,7 +10,7 @@
 class GameObject
 {
 	friend class ComponentTransform;
-
+	friend class ComponentAABB;
 public:
 
 	GameObject(const char* name, GameObject* parent = nullptr);
@@ -37,10 +37,11 @@ public:
 	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* parent) { this->parent = parent; }// Can recieve nullptr
 
-	float3 getCentroid() const { return centroid; };
-	float3 getHalfsize() const { return half_size; };
+	float3 getCentroid() const { return centroid; };	// includes all childs
+	float3 getHalfsize() const { return half_size; };	// includes all childs
 
-	void getInheritedHalfsizeAndCentroid(float3& half_size, float3& centroid);
+	float3 getOwnCentroid() const { return own_centroid; };		// does not include childs
+	float3 getOwnHalfsize() const { return own_half_size; };	// does not include childs
 
 	bool isActive() const { return is_active; }
 	bool isStatic() const { return is_static; }
@@ -50,9 +51,6 @@ public:
 	void Rename(const char* new_name) { name = new_name; };
 	std::string getName() const { return name; };
 
-private: 
-	void calculateCentroidandHalfsize();
-
 private:
 
 	std::list<Component*> components;
@@ -61,8 +59,11 @@ private:
 
 	GameObject* parent = nullptr;
 
-	float3 centroid = float3::zero;
-	float3 half_size = float3::zero;
+	float3 centroid = float3::zero;		// includes all childs
+	float3 half_size = float3::zero;	// includes all childs
+
+	float3 own_centroid = float3::zero;		// does not include childs
+	float3 own_half_size = float3::zero;	// does not include childs
 
 	const uint id = 0;
 	const uint uuid = 0;

@@ -8,6 +8,14 @@
 #include "ComponentTransform.h"
 
 
+ComponentAABB::ComponentAABB(GameObject* parent) : Component(parent, C_AABB)
+{
+	aabb = new AABB();
+	obb = new OBB();
+
+	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
+}
+
 ComponentAABB::~ComponentAABB()
 {
 	if (aabb) delete aabb;
@@ -16,23 +24,33 @@ ComponentAABB::~ComponentAABB()
 
 void ComponentAABB::Reload()
 {
-	if (!obb)
-		obb = new OBB();
+	std::list<Component*> meshes;
+	getParent()->getComponents(MESH, meshes);
 
-	float3 half_size, centroid;
-	getParent()->getInheritedHalfsizeAndCentroid(half_size, centroid);
-	
-	obb->pos = centroid;
-	obb->r = half_size;
+	float3 min_point = float3::inf;
+	float3 max_point = -float3::inf;
 
-	transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM);
+	for (auto it = meshes.begin(); it != meshes.end(); it++)
+	{
+		Mesh* mesh = ((ComponentMesh*)(*it))->getMesh();
 
-	obb->axis[0] = transform->Right();
-	obb->axis[1] = transform->Up();
-	obb->axis[2] = transform->Forward();
+		if (min_point.x > (mesh->getCentroid() + mesh->getHalfSize()).x) min_point.x = (mesh->getCentroid() + mesh->getHalfSize()).x;
+		if (min_point.y > (mesh->getCentroid() + mesh->getHalfSize()).y) min_point.y = (mesh->getCentroid() + mesh->getHalfSize()).y;
+		if (min_point.z > (mesh->getCentroid() + mesh->getHalfSize()).z) min_point.z = (mesh->getCentroid() + mesh->getHalfSize()).z;
 
-	if (!aabb)
-		aabb = new AABB();
+		if (max_point.x < (mesh->getCentroid() - mesh->getHalfSize()).x) max_point.x = (mesh->getCentroid() - mesh->getHalfSize()).x;
+		if (max_point.y < (mesh->getCentroid() - mesh->getHalfSize()).y) max_point.y = (mesh->getCentroid() - mesh->getHalfSize()).y;
+		if (max_point.z < (mesh->getCentroid() - mesh->getHalfSize()).z) max_point.z = (mesh->getCentroid() - mesh->getHalfSize()).z;
+
+	}
+
+	if (min_point.IsFinite() && max_point.IsFinite())
+	{
+		getParent()->own_centroid = (min_point + max_point) / 2;
+		getParent()->own_half_size = max_point - getParent()->own_centroid;
+	}
+	else
+		getParent()->own_centroid = getParent()->own_half_size = float3::zero;
 
 	*aabb = obb->MinimalEnclosingAABB();
 }
@@ -41,48 +59,48 @@ bool ComponentAABB::Update(float dt)
 {
 	if (isActive())
 	{
-		bool update = false;
+		obb->pos = transform->getRotation() * getParent()->own_centroid + transform->getPosition();
+		obb->r = getParent()->own_half_size;
 
-		float3 inh_half_size, inh_centroid;
-		getParent()->getInheritedHalfsizeAndCentroid(inh_half_size, inh_centroid);
-
-		if (!inh_centroid.Equals(obb->pos))
-		{
-			obb->pos = inh_centroid;
-			update = true;
-		}
-
-		if (!transform->Right().Equals(obb->axis[0]))
-		{
-			obb->axis[0] = transform->Right();
-			obb->axis[1] = transform->Up();
-			obb->axis[2] = transform->Forward();
-
-			update = true;
-		}
-
-
-		if (!inh_half_size.Equals(obb->r))
-		{
-			obb->r = inh_half_size;
-			update = true;
-		}
-
-		if (update)
-			*aabb = obb->MinimalEnclosingAABB();
+		obb->axis[0] = transform->Right();
+		obb->axis[1] = transform->Up();
+		obb->axis[2] = transform->Forward();
 		
+		std::list<GameObject*> children;
+		getParent()->getChildren(children);
+
+		for (auto it = children.begin(); it != children.end(); it++)
+		{
+			OBB* child_obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->obb;
+			for (int i = 0; i < 8; i++)
+				obb->Enclose(child_obb->CornerPoint(i));
+		}
+
+		*aabb = obb->MinimalEnclosingAABB();
 		
-		if (draw_aabb)
-			DrawAABB();
-		if (draw_obb)
-			DrawOBB();
+		if (draw_aabb)	DrawAABB();
+		if (draw_obb)	DrawOBB();
 	}
 	return true;
 }
 
 void ComponentAABB::DrawAABB() const
 {
-	App->renderer3D->DrawDirectAABB(*aabb);
+	glLineWidth(1.5f);
+
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINES);
+
+	for (int i = 0; i < 12; i++)
+	{
+		glVertex3f(aabb->Edge(i).a.x, aabb->Edge(i).a.y, aabb->Edge(i).a.z);		
+		glVertex3f(aabb->Edge(i).b.x, aabb->Edge(i).b.y, aabb->Edge(i).b.z);
+	}
+
+	glEnd();
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glLineWidth(1.0f);
 }
 
 void ComponentAABB::DrawOBB() const
@@ -93,7 +111,10 @@ void ComponentAABB::DrawOBB() const
 	glBegin(GL_LINES);
 
 	for (int i = 0; i < 12; i++)
-		{ glVertex3f(obb->Edge(i).a.x, obb->Edge(i).a.y, obb->Edge(i).a.z);		glVertex3f(obb->Edge(i).b.x, obb->Edge(i).b.y, obb->Edge(i).b.z); }
+	{
+		glVertex3f(obb->Edge(i).a.x, obb->Edge(i).a.y, obb->Edge(i).a.z);
+		glVertex3f(obb->Edge(i).b.x, obb->Edge(i).b.y, obb->Edge(i).b.z);
+	}
 
 	
 	glEnd();
