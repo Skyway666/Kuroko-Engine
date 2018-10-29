@@ -10,6 +10,7 @@
 #include "ModuleScene.h"
 #include "ModuleCamera3D.h"
 #include "Applog.h"
+#include "ModuleRenderer3D.h"
 
 
 GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits())
@@ -44,7 +45,7 @@ bool GameObject::Update(float dt)
 			app_log->AddLog("error in gameobject %s", name.c_str());
 	}
 
-	
+	//App->renderer3D->DirectDrawCube(float3(10, 10, 10), centroid);
 
 	return ret;
 }

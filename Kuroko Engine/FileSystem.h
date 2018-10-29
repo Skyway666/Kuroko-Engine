@@ -29,12 +29,13 @@ public:
 	void CreateEmptyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	void DestroyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	bool ExistisFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
+	void getFileNameFromPath(std::string& str);
 	private: 
 	// Useful functions to work with paths
 	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
 	bool removeExtension(std::string& str);
 	bool removePath(std::string& str);
-	void getFileNameFromPath(std::string& str);
+
 };
 
 #endif
