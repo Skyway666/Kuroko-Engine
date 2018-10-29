@@ -653,7 +653,7 @@ bool ModuleUI::DrawComponent(Component& component)
 				if (FrameBuffer* frame_buffer = camera->getCamera()->getFrameBuffer())
 				{
 					uint size_factor = frame_buffer->size_x / 256;
-					ImGui::ImageButton((void*)frame_buffer->depth_tex->gl_id, ImVec2(frame_buffer->size_x / size_factor, frame_buffer->size_y / size_factor), ImVec2(0, 1), ImVec2(1, 0), 2);
+					ImGui::ImageButton((void*)frame_buffer->tex->gl_id, ImVec2(frame_buffer->size_x / size_factor, frame_buffer->size_y / size_factor), ImVec2(0, 1), ImVec2(1, 0), 2);
 				}
 				else camera->getCamera()->setFrameBuffer(App->camera->initFrameBuffer());
 			}

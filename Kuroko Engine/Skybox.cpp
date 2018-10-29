@@ -4,7 +4,7 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 
-#define SKYBOX_OVERLAP_VALUE 1.0f  // negative offset of planes to avoid edges being visible for the user
+#define SKYBOX_OVERLAP_VALUE 0.1f  // negative offset of planes to avoid edges being visible for the user
 
 Skybox::Skybox(float distance) : distance(distance)
 {
@@ -112,6 +112,9 @@ void Skybox::Draw() const
 			glBindBuffer(GL_ARRAY_BUFFER, planes[i]->vboId);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planes[i]->iboId);
 
+			bool depth_test = glIsEnabled(GL_DEPTH_TEST);
+			glDisable(GL_DEPTH_TEST);
+
 			// enable vertex arrays
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_NORMAL_ARRAY);
@@ -134,6 +137,9 @@ void Skybox::Draw() const
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_NORMAL_ARRAY);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			if(depth_test)
+				glEnable(GL_DEPTH_TEST);
 
 			// unbind VBOs
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
