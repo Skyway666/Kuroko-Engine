@@ -158,6 +158,8 @@ update_status ModuleUI::Update(float dt) {
 				std::string file_path = openFileWID();
 				App->importer->Import(file_path.c_str());
 			}
+			if (ImGui::MenuItem("Save scene"))
+				App->scene->AskSceneSave();
 			if(ImGui::BeginMenu("Configuration")){
 				if (ImGui::MenuItem("Save Configuration"))
 					App->SaveConfig();

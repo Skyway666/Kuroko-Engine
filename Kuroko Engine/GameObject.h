@@ -4,8 +4,10 @@
 #include <string>
 #include "Component.h"
 #include "Globals.h"
+#include "Parson\parson.h"
 
 #include "MathGeoLib\Math\float3.h"
+
 
 class GameObject
 {
@@ -50,6 +52,9 @@ public:
 
 	void Rename(const char* new_name) { name = new_name; };
 	std::string getName() const { return name; };
+
+	void Save(JSON_Object& config);
+	void Load(JSON_Object& config);
 
 private:
 

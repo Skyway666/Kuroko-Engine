@@ -1,5 +1,7 @@
 #ifndef _COMPONENT_
 #define _COMPONENT_
+
+#include "Parson\parson.h"
 class GameObject;
 
 enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA };
@@ -18,6 +20,9 @@ public:
 	Component_type getType() const { return type; };
 	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* new_parent) { parent = new_parent; } // Can recieve nullptr
+
+	virtual void Save(JSON_Object& config) {}
+	virtual void Load(JSON_Object& config) {}
 
 private:
 

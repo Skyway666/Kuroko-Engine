@@ -11,6 +11,7 @@
 #include "Quadtree.h"
 #include "ModuleRenderer3D.h"
 #include "Applog.h"
+#include "FileSystem.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "glew-2.1.0\include\GL\glew.h"     // <- testing 
@@ -106,6 +107,9 @@ update_status ModuleScene::PostUpdate(float dt)
 			app_log->AddLog("Found %s in quadtree \n", (*it)->getName().c_str());
 	}
 	// TEST FOR QUADTREE
+
+
+
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
 		if (*it == selected_obj) selected_obj = nullptr;
@@ -251,7 +255,7 @@ void ModuleScene::DrawGrid() const
 
 void ModuleScene::ManageSceneSaveLoad() {
 	if (want_save_scene) {
-		SaveScene();
+		SaveScene("scene_test");
 		want_save_scene = false;
 	}
 	if (want_load_scene) {
@@ -260,8 +264,23 @@ void ModuleScene::ManageSceneSaveLoad() {
 	}
 }
 
-void ModuleScene::SaveScene() {
+void ModuleScene::SaveScene(std::string name) {
 
+	if (App->fs->ExistisFile(name.c_str(), ASSETS_SCENES, JSON_EXTENSION))
+		app_log->AddLog("%s scene already created, overwritting...", name.c_str());
+
+	App->fs->CreateEmptyFile(name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
+
+	JSON_Value* scene = json_value_init_object();
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+		JSON_Value* object = json_value_init_object();
+		(*it)->Save(*json_object(object));
+		json_object_set_value(json_object(scene), (*it)->getName().c_str(), object);
+	}
+
+	std::string path;
+	App->fs->FormFullPath(path, name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
+	json_serialize_to_file(scene, path.c_str());
 }
 
 void ModuleScene::LoadScene() {
