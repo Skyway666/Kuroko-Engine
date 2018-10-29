@@ -26,7 +26,7 @@ public:
 	void* Import(const char* file, ImportType expected_filetype = I_NONE);
 	//Own file format
 	void ExportMeshToKR(const char* file, Mesh* mesh);
-	void ExportTextureToDDS();
+	void ExportTextureToDDS(const char* file);
 	Mesh* ImportMeshFromKR(const char* file);
 
 

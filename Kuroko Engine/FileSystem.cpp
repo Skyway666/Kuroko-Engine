@@ -74,6 +74,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case LIBRARY_ANIMATIONS:
 		path = ANIMATIONS_FOLDER;
 		break;
+	case LIBRARY_TEXTURES:
+		path = TEXTURES_FOLDER;
+		break;
 	case SETTINGS:
 		path = SETTINGS_FOLDER;
 		break;

@@ -6,15 +6,20 @@
 
 #define ENGINE_EXTENSION ".kr"
 #define JSON_EXTENSION ".json"
+#define DDS_EXTENSION ".dds"
+
 #define MESHES_FOLDER "Library\\Meshes\\"
 #define MATERIALS_FOLDER "Library\\Materials\\"
 #define ANIMATIONS_FOLDER "Library\\Animations\\"
+#define TEXTURES_FOLDER "Library\\Textures\\"
 #define SETTINGS_FOLDER "Settings\\"
 #define SCENES_FOLDER "Assets\\Scenes\\"
+
 enum lib_dir {
 	LIBRARY_MESHES,
 	LIBRARY_MATERIALS,
 	LIBRARY_ANIMATIONS,
+	LIBRARY_TEXTURES,
 	SETTINGS,
 	ASSETS_SCENES,
 	NO_LIB
