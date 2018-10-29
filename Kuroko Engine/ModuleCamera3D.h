@@ -15,6 +15,7 @@ struct FrameBuffer
 	Texture* tex = nullptr;
 	Texture* depth_tex = nullptr;
 	uint id = 0;
+	uint depth_test_id = 0;
 
 	uint size_x = 0;
 	uint size_y = 0;

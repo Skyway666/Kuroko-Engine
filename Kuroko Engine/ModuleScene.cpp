@@ -13,12 +13,8 @@
 #include "Applog.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
+#include "glew-2.1.0\include\GL\glew.h"     // <- testing 
 
-#include "SDL\include\SDL_opengl.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
-
-#pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 #include <array>
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -156,6 +152,16 @@ update_status ModuleScene::Update(float dt)
 	{
 		skybox->updatePosition(App->camera->editor_camera->getFrustum()->pos);
 		skybox->Draw();
+
+		for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
+		{
+			if ((*it)->getFrameBuffer())
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, (*it)->getFrameBuffer()->id);
+				skybox->Draw();
+			}
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	if (draw_grid)	DrawGrid();

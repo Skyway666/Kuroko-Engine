@@ -14,7 +14,7 @@ enum Direction { LEFT, RIGHT, UP, DOWN, BACK, FRONT};
 class Skybox
 {
 public:
-	Skybox(float distance = 500.0f);
+	Skybox(float distance = 100.0f);
 
 	void updatePosition(const float3& new_pos) { transform_mat.SetTranslatePart(new_pos); };
 	void setAllTextures(std::array<Texture*, 6>& texs)	{ for(int i = 0; i < 6; i++)	textures[i] = texs[i]; };

@@ -16,7 +16,6 @@
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "camera";
-	editor_camera = new Camera(float3(0.0, 2.0f, 5.0f), float3::zero);
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -26,6 +25,7 @@ ModuleCamera3D::~ModuleCamera3D()
 bool ModuleCamera3D::Init(const JSON_Object& config)
 {
 	app_log->AddLog("Setting up the camera");
+	editor_camera = new Camera(float3(0.0, 2.0f, 5.0f), float3::zero);
 
 	return true;
 }
@@ -33,8 +33,6 @@ bool ModuleCamera3D::Init(const JSON_Object& config)
 // -----------------------------------------------------------------
 bool ModuleCamera3D::CleanUp()
 {
-	if (editor_camera) delete editor_camera;
-
 	for (auto it = game_cameras.begin(); it != game_cameras.end(); it++)
 		delete *it;
 
@@ -179,14 +177,14 @@ FrameBuffer* ModuleCamera3D::initFrameBuffer(uint size_x, uint size_y)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	//set depth renderer
-	glGenRenderbuffers(1, &fb->depth_tex->gl_id);
-	glBindRenderbuffer(GL_RENDERBUFFER, fb->depth_tex->gl_id);
+	glGenRenderbuffers(1, &fb->depth_test_id);
+	glBindRenderbuffer(GL_RENDERBUFFER, fb->depth_test_id);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size_x, size_y);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb->depth_tex->gl_id);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb->depth_test_id);
 
 	// init frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);
-	glFramebufferTexture2D(GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->depth_tex->gl_id, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);/*
+	glFramebufferTexture2D(GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->depth_tex->gl_id, 0);*/
 
 	// Set the list of draw buffers.
 	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };

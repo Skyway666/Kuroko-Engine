@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "ComponentTransform.h"
 #include "ModuleScene.h"
+#include "ModuleCamera3D.h"
 
 Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, float hor_fov, float ver_fov)
 {
@@ -20,6 +21,8 @@ Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, 
 
 	LookAt(reference);
 	updateFrustum();
+
+	App->camera->game_cameras.push_back(this);
 }
 
 
