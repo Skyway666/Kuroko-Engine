@@ -48,13 +48,14 @@ public:
 	void deleteTexture(Texture* tex)		{ textures_to_delete.push_back(tex); };
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
+
+	void AskSceneSave() { want_save_scene = true; }
+	void AskSceneLoad() { want_load_scene = true; }
 private:
 	
 	void DrawGrid() const;
-	void AskSceneSave() {want_save_scene = true;}
-	void AskSceneLoad() {want_load_scene = true; }
 	void ManageSceneSaveLoad();
-	void SaveScene();
+	void SaveScene(std::string name);
 	void LoadScene();
 private:
 

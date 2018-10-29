@@ -192,6 +192,27 @@ void GameObject::removeComponent(Component* component)
 }
 
 
+
+void GameObject::Save(JSON_Object & config) {
+
+	// Saving object own variables
+	json_object_set_number(&config, "UUID", uuid);
+	if (parent) json_object_set_number(&config, "Parent", parent->uuid);
+
+	// Save components
+
+	//JSON_Value* 
+
+	//for (auto it = components.begin(); it != components.end; it++) {
+
+	//	(*it)->Save();
+	//}
+
+}
+
+void GameObject::Load(JSON_Object & config) {
+}
+
 void GameObject::calculateCentroidandHalfsize()
 {
 	std::list<Component*> meshes;

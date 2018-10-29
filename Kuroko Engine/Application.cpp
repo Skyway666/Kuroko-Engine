@@ -26,6 +26,8 @@ Application::Application()
 	CreateDirectory("Library\\Meshes", NULL);
 	CreateDirectory("Library\\Materials", NULL);
 	CreateDirectory("Library\\Animation", NULL);
+	CreateDirectory("Assets", NULL);
+	CreateDirectory("Assets\\Scenes", NULL);
 
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);

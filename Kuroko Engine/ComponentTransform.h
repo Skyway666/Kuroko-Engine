@@ -40,6 +40,9 @@ public:
 	float3 Right()const;
 	float3 Up()const;
 
+	void Save(JSON_Object& config);
+	void Load(JSON_Object& config);
+
 
 private:
 

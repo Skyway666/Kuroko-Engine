@@ -77,6 +77,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case SETTINGS:
 		path = SETTINGS_FOLDER;
 		break;
+	case ASSETS_SCENES:
+		path = SCENES_FOLDER;
+		break;
 	case NO_LIB:
 		path = "";
 		break;

@@ -78,6 +78,14 @@ float3 ComponentTransform::Up() const
 	return up;
 }
 
+void ComponentTransform::Save(JSON_Object & config) {
+
+}
+
+void ComponentTransform::Load(JSON_Object & config) {
+
+}
+
 
 void ComponentTransform::setPosition(const float3& pos)		{ position = pos;	getParent()->calculateCentroidandHalfsize(); };
 void ComponentTransform::Translate(const float3& dir)		{ position += dir;	getParent()->calculateCentroidandHalfsize(); };
