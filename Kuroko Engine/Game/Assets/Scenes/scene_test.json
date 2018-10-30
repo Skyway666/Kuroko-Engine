@@ -1,1 +1,36 @@
-{"Cube":{"UUID":4020390818,"Components":[{"test":true},{},{}]},"RootNode":{"UUID":3297841336,"Components":[{"test":true},{}]},"Chimney":{"UUID":3430887073,"Parent":3297841336,"Components":[{"test":true},{},{}]},"Baker_house":{"UUID":2637037419,"Parent":3297841336,"Components":[{"test":true},{},{}]}}
+{
+  
+  "Cube": {
+    "UUID": 4020390818,
+    "Components": [
+      { "test": true },
+      {},
+      {}
+    ]
+  },
+  "RootNode": {
+    "UUID": 3297841336,
+    "Components": [
+      { "test": true },
+      {}
+    ]
+  },
+  "Chimney": {
+    "UUID": 3430887073,
+    "Parent": 3297841336,
+    "Components": [
+      { "test": true },
+      {},
+      {}
+    ]
+  },
+  "Baker_house": {
+    "UUID": 2637037419,
+    "Parent": 3297841336,
+    "Components": [
+      { "test": true },
+      {},
+      {}
+    ]
+  }
+}
