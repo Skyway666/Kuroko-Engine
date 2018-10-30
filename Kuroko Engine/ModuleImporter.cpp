@@ -10,6 +10,8 @@
 #include "ModuleAudio.h"
 #include "Camera.h"
 #include "FileSystem.h"
+#include "ComponentTransform.h"
+#include "Transform.h"
 #include "Timer.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
@@ -219,6 +221,14 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 			c_m->setMaterial(mat);
 		}
 		root_obj->addComponent(c_m);
+
+		aiVector3D pos = { 0.0f, 0.0f, 0.0f };
+		aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+		aiQuaternion rot;
+		node.mTransformation.Decompose(scl, rot, pos);
+
+		((ComponentTransform*)root_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+
 		ExportMeshToKR(node.mName.C_Str(), mesh);
 		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}

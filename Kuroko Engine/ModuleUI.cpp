@@ -543,6 +543,11 @@ bool ModuleUI::DrawComponent(Component& component)
 			rotation = transform->getRotationEuler();
 			scale = transform->getScale();
 
+			if (ImGui::Button("Reset Transform"))
+			{
+				position = float3::zero; rotation = float3::zero, scale = float3::one;
+			}
+
 			//position
 			ImGui::Text("Position:");
 			ImGui::SameLine();
