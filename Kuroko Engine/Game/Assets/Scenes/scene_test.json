@@ -1,11 +1,12 @@
 {
   
   "RootNode": {
-    "UUID": 755011411,
+    "UUID": 2839405032,
     "Components": [
       {
-        "Transform": {
-          "Local": {
+        "type": "transform",
+        "transform": {
+          "local": {
             "px": 0,
             "py": 0,
             "pz": 0,
@@ -17,7 +18,7 @@
             "qz": 0,
             "qw": 1
           },
-          "Global": {
+          "global": {
             "px": 0,
             "py": 0,
             "pz": 0,
@@ -35,12 +36,13 @@
     ]
   },
   "Chimney": {
-    "UUID": 2851348293,
-    "Parent": 755011411,
+    "UUID": 1167200667,
+    "Parent": 2839405032,
     "Components": [
       {
-        "Transform": {
-          "Local": {
+        "type": "transform",
+        "transform": {
+          "local": {
             "px": 0,
             "py": 0,
             "pz": 0,
@@ -52,7 +54,7 @@
             "qz": -0.7071068286895752,
             "qw": 0.70710670948028564
           },
-          "Global": {
+          "global": {
             "px": 0,
             "py": 0,
             "pz": 0,
@@ -71,12 +73,13 @@
     ]
   },
   "Baker_house": {
-    "UUID": 2185503301,
-    "Parent": 755011411,
+    "UUID": 4114136042,
+    "Parent": 2839405032,
     "Components": [
       {
-        "Transform": {
-          "Local": {
+        "type": "transform",
+        "transform": {
+          "local": {
             "px": 0,
             "py": 0,
             "pz": 0,
@@ -88,7 +91,7 @@
             "qz": -0.7071068286895752,
             "qw": 0.70710670948028564
           },
-          "Global": {
+          "global": {
             "px": 0,
             "py": 0,
             "pz": 0,
