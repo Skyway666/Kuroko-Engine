@@ -12,7 +12,6 @@ public:
 	ComponentMesh(GameObject* gameobject) : Component(gameobject, MESH) {};   // empty constructor
 	ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), mesh(mesh) {};
 
-	bool Update(float dt) { if (mesh && isActive()) Draw(); return true; };
 	void Draw() const;
 
 	bool getWireframe() const			{ return wireframe; };

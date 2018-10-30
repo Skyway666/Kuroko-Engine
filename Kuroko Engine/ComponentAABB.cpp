@@ -81,11 +81,14 @@ bool ComponentAABB::Update(float dt)
 		getParent()->half_size = obb->r.Abs();
 
 		*aabb = obb->MinimalEnclosingAABB();
-		
-		if (draw_aabb)	DrawAABB();
-		if (draw_obb)	DrawOBB();
 	}
 	return true;
+}
+
+void ComponentAABB::Draw() const
+{
+	if (draw_aabb)	DrawAABB();
+	if (draw_obb)	DrawOBB();
 }
 
 void ComponentAABB::DrawAABB() const

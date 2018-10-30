@@ -27,6 +27,8 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
+	void DrawScene(float3 camera_pos);
+
 	void Play() { game_state = PLAYING; };
 	void Pause() { game_state = PAUSED; };
 	void Stop() { game_state = STOPPED; };
@@ -53,7 +55,6 @@ public:
 	void AskSceneLoad() { want_load_scene = true; }
 private:
 	
-	void DrawGrid() const;
 	void ManageSceneSaveLoad();
 	void SaveScene(std::string name);
 	void LoadScene();
@@ -77,7 +78,6 @@ private:
 public:
 
 	GameObject* selected_obj	= nullptr;
-	bool draw_grid				= true;
 
 	uint last_mat_id			= 0;
 	uint last_gobj_id			= 0;

@@ -19,6 +19,7 @@ public:
 	~GameObject();
 
 	bool Update(float dt);
+	void Draw() const;
 	
 	uint getId() { return id; }
 

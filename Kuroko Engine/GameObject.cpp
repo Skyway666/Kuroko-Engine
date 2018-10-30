@@ -32,24 +32,25 @@ GameObject::~GameObject()
 
 bool GameObject::Update(float dt)
 {
-	bool ret = true;
-
 	if (is_active)
 	{
-		for (std::list<Component*>::iterator it = components.begin(); it != components.end() && ret; it++)
-			ret = (*it)->Update(dt);
-
-		for (std::list<GameObject*>::iterator it = children.begin(); it != children.end() && ret; it++)
-			ret = (*it)->Update(dt);
-
-		if (!ret)
-			app_log->AddLog("error in gameobject %s", name.c_str());
+		for (auto it = components.begin(); it != components.end(); it++)
+			if(!(*it)->Update(dt))
+				{ app_log->AddLog("error in gameobject %s", name.c_str()); return false;}
 	}
 
-
-	return ret;
+	return true;
 }
 
+
+void GameObject::Draw() const
+{
+	if (is_active)
+	{
+		for (auto it = components.begin(); it != components.end(); it++)
+			(*it)->Draw();
+	}
+}
 
 Component* GameObject::getComponent(Component_type type) const
 {
