@@ -77,6 +77,9 @@ bool ComponentAABB::Update(float dt)
 				obb->Enclose(child_obb->CornerPoint(i));
 		}
 
+		getParent()->centroid = obb->pos;
+		getParent()->half_size = obb->r.Abs();
+
 		*aabb = obb->MinimalEnclosingAABB();
 		
 		if (draw_aabb)	DrawAABB();

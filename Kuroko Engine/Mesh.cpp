@@ -450,6 +450,9 @@ bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh)
 	}
 	calculateCentroidandHalfsize();
 
+	for (int i = 0; i < num_vertices; i++)
+		vertices[i] -= centroid;
+
 	return true;
 }
 
