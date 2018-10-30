@@ -101,7 +101,7 @@ void ComponentTransform::LocalToGlobal()
 }
 
 void ComponentTransform::Save(JSON_Object & config) {
-
+	json_object_set_boolean(&config, "test", true);
 }
 
 void ComponentTransform::Load(JSON_Object & config) {
