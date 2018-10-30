@@ -47,7 +47,9 @@ bool GameObject::Update(float dt)
 	}
 
 	//App->renderer3D->DirectDrawCube(float3(10, 10, 10), centroid);
-
+	// TEMPORAL PATCH FOR QUADTREE
+	calculateCentroidandHalfsize();
+	// TEMPORAL PATCH FOR QUADTREE
 	return ret;
 }
 
@@ -184,7 +186,46 @@ void GameObject::removeComponent(Component* component)
 	
 }
 
+void GameObject::calculateCentroidandHalfsize()
+{
+	std::list<Component*> meshes;
+	getComponents(MESH, meshes);
 
+	float3 lowest_p = float3::inf;
+	float3 highest_p = -float3::inf;
+
+	for (std::list<Component*>::iterator it = meshes.begin(); it != meshes.end(); it++)
+	{
+		if (Mesh* mesh = ((ComponentMesh*)(*it))->getMesh())
+		{
+			float3 half_size = mesh->getHalfSize();
+
+			if (lowest_p.x > -half_size.x) lowest_p.x = -half_size.x;
+			if (lowest_p.y > -half_size.y) lowest_p.y = -half_size.y;
+			if (lowest_p.z > -half_size.z) lowest_p.z = -half_size.z;
+
+			if (highest_p.x < half_size.x) highest_p.x = half_size.x;
+			if (highest_p.y < half_size.y) highest_p.y = half_size.y;
+			if (highest_p.z < half_size.z) highest_p.z = half_size.z;
+		}
+	}
+
+	float4x4 inh_transform = ((ComponentTransform*)getComponent(TRANSFORM))->getInheritedTransform();
+
+	if (!lowest_p.IsFinite() || !highest_p.IsFinite())
+	{
+		centroid = float3::zero;
+		half_size = float3::zero;
+	}
+	else
+	{
+		centroid = float3(((lowest_p + highest_p) * 0.5f) + inh_transform.TranslatePart());
+		half_size = highest_p;
+		float3 inh_scale = inh_transform.GetScale();
+		half_size = { half_size.x * inh_scale.x, half_size.y * inh_scale.y , half_size.z * inh_scale.z };
+	}
+
+}
 
 void GameObject::Save(JSON_Object & config) {
 
