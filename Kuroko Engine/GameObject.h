@@ -53,10 +53,6 @@ public:
 	void Rename(const char* new_name) { name = new_name; };
 	std::string getName() const { return name; };
 
-	// TEMPORAL PATCH FOR QUADTREE
-	void calculateCentroidandHalfsize();
-	// TEMPORAL PATCH FOR QUADTREE
-
 	void Save(JSON_Object& config);
 	void Load(JSON_Object& config);
 
