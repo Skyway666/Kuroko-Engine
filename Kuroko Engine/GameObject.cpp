@@ -46,7 +46,7 @@ bool GameObject::Update(float dt)
 			app_log->AddLog("error in gameobject %s", name.c_str());
 	}
 
-	App->renderer3D->DirectDrawCube(float3(10, 10, 10), centroid);
+	//App->renderer3D->DirectDrawCube(float3(10, 10, 10), centroid);
 	// TEMPORAL PATCH FOR QUADTREE
 	calculateCentroidandHalfsize();
 	// TEMPORAL PATCH FOR QUADTREE
