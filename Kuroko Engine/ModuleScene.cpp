@@ -84,6 +84,8 @@ update_status ModuleScene::PostUpdate(float dt)
 	// TEST FOR QUADTREE
 	quadtree->DebugDraw();
 
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+
 	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
 		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 			quadtree->Insert(*it);
