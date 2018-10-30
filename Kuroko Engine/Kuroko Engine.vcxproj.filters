@@ -111,9 +111,6 @@
     <ClInclude Include="ModuleImporter.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Sources\Game</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
@@ -315,9 +312,6 @@
     <ClInclude Include="WinItemDialog.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Sources\Game</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui\imconfig.h">
       <Filter>Sources\ImGui\Headers</Filter>
     </ClInclude>
@@ -357,16 +351,25 @@
     <ClInclude Include="FileSystem.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Sources\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Sources\Game</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
     <ClInclude Include="Quadtree.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -403,9 +406,6 @@
     </ClCompile>
     <ClCompile Include="ModuleImporter.cpp">
       <Filter>Sources\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Sources\Game</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Sources\Game</Filter>
@@ -524,9 +524,6 @@
     <ClCompile Include="ModuleDebug.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Sources\Game</Filter>
-    </ClCompile>
     <ClCompile Include="ImGui\imgui_demo.cpp">
       <Filter>Sources\ImGui\cpps</Filter>
     </ClCompile>
@@ -557,16 +554,25 @@
     <ClCompile Include="FileSystem.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Sources\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Sources\Game</Filter>
-    </ClCompile>
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Game</Filter>
     </ClCompile>
     <ClCompile Include="Quadtree.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
       <Filter>Sources\Containers</Filter>
     </ClCompile>
   </ItemGroup>

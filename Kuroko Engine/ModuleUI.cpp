@@ -17,6 +17,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
 #include "Camera.h"
@@ -512,16 +513,34 @@ bool ModuleUI::DrawComponent(Component& component)
 		if (ImGui::CollapsingHeader("Transform") && !component.getParent()->isStatic()) // Don't allow to modify transform if the object is static
 		{
 			ImGui::Text("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
-			ComponentTransform* transform = (ComponentTransform*)&component;
+			ComponentTransform* c_trans = (ComponentTransform*)&component;
 
 			static float3 position;
-			static float3 rotation;;
+			static float3 rotation;
 			static float3 scale;
 
-			position = transform->position;
-			rotation = transform->getRotationEuler();
-			scale = transform->scale;
+			Transform* transform = nullptr;
 
+			if (c_trans->getMode() == LOCAL)
+			{
+				transform = c_trans->local;
+				ImGui::Text("Current mode: Local");
+				ImGui::SameLine();
+				if (ImGui::Button("Global"))
+					c_trans->setMode(GLOBAL);
+			}
+			else
+			{
+				transform = c_trans->global;
+				ImGui::Text("Current mode: Global");
+				ImGui::SameLine();
+				if (ImGui::Button("Local"))
+					c_trans->setMode(LOCAL);
+			}
+
+			position = transform->getPosition();
+			rotation = transform->getRotationEuler();
+			scale = transform->getScale();
 
 			//position
 			ImGui::Text("Position:");

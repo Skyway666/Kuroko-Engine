@@ -1,81 +1,108 @@
 #include "ComponentTransform.h"
 #include "GameObject.h"
+#include "Transform.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
+ComponentTransform::ComponentTransform(GameObject* parent, const Quat& rot, const float3& pos, const float3& scl) : Component(parent, TRANSFORM)
+{
+	local = new Transform();
+	global = new Transform();
+
+	local->setPosition(pos);
+	local->setRotation(rot);
+	local->setScale(scl);
+	local->CalculateMatrix();
+
+	LocalToGlobal();
+}
+
+ComponentTransform::ComponentTransform(GameObject* parent, const float3& euler_axis, const float3& pos, const float3& scl) : Component(parent, TRANSFORM)
+{
+	local = new Transform();
+	global = new Transform();
+
+	local->setPosition(pos);
+	local->setRotation(Quat::FromEulerXYZ(euler_axis.x, euler_axis.y, euler_axis.z));
+	local->setScale(scl);
+	local->CalculateMatrix();
+
+	LocalToGlobal();
+}
 
 ComponentTransform::ComponentTransform(GameObject* parent, const ComponentTransform& transform) : Component(parent, TRANSFORM)
 {
-	position = transform.position; rotation = transform.rotation; scale = transform.scale;
+	local = new Transform(*transform.local);
+	global = new Transform(*transform.global);
 }
 
-float4x4 ComponentTransform::getInheritedTransform(float3 pos, Quat rot, float3 scl) const 
+ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, TRANSFORM)
 {
-	pos += position;
-	scl.x *= scale.x; scl.y *= scale.y; scl.z *= scale.z;
-	rot = rotation * rot;
+	local = new Transform();
+	global = new Transform();
+}
 
-	GameObject* obj = getParent();
-	if (GameObject* parent_obj = obj->getParent())
+ComponentTransform::~ComponentTransform()
+{
+	if (local) delete local;
+	if (global) delete global;
+}
+
+bool ComponentTransform::Update(float dt)
+{
+	if (mode == GLOBAL)
 	{
-		ComponentTransform* parent_transform = (ComponentTransform*)parent_obj->getComponent(TRANSFORM);
-		return parent_transform->getInheritedTransform(pos, rot, scl);
+		global->CalculateMatrix();
+		GlobalToLocal();
 	}
 	else
 	{
-		float4x4 inh_mat = float4x4::identity;
-		inh_mat = inh_mat * rot;
-		inh_mat = inh_mat * inh_mat.Scale(scl);
-		inh_mat.SetTranslatePart(pos);
-		return inh_mat;
+		local->CalculateMatrix();
+		LocalToGlobal();
 	}
+
+	return true;
 }
 
-
-
-void ComponentTransform::setRotationEuler(const float3& euler)
+Transform* ComponentTransform::getInheritedTransform()
 {
-	rotation = Quat::identity;
-	rotation = rotation * rotation.RotateX(DegToRad(euler.x));
-	rotation = rotation * rotation.RotateY(DegToRad(euler.y));
-	rotation = rotation * rotation.RotateZ(DegToRad(euler.z));
-	euler_angles = euler;
+	if (GameObject* parent_obj = getParent()->getParent())
+		return ((ComponentTransform*)parent_obj->getComponent(TRANSFORM))->local;
 }
 
-void ComponentTransform::LookAt(const float3& position, const float3& target, const float3& forward, const float3& up)
+void ComponentTransform::GlobalToLocal()
 {
-	mat = mat.LookAt(position, target, forward, up, float3::unitY);
-	rotation = mat.RotatePart().ToQuat();
+	if (Transform* inh_transform = getInheritedTransform())
+	{
+		local->setPosition(inh_transform->getPosition() + global->getPosition());
+		local->setRotation(inh_transform->getRotation() * global->getRotation());
+		local->setScale(inh_transform->getScale() - float3::one + global->getScale());
+	}
+	else
+	{
+		local->setPosition(global->getPosition());
+		local->setRotation(global->getRotation());
+		local->setScale(global->getScale());
+	}
+	local->CalculateMatrix();
 }
 
-float4x4 ComponentTransform::getModelViewMatrix() 
+void ComponentTransform::LocalToGlobal()
 {
-	mat = float4x4::identity;
-	mat = mat * rotation;
-	mat = mat * mat.Scale(scale);
-	mat.SetTranslatePart(position);
-	return mat;
-}
+	if (Transform* inh_transform = getInheritedTransform())
+	{
+		global->setPosition(local->getPosition()  - inh_transform->getPosition());
+		global->setRotation(local->getRotation() * inh_transform->getRotation().Inverted());
+		global->setScale(local->getScale() - (inh_transform->getScale() - float3::one));
+	}
+	else
+	{
 
-float3 ComponentTransform::Right() const
-{
-	float3 right = float3::unitX;
-	right = rotation * right;
-	return right;
-}
-
-float3 ComponentTransform::Forward() const
-{
-	float3 forward = float3::unitZ;
-	forward = rotation * forward;
-	return forward;
-}
-
-float3 ComponentTransform::Up() const
-{
-	float3 up = float3::unitY;
-	up = rotation * up;
-	return up;
+		global->setPosition(local->getPosition());
+		global->setRotation(local->getRotation());
+		global->setScale(local->getScale());
+	}
+	global->CalculateMatrix();
 }
 
 void ComponentTransform::Save(JSON_Object & config) {
@@ -86,8 +113,3 @@ void ComponentTransform::Load(JSON_Object & config) {
 
 }
 
-
-void ComponentTransform::setPosition(const float3& pos) { position = pos; };
-void ComponentTransform::Translate(const float3& dir)	{ position += dir; };
-void ComponentTransform::setScale(const float3& scl)	{ scale = scl; };
-void ComponentTransform::Scale(const float3& scl)		{ scale.x *= scl.x; scale.y *= scl.y; scale.z *= scl.z;};

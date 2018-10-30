@@ -3,6 +3,7 @@
 #include "MathGeoLib\Math\Quat.h"
 #include "Application.h"
 #include "ComponentTransform.h"
+#include "Transform.h"
 #include "ModuleScene.h"
 #include "ModuleCamera3D.h"
 
@@ -61,7 +62,7 @@ void Camera::FitToSizeSelectedGeometry(float distance)
 	if (GameObject* selected_obj = App->scene->selected_obj)
 	{
 		float3 new_pos = selected_obj->getCentroid() + selected_obj->getHalfsize() + float3(distance, distance, distance);
-		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->getRotationEuler().y) * new_pos;
+		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->global->getRotationEuler().y) * new_pos;
 
 		frustum->pos = new_pos;
 		LookAt(selected_obj->getCentroid());

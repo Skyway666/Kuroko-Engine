@@ -176,6 +176,7 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="VRAM.h" />
     <ClInclude Include="WinItemDialog.h" />
   </ItemGroup>
@@ -245,6 +246,7 @@
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VRAM.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "Transform.h"
 #include "GameObject.h"
 #include "ModuleScene.h"
 #include "Application.h"
@@ -17,7 +18,7 @@ void ComponentMesh::Draw() const
 		view_mat.Set((float*)matrix);
 
 		glMatrixMode(GL_MODELVIEW_MATRIX);
-		glLoadMatrixf((GLfloat*)(transform->getInheritedTransform().Transposed() * view_mat).v);
+		glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
 	}
 
 	if (draw_normals || App->scene->global_normals)

@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "Transform.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ComponentTransform.h"
@@ -59,12 +60,12 @@ bool ComponentAABB::Update(float dt)
 {
 	if (isActive())
 	{
-		obb->pos = transform->getRotation() * getParent()->own_centroid + transform->getPosition();
+		obb->pos = transform->global->getRotation() * getParent()->own_centroid + transform->global->getPosition();
 		obb->r = getParent()->own_half_size;
 
-		obb->axis[0] = transform->Right();
-		obb->axis[1] = transform->Up();
-		obb->axis[2] = transform->Forward();
+		obb->axis[0] = transform->global->Right();
+		obb->axis[1] = transform->global->Up();
+		obb->axis[2] = transform->global->Forward();
 		
 		std::list<GameObject*> children;
 		getParent()->getChildren(children);
