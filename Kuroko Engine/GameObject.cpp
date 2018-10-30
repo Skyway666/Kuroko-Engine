@@ -192,12 +192,16 @@ void GameObject::Save(JSON_Object & config) {
 
 	// Save components
 
-	//JSON_Value* 
+	JSON_Value* component_array = json_value_init_array();
+	JSON_Value* curr_component;
 
-	//for (auto it = components.begin(); it != components.end; it++) {
+	for (auto it = components.begin(); it != components.end(); it++) {
+		curr_component = json_value_init_object();
+		(*it)->Save(*json_object(curr_component));
+		json_array_append_value(json_array(component_array), curr_component);
+	}
 
-	//	(*it)->Save();
-	//}
+	json_object_set_value(&config, "Components", component_array);
 
 }
 

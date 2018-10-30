@@ -102,6 +102,43 @@ void ComponentTransform::LocalToGlobal()
 
 void ComponentTransform::Save(JSON_Object & config) {
 
+	JSON_Value* local_trans = json_value_init_object();
+	JSON_Value* global_trans = json_value_init_object();
+	JSON_Value* transform = json_value_init_object();
+	// Store local transform
+	// Position
+	json_object_set_number(json_object(local_trans), "px", local->position.x);
+	json_object_set_number(json_object(local_trans), "py", local->position.y);
+	json_object_set_number(json_object(local_trans), "pz", local->position.z);
+	// Scale
+	json_object_set_number(json_object(local_trans), "sx", local->scale.x);
+	json_object_set_number(json_object(local_trans), "sy", local->scale.y);
+	json_object_set_number(json_object(local_trans), "sz", local->scale.z);
+	// Rotation
+	json_object_set_number(json_object(local_trans), "qx", local->rotation.x);
+	json_object_set_number(json_object(local_trans), "qy", local->rotation.y);
+	json_object_set_number(json_object(local_trans), "qz", local->rotation.z);
+	json_object_set_number(json_object(local_trans), "qw", local->rotation.w);
+
+	// Store global transform
+	// Position
+	json_object_set_number(json_object(global_trans), "px", local->position.x);
+	json_object_set_number(json_object(global_trans), "py", local->position.y);
+	json_object_set_number(json_object(global_trans), "pz", local->position.z);
+	// Scale
+	json_object_set_number(json_object(global_trans), "sx", local->scale.x);
+	json_object_set_number(json_object(global_trans), "sy", local->scale.y);
+	json_object_set_number(json_object(global_trans), "sz", local->scale.z);
+	// Rotation
+	json_object_set_number(json_object(global_trans), "qx", local->rotation.x);
+	json_object_set_number(json_object(global_trans), "qy", local->rotation.y);
+	json_object_set_number(json_object(global_trans), "qz", local->rotation.z);
+	json_object_set_number(json_object(global_trans), "qw", local->rotation.w);
+
+	json_object_set_value(json_object(transform), "Local", local_trans);
+	json_object_set_value(json_object(transform), "Global", global_trans);
+	json_object_set_value(&config, "Transform", transform);
+
 }
 
 void ComponentTransform::Load(JSON_Object & config) {
