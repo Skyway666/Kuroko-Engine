@@ -11,7 +11,6 @@
 
 Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, float hor_fov, float ver_fov)
 {
-
 	frustum = new Frustum();
 	frustum->pos = position;
 	frustum->front = float3::unitZ;

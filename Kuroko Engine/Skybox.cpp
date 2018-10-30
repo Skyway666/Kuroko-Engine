@@ -91,7 +91,6 @@ void Skybox::Draw() const
 {
 	if (planes.size() == 6 && textures.size() == 6)
 	{
-
 		float4x4 view_mat = float4x4::identity;
 
 		GLfloat matrix[16];

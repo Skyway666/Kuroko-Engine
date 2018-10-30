@@ -15,12 +15,13 @@ bool ModuleDebug::CleanUp()
 	return true;
 }
 
-update_status ModuleDebug::Update(float dt)
+void ModuleDebug::DrawShapes()
 {
+	if (draw_grid)	
+		DrawGrid();
+
 	for (std::list<DebugShape*>::iterator it = shapes.begin(); it != shapes.end(); it++)
 		(*it)->Draw();
-
-	return UPDATE_CONTINUE;
 }
 
 uint ModuleDebug::addArrow(const float3& start_point, const float3& end_point, const Color& color)
@@ -173,11 +174,33 @@ uint  ModuleDebug::addFrustum(const float3& pos, const Quat& rotation, FrustumTy
 
 }
 
+
+
+void ModuleDebug::DrawGrid() const
+{
+	glLineWidth(1.0f);
+	glColor3f(0.5f, 0.5f, 0.5f);
+	glBegin(GL_LINES);
+
+	float d = 20.0f;
+
+	for (float i = -d; i <= d; i += 1.0f)
+	{
+		glVertex3f(i, 0.0f, -d);
+		glVertex3f(i, 0.0f, d);
+		glVertex3f(-d, 0.0f, i);
+		glVertex3f(d, 0.0f, i);
+	}
+
+	glEnd();
+
+}
+
 void ModuleDebug::removeShape(uint id)
 {
 	DebugShape* to_erase = nullptr;
 
-	for (std::list<DebugShape*>::iterator it = shapes.begin(); it != shapes.end(); it++)
+	for (auto it = shapes.begin(); it != shapes.end(); it++)
 	{
 		if ((*it)->id == id)
 		{
@@ -187,6 +210,14 @@ void ModuleDebug::removeShape(uint id)
 	}
 
 	shapes.remove(to_erase);
+}
+
+void ModuleDebug::ClearShapes()
+{
+	for (auto it = shapes.begin(); it != shapes.end(); it++)
+		delete *it;
+
+	shapes.clear();
 }
 
 

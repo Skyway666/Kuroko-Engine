@@ -12,9 +12,9 @@
 #include "ModuleRenderer3D.h"
 #include "Applog.h"
 #include "FileSystem.h"
+#include "ModuleDebug.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
-#include "glew-2.1.0\include\GL\glew.h"     // <- testing 
 
 #include <array>
 
@@ -152,22 +152,24 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+		(*it)->Update(dt);
+
+	return UPDATE_CONTINUE;
+}
+
+void ModuleScene::DrawScene(float3 camera_pos)
+{
 	if (skybox)
 	{
-		skybox->updatePosition(App->camera->editor_camera->getFrustum()->pos);
+		skybox->updatePosition(camera_pos);
 		skybox->Draw();
 	}
 
-	if (draw_grid)	DrawGrid();
+	App->debug->DrawShapes();
 
-	std::list<GameObject*> root_objs;
-	getRootObjs(root_objs);
-
-	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
-		(*it)->Update(dt);
-
-
-	return UPDATE_CONTINUE;
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+		(*it)->Draw();
 }
 
 Material* ModuleScene::getMaterial(uint id)  const
@@ -232,26 +234,6 @@ void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 				list_to_fill.remove(*it);
 }
 
-
-void ModuleScene::DrawGrid() const
-{
-	glLineWidth(1.0f);
-	glColor3f(0.5f, 0.5f, 0.5f);
-	glBegin(GL_LINES);
-
-	float d = 20.0f;
-
-	for (float i = -d; i <= d; i += 1.0f)
-	{
-		glVertex3f(i, 0.0f, -d);
-		glVertex3f(i, 0.0f, d);
-		glVertex3f(-d, 0.0f, i);
-		glVertex3f(d, 0.0f, i);
-	}
-
-	glEnd();
-
-}
 
 void ModuleScene::ManageSceneSaveLoad() {
 	if (want_save_scene) {

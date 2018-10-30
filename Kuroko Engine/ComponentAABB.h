@@ -18,6 +18,7 @@ public:
 	~ComponentAABB();
 
 	bool Update(float dt);
+	void Draw() const;
 	void Reload();
 
 	math::AABB* getAABB() const { return aabb; };

@@ -13,6 +13,7 @@ public:
 	Component(GameObject* gameobject, Component_type type) : parent(gameobject), type(type) {};
 
 	virtual bool Update(float dt) { return true; };
+	virtual void Draw() const {};
 
 	bool isActive() { return is_active; } const
 	void setActive(bool state) { is_active = state; }

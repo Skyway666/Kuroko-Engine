@@ -10,6 +10,7 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
+#include "ModuleScene.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -123,16 +124,30 @@ bool ModuleRenderer3D::Start()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	for (auto cam = App->camera->game_cameras.rbegin(); cam != App->camera->game_cameras.rend(); ++cam)
+	{
+		if (*cam != App->camera->editor_camera)
+		{
+			if (!(*cam)->getFrameBuffer())
+				continue;
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf((GLfloat*)App->camera->editor_camera->getFrustum()->ViewProjMatrix().Transposed().v);
-	
-	//lights[0].SetPos(App->camera->editor_camera->getFrustum()->pos.x, App->camera->editor_camera->getFrustum()->pos.y, App->camera->editor_camera->getFrustum()->pos.z);
+			glBindFramebuffer(GL_FRAMEBUFFER, (*cam)->getFrameBuffer()->id);
+		}
 
-	for(uint i = 0; i < MAX_LIGHTS; ++i)
-		lights[i].Render();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf((GLfloat*)(*cam)->getFrustum()->ViewProjMatrix().Transposed().v);
+
+		App->scene->DrawScene((*cam)->getFrustum()->pos);
+		lights[0].SetPos((*cam)->getFrustum()->pos.x, (*cam)->getFrustum()->pos.y, (*cam)->getFrustum()->pos.z);
+
+		for (uint i = 0; i < MAX_LIGHTS; ++i)
+			lights[i].Render();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 
 	return UPDATE_CONTINUE;
 }
