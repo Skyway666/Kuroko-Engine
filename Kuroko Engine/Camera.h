@@ -4,6 +4,7 @@
 #include "MathGeoLib\Math\float4x4.h"
 #include "MathGeoLib\Math\float3.h"
 #include "MathGeoLib\Geometry\Frustum.h"
+#include "MathGeoLib\Geometry\OBB.h"
 
 class FrameBuffer;
 
@@ -30,6 +31,7 @@ public:
 	void setFrustum(Frustum* f) { frustum = f; };
 	void setFov(float hor_fov, float ver_fov);
 	void setPlaneDistance(float n_plane, float f_plane);
+	bool frustumCull(const OBB& obb);
 
 private:
 

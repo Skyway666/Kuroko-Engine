@@ -1,11 +1,13 @@
 #include "Camera.h"
 #include "GameObject.h"
-#include "MathGeoLib\Math\Quat.h"
 #include "Application.h"
 #include "ComponentTransform.h"
 #include "Transform.h"
 #include "ModuleScene.h"
 #include "ModuleCamera3D.h"
+
+#include "MathGeoLib\Math\Quat.h"
+#include "MathGeoLib\Geometry\Plane.h"
 
 Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, float hor_fov, float ver_fov)
 {
@@ -85,6 +87,24 @@ void Camera::Reset()
 	LookAt(Reference);
 
 	updateFrustum();
+}
+
+bool Camera::frustumCull(const OBB& obb)
+{
+	for (int i = 0; i < 6; i++)
+	{
+		Plane plane = frustum->GetPlane(i);
+
+		for (int j = 0; j < 8; j++)
+		{
+			if (plane.IsOnPositiveSide(obb.CornerPoint(j)))
+				continue;
+			else
+				return true;
+		}
+	}
+
+	return false;
 }
 
 

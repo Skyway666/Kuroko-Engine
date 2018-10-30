@@ -94,7 +94,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			{
 				std::vector<uint> mat_id;
 				LoadMaterials(*imported_scene, mat_id);
-				GameObject* root_obj = LoadMeshRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
+				GameObject* root_obj = LoadNodeRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
 
 				App->scene->selected_obj = root_obj;
@@ -204,7 +204,7 @@ void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_
 
 }
 
-GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent) 
+GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent)
 {
 	GameObject* root_obj = new GameObject(node.mName.C_Str(), parent);
 
@@ -224,7 +224,7 @@ GameObject* ModuleImporter::LoadMeshRecursive(const aiNode& node, const aiScene&
 	}
 
 	for (int i = 0; i < node.mNumChildren; i++)
-		root_obj->addChild(LoadMeshRecursive(*node.mChildren[i], scene, in_mat_id, root_obj));
+		root_obj->addChild(LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, root_obj));
 
 	return root_obj;
 }

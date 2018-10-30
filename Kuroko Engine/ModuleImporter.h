@@ -22,19 +22,15 @@ public:
 	bool Init(const JSON_Object& config);
 	bool CleanUp();
 
-
 	void* Import(const char* file, ImportType expected_filetype = I_NONE);
 	//Own file format
 	void ExportMeshToKR(const char* file, Mesh* mesh);
 	void ExportTextureToDDS(const char* file);
 	Mesh* ImportMeshFromKR(const char* file);
 
-
-
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;
-	GameObject* LoadMeshRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
-
+	GameObject* LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
 
 };
 void logAssimp(const char* message, char* user);
