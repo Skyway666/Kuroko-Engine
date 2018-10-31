@@ -1,6 +1,7 @@
 #ifndef _MATERIAL
 #define _MATERIAL
 #include "Globals.h"
+#include <string>
 
 enum Mat_Wrap { W_UNKNOWN, CLAMP, CLAMP_TO_BORDER, REPEAT, MIRRORED_REPEAT };
 enum Mat_MinMagFilter { M_UNKNOWN, NEAREST, LINEAR, MIPMAP_NEAREST, MIPMAP_LINEAR};
@@ -18,6 +19,7 @@ public:
 	uint getGLid() const { return gl_id; };
 	uint getId() const { return id; };
 	void getSize(int& x, int& y) const { x = size_x; y = size_y; };
+	const char* getName() { return texture_name.c_str(); };
 
 	void setParameters(Mat_Wrap wrap, Mat_MinMagFilter min_filter, Mat_MinMagFilter mag_filter);
 	void LoadCheckered();
@@ -30,6 +32,8 @@ public:
 	Mat_MinMagFilter mag_filter_mode = M_UNKNOWN;
 
 private:
+
+	std::string texture_name;
 	const uint id	= 0;
 	int size_x = 0;
 	int size_y = 0;

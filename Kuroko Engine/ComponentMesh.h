@@ -23,6 +23,9 @@ public:
 	void setMaterial(Material* new_mat) { mat = new_mat; };// Can recieve nullptr
 	void setMesh(Mesh* new_mesh)		{ mesh = new_mesh; }// Can recieve nullptr
 
+	void Save(JSON_Object& config);
+	void Load(JSON_Object& config);
+
 private:
 	bool wireframe = false;
 	bool draw_normals = false;

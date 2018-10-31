@@ -212,7 +212,7 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 
 	for (int i = 0; i < node.mNumMeshes; i++)
 	{
-		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]]);
+		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
 		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
 		if(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
 			c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));

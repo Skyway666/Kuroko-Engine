@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "ModuleScene.h"
 #include "Application.h"
+#include "Material.h"
 #include "glew-2.1.0\include\GL\glew.h"
 
 void ComponentMesh::Draw() const
@@ -31,4 +32,14 @@ void ComponentMesh::Draw() const
 
 	if (transform)
 		glLoadMatrixf((GLfloat*)view_mat.v);
+}
+
+void ComponentMesh::Save(JSON_Object & config) {
+	// Determine the type of the mesh
+	json_object_set_string(&config, "type", "mesh");
+	json_object_set_string(&config, "mesh_name", mesh->getName());
+	json_object_set_string(&config, "diffuse_name", mat->getTexture(DIFFUSE)->getName());
+}
+
+void ComponentMesh::Load(JSON_Object & config) {
 }

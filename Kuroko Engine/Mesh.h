@@ -1,6 +1,7 @@
 #ifndef _MESH
 #define _MESH
 #include "Globals.h"
+#include <string>
 
 #include "MathGeoLib\Math\float3.h"
 #include "MathGeoLib\Math\float2.h"
@@ -27,10 +28,10 @@ class Mesh {
 	
 	friend class Skybox;
 public:
-	Mesh(const aiMesh& mesh);
+	Mesh(const aiMesh& mesh, const char* file_name = "");
 	Mesh(PrimitiveTypes primitive);
 	// Maybe a "MeshDef" could be created?
-	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords, uint num_vertices, uint num_tris); 
+	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords, uint num_vertices, uint num_tris); //Used to load own file
 	~Mesh();
 
 	void Draw(Material* mat) const;
@@ -46,7 +47,7 @@ public:
 	const float3* getNormals()		{ return normals; }
 	const float3* getColors()		{ return colors; }
 	const float2* getTexCoords()	{ return tex_coords; }
-
+	const char* getName()			{ return mesh_name.c_str(); }
 	uint getNumVertices() { return num_vertices; }
 	uint getNumTris() { return num_tris; }
 
@@ -66,6 +67,7 @@ private:
 	const uint id = 0;
 	uint iboId = 0;
 	uint vboId = 0;
+	std::string mesh_name;
 
 	uint num_vertices = 0;
 	uint num_tris = 0;

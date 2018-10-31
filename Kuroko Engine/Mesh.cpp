@@ -9,10 +9,12 @@
 
 #include "Assimp\include\scene.h"
 
-Mesh::Mesh(const aiMesh& imported_mesh) : id(App->scene->last_mesh_id++)
+Mesh::Mesh(const aiMesh& imported_mesh, const char* file_name) : id(App->scene->last_mesh_id++)
 {
 	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
 	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
+
+	mesh_name = file_name;
 	
 	App->scene->addMesh(this);
 }
@@ -157,6 +159,7 @@ void Mesh::BuildCube(float3& size)
 {
 	size.x *= 0.5f; size.y *= 0.5f; size.z *= 0.5f;
 
+	mesh_name = "CUBE";
 	num_vertices = 8;
 	vertices = new float3[num_vertices];
 
@@ -205,6 +208,7 @@ void Mesh::BuildPlane(float sx, float sy)
 {
 	sx *= 0.5f, sy *= 0.5f;
 
+	mesh_name = "PLANE";
 	num_vertices = 8;
 	vertices = new float3[num_vertices];
 
@@ -241,7 +245,7 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 
 	// Sphere (code from http://www.songho.ca/opengl/gl_sphere.html)
 
-
+	mesh_name = "SPHERE";	
 	float x, y, z, xy;                              // vertex position
 	float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
 	float s, t;                                     // vertex texCoord
@@ -326,6 +330,7 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 
 	// code belongs to Zakuayada https://www.gamedev.net/forums/topic/359467-draw-cylinder-with-triangle-strips/
 
+	mesh_name = "CYLINDER";
 	num_vertices = numSteps * 2 + 2;
 	vertices = new float3[num_vertices];
 	normals = new float3[num_vertices];
