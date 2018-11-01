@@ -22,7 +22,7 @@ public:
 	ModuleUI(Application* app, bool start_enabled = true);
 	~ModuleUI();
 
-	bool Init(const JSON_Object& config);
+	bool Init(const JSON_Object* config);
 	bool Start();
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
@@ -45,8 +45,8 @@ public:
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
 
-	void SaveConfig(JSON_Object& config) const;
-	void LoadConfig(const JSON_Object& config);
+	void SaveConfig(JSON_Object* config) const;
+	void LoadConfig(const JSON_Object* config);
 
 private:
 	

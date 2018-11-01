@@ -27,7 +27,7 @@ ModuleRenderer3D::ModuleRenderer3D(Application* app, bool start_enabled) : Modul
 }
 
 // Called before render is available
-bool ModuleRenderer3D::Init(const JSON_Object& config)
+bool ModuleRenderer3D::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Creating 3D Renderer context...\n");
 	bool ret = true;

@@ -19,7 +19,7 @@ public:
 	ModuleImporter(Application* app, bool start_enabled = true);
 	~ModuleImporter();
 
-	bool Init(const JSON_Object& config);
+	bool Init(const JSON_Object* config);
 	bool CleanUp();
 
 	void* Import(const char* file, ImportType expected_filetype = I_NONE);

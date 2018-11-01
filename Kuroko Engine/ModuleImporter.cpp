@@ -51,7 +51,7 @@ ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(ap
 
 ModuleImporter::~ModuleImporter() {}
 
-bool ModuleImporter::Init(const JSON_Object& config)
+bool ModuleImporter::Init(const JSON_Object* config)
 {
 
 	struct aiLogStream stream;

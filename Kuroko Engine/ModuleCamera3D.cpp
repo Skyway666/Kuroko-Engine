@@ -22,7 +22,7 @@ ModuleCamera3D::~ModuleCamera3D()
 {}
 
 // -----------------------------------------------------------------
-bool ModuleCamera3D::Init(const JSON_Object& config)
+bool ModuleCamera3D::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Setting up the camera");
 	editor_camera = new Camera(float3(0.0, 2.0f, 5.0f), float3::zero);

@@ -47,7 +47,7 @@ ModuleUI::ModuleUI(Application* app, bool start_enabled) : Module(app, start_ena
 ModuleUI::~ModuleUI() {
 }
 
-bool ModuleUI::Init(const JSON_Object& config) {
+bool ModuleUI::Init(const JSON_Object* config) {
 	
 	SDL_GL_SetSwapInterval(1); // Enable vsync
 
@@ -1033,27 +1033,27 @@ void ModuleUI::DrawTimeControl()
 	ImGui::End();
 }
 
-void ModuleUI::SaveConfig(JSON_Object& config) const
+void ModuleUI::SaveConfig(JSON_Object* config) const
 {
-	json_object_set_boolean(&config, "hierarchy", open_tabs[HIERARCHY]);
-	json_object_set_boolean(&config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
-	json_object_set_boolean(&config, "primitive", open_tabs[PRIMITIVE]);
-	json_object_set_boolean(&config, "about", open_tabs[ABOUT]);
-	json_object_set_boolean(&config, "configuration", open_tabs[CONFIGURATION]);
-	json_object_set_boolean(&config, "log", open_tabs[LOG]);
-	json_object_set_boolean(&config, "time_control", open_tabs[TIME_CONTROL]);
+	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);
+	json_object_set_boolean(config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
+	json_object_set_boolean(config, "primitive", open_tabs[PRIMITIVE]);
+	json_object_set_boolean(config, "about", open_tabs[ABOUT]);
+	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
+	json_object_set_boolean(config, "log", open_tabs[LOG]);
+	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
-void ModuleUI::LoadConfig(const JSON_Object& config) 
+void ModuleUI::LoadConfig(const JSON_Object* config) 
 {
-	open_tabs[CONFIGURATION]	= json_object_get_boolean(&config, "configuration");
-	open_tabs[HIERARCHY]		= json_object_get_boolean(&config, "hierarchy");
-	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(&config, "obj_inspector");
-	open_tabs[PRIMITIVE]		= json_object_get_boolean(&config, "primitive");
-	open_tabs[ABOUT]			= json_object_get_boolean(&config, "about");
-	open_tabs[LOG]				= json_object_get_boolean(&config, "log");
-	open_tabs[TIME_CONTROL]		= json_object_get_boolean(&config, "time_control");
+	open_tabs[CONFIGURATION]	= json_object_get_boolean(config, "configuration");
+	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
+	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
+	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
+	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
+	open_tabs[LOG]				= json_object_get_boolean(config, "log");
+	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 

@@ -29,7 +29,7 @@ public:
 	// Destructor
 	virtual ~ModuleWindow();
 
-	bool Init(const JSON_Object& config);
+	bool Init(const JSON_Object* config);
 	bool CleanUp();
 
 	// id = 0 assigns to main window
@@ -41,10 +41,10 @@ public:
 	void setBrightness(float brightness, uint id = 0);
 	void setSize(int x, int y, uint id = 0);
 
-	void fillWindowConfig(const JSON_Object& config);
+	void fillWindowConfig(const JSON_Object* config);
 
-	void SaveConfig(JSON_Object& config) const;
-	void LoadConfig(const JSON_Object& config);
+	void SaveConfig(JSON_Object* config) const;
+	void LoadConfig(const JSON_Object* config);
 
 public:
 

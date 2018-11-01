@@ -15,7 +15,7 @@ ModuleWindow::~ModuleWindow()
 }
 
 // Called before render is available
-bool ModuleWindow::Init(const JSON_Object& config)
+bool ModuleWindow::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Init SDL window & surface");
 	bool ret = true;
@@ -54,7 +54,7 @@ bool ModuleWindow::Init(const JSON_Object& config)
 		main_window->height = height = DM.h - main_window->adaptable_offsety;
 		}
 		
-		main_window->window = SDL_CreateWindow(json_object_get_string(&config,"title"), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		main_window->window = SDL_CreateWindow(json_object_get_string(config,"title"), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
 		if(main_window->window == NULL)
 		{
@@ -224,57 +224,57 @@ void ModuleWindow::setSize(int x, int y, uint id)
 	}
 }
 
-void ModuleWindow::fillWindowConfig(const JSON_Object& config) 
+void ModuleWindow::fillWindowConfig(const JSON_Object* config) 
 {
-	main_window->borderless = json_object_get_boolean(&config, "borderless");
-	main_window->fullscreen = json_object_get_boolean(&config, "fullscreen");
-	main_window->resizable = json_object_get_boolean(&config, "resizable");
-	main_window->fulldesk = json_object_get_boolean(&config, "fulldesktop");
-	main_window->adapt_screen = json_object_get_boolean(&config, "adapt_screen");
+	main_window->borderless = json_object_get_boolean(config, "borderless");
+	main_window->fullscreen = json_object_get_boolean(config, "fullscreen");
+	main_window->resizable = json_object_get_boolean(config, "resizable");
+	main_window->fulldesk = json_object_get_boolean(config, "fulldesktop");
+	main_window->adapt_screen = json_object_get_boolean(config, "adapt_screen");
 
-	main_window->width = json_object_get_number(&config, "width");
-	main_window->height = json_object_get_number(&config, "height");
-	main_window->adaptable_offsetx = json_object_get_number(&config, "adaptable_offsetx");
-	main_window->adaptable_offsety = json_object_get_number(&config, "adaptable_offsety");
+	main_window->width = json_object_get_number(config, "width");
+	main_window->height = json_object_get_number(config, "height");
+	main_window->adaptable_offsetx = json_object_get_number(config, "adaptable_offsetx");
+	main_window->adaptable_offsety = json_object_get_number(config, "adaptable_offsety");
 
-	main_window->brightness = json_object_get_number(&config, "brightness");
+	main_window->brightness = json_object_get_number(config, "brightness");
 }
 
-void ModuleWindow::SaveConfig(JSON_Object& config) const
+void ModuleWindow::SaveConfig(JSON_Object* config) const
 {
-	json_object_set_boolean(&config, "borderless", main_window->borderless);
-	json_object_set_boolean(&config, "fullscreen", main_window->fullscreen);
-	json_object_set_boolean(&config, "resizable", main_window->resizable);
-	json_object_set_boolean(&config, "fulldesktop", main_window->fulldesk);
-	json_object_set_boolean(&config, "adapt_screen", main_window->adapt_screen);
+	json_object_set_boolean(config, "borderless", main_window->borderless);
+	json_object_set_boolean(config, "fullscreen", main_window->fullscreen);
+	json_object_set_boolean(config, "resizable", main_window->resizable);
+	json_object_set_boolean(config, "fulldesktop", main_window->fulldesk);
+	json_object_set_boolean(config, "adapt_screen", main_window->adapt_screen);
 
-	json_object_set_number(&config, "width", main_window->width);
-	json_object_set_number(&config, "height", main_window->height);
-	json_object_set_number(&config, "adaptable_offsetx", main_window->adaptable_offsetx);
-	json_object_set_number(&config, "adaptable_offsety", main_window->adaptable_offsety);
-	json_object_set_number(&config, "brightness", main_window->brightness);
+	json_object_set_number(config, "width", main_window->width);
+	json_object_set_number(config, "height", main_window->height);
+	json_object_set_number(config, "adaptable_offsetx", main_window->adaptable_offsetx);
+	json_object_set_number(config, "adaptable_offsety", main_window->adaptable_offsety);
+	json_object_set_number(config, "brightness", main_window->brightness);
 }
 
-void ModuleWindow::LoadConfig(const JSON_Object& config) {
+void ModuleWindow::LoadConfig(const JSON_Object* config) {
 
 	fillWindowConfig(config);
-	setFullscreen(json_object_get_boolean(&config, "fullscreen"));
-	setResizable(json_object_get_boolean(&config, "resizable"));
-	setFullDesktop(json_object_get_boolean(&config, "fulldesktop"));
-	setBorderless(json_object_get_boolean(&config, "borderless"));
+	setFullscreen(json_object_get_boolean(config, "fullscreen"));
+	setResizable(json_object_get_boolean(config, "resizable"));
+	setFullDesktop(json_object_get_boolean(config, "fulldesktop"));
+	setBorderless(json_object_get_boolean(config, "borderless"));
 	int width, height = 0;
 	if (!main_window->adapt_screen){
-		width = json_object_get_number(&config, "width");
-		height = json_object_get_number(&config, "height");
+		width = json_object_get_number(config, "width");
+		height = json_object_get_number(config, "height");
 	}
 	else {
 		SDL_DisplayMode DM;
 		SDL_GetCurrentDisplayMode(0, &DM);
-		width = DM.w - json_object_get_number(&config, "adaptable_offsetx");
-		height = DM.h - json_object_get_number(&config, "adaptable_offsety");
+		width = DM.w - json_object_get_number(config, "adaptable_offsetx");
+		height = DM.h - json_object_get_number(config, "adaptable_offsety");
 
 	}
 	setSize(width, height);
 
-	setBrightness(json_object_get_number(&config, "brightness"));
+	setBrightness(json_object_get_number(config, "brightness"));
 }

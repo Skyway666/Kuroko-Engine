@@ -41,7 +41,6 @@ public:
 	ModuleDebug(Application* app, bool start_enabled = true) : Module(app, start_enabled) { name = "debug"; };
 	~ModuleDebug() { ClearShapes(); };
 
-	bool Init(const JSON_Object& config) { return true; };
 	void DrawShapes();
 	bool CleanUp();
 

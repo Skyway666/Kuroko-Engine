@@ -20,7 +20,7 @@ public:
 	ModuleInput(Application* app, bool start_enabled = true);
 	~ModuleInput();
 
-	bool Init(const JSON_Object& config);
+	bool Init(const JSON_Object* config);
 	update_status PreUpdate(float dt);
 	bool CleanUp();
 
