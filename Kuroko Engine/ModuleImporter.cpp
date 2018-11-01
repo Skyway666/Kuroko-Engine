@@ -127,7 +127,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		{
 			std::string texture_name = file;
 			App->fs->getFileNameFromPath(texture_name);
-			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str()); // code breaks here when importing texture from scene the first time
+			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str()); 
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}
@@ -276,6 +276,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 		size += sizeof(float3)*vert_num;
 	if (has_texcoords)
 		size += sizeof(float2)*vert_num;
+
 	char* data = new char[size];
 	char* cursor = data;
 
