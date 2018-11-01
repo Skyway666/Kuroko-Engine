@@ -67,7 +67,7 @@ bool ComponentTransform::Update(float dt)
 Transform* ComponentTransform::getInheritedTransform()
 {
 	if (GameObject* parent_obj = getParent()->getParent())
-		return ((ComponentTransform*)parent_obj->getComponent(TRANSFORM))->local;
+		return ((ComponentTransform*)parent_obj->getComponent(TRANSFORM))->global;
 	else 
 		return nullptr;
 }
