@@ -21,26 +21,34 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 	
 }
 
-GameObject::GameObject(JSON_Object& deff): uuid(json_object_get_number(&deff, "UUID")) {
-	name = json_object_get_string(&deff, "name");
+GameObject::GameObject(JSON_Object* deff): uuid(json_object_get_number(deff, "UUID")) {
+	name = json_object_get_string(deff, "name");
 
 	// Create components
-	JSON_Array* json_components = json_object_get_array(&deff, "Components");
+	JSON_Array* json_components = json_object_get_array(deff, "Components");
 
 	for (int i = 0; i < json_array_get_count(json_components); i++) {
 		JSON_Object* component_deff = json_array_get_object(json_components, i);
-		const char* type = json_object_get_string(component_deff, "type");
+		std::string type;
+		if(const char* type_c_str = json_object_get_string(component_deff, "type"))
+			 type = type_c_str;
 		Component* component = nullptr;
-		if (type == "transform") {
-			component = new ComponentTransform(*component_deff);
+		if (type.compare("transform") == 0) {
+			component = new ComponentTransform(component_deff);
 		}
-		else if (type == "mesh") {
+		else if (type.compare("mesh") == 0) {
 			// Create mesh component
 		}
 
+
 		// Set component's parent-child
-		component->setParent(this);      
+		if (!component){
+			app_log->AddLog("WARNING! Component of type %s could not be loaded", type);
+			continue;
+		}
+		component->setParent(this);
 		components.push_back(component);
+		
 	}
 }
 
@@ -209,12 +217,12 @@ void GameObject::removeComponent(Component* component)
 	
 }
 
-void GameObject::Save(JSON_Object & config) {
+void GameObject::Save(JSON_Object * config) {
 
 	// Saving object own variables
-	json_object_set_string(&config, "name", name.c_str());
-	json_object_set_number(&config, "UUID", uuid);
-	if (parent) json_object_set_number(&config, "Parent", parent->uuid);
+	json_object_set_string(config, "name", name.c_str());
+	json_object_set_number(config, "UUID", uuid);
+	if (parent) json_object_set_number(config, "Parent", parent->uuid);
 
 	// Saving components components
 	JSON_Value* component_array = json_value_init_array(); // Create array of components
@@ -225,10 +233,10 @@ void GameObject::Save(JSON_Object & config) {
 		json_array_append_value(json_array(component_array), curr_component); // Add them to array
 	}
 
-	json_object_set_value(&config, "Components", component_array); // Save component array in object
+	json_object_set_value(config, "Components", component_array); // Save component array in object
 
 }
 
-void GameObject::Load(JSON_Object & config) 
+void GameObject::Load(JSON_Object * config) 
 {
 }

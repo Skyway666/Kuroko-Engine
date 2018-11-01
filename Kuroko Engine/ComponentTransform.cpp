@@ -36,9 +36,9 @@ ComponentTransform::ComponentTransform(GameObject* parent, const ComponentTransf
 	global = new Transform(*transform.global);
 }
 
-ComponentTransform::ComponentTransform(JSON_Object& deff): Component(nullptr, TRANSFORM){
-	local = new Transform(*json_object_get_object(&deff, "local"));
-	global = new Transform(*json_object_get_object(&deff, "global"));
+ComponentTransform::ComponentTransform(JSON_Object* deff): Component(nullptr, TRANSFORM){
+	local = new Transform(json_object_get_object(deff, "local"));
+	global = new Transform(json_object_get_object(deff, "global"));
 	
 }
 

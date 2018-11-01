@@ -16,7 +16,7 @@ class GameObject
 public:
 
 	GameObject(const char* name, GameObject* parent = nullptr);
-	GameObject(JSON_Object& deff);
+	GameObject(JSON_Object* deff);
 	~GameObject();
 
 	bool Update(float dt);
@@ -55,8 +55,8 @@ public:
 	void Rename(const char* new_name) { name = new_name; };
 	std::string getName() const { return name; };
 
-	void Save(JSON_Object& config);
-	void Load(JSON_Object& config);
+	void Save(JSON_Object* config);
+	void Load(JSON_Object* config);
 
 private:
 

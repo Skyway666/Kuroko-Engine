@@ -13,7 +13,7 @@ class Transform
 public:
 	Transform() {}
 	Transform(const Transform& transform);
-	Transform(JSON_Object &deff);
+	Transform(JSON_Object* deff);
 
 	void Set(const float3& pos, const Quat& rot, const float3& scl) { setPosition(pos); setRotation(rot); setScale(scl); };
 	void setPosition(const float3& pos);
