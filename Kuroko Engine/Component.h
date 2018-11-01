@@ -25,7 +25,7 @@ public:
 	virtual void Save(JSON_Object& config) {}
 	virtual void Load(JSON_Object& config) {}
 
-private:
+protected:
 
 	bool is_active = true;
 	const Component_type type = NONE;

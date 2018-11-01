@@ -241,7 +241,7 @@ void ModuleScene::ManageSceneSaveLoad() {
 		want_save_scene = false;
 	}
 	if (want_load_scene) {
-		LoadScene();
+		LoadScene("scene_test");
 		want_load_scene = false;
 	}
 }
@@ -253,20 +253,43 @@ void ModuleScene::SaveScene(std::string name) {
 
 	App->fs->CreateEmptyFile(name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
 
-	JSON_Value* scene = json_value_init_object();
+
+	JSON_Value* scene = json_value_init_object();	// Full file object
+	JSON_Value* objects_array = json_value_init_array();	// Array of objects in the scene
+
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
-		JSON_Value* object = json_value_init_object();
-		(*it)->Save(*json_object(object));
-		json_object_set_value(json_object(scene), (*it)->getName().c_str(), object);
+		JSON_Value* content = json_value_init_object(); // Content of the object
+		JSON_Value* object = json_value_init_object();	// Object in the arrat
+		(*it)->Save(*json_object(content));				// Fill content
+		json_object_set_value(json_object(object), (*it)->getName().c_str(), content); // Put content in object
+		json_array_append_value(json_array(objects_array), object); // Add object to array
 	}
 
+	json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
+
+	// TODO store editor camera
 	std::string path;
 	App->fs->FormFullPath(path, name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
 	json_serialize_to_file(scene, path.c_str());
 }
 
-void ModuleScene::LoadScene() {
+void ModuleScene::LoadScene(const char* path) {
+	JSON_Value* scene;
+	if (scene = json_parse_file(path)) {
+		app_log->AddLog("Couldn't load %s, no value", path);
+		return;
+	}
 	
+	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
+
+	// Load all the objects and put them in the scene array
+	for (int i = 0; i < json_array_get_count(objects); i++) {
+		JSON_Object* obj_deff = json_array_get_object(objects, i);
+		GameObject* obj = new GameObject(*obj_deff);
+		game_objects.push_back(obj);
+	}
+
+	// Manage the object's parenting
 }
 
 

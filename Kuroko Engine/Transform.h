@@ -2,7 +2,7 @@
 #define _TRANSFORM_H_
 
 #include "Globals.h"
-
+#include "Parson\parson.h"
 #include "MathGeoLib\Math\float3.h"
 #include "MathGeoLib\Math\Quat.h"
 #include "MathGeoLib\Math\float4x4.h"
@@ -13,6 +13,7 @@ class Transform
 public:
 	Transform() {}
 	Transform(const Transform& transform);
+	Transform(JSON_Object &deff);
 
 	void Set(const float3& pos, const Quat& rot, const float3& scl) { setPosition(pos); setRotation(rot); setScale(scl); };
 	void setPosition(const float3& pos);

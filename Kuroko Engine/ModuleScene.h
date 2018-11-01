@@ -57,7 +57,7 @@ private:
 	
 	void ManageSceneSaveLoad();
 	void SaveScene(std::string name);
-	void LoadScene();
+	void LoadScene(const char* path);
 private:
 
 	std::list<GameObject*>	game_objects; 

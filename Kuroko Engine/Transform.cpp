@@ -9,6 +9,18 @@ Transform::Transform(const Transform& transform)
 	CalculateMatrix();
 }
 
+Transform::Transform(JSON_Object & deff) {
+
+	setPosition(float3(json_object_get_number(&deff, "px"), json_object_get_number(&deff, "py"), json_object_get_number(&deff, "pz")));
+	setScale(float3(json_object_get_number(&deff, "sx"), json_object_get_number(&deff, "sy"), json_object_get_number(&deff, "sz")));
+	Quat rotation;
+	rotation.x = json_object_get_number(&deff, "qx");
+	rotation.y = json_object_get_number(&deff, "qy");
+	rotation.z = json_object_get_number(&deff, "qz");
+	rotation.w = json_object_get_number(&deff, "qw");
+	setRotation(rotation);
+}
+
 void Transform::setRotationEuler(const float3& euler)
 {
 	rotation = Quat::identity;

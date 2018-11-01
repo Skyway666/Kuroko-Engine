@@ -21,6 +21,29 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 	
 }
 
+GameObject::GameObject(JSON_Object& deff): uuid(json_object_get_number(&deff, "UUID")) {
+	name = json_object_get_string(&deff, "name");
+
+	// Create components
+	JSON_Array* json_components = json_object_get_array(&deff, "Components");
+
+	for (int i = 0; i < json_array_get_count(json_components); i++) {
+		JSON_Object* component_deff = json_array_get_object(json_components, i);
+		const char* type = json_object_get_string(component_deff, "type");
+		Component* component = nullptr;
+		if (type == "transform") {
+			component = new ComponentTransform(*component_deff);
+		}
+		else if (type == "mesh") {
+			// Create mesh component
+		}
+
+		// Set component's parent-child
+		component->setParent(this);      
+		components.push_back(component);
+	}
+}
+
 GameObject::~GameObject()
 {
 	for (auto it = components.begin(); it != components.end(); it++)
@@ -29,6 +52,8 @@ GameObject::~GameObject()
 	for (auto it = children.begin(); it != children.end(); it++)
 		(*it)->parent = parent;
 }
+
+
 
 bool GameObject::Update(float dt)
 {
@@ -187,21 +212,20 @@ void GameObject::removeComponent(Component* component)
 void GameObject::Save(JSON_Object & config) {
 
 	// Saving object own variables
+	json_object_set_string(&config, "name", name.c_str());
 	json_object_set_number(&config, "UUID", uuid);
 	if (parent) json_object_set_number(&config, "Parent", parent->uuid);
 
-	// Save components
-
-	JSON_Value* component_array = json_value_init_array();
-	JSON_Value* curr_component;
+	// Saving components components
+	JSON_Value* component_array = json_value_init_array(); // Create array of components
 
 	for (auto it = components.begin(); it != components.end(); it++) {
-		curr_component = json_value_init_object();
-		(*it)->Save(*json_object(curr_component));
-		json_array_append_value(json_array(component_array), curr_component);
+		JSON_Value* curr_component = json_value_init_object(); // Create new components 
+		(*it)->Save(*json_object(curr_component));			   // Save component
+		json_array_append_value(json_array(component_array), curr_component); // Add them to array
 	}
 
-	json_object_set_value(&config, "Components", component_array);
+	json_object_set_value(&config, "Components", component_array); // Save component array in object
 
 }
 
