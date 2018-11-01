@@ -37,7 +37,7 @@ GameObject::GameObject(JSON_Object* deff): uuid(json_object_get_number(deff, "UU
 			component = new ComponentTransform(component_deff);
 		}
 		else if (type.compare("mesh") == 0) {
-			// Create mesh component
+			component = new ComponentMesh(component_deff);
 		}
 
 

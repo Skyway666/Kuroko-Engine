@@ -10,6 +10,7 @@ class ComponentMesh : public Component {
 public:
 
 	ComponentMesh(GameObject* gameobject) : Component(gameobject, MESH) {};   // empty constructor
+	ComponentMesh(JSON_Object* deff);
 	ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), mesh(mesh) {};
 
 	void Draw() const;
@@ -22,6 +23,7 @@ public:
 	void setDrawNormals(bool state)		{ draw_normals = state; };
 	void setMaterial(Material* new_mat) { mat = new_mat; };// Can recieve nullptr
 	void setMesh(Mesh* new_mesh)		{ mesh = new_mesh; }// Can recieve nullptr
+	bool whichPrimitive(std::string mesh_name, PrimitiveTypes& which_primitive); 
 
 	void Save(JSON_Object& config);
 	void Load(JSON_Object& config);

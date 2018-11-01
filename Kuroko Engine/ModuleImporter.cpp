@@ -127,7 +127,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		{
 			std::string texture_name = file;
 			App->fs->getFileNameFromPath(texture_name);
-			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str());
+			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str()); // code breaks here when importing texture from scene the first time
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}

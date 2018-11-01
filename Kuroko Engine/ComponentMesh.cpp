@@ -6,7 +6,33 @@
 #include "Application.h"
 #include "Material.h"
 #include "ModuleImporter.h"
+#include "FileSystem.h"
 #include "glew-2.1.0\include\GL\glew.h"
+
+ComponentMesh::ComponentMesh(JSON_Object * deff): Component(nullptr, MESH) {
+	std::string path;
+
+	// Load mesh from own file format
+	PrimitiveTypes primitive_type = Primitive_None;
+	std::string mesh_name = json_object_get_string(deff, "mesh_name");
+
+	if (whichPrimitive(mesh_name, primitive_type)) { // If it is a primitive, build one, else load from .kr
+		mesh = new Mesh(primitive_type);
+	}
+	else{
+	App->fs->FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
+	mesh = App->importer->ImportMeshFromKR(path.c_str());
+	}
+
+	mat = new Material();
+	const char* diffuse_name;
+	if(diffuse_name = json_object_get_string(deff, "diffuse_name")){ // If it has a diffuse texture load it
+		App->fs->FormFullPath(path, diffuse_name, LIBRARY_TEXTURES, DDS_EXTENSION);
+		Texture* diffuse = (Texture*)App->importer->Import(path.c_str(), I_TEXTURE);
+		mat->setTexture(DIFFUSE, diffuse);
+	}
+	
+}
 
 void ComponentMesh::Draw() const
 {
@@ -33,6 +59,27 @@ void ComponentMesh::Draw() const
 
 	if (transform)
 		glLoadMatrixf((GLfloat*)view_mat.v);
+}
+
+bool ComponentMesh::whichPrimitive(std::string mesh_name, PrimitiveTypes & which_primitive) {
+
+	which_primitive = Primitive_None; // Just for security
+	if (mesh_name.compare("CUBE") == 0) 
+		which_primitive = Primitive_Cube;
+
+	else if (mesh_name.compare("PLANE") == 0) 
+		which_primitive = Primitive_Plane;
+
+	else if (mesh_name.compare("SPHERE") == 0) 
+		which_primitive = Primitive_Sphere;
+
+	else if (mesh_name.compare("CYLINDER") == 0) 
+		which_primitive = Primitive_Cylinder;
+	
+	if (which_primitive != Primitive_None)
+		return true;
+
+	return false;
 }
 
 void ComponentMesh::Save(JSON_Object & config) {
