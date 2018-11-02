@@ -429,7 +429,7 @@ bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh)
 	if (imported_mesh.HasVertexColors(0))
 	{
 		imported_colors = true;
-		memcpy(normals, imported_mesh.mColors[0], sizeof(float3) * num_vertices);
+		memcpy(colors, imported_mesh.mColors[0], sizeof(float3) * num_vertices);
 	}
 	else
 	{
