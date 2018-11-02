@@ -13,8 +13,11 @@
 #include "ModuleRenderer3D.h"
 
 
-GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits() + 1) // UUID can never be 0!
+GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits()) 
 {
+	if (uuid == 0)		// Remote case, UUID can never be 0!
+		uuid += 1;
+
 	addComponent(TRANSFORM);
 	addComponent(C_AABB);
 	App->scene->addGameObject(this);

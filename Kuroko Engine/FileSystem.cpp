@@ -91,6 +91,22 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	path.append(extension);
 }
 
+bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const char * extension) {
+
+	// Form destination path
+	std::string dest_path;
+	std::string file_name = full_path_src;
+	getFileNameFromPath(file_name);
+	FormFullPath(dest_path, file_name.c_str(), dest_lib, extension); 
+
+	// Copy and paste
+	std::ifstream src(full_path_src, std::ios::binary);
+	std::ofstream dest(dest_path, std::ios::binary);
+	dest << src.rdbuf();
+
+	return src && dest;
+}
+
 bool FileSystem::removeExtension(std::string& str) {
 	size_t lastdot = str.find_last_of(".");
 	if (lastdot == std::string::npos)

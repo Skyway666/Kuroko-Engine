@@ -128,6 +128,11 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			std::string texture_name = file;
 			App->fs->getFileNameFromPath(texture_name);
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str()); 
+
+			if (extension == ".dds") { 									// Copy and paste file in library folder. Bad exported dds will be overwritten
+				if (!App->fs->copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
+					app_log->AddLog("%s could not be copied to Library/Textures", file);
+			}
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}
@@ -330,7 +335,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	delete data;
 }
 
-void ModuleImporter::ExportTextureToDDS(const char* file) {
+void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
 	ILuint size;
 	char *data;
 	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
@@ -338,7 +343,7 @@ void ModuleImporter::ExportTextureToDDS(const char* file) {
 	if (size > 0) {
 		data = new char[size]; // allocate data buffer
 		if (ilSaveL(IL_DDS, data, size) > 0) // Save to buffer with the ilSaveIL function
-			App->fs->ExportBuffer(data, size, file, LIBRARY_TEXTURES, DDS_EXTENSION);
+			App->fs->ExportBuffer(data, size, texture_name, LIBRARY_TEXTURES, DDS_EXTENSION);
 		delete data; 
 	}
 }

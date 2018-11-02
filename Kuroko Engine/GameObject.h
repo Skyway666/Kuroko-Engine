@@ -74,7 +74,7 @@ private:
 	float3 own_half_size = float3::zero;	// does not include childs
 
 	const uint id = 0;
-	const uint uuid = 0; // UUID can't be 0! Parents which UUID is 0, means that object has no parent
+	uint uuid = 0; // UUID can't be 0! Parents which UUID is 0, means that object has no parent
 
 public:
 

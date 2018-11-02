@@ -68,7 +68,7 @@ private:
 	const uint id = 0;
 	uint iboId = 0;
 	uint vboId = 0;
-	std::string mesh_name;
+	std::string mesh_name; //"CUBE", "PLANE", "SHPERE" and "CYLIDER" are primitives, don't use models with this name
 
 	uint num_vertices = 0;
 	uint num_tris = 0;
