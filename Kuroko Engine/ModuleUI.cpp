@@ -832,7 +832,10 @@ void ModuleUI::DrawAboutWindow()
 	ImGui::SameLine();
 	if (ImGui::Button("Learn more##pcg_random"))
 		App->requestBrowser("http://www.pcg-random.org");
-	
+	ImGui::Text("ImGuizmo");
+	ImGui::SameLine();
+	if(ImGui::Button("Learn more##imguizmo"))
+		App->requestBrowser("https://github.com/CedricGuillemet/ImGuizmo");
 	ImGui::PopFont();
 	ImGui::End();
 }

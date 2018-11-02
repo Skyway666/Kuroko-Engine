@@ -1,4 +1,4 @@
-Kuroko Engine 0.452
+Kuroko Engine 0.5
 
 This is a videogame engine in process, developed by Rodrigo de Pedro Lombao and Lucas García Mateu.
 
@@ -10,11 +10,15 @@ Features of the engine:
 - Primitive shapes (Plane, Cube, Sphere and Cylinder)
 - Game object system, with parenting and components
 - Load and Save of the editor configuration through JSON
+- Own File Format for meshes and all textures stored in dds in automatically created libraries
+- Camera as a component (the camera shows what it sees in the inspector)
+- Quadtree
+- Save and Load of scene, fully from the library
 
 - File import through windows explorer or drag and drop
 - About tab with information about the engine and links to the used libraries
 - UI docking
-- Inspector with information about the transform, mesh and material used by the gameobject.
+
 
 Libraries used:
 - Assimp 	(http://www.assimp.org/)
@@ -25,6 +29,7 @@ Libraries used:
 - OpenGL, GLSL	(https://www.opengl.org/
 - Parson	(https://github.com/kgabis/parson)
 - PCG Random	(http://www.pcg-random.org)
+- ImGuizmo      (https://github.com/CedricGuillemet/ImGuizmo)
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
 
