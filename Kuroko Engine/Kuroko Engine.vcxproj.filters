@@ -55,6 +55,15 @@
     <Filter Include="Sources\Containers">
       <UniqueIdentifier>{77481df1-a35f-4080-a7c6-fc4670d02993}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\ImGuizmo">
+      <UniqueIdentifier>{3259b108-1a7d-4e1e-9bc7-9534920f157d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ImGuizmo\headers">
+      <UniqueIdentifier>{08ee1642-b4f6-40c5-a6eb-faaef7fb7d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\ImGuizmo\cpps">
+      <UniqueIdentifier>{61c95dc2-d3a8-489e-ba78-f49dd8075845}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -372,6 +381,12 @@
     <ClInclude Include="Transform.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\ImGuizmo.h">
+      <Filter>Sources\ImGuizmo\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\ImSequencer.h">
+      <Filter>Sources\ImGuizmo\headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -574,6 +589,12 @@
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\ImGuizmo.cpp">
+      <Filter>Sources\ImGuizmo\cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\ImSequencer.cpp">
+      <Filter>Sources\ImGuizmo\cpps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
