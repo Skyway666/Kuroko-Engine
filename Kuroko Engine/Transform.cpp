@@ -1,5 +1,9 @@
 #include "Transform.h"
 #include "MathGeoLib\Math\TransformOps.h"
+#include "ImGui\ImGuizmo.h"
+#include "Application.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 Transform::Transform(const Transform& transform)
 {
@@ -34,6 +38,14 @@ void Transform::LookAt(const float3& position, const float3& target, const float
 {
 	mat = mat.LookAt(position, target, forward, up, float3::unitY);
 	rotation = mat.RotatePart().ToQuat();
+}
+
+void Transform::DrawGuizmo() {
+	ImGuizmo::BeginFrame();
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
+	ImGuizmo::Manipulate(App->camera->, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
 }
 
 float4x4 Transform::CalculateMatrix()
