@@ -48,7 +48,8 @@ public:
 	const float3* getNormals()		{ return normals; }
 	const float3* getColors()		{ return colors; }
 	const float2* getTexCoords()	{ return tex_coords; }
-	const char* getName()			{ return mesh_name.c_str(); }
+	const char* getName()			{ return mesh_name.c_str(); }         
+	void setName(const char* name)	{ mesh_name = name; }
 	uint getNumVertices() { return num_vertices; }
 	uint getNumTris() { return num_tris; }
 

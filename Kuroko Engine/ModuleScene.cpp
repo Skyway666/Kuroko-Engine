@@ -234,14 +234,24 @@ void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 				list_to_fill.remove(*it);
 }
 
+void ModuleScene::AskSceneSave(char * scene_name) {
+	want_save_scene = true;
+	scene_to_save_name = scene_name;
+}
+
+void ModuleScene::AskSceneLoad(char * path) {
+	want_load_scene = true;
+	path_to_load_scene = path;
+}
+
 
 void ModuleScene::ManageSceneSaveLoad() {
 	if (want_save_scene) {
-		SaveScene("scene_test");
+		SaveScene(scene_to_save_name);
 		want_save_scene = false;
 	}
 	if (want_load_scene) {
-		LoadScene("Assets/Scenes/scene_test.json");
+		LoadScene(path_to_load_scene.c_str());
 		want_load_scene = false;
 	}
 }
@@ -299,7 +309,7 @@ void ModuleScene::LoadScene(const char* path) {
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
 		if(parents[i] != 0) {			// If the UUID of the parent is 0, it means that it has no parent
 			GameObject* child = (*it);
-			GameObject* parent;
+			GameObject* parent = nullptr;
 			// Look for the parent among all gameobjects
 			for (auto pos_par = game_objects.begin(); pos_par != game_objects.end(); pos_par++){
 				if((*pos_par)->getUUID() == parents[i]){	// We find the parent

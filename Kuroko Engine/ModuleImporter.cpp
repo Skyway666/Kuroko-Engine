@@ -111,6 +111,9 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		// Import own file format
 		if (extension == ".kr"){
 			Mesh* mesh = ImportMeshFromKR(file);
+			std::string mesh_name = file;
+			App->fs->getFileNameFromPath(mesh_name);
+			mesh->setName(mesh_name.c_str());
 			if (mesh) {
 				GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
 				ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);

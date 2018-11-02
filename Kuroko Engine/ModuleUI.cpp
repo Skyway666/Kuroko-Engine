@@ -106,6 +106,7 @@ update_status ModuleUI::Update(float dt) {
 
 
 	InvisibleDockingBegin();
+	static bool file_save = false;
 
 	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
 		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
@@ -161,9 +162,11 @@ update_status ModuleUI::Update(float dt) {
 				App->importer->Import(file_path.c_str());
 			}
 			if (ImGui::MenuItem("Save scene"))
-				App->scene->AskSceneSave();
-			if (ImGui::MenuItem("Load scene"))
-				App->scene->AskSceneLoad();
+				file_save = true;
+			if (ImGui::MenuItem("Load scene")){
+				std::string file_path = openFileWID();
+				App->scene->AskSceneLoad((char*)file_path.c_str());
+			}
 			if(ImGui::BeginMenu("Configuration")){
 				if (ImGui::MenuItem("Save Configuration"))
 					App->SaveConfig();
@@ -198,7 +201,24 @@ update_status ModuleUI::Update(float dt) {
 	
 	}
 	ImGui::EndMainMenuBar();
-	ImGui::End();
+
+	if (file_save) {
+		ImGui::Begin("Scene Name");
+		ImGui::PushFont(ui_fonts[REGULAR]);
+
+		static char rename_buffer[64];
+		ImGui::InputText("Save as...", rename_buffer, 64);
+		ImGui::SameLine();
+		if (ImGui::Button("Change")) {
+			App->scene->AskSceneSave(rename_buffer);
+			for (int i = 0; i < 64; i++)
+				rename_buffer[i] = '\0';
+			file_save = false;
+		}
+		ImGui::PopFont();
+		ImGui::End();
+	}
+	InvisibleDockingEnd();
 	return UPDATE_CONTINUE;
 
 }

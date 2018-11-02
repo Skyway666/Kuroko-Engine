@@ -24,6 +24,7 @@ ComponentMesh::ComponentMesh(JSON_Object * deff): Component(nullptr, MESH) {
 	mesh = App->importer->ImportMeshFromKR(path.c_str());
 	}
 
+	mesh->setName(mesh_name.c_str());
 	mat = new Material();
 	const char* diffuse_name;
 	if(diffuse_name = json_object_get_string(deff, "diffuse_name")){ // If it has a diffuse texture load it

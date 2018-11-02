@@ -1,4 +1,5 @@
 #include "FileSystem.h"
+#include "Applog.h"
 #include <iostream>
 #include <fstream>
 
@@ -99,6 +100,10 @@ bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const 
 	getFileNameFromPath(file_name);
 	FormFullPath(dest_path, file_name.c_str(), dest_lib, extension); 
 
+	if (dest_path.compare(full_path_src)) {
+		app_log->AddLog("Trying to copy/paste same file in same location, avoiding operation");
+		return false;
+	}
 	// Copy and paste
 	std::ifstream src(full_path_src, std::ios::binary);
 	std::ofstream dest(dest_path, std::ios::binary);

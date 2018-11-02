@@ -51,8 +51,8 @@ public:
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
 
-	void AskSceneSave() { want_save_scene = true; }
-	void AskSceneLoad() { want_load_scene = true; }
+	void AskSceneSave(char* scene_name); 
+	void AskSceneLoad(char* path);
 private:
 	
 	void ManageSceneSaveLoad();
@@ -75,6 +75,9 @@ private:
 	GameState game_state	= STOPPED;
 	bool want_save_scene	= false;
 	bool want_load_scene	= false;
+
+	std::string scene_to_save_name;
+	std::string path_to_load_scene;
 public:
 
 	GameObject* selected_obj	= nullptr;
