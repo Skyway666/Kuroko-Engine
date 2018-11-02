@@ -56,14 +56,15 @@ Texture::Texture() : id(App->scene->last_tex_id++)
 	App->scene->addTexture(this);
 }
 
-Texture::Texture(uint GL_id, const char* texture_name) : id(App->scene->last_tex_id++)
+Texture::Texture(uint GL_id, const char* texture_name, bool compress) : id(App->scene->last_tex_id++)
 { 
 	gl_id = GL_id;
 
 	glBindTexture(GL_TEXTURE_2D, gl_id);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, (GLint*)&size_x);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&size_y);
-	App->importer->ExportTextureToDDS(texture_name);
+	if(compress)
+		App->importer->ExportTextureToDDS(texture_name);
 	this->texture_name = texture_name;
 	glBindTexture(GL_TEXTURE_2D, 0);
 	App->scene->addTexture(this);

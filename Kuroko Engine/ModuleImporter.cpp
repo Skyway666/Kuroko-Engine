@@ -130,12 +130,14 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		{
 			std::string texture_name = file;
 			App->fs->getFileNameFromPath(texture_name);
-			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str()); 
+			bool is_dds = extension == ".dds";
+			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
-			if (extension == ".dds") { 									// Copy and paste file in library folder. Bad exported dds will be overwritten
+			if (is_dds) { 									// We copy and paste file in library folder.
 				if (!App->fs->copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
 					app_log->AddLog("%s could not be copied to Library/Textures", file);
 			}
+
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}

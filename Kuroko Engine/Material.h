@@ -13,7 +13,7 @@ struct Texture
 {
 public:
 	Texture();
-	Texture(uint GL_id, const char* texture_name);
+	Texture(uint GL_id, const char* texture_name, bool compress = true);
 	~Texture();
 
 	uint getGLid() const { return gl_id; };

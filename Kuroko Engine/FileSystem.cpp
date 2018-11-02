@@ -100,7 +100,7 @@ bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const 
 	getFileNameFromPath(file_name);
 	FormFullPath(dest_path, file_name.c_str(), dest_lib, extension); 
 
-	if (dest_path.compare(full_path_src)) {
+	if (dest_path.compare(full_path_src) == 0) {
 		app_log->AddLog("Trying to copy/paste same file in same location, avoiding operation");
 		return false;
 	}
