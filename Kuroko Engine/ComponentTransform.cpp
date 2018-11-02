@@ -146,6 +146,7 @@ void ComponentTransform::Save(JSON_Object & config) {
 	json_object_set_value(&config, "local", local_trans);
 	json_object_set_value(&config, "global", global_trans);
 
+
 }
 
 void ComponentTransform::Load(JSON_Object & config) {

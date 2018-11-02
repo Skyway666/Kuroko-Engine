@@ -264,11 +264,16 @@ void ModuleScene::SaveScene(std::string name) {
 	}
 
 	json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
+	
+
 
 	// TODO store editor camera
 	std::string path;
 	App->fs->FormFullPath(path, name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
 	json_serialize_to_file(scene, path.c_str());
+
+	// Free everything
+	json_value_free(scene);
 }
 
 void ModuleScene::LoadScene(const char* path) {
@@ -287,7 +292,10 @@ void ModuleScene::LoadScene(const char* path) {
 		game_objects.push_back(obj);
 	}
 
-	// Manage the object's parenting
+	// TODO: Manage the object's parenting
+
+
+	json_value_free(scene);
 }
 
 
