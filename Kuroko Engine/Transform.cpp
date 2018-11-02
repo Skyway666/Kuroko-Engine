@@ -45,7 +45,7 @@ void Transform::DrawGuizmo() {
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
 	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
 
-	ImGuizmo::Manipulate(App->camera->, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
+	//ImGuizmo::Manipulate(App->camera->, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
 }
 
 float4x4 Transform::CalculateMatrix()
