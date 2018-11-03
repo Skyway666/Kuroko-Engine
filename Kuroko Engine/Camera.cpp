@@ -106,6 +106,18 @@ bool Camera::frustumCull(const OBB& obb)
 	return false;
 }
 
+float4x4 Camera::getViewMatrix() {
+
+	Transform view_matrix;
+
+	view_matrix.setPosition(frustum->pos);
+	Quat rotation;
+	rotation.LookAt(float3(0,0,1),frustum->front, float3(0,1,0), frustum->up);
+	view_matrix.setRotation(rotation);
+
+	return view_matrix.CalculateMatrix();
+}
+
 
 void Camera::updateFrustum()
 {

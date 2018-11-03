@@ -67,6 +67,8 @@ bool ComponentTransform::Update(float dt)
 		LocalToGlobal();
 	}
 
+	global->DrawGuizmo();
+
 	return true;
 }
 

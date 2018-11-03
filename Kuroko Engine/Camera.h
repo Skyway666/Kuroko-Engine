@@ -33,6 +33,8 @@ public:
 	void setPlaneDistance(float n_plane, float f_plane);
 	bool frustumCull(const OBB& obb);
 
+	float4x4 getViewMatrix();
+
 private:
 
 	void updateFrustum();
