@@ -21,6 +21,7 @@ public:
 
 	bool Update(float dt);
 	void Draw() const;
+	void DrawSelected() const;
 	
 	uint getId() { return id; }
 	uint getUUID() { return uuid; }

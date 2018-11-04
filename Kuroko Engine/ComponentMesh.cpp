@@ -70,6 +70,39 @@ void ComponentMesh::Draw() const
 	}
 }
 
+void ComponentMesh::DrawSelected() const
+{
+
+	OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
+
+	if (App->camera->current_camera->frustumCull(*obb))
+	{
+		ComponentTransform* transform = nullptr;
+		float4x4 view_mat = float4x4::identity;
+
+		if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+		{
+			GLfloat matrix[16];
+			glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+			view_mat.Set((float*)matrix);
+
+			glMatrixMode(GL_MODELVIEW_MATRIX);
+			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+		}
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glLineWidth(2.5f);
+		mesh->Draw(mat);
+		glColor3f(0.8f, 0.8f, 0.8f); 
+		glLineWidth(1.0f);
+
+		if (transform)
+			glLoadMatrixf((GLfloat*)view_mat.v);
+	}
+}
+
 bool ComponentMesh::whichPrimitive(std::string mesh_name, PrimitiveTypes & which_primitive) {
 
 	which_primitive = Primitive_None; // Just for security

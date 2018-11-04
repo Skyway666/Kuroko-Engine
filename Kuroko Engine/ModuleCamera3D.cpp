@@ -171,7 +171,7 @@ FrameBuffer* ModuleCamera3D::initFrameBuffer(uint size_x, uint size_y)
 	fb->depth_tex = new Texture();
 	glGenTextures(1, &fb->depth_tex->gl_id);
 	glBindTexture(GL_TEXTURE_2D, fb->depth_tex->gl_id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size_x, size_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, size_x, size_y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -183,8 +183,8 @@ FrameBuffer* ModuleCamera3D::initFrameBuffer(uint size_x, uint size_y)
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fb->depth_test_id);
 
 	// init frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);/*
-	glFramebufferTexture2D(GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->depth_tex->gl_id, 0);*/
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->tex->gl_id, 0);
+	glFramebufferTexture2D(GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->depth_tex->gl_id, 0);
 
 	// Set the list of draw buffers.
 	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };

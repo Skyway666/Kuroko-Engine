@@ -14,6 +14,7 @@ public:
 	ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), mesh(mesh) {};
 
 	void Draw() const;
+	void DrawSelected() const;
 
 	bool getWireframe() const			{ return wireframe; };
 	bool getDrawNormals()const			{ return draw_normals; };

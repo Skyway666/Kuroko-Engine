@@ -13,8 +13,14 @@
 #include "Applog.h"
 #include "FileSystem.h"
 #include "ModuleDebug.h"
+#include "ModuleWindow.h"
+#include "ComponentAABB.h"
+#include "ComponentTransform.h"
+#include "Transform.h"
+#include "ComponentMesh.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
+#include "MathGeoLib\Geometry\LineSegment.h"
 
 #include <array>
 
@@ -152,6 +158,12 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
+	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1))
+	{
+		if (GameObject* new_selected = MousePicking())
+			selected_obj = new_selected;
+	}
+
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Update(dt);
 
@@ -170,7 +182,74 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Draw();
+
 }
+
+
+
+bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
+
+GameObject* ModuleScene::MousePicking()
+{
+	GameObject* ret = nullptr;
+
+	float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
+	float y = (((((float)App->window->main_window->height - (float) App->input->GetMouseY()) / (float)App->window->main_window->height) * 2 ) -1);
+	Frustum* f = App->camera->current_camera->getFrustum();
+	Ray ray = f->UnProjectLineSegment(x , y).ToRay();
+
+	std::list<GameObject*> intersected_objs;
+
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+	{
+		if ((*it)->getComponent(MESH))
+		{
+			OBB* obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->getOBB();
+			if (ray.Intersects(*obb))
+				intersected_objs.push_back(*it);
+		}
+	}
+	
+	if (intersected_objs.empty())
+		return ret;
+
+	std::list<RayHit> ray_hits;
+	
+	for (auto it = intersected_objs.begin(); it != intersected_objs.end(); it++)
+	{
+		Transform* global = ((ComponentTransform*)(*it)->getComponent(TRANSFORM))->global;
+		std::list<Component*> meshes;
+		(*it)->getComponents(MESH, meshes);
+		for (auto it2 = meshes.begin(); it2 != meshes.end(); it2++)
+		{
+			Mesh* mesh = ((ComponentMesh*)*it2)->getMesh();
+
+			for (int i = 0; i < mesh->getNumTris(); i++)
+			{
+				const float3* vertices = mesh->getVertices();
+				const Tri* tris = mesh->getTris();
+
+				Triangle t((global->getRotation() * (global->getScale().Mul(vertices[tris[i].v1])) + global->getPosition()),
+					(global->getRotation() * (global->getScale().Mul(vertices[tris[i].v2])) + global->getPosition()),
+					(global->getRotation() * (global->getScale().Mul(vertices[tris[i].v3])) + global->getPosition()));
+
+				float out_dist = 0.0f;
+				float3 intersection_point = float3::zero;
+				if (ray.Intersects(t, &out_dist, &intersection_point))
+					ray_hits.push_back(RayHit(out_dist, *it));
+			}
+		}
+	}
+
+	if (ray_hits.empty())
+		return ret;
+	else {
+		ray_hits.sort(sortCloserRayhit);
+		return ray_hits.front().obj;
+	}
+}
+
+
 
 Material* ModuleScene::getMaterial(uint id)  const
 {

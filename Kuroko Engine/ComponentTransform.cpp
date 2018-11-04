@@ -1,6 +1,8 @@
 #include "ComponentTransform.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Application.h"
+#include "ModuleScene.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
@@ -67,7 +69,8 @@ bool ComponentTransform::Update(float dt)
 		LocalToGlobal();
 	}
 
-	global->DrawGuizmo();
+	if(App->scene->selected_obj == getParent())
+		global->DrawGuizmo();
 
 	return true;
 }

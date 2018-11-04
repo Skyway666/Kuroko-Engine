@@ -37,13 +37,13 @@ void ComponentAABB::Reload()
 	{
 		Mesh* mesh = ((ComponentMesh*)(*it))->getMesh();
 
-		if (min_point.x > (mesh->getCentroid() + mesh->getHalfSize()).x) min_point.x = (mesh->getCentroid() + mesh->getHalfSize()).x;
-		if (min_point.y > (mesh->getCentroid() + mesh->getHalfSize()).y) min_point.y = (mesh->getCentroid() + mesh->getHalfSize()).y;
-		if (min_point.z > (mesh->getCentroid() + mesh->getHalfSize()).z) min_point.z = (mesh->getCentroid() + mesh->getHalfSize()).z;
+		if (min_point.x > (mesh->getCentroid() - mesh->getHalfSize()).x) min_point.x = (mesh->getCentroid() - mesh->getHalfSize()).x;
+		if (min_point.y > (mesh->getCentroid() - mesh->getHalfSize()).y) min_point.y = (mesh->getCentroid() - mesh->getHalfSize()).y;
+		if (min_point.z > (mesh->getCentroid() - mesh->getHalfSize()).z) min_point.z = (mesh->getCentroid() - mesh->getHalfSize()).z;
 
-		if (max_point.x < (mesh->getCentroid() - mesh->getHalfSize()).x) max_point.x = (mesh->getCentroid() - mesh->getHalfSize()).x;
-		if (max_point.y < (mesh->getCentroid() - mesh->getHalfSize()).y) max_point.y = (mesh->getCentroid() - mesh->getHalfSize()).y;
-		if (max_point.z < (mesh->getCentroid() - mesh->getHalfSize()).z) max_point.z = (mesh->getCentroid() - mesh->getHalfSize()).z;
+		if (max_point.x < (mesh->getCentroid() + mesh->getHalfSize()).x) max_point.x = (mesh->getCentroid() + mesh->getHalfSize()).x;
+		if (max_point.y < (mesh->getCentroid() + mesh->getHalfSize()).y) max_point.y = (mesh->getCentroid() + mesh->getHalfSize()).y;
+		if (max_point.z < (mesh->getCentroid() + mesh->getHalfSize()).z) max_point.z = (mesh->getCentroid() + mesh->getHalfSize()).z;
 
 	}
 
@@ -62,8 +62,8 @@ bool ComponentAABB::Update(float dt)
 {
 	if (isActive())
 	{
-		obb->pos = transform->global->getRotation() * getParent()->own_centroid + transform->global->getPosition();
-		obb->r = getParent()->own_half_size;
+		obb->pos = transform->global->getPosition();
+		obb->r =  (getParent()->own_half_size * transform->global->getScale().x, getParent()->own_half_size * transform->global->getScale().y, getParent()->own_half_size * transform->global->getScale().z);
 
 		obb->axis[0] = transform->global->Right();
 		obb->axis[1] = transform->global->Up();
@@ -107,7 +107,7 @@ void ComponentAABB::DrawAABB() const
 	}
 
 	glEnd();
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor3f(0.8f, 0.8f, 0.8f);
 
 	glLineWidth(1.0f);
 }
@@ -127,7 +127,7 @@ void ComponentAABB::DrawOBB() const
 
 	
 	glEnd();
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor3f(0.8f, 0.8f, 0.8f);
 
 	glLineWidth(1.0f);
 }

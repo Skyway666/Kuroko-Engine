@@ -85,7 +85,26 @@ void GameObject::Draw() const
 	{
 		for (auto it = components.begin(); it != components.end(); it++)
 			(*it)->Draw();
+
+		if (App->scene->selected_obj == this)
+			DrawSelected();
 	}
+}
+
+
+void GameObject::DrawSelected() const
+{
+	for (auto it = components.begin(); it != components.end(); it++)
+	{
+		if ((*it)->getType() == MESH)
+			((ComponentMesh*)*it)->DrawSelected();
+	}
+
+	std::list<GameObject*> children;
+	getChildren(children);
+
+	for (auto it = children.begin(); it != children.end(); it++)
+		(*it)->DrawSelected();
 }
 
 Component* GameObject::getComponent(Component_type type) const

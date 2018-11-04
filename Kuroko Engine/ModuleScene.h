@@ -14,6 +14,13 @@ class Quadtree;
 
 enum GameState { STOPPED, PAUSED, PLAYING};
 
+struct RayHit
+{
+	RayHit(float distance, GameObject*obj) : distance(distance), obj(obj) {};
+	float distance = 0.0f;
+	GameObject* obj = nullptr;
+};
+
 class ModuleScene : public Module
 {
 
@@ -54,6 +61,8 @@ public:
 
 	void AskSceneSave(char* scene_name); 
 	void AskSceneLoad(char* path);
+
+	GameObject* MousePicking();
 private:
 	
 	void ManageSceneSaveLoad();
