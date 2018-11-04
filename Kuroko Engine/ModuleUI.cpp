@@ -96,6 +96,7 @@ update_status ModuleUI::PreUpdate(float dt) {
 
 	// Start the ImGui frame
 	ImGui_ImplOpenGL2_NewFrame();
+
 	ImGui_ImplSDL2_NewFrame(App->window->main_window->window);
 	ImGui::NewFrame();
 

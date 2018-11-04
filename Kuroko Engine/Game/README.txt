@@ -14,10 +14,12 @@ Features of the engine:
 - Camera as a component (the camera shows what it sees in the inspector)
 - Quadtree
 - Save and Load of scene, fully from the library
-
-- File import through windows explorer or drag and drop
+- Transform "Global and Local"
 - About tab with information about the engine and links to the used libraries
 - UI docking
+
+INNOVATION: 
+- File import through windows explorer or drag and drop
 
 
 Libraries used:
