@@ -136,6 +136,8 @@ void Transform::DrawGuizmo() {
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	//ImGuizmo::DrawCube((float*)view4x4.v, (float*)projection4x4.v, new_matrix);
 	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, mCurrentGizmoOperation, mCurrentGizmoMode, new_matrix, NULL, NULL);
+
+	ApplyMatrix(new_matrix);
 }
 
 float4x4 Transform::CalculateMatrix()
@@ -145,6 +147,22 @@ float4x4 Transform::CalculateMatrix()
 	mat = mat * mat.Scale(scale);
 	mat.SetTranslatePart(position);
 	return mat;
+}
+
+void Transform::ApplyMatrix(float * m) {
+
+	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+	ImGuizmo::DecomposeMatrixToComponents(m, matrixTranslation, matrixRotation, matrixScale);
+
+	position.x = matrixTranslation[0];
+	position.y = matrixTranslation[1];
+	position.z = matrixTranslation[2];
+
+	setRotationEuler(float3(matrixRotation[0], matrixRotation[1], matrixRotation[2]));
+
+	scale.x = matrixScale[0];
+	scale.y = matrixScale[1];
+	scale.z = matrixScale[2];
 }
 
 float3 Transform::Right() const

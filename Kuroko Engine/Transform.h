@@ -27,6 +27,7 @@ public:
 	void DrawGuizmo();
 
 	float4x4 CalculateMatrix();
+	void ApplyMatrix(float* m);
 
 	float3 getPosition()const { return position; };
 	float3 getScale() const { return scale; };
