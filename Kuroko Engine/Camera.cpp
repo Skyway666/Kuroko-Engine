@@ -108,6 +108,8 @@ bool Camera::frustumCull(const OBB& obb)
 
 float4x4 Camera::getViewMatrix() {
 
+	// Other way https://www.3dgep.com/understanding-the-view-matrix/
+
 	Transform view_matrix;
 
 	view_matrix.setPosition(frustum->pos);
