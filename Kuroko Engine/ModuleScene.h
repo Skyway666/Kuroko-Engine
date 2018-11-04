@@ -46,6 +46,7 @@ public:
 
 	void deleteMaterial(Material* mat)		{ materials_to_delete.push_back(mat); };
 	void deleteGameObject(GameObject* gobj)	{ game_objs_to_delete.push_back(gobj); };
+	void deleteGameObjectRecursive(GameObject* gobj);
 	void deleteMesh(Mesh* mesh)				{ meshes_to_delete.push_back(mesh); };
 	void deleteTexture(Texture* tex)		{ textures_to_delete.push_back(tex); };
 

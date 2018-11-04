@@ -126,6 +126,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 {
 	for (auto cam = App->camera->game_cameras.rbegin(); cam != App->camera->game_cameras.rend(); ++cam)
 	{
+		App->camera->current_camera = *cam;
+
 		if (*cam != App->camera->editor_camera)
 		{
 			if (!(*cam)->getFrameBuffer())

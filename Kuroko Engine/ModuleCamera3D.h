@@ -34,6 +34,7 @@ public:
 
 public:
 	Camera* editor_camera = nullptr;
+	Camera* current_camera = nullptr;
 	std::list<Camera*> game_cameras;
 
 	std::list<FrameBuffer*> frame_buffers;

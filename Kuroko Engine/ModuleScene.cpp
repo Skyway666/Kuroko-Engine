@@ -234,6 +234,17 @@ void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 				list_to_fill.remove(*it);
 }
 
+void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
+{
+	game_objs_to_delete.push_back(gobj);
+
+	std::list<GameObject*> children;
+	gobj->getChildren(children);
+
+	for (auto it = children.begin(); it != children.end(); it++)
+		deleteGameObjectRecursive(*it);
+}
+
 void ModuleScene::AskSceneSave(char * scene_name) {
 	want_save_scene = true;
 	scene_to_save_name = scene_name;

@@ -4,6 +4,8 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "Transform.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ComponentTransform.h"
@@ -88,7 +90,7 @@ bool ComponentAABB::Update(float dt)
 void ComponentAABB::Draw() const
 {
 	if (draw_aabb)	DrawAABB();
-	if (draw_obb)	DrawOBB();
+	if (draw_obb && App->camera->current_camera->frustumCull(*getOBB()))	DrawOBB();
 }
 
 void ComponentAABB::DrawAABB() const

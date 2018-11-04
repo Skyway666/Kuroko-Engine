@@ -31,7 +31,7 @@ public:
 	void setFrustum(Frustum* f) { frustum = f; };
 	void setFov(float hor_fov, float ver_fov);
 	void setPlaneDistance(float n_plane, float f_plane);
-	bool frustumCull(const OBB& obb);
+	bool frustumCull(const OBB& obb);  // returns true if inside the frustum
 
 	float4x4 getViewMatrix();
 

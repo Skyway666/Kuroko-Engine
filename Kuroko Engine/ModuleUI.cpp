@@ -322,7 +322,7 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		ImGui::SameLine();
 		if (ImGui::Button("Delete") || App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
-			App->scene->deleteGameObject(selected_obj);
+			App->scene->deleteGameObjectRecursive(selected_obj);
 
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);

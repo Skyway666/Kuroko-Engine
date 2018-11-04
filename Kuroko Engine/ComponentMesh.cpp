@@ -4,10 +4,13 @@
 #include "GameObject.h"
 #include "ModuleScene.h"
 #include "Application.h"
+#include "ComponentAABB.h"
 #include "Material.h"
 #include "ModuleImporter.h"
 #include "FileSystem.h"
 #include "glew-2.1.0\include\GL\glew.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 ComponentMesh::ComponentMesh(JSON_Object * deff): Component(nullptr, MESH) {
 	std::string path;
@@ -37,29 +40,34 @@ ComponentMesh::ComponentMesh(JSON_Object * deff): Component(nullptr, MESH) {
 
 void ComponentMesh::Draw() const
 {
-	ComponentTransform* transform = nullptr;
-	float4x4 view_mat = float4x4::identity;
+	OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
 
-	if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+	if (App->camera->current_camera->frustumCull(*obb))
 	{
-		GLfloat matrix[16];
-		glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-		view_mat.Set((float*)matrix);
+		ComponentTransform* transform = nullptr;
+		float4x4 view_mat = float4x4::identity;
 
-		glMatrixMode(GL_MODELVIEW_MATRIX);
-		glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+		if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+		{
+			GLfloat matrix[16];
+			glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+			view_mat.Set((float*)matrix);
+
+			glMatrixMode(GL_MODELVIEW_MATRIX);
+			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+		}
+
+		if (draw_normals || App->scene->global_normals)
+			mesh->DrawNormals();
+
+		if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		mesh->Draw(mat);
+
+		if (transform)
+			glLoadMatrixf((GLfloat*)view_mat.v);
 	}
-
-	if (draw_normals || App->scene->global_normals)
-		mesh->DrawNormals();
-
-	if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	mesh->Draw(mat);
-
-	if (transform)
-		glLoadMatrixf((GLfloat*)view_mat.v);
 }
 
 bool ComponentMesh::whichPrimitive(std::string mesh_name, PrimitiveTypes & which_primitive) {
