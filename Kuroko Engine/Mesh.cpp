@@ -33,8 +33,10 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 	if (colors) imported_colors = true;
 	if (tex_coords) imported_tex_coords = true;
 
+	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
 
+	App->scene->addMesh(this);
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)

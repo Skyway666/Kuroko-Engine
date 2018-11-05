@@ -20,7 +20,7 @@ public:
 	ComponentTransform(GameObject* parent, const Quat& rot, const float3& pos, const float3& scl);
 	ComponentTransform(GameObject* parent, const float3& euler_axis, const float3& pos, const float3& scl);
 	ComponentTransform(GameObject* parent, const ComponentTransform& transform);
-	ComponentTransform(JSON_Object* deff);
+	ComponentTransform(JSON_Object* deff, GameObject* parent);
 	ComponentTransform(GameObject* parent);
 
 	~ComponentTransform();

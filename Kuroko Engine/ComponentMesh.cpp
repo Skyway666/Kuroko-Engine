@@ -12,7 +12,7 @@
 #include "ModuleCamera3D.h"
 #include "Camera.h"
 
-ComponentMesh::ComponentMesh(JSON_Object * deff): Component(nullptr, MESH) {
+ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(parent, MESH) {
 	std::string path;
 
 	// Load mesh from own file format

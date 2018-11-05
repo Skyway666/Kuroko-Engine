@@ -210,7 +210,7 @@ update_status ModuleUI::Update(float dt) {
 		static char rename_buffer[64];
 		ImGui::InputText("Save as...", rename_buffer, 64);
 		ImGui::SameLine();
-		if (ImGui::Button("Change")) {
+		if (ImGui::Button("Save")) {
 			App->scene->AskSceneSave(rename_buffer);
 			for (int i = 0; i < 64; i++)
 				rename_buffer[i] = '\0';

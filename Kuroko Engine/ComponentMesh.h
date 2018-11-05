@@ -10,7 +10,7 @@ class ComponentMesh : public Component {
 public:
 
 	ComponentMesh(GameObject* gameobject) : Component(gameobject, MESH) {};   // empty constructor
-	ComponentMesh(JSON_Object* deff);
+	ComponentMesh(JSON_Object* deff, GameObject* parent);
 	ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), mesh(mesh) {};
 
 	void Draw() const;

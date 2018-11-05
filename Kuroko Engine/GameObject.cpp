@@ -37,10 +37,13 @@ GameObject::GameObject(JSON_Object* deff): uuid(json_object_get_number(deff, "UU
 			 type = type_c_str;
 		Component* component = nullptr;
 		if (type.compare("transform") == 0) {
-			component = new ComponentTransform(component_deff);
+			component = new ComponentTransform(component_deff, this);
+		}
+		else if (type.compare("AABB") == 0) {
+			component = new ComponentAABB(this);
 		}
 		else if (type.compare("mesh") == 0) {
-			component = new ComponentMesh(component_deff);
+			component = new ComponentMesh(component_deff, this);
 		}
 
 		// Set component's parent-child
@@ -48,11 +51,9 @@ GameObject::GameObject(JSON_Object* deff): uuid(json_object_get_number(deff, "UU
 			app_log->AddLog("WARNING! Component of type %s could not be loaded", type.c_str());
 			continue;
 		}
-		component->setParent(this);
-		components.push_back(component);
+		addComponent(component);
 	}
-	ComponentAABB* tmp_aabb = (ComponentAABB*)addComponent(C_AABB);
-	tmp_aabb->Reload();
+
 	
 }
 

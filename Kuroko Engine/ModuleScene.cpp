@@ -224,7 +224,6 @@ void ModuleScene::DrawGuizmo() {
 		transform->global->setScale(mat.GetScale());
 		transform->GlobalToLocal();
 	}
-
 }
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
