@@ -132,3 +132,7 @@ void ComponentAABB::DrawOBB() const
 	glLineWidth(1.0f);
 }
 
+void ComponentAABB::Save(JSON_Object* config) {
+
+	json_object_set_string(config, "type", "AABB");
+}

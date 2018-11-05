@@ -170,8 +170,8 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 				app_log->AddLog("Error loading fx: %s", file);
 		}
 	}*/
-	else
-		app_log->AddLog("Error loading file [incompatible format]: %s", file);
+
+	app_log->AddLog("Error loading file [incompatible format]: %s", file);
 
 	return nullptr;
 }

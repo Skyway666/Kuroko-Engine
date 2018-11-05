@@ -193,7 +193,7 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 void ModuleScene::DrawGuizmo() {
 
-	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
 
 	ImGuizmo::BeginFrame();
@@ -414,7 +414,6 @@ void ModuleScene::SaveScene(std::string name) {
 	json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
 	
 
-
 	// TODO store editor camera
 	std::string path;
 	App->fs->FormFullPath(path, name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
@@ -431,9 +430,6 @@ void ModuleScene::LoadScene(const char* path) {
 		return;
 	}
 
-
-
-	
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
 	uint obj_num = json_array_get_count(objects);

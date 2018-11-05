@@ -58,7 +58,6 @@ public:
 	std::string getName() const { return name; };
 
 	void Save(JSON_Object* config);
-	void Load(JSON_Object* config);
 
 private:
 

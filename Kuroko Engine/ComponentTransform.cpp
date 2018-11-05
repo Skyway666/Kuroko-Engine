@@ -109,13 +109,13 @@ void ComponentTransform::LocalToGlobal()
 	global->CalculateMatrix();
 }
 
-void ComponentTransform::Save(JSON_Object & config) {
+void ComponentTransform::Save(JSON_Object* config) {
 
 	// Component has an object called transform, which has the two transforms as attributes
 	JSON_Value* local_trans = json_value_init_object();
 	JSON_Value* global_trans = json_value_init_object();
 	// Set component type
-	json_object_set_string(&config, "type", "transform");
+	json_object_set_string(config, "type", "transform");
 	// Store local transform
 	// Position
 	json_object_set_number(json_object(local_trans), "px", local->position.x);
@@ -146,13 +146,9 @@ void ComponentTransform::Save(JSON_Object & config) {
 	json_object_set_number(json_object(global_trans), "qz", local->rotation.z);
 	json_object_set_number(json_object(global_trans), "qw", local->rotation.w);
 
-	json_object_set_value(&config, "local", local_trans);
-	json_object_set_value(&config, "global", global_trans);
+	json_object_set_value(config, "local", local_trans);
+	json_object_set_value(config, "global", global_trans);
 
-
-}
-
-void ComponentTransform::Load(JSON_Object & config) {
 
 }
 

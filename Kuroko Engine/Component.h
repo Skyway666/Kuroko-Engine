@@ -22,8 +22,7 @@ public:
 	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* new_parent) { parent = new_parent; } // Can recieve nullptr
 
-	virtual void Save(JSON_Object& config) {}
-	virtual void Load(JSON_Object& config) {}
+	virtual void Save(JSON_Object* config) {}
 
 protected:
 

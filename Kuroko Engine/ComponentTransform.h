@@ -32,8 +32,7 @@ public:
 	void setMode(TransformMode mode) { this->mode = mode; };
 	TransformMode getMode() { return mode; };
 
-	void Save(JSON_Object& config);
-	void Load(JSON_Object& config);
+	void Save(JSON_Object* config);
 
 private:
 

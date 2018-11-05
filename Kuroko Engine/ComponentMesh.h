@@ -26,8 +26,7 @@ public:
 	void setMesh(Mesh* new_mesh)		{ mesh = new_mesh; }// Can recieve nullptr
 	bool whichPrimitive(std::string mesh_name, PrimitiveTypes& which_primitive); 
 
-	void Save(JSON_Object& config);
-	void Load(JSON_Object& config);
+	void Save(JSON_Object* config);
 
 private:
 	bool wireframe = false;

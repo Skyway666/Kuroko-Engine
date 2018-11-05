@@ -27,6 +27,8 @@ public:
 	void DrawAABB() const;
 	void DrawOBB() const;
 
+	void Save(JSON_Object* config);
+
 
 public:
 	bool draw_aabb = false;
