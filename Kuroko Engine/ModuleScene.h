@@ -56,6 +56,7 @@ public:
 	void deleteGameObjectRecursive(GameObject* gobj);
 	void deleteMesh(Mesh* mesh)				{ meshes_to_delete.push_back(mesh); };
 	void deleteTexture(Texture* tex)		{ textures_to_delete.push_back(tex); };
+	void ClearScene();
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
 

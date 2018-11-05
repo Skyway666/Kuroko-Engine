@@ -301,6 +301,14 @@ Texture* ModuleScene::getTexture(uint id) const
 	return nullptr;
 }
 
+void ModuleScene::ClearScene()
+{
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+		delete *it;
+
+	game_objects.clear();
+}
+
 void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 {
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -382,6 +390,9 @@ void ModuleScene::LoadScene(const char* path) {
 		app_log->AddLog("Couldn't load %s, no value", path);
 		return;
 	}
+
+
+
 	
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 

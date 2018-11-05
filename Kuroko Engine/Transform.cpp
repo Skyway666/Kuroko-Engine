@@ -123,29 +123,46 @@ void Transform::DrawGuizmo() {
 	//glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
 	//glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
 
-	view4x4 = float4x4::identity;
+	//view4x4 = float4x4::identity;
 
-	float new_matrix[16];
-	float* old_matrix = (float*)CalculateMatrix().v;
-	for(int i = 0; i < 16; i++)
-		new_matrix[i] = old_matrix[i];
+	CalculateMatrix();
 
 
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetOrthographic(true);
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	//ImGuizmo::DrawCube((float*)view4x4.v, (float*)projection4x4.v, new_matrix);
-	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, mCurrentGizmoOperation, mCurrentGizmoMode, new_matrix, NULL, NULL);
+	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)mat.v, NULL, NULL);
 
-	ApplyMatrix(new_matrix);
+	//ApplyMatrix((float*)mat.v);
 }
 
 float4x4 Transform::CalculateMatrix()
 {
-	mat = float4x4::identity;
-	mat = mat * rotation;
-	mat = mat * mat.Scale(scale);
-	mat.SetTranslatePart(position);
+
+	// WAY 1
+	//mat = float4x4::identity;
+	//mat = mat * rotation;
+	//mat = mat * mat.Scale(scale);
+	//mat.SetTranslatePart(position);
+
+	// WAY 2
+	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+
+	matrixTranslation[0] = position.x;
+	matrixTranslation[1] = position.y;
+	matrixTranslation[2] = position.z;
+
+	matrixRotation[0] = euler_angles.x;
+	matrixRotation[1] = euler_angles.y;
+	matrixRotation[2] = euler_angles.z;
+
+	matrixScale[0] = scale.x;
+	matrixScale[1] = scale.y;
+	matrixScale[2] = scale.z;
+
+	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, (float*)mat.v); // When recomposing the matrix from the components, it is transposed
+	mat.Transpose(); 
 	return mat;
 }
 
