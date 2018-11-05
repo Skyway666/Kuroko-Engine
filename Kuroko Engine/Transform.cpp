@@ -72,6 +72,23 @@ float3 Transform::Up() const
 	return up;
 }
 
+void Transform::Save(JSON_Object* config) {
+
+	// Position
+	json_object_set_number(config, "px", position.x);
+	json_object_set_number(config, "py", position.y);
+	json_object_set_number(config, "pz", position.z);
+	// Scale
+	json_object_set_number(config, "sx", scale.x);
+	json_object_set_number(config, "sy", scale.y);
+	json_object_set_number(config, "sz", scale.z);
+	// Rotation
+	json_object_set_number(config, "qx", rotation.x);
+	json_object_set_number(config, "qy", rotation.y);
+	json_object_set_number(config, "qz", rotation.z);
+	json_object_set_number(config, "qw", rotation.w);
+}
+
 void Transform::setPosition(const float3& pos) { position = pos; };
 void Transform::Translate(const float3& dir) { position += dir; };
 void Transform::setScale(const float3& scl) { scale = scl; };
