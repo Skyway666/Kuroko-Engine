@@ -14,6 +14,7 @@
 #include "ImGui/imgui_impl_opengl2.h"
 #include "ImGui/imgui_internal.h"
 
+
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
@@ -76,7 +77,13 @@ bool ModuleUI::Start()
 	ui_textures[PLAY]		= (Texture*)App->importer->Import("Play.png", I_TEXTURE);
 	ui_textures[PAUSE]		= (Texture*)App->importer->Import("Pause.png", I_TEXTURE);
 	ui_textures[STOP]		= (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
+
+	ui_textures[TRANSLATE] = (Texture*)App->importer->Import("translate.png", I_TEXTURE);
+	ui_textures[ROTATE] = (Texture*)App->importer->Import("rotate.png", I_TEXTURE);
+	ui_textures[SCALE] = (Texture*)App->importer->Import("scale.png", I_TEXTURE);
+
 	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("no_texture.png", I_TEXTURE);
+
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
 	ui_fonts[REGULAR]				= io->Fonts->AddFontFromFileTTF("Fonts/regular.ttf", 18.0f);
@@ -1059,6 +1066,32 @@ void ModuleUI::DrawTimeControl()
 	ImGui::End();
 }
 
+void ModuleUI::DrawAndSetGizmoOptions(ImGuizmo::OPERATION& operation, ImGuizmo::MODE& mode) {
+
+
+	static bool draw = true;
+	ImGui::Begin("Gizmo", &draw);
+
+
+	int w, h;
+	ui_textures[TRANSLATE]->getSize(w, h);
+	if (ImGui::ImageButton((void*)ui_textures[TRANSLATE]->getGLid(), ImVec2(w, h), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGizmoOperation() == ImGuizmo::OPERATION::TRANSLATE ? 1.0f : 0.0f)))
+		operation = ImGuizmo::OPERATION::TRANSLATE;
+
+	ImGui::SameLine();
+	ui_textures[ROTATE]->getSize(w, h);
+	if (ImGui::ImageButton((void*)ui_textures[ROTATE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGizmoOperation() == ImGuizmo::OPERATION::ROTATE ? 1.0f : 0.0f)))
+		operation = ImGuizmo::OPERATION::ROTATE;
+
+	ImGui::SameLine();
+	ui_textures[SCALE]->getSize(w, h);
+	if (ImGui::ImageButton((void*)ui_textures[SCALE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGizmoOperation() == ImGuizmo::OPERATION::SCALE ? 1.0f : 0.0f)))
+		operation = ImGuizmo::OPERATION::SCALE;
+
+
+	ImGui::End();
+
+}
 void ModuleUI::SaveConfig(JSON_Object* config) const
 {
 	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);

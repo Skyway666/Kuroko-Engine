@@ -18,11 +18,12 @@
 #include "ComponentTransform.h"
 #include "Transform.h"
 #include "ComponentMesh.h"
+#include "ModuleUI.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "MathGeoLib\Geometry\LineSegment.h"
 #include "glew-2.1.0\include\GL\glew.h"
-#include "ImGui\ImGuizmo.h"
+
 #include "ImGui\imgui.h"
 
 #include <array>
@@ -193,8 +194,8 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 void ModuleScene::DrawGuizmo() {
 
-	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
+	App->gui->DrawAndSetGizmoOptions(gizmo_operation, gizmo_mode);
 
 	ImGuizmo::BeginFrame();
 	float4x4 projection4x4;
@@ -215,7 +216,7 @@ void ModuleScene::DrawGuizmo() {
 
 	float4x4 mat = float4x4(transform->global->getMatrix());
 	mat.Transpose();
-	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)mat.v, NULL, NULL);
+	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, gizmo_operation, gizmo_mode, (float*)mat.v, NULL, NULL);
 	if (ImGuizmo::IsUsing())
 	{
 		mat.Transpose();
@@ -287,9 +288,6 @@ GameObject* ModuleScene::MousePicking()
 		return ray_hits.front().obj;
 	}
 }
-
-
-
 Material* ModuleScene::getMaterial(uint id)  const
 {
 	for (auto it = materials_to_delete.begin(); it != materials_to_delete.end(); it++)

@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include "MathGeoLib\Geometry\Frustum.h"
+#include "ImGui\ImGuizmo.h"
 #include <list>
 
 class GameObject; 
@@ -13,6 +14,7 @@ class Skybox;
 class Quadtree;
 
 enum GameState { STOPPED, PAUSED, PLAYING};
+
 
 struct RayHit
 {
@@ -41,6 +43,8 @@ public:
 	void Pause() { game_state = PAUSED; };
 	void Stop() { game_state = STOPPED; };
 	GameState getGameState() { return game_state; };
+	ImGuizmo::OPERATION getGizmoOperation() { return gizmo_operation;}
+	ImGuizmo::MODE getGizmoMode() { return gizmo_mode;}
 
 	void addMaterial(Material* mat)			{ materials.push_back(mat); };
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
@@ -84,7 +88,10 @@ private:
 
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
-	GameState game_state	= STOPPED;
+	GameState game_state	= GameState::STOPPED;
+	ImGuizmo::OPERATION	gizmo_operation	= ImGuizmo::TRANSLATE;
+	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
+
 	bool want_save_scene	= false;
 	bool want_load_scene	= false;
 

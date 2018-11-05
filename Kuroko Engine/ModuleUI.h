@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "ImGui/imgui.h"
+#include "ImGui\ImGuizmo.h"
 #include <array>
 
 struct ImGuiIO;
@@ -13,7 +14,7 @@ class Material;
 class Camera;
 
 enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, /*AUDIO,*/ LAST_UI_TAB};  // LAST is an utility value to store the max num of tabs.
-enum UI_textures { PLAY, PAUSE, STOP, NO_TEXTURE, LAST_UI_TEX};
+enum UI_textures { PLAY, PAUSE, STOP, TRANSLATE, ROTATE, SCALE, NO_TEXTURE, LAST_UI_TEX};
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
 
 class ModuleUI :
@@ -41,6 +42,7 @@ public:
 	void DrawHardware() const;
 	void DrawApplication() const;
 	void DrawTimeControl();
+	void DrawAndSetGizmoOptions(ImGuizmo::OPERATION& operation, ImGuizmo::MODE& mode);
 
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
