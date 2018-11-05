@@ -35,7 +35,7 @@ public:
 	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords, uint num_vertices, uint num_tris); //Used to load own file
 	~Mesh();
 
-	void Draw(Material* mat) const;
+	void Draw(Material* mat, bool draw_as_selected = false) const;
 	void DrawNormals() const;
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;

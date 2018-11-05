@@ -83,13 +83,13 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 			ret = false;
 		}
 		
-		GLfloat LightModelAmbient[] = {0.75f, 0.75f, 0.75f, 1.0f};
+		GLfloat LightModelAmbient[] = {0.95f, 0.95f, 0.95f, 1.0f};
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
 		
 		lights[0].ref = GL_LIGHT0;
-		lights[0].ambient.Set(0.25f, 0.25f, 0.25f, 1.0f);
-		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
-		lights[0].SetPos(0.0f, 0.0f, 2.5f);
+		lights[0].ambient.Set(0.0f, 0.0f, 0.0f, 1.0f);
+		lights[0].diffuse.Set(0.1f, 0.1f, 0.1f, 1.0f);
+		lights[0].SetPos(0.0f, 2.5f, 0.0f);
 		lights[0].Init();
 		
 		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
