@@ -92,11 +92,9 @@ void ComponentMesh::DrawSelected() const
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glLineWidth(2.5f);
-		mesh->Draw(mat);
-		glColor3f(0.8f, 0.8f, 0.8f); 
-		glLineWidth(1.0f);
+		mesh->Draw(nullptr, true);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		if (transform)
 			glLoadMatrixf((GLfloat*)view_mat.v);

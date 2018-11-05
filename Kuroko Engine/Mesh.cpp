@@ -96,12 +96,12 @@ void Mesh::LoadDataToVRAM()
 
 
 
-void Mesh::Draw(Material* mat)  const
+void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 {
 	Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
 
-	if (diffuse_tex)		glEnable(GL_TEXTURE_2D);
-	else					glEnableClientState(GL_COLOR_ARRAY);
+	if (diffuse_tex)			glEnable(GL_TEXTURE_2D);
+	else if(!draw_as_selected)	glEnableClientState(GL_COLOR_ARRAY);
 
 	// bind VBOs before drawing
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -111,6 +111,12 @@ void Mesh::Draw(Material* mat)  const
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (draw_as_selected)
+	{
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glLineWidth(2.5f);
+	}
 
 	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
@@ -126,6 +132,12 @@ void Mesh::Draw(Material* mat)  const
 	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, 0);
 	else					glDisableClientState(GL_COLOR_ARRAY);
 
+	if (draw_as_selected)
+	{
+		glColor3f(0.8f, 0.8f, 0.8f);
+		glLineWidth(1.0f);
+	}
+	 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
