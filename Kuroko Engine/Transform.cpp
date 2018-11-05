@@ -1,7 +1,5 @@
 #include "Transform.h"
 #include "MathGeoLib\Math\TransformOps.h"
-#include "ImGui\ImGuizmo.h"
-#include "ImGui\imgui.h"
 #include "Application.h"
 #include "ModuleCamera3D.h"
 #include "Camera.h"
@@ -110,76 +108,14 @@ void Transform::LookAt(const float3& position, const float3& target, const float
 	rotation = mat.RotatePart().ToQuat();
 }
 
-void Transform::DrawGuizmo() {
-
-	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
-	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
-
-	ImGuizmo::BeginFrame();
-	float4x4 projection4x4 = App->camera->editor_camera->getFrustum()->ProjectionMatrix();
-	float4x4 view4x4 = App->camera->editor_camera->getViewMatrix();
-
-
-	//glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
-	//glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
-
-	//view4x4 = float4x4::identity;
-
-	CalculateMatrix();
-
-
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetOrthographic(true);
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	//ImGuizmo::DrawCube((float*)view4x4.v, (float*)projection4x4.v, new_matrix);
-	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)mat.v, NULL, NULL);
-
-	//ApplyMatrix((float*)mat.v);
-}
-
 float4x4 Transform::CalculateMatrix()
 {
+	mat = float4x4::identity;
+	mat = mat * rotation;
+	mat = mat * mat.Scale(scale);
+	mat.SetTranslatePart(position);
 
-	// WAY 1
-	//mat = float4x4::identity;
-	//mat = mat * rotation;
-	//mat = mat * mat.Scale(scale);
-	//mat.SetTranslatePart(position);
-
-	// WAY 2
-	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-
-	matrixTranslation[0] = position.x;
-	matrixTranslation[1] = position.y;
-	matrixTranslation[2] = position.z;
-
-	matrixRotation[0] = euler_angles.x;
-	matrixRotation[1] = euler_angles.y;
-	matrixRotation[2] = euler_angles.z;
-
-	matrixScale[0] = scale.x;
-	matrixScale[1] = scale.y;
-	matrixScale[2] = scale.z;
-
-	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, (float*)mat.v); // When recomposing the matrix from the components, it is transposed
-	mat.Transpose(); 
 	return mat;
-}
-
-void Transform::ApplyMatrix(float * m) {
-
-	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-	ImGuizmo::DecomposeMatrixToComponents(m, matrixTranslation, matrixRotation, matrixScale);
-
-	position.x = matrixTranslation[0];
-	position.y = matrixTranslation[1];
-	position.z = matrixTranslation[2];
-
-	setRotationEuler(float3(matrixRotation[0], matrixRotation[1], matrixRotation[2]));
-
-	scale.x = matrixScale[0];
-	scale.y = matrixScale[1];
-	scale.z = matrixScale[2];
 }
 
 float3 Transform::Right() const

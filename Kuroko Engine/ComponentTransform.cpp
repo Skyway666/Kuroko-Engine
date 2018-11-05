@@ -69,8 +69,6 @@ bool ComponentTransform::Update(float dt)
 		LocalToGlobal();
 	}
 
-	if(App->scene->selected_obj == getParent())
-		local->DrawGuizmo();
 
 	return true;
 }

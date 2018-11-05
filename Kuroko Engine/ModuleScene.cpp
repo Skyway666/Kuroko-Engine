@@ -21,6 +21,9 @@
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "MathGeoLib\Geometry\LineSegment.h"
+#include "glew-2.1.0\include\GL\glew.h"
+#include "ImGui\ImGuizmo.h"
+#include "ImGui\imgui.h"
 
 #include <array>
 
@@ -158,7 +161,7 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
-	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1))
+	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver())
 	{
 		if (GameObject* new_selected = MousePicking())
 			selected_obj = new_selected;
@@ -183,9 +186,46 @@ void ModuleScene::DrawScene(float3 camera_pos)
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Draw();
 
+	if (selected_obj)
+		DrawGuizmo();
+
 }
 
+void ModuleScene::DrawGuizmo() {
 
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
+	ImGuizmo::BeginFrame();
+	float4x4 projection4x4;
+	float4x4 view4x4;
+
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
+	glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetOrthographic(true);
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+	ComponentTransform* transform = (ComponentTransform*)selected_obj->getComponent(TRANSFORM);
+	if (transform->getMode() == LOCAL)
+		transform->LocalToGlobal();
+	else
+		transform->global->CalculateMatrix();
+
+	float4x4 mat = float4x4(transform->global->getMatrix());
+	mat.Transpose();
+	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)mat.v, NULL, NULL);
+	if (ImGuizmo::IsUsing())
+	{
+		mat.Transpose();
+		transform->global->setPosition(mat.TranslatePart());
+		transform->global->setRotation(mat.RotatePart().ToQuat());
+		transform->global->setScale(mat.GetScale());
+		transform->GlobalToLocal();
+	}
+
+}
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
 

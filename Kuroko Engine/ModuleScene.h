@@ -35,6 +35,7 @@ public:
 	bool CleanUp();
 
 	void DrawScene(float3 camera_pos);
+	void DrawGuizmo();
 
 	void Play() { game_state = PLAYING; };
 	void Pause() { game_state = PAUSED; };
