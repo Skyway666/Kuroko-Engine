@@ -32,7 +32,7 @@ enum update_status
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
-#define TITLE "3D Physics Playground"
+#define TITLE "Kuroko Engine"
 #define PI       3.14159265358979323846   // pi
 
 #endif
