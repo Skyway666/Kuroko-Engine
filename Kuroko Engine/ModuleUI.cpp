@@ -1070,6 +1070,28 @@ void ModuleUI::DrawTimeControl()
 	ui_textures[STOP]->getSize(w, h);
 	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == STOPPED ? 1.0f : 0.0f)))
 		App->time->Stop();
+	
+
+	static int advance_frames = 1;
+	static float time_scale = 1;
+
+	ImGui::DragInt("Advance frames", &advance_frames, 0.05, 0, 1000);
+
+	if (ImGui::Button("Advance"))		// TODO: Make it a label
+		App->time->Advance(advance_frames);
+
+	if (ImGui::DragFloat("Time scale", &time_scale, 0.01, 0, 100))
+		App->time->setTimeScale(time_scale);
+
+
+	ImGui::Text("%f seconds in real time clock", App->time->getRealTime() / 1000);
+	ImGui::Text("%f ms delta_time", App->time->getDeltaTime());
+	ImGui::Text("%f seconds in game time clock", App->time->getGameTime() / 1000);
+	ImGui::Text("%f ms game delta_time", App->time->getGameDeltaTime());
+	ImGui::Text("%i frames", App->time->getFrameCount());
+
+
+
 
 	ImGui::End();
 }

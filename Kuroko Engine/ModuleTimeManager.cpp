@@ -20,40 +20,50 @@ ModuleTimeManager::~ModuleTimeManager()
 bool ModuleTimeManager::Init(const JSON_Object * config)
 {
 	// Set clock configuration in some way?
-
+	game_time.Reset();
+	game_time.setScale(1);
+	real_time.Reset();
 
 	return true;
 }
 
-update_status ModuleTimeManager::Update(float dt)
-{
-	switch (game_state) {
-	case GameState::PLAYING:
-		ManageGamePlaying();
-		break;
-	case GameState::PAUSED:
+void ModuleTimeManager::ManageGamePaused() {
+	bool state_changed = false;
 
+	switch (last_game_state) {
+	case PLAYING:
+		game_time.Pause();
+		state_changed = true;
 		break;
-	
-	case GameState::STOPPED:
+	case STOPPED:
+		app_log->AddLog("Can't pause game while stopped!");
+		game_state = STOPPED;
 		break;
 	}
 
-	game_time.Update();
-	return UPDATE_CONTINUE;
+	frame_count++;
+	if (state_changed)
+		last_game_state = game_state;
 }
 
-bool ModuleTimeManager::CleanUp()
-{
+void ModuleTimeManager::ManageGameStopped() {
+	bool state_changed = false;
 
-	return true;
+	switch (last_game_state) {
+	case PLAYING:
+	case PAUSED:
+		real_time.Reset();
+		game_time.Reset();
+		frame_count = 0;
+		state_changed = true;
+		break;
+	}
+
+	if (state_changed)
+		last_game_state = game_state;
+
+
 }
-
-void ModuleTimeManager::Advance() {
-	// Should only allow to advance if the game is paused
-}
-
-
 
 void ModuleTimeManager::ManageGamePlaying() {
 
@@ -71,45 +81,81 @@ void ModuleTimeManager::ManageGamePlaying() {
 		break;
 	}
 
+	frame_count++;
 	if (state_changed)
 		last_game_state = game_state;
-		 
+
 }
 
-void ModuleTimeManager::ManageGamePaused() {
-	bool state_changed = false;
+void ModuleTimeManager::Advance(int frames) {
+	if (game_state != PAUSED)
+		app_log->AddLog("Can't advance frames while not paused!");
+	else {
+		advance = true;
+		advance_frames = frames;
+		advanced_frames = 0;
+	}
+}
 
-	switch (last_game_state) {
-	case PLAYING:
-		game_time.Pause();
-		state_changed = true;
-		break;
-	case STOPPED:
-		app_log->AddLog("Can't pause game while stopped!");
-		game_state = STOPPED;
-		break;
+float ModuleTimeManager::getDeltaTime() {
+	float ret = 0;
+	if (game_state != STOPPED)
+		ret = real_dt;
+
+	return ret;
+}
+
+void ModuleTimeManager::ManageAdvance() {
+	if (advance) {
+		game_time.Resume();
+		advance = false;
+		advancing = true;
 	}
 
-	if(state_changed)
-		last_game_state = game_state;
+	if (advancing) {
+		if (advance_frames > advanced_frames)
+			advanced_frames++;
+		else {
+			game_time.Pause();
+			advancing = false;
+		}
+	}
 }
 
-void ModuleTimeManager::ManageGameStopped() {
-	bool state_changed = false;
 
-	switch (last_game_state) {
-	case PLAYING:
-	case PAUSED:
-		real_time.Reset();
-		game_time.Reset();
-		state_changed = true;
+
+
+update_status ModuleTimeManager::Update(float dt)
+{
+	switch (game_state) {
+	case GameState::PLAYING:
+		ManageGamePlaying();
+		break;
+	case GameState::PAUSED:
+		ManageGamePaused();
+		break;
+	case GameState::STOPPED:
+		ManageGameStopped();
 		break;
 	}
+	ManageAdvance();
+	game_time.Update(); // Clock allways updates, but can get 
 
-	if (state_changed)
-		last_game_state = game_state;
+	real_dt = delta_timer.Read();
+	delta_timer.Start();
+
+	return UPDATE_CONTINUE;
 }
 
+bool ModuleTimeManager::CleanUp()
+{
+
+	return true;
+}
+
+
+
+// Game Timer
 void GameTimer::Start() {
 	paused = false;
 	last_frame_time = SDL_GetTicks();
@@ -146,4 +192,12 @@ float GameTimer::Read() {
 
 void GameTimer::setScale(float scale) {
 	time_scale = scale;
+}
+
+float GameTimer::getScale() {
+	return time_scale;
+}
+
+float GameTimer::getDeltaTime() {
+	return delta_time;
 }
