@@ -18,6 +18,7 @@ Features of the engine:
 - About tab with information about the engine and links to the used libraries
 - UI docking
 - Time control
+- Gizmo implemented
 
 INNOVATION: 
 - File import through windows explorer or drag and drop
