@@ -344,6 +344,8 @@ void ModuleScene::ClearScene()
 		delete *it;
 
 	game_objects.clear();
+
+	selected_obj = nullptr;
 }
 
 void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
@@ -426,6 +428,8 @@ void ModuleScene::LoadScene(const char* path) {
 		app_log->AddLog("Couldn't load %s, no value", path);
 		return;
 	}
+
+	ClearScene();
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
