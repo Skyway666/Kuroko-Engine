@@ -38,6 +38,7 @@ void ModuleTimeManager::ManageGamePaused() {
 	case STOPPED:
 		app_log->AddLog("Can't pause game while stopped!");
 		game_state = STOPPED;
+		return;
 		break;
 	}
 

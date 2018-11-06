@@ -78,6 +78,7 @@ bool ModuleUI::Start()
 	ui_textures[PLAY]		= (Texture*)App->importer->Import("Play.png", I_TEXTURE);
 	ui_textures[PAUSE]		= (Texture*)App->importer->Import("Pause.png", I_TEXTURE);
 	ui_textures[STOP]		= (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
+	ui_textures[ADVANCE]	= (Texture*)App->importer->Import("Advance.png", I_TEXTURE);
 
 	ui_textures[TRANSLATE] = (Texture*)App->importer->Import("translate.png", I_TEXTURE);
 	ui_textures[ROTATE] = (Texture*)App->importer->Import("rotate.png", I_TEXTURE);
@@ -1075,10 +1076,14 @@ void ModuleUI::DrawTimeControl()
 	static int advance_frames = 1;
 	static float time_scale = 1;
 
-	ImGui::DragInt("Advance frames", &advance_frames, 0.05, 0, 1000);
-
-	if (ImGui::Button("Advance"))		// TODO: Make it a label
+	ImGui::SameLine();
+	ui_textures[ADVANCE]->getSize(w, h);
+	if (ImGui::ImageButton((void*)ui_textures[ADVANCE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, 0.0f)))
 		App->time->Advance(advance_frames);
+
+
+	ImGui::DragInt("Advance frames", &advance_frames, 0.05, 1, 1000);
+
 
 	if (ImGui::DragFloat("Time scale", &time_scale, 0.01, 0, 100))
 		App->time->setTimeScale(time_scale);
