@@ -12,6 +12,7 @@
 #include "AppLog.h"
 #include "Random.h"
 #include "FileSystem.h"
+#include "ModuleTimeManager.h"
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -41,12 +42,14 @@ Application::Application()
 	camera = new ModuleCamera3D(this);
 	gui = new ModuleUI(this);
 	fs = new FileSystem(this);
+	time = new ModuleTimeManager(this);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
 
 	// Main Modules
+	//list_modules.push_back(time);
 	list_modules.push_back(window);
 	list_modules.push_back(camera);
 	list_modules.push_back(input);

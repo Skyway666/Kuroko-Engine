@@ -387,6 +387,9 @@
     <ClInclude Include="ImGui\ImSequencer.h">
       <Filter>Sources\ImGuizmo\headers</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleTimeManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -595,6 +598,9 @@
     </ClCompile>
     <ClCompile Include="ImGui\ImSequencer.cpp">
       <Filter>Sources\ImGuizmo\cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleTimeManager.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

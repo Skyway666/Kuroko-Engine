@@ -11,6 +11,7 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ModuleCamera3D.h"
 #include "Camera.h"
+#include "Applog.h"
 
 ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(parent, MESH) {
 	std::string path;
@@ -23,8 +24,10 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 		mesh = new Mesh(primitive_type);
 	}
 	else{
-	App->fs->FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
-	mesh = App->importer->ImportMeshFromKR(path.c_str());
+		App->fs->FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
+		mesh = App->importer->ImportMeshFromKR(path.c_str());
+		if (!mesh)
+			return;
 	}
 
 	mesh->setName(mesh_name.c_str());

@@ -17,6 +17,7 @@ class ModuleUI;
 class ModuleImporter;
 class ModuleDebug;
 class FileSystem;
+class ModuleTimeManager;
 
 class Application
 {
@@ -31,6 +32,7 @@ public:
 	ModuleUI* gui;
 	ModuleImporter* importer;
 	FileSystem* fs;
+	ModuleTimeManager* time;
 
 private:
 

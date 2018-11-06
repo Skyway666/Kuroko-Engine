@@ -368,6 +368,12 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	float2* tex_coords = nullptr;
 
 	// Import buffer from file
+	if (!App->fs->ExistisFile(file)) {
+		app_log->AddLog("Couldn't load mesh, not found in library");
+		return nullptr;
+	}
+
+
 	char* buffer = App->fs->ImportFile(file);
 	char* cursor = buffer;
 
