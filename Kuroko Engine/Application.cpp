@@ -49,7 +49,7 @@ Application::Application()
 	// They will CleanUp() in reverse order
 
 	// Main Modules
-	//list_modules.push_back(time);
+	list_modules.push_back(time);
 	list_modules.push_back(window);
 	list_modules.push_back(camera);
 	list_modules.push_back(input);

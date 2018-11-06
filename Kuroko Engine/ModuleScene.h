@@ -13,7 +13,7 @@ class Texture;
 class Skybox;
 class Quadtree;
 
-enum GameState { STOPPED, PAUSED, PLAYING};
+
 
 
 struct RayHit
@@ -39,10 +39,6 @@ public:
 	void DrawScene(float3 camera_pos);
 	void DrawGuizmo();
 
-	void Play() { game_state = PLAYING; };
-	void Pause() { game_state = PAUSED; };
-	void Stop() { game_state = STOPPED; };
-	GameState getGameState() { return game_state; };
 	ImGuizmo::OPERATION getGizmoOperation() { return gizmo_operation;}
 	ImGuizmo::MODE getGizmoMode() { return gizmo_mode;}
 
@@ -90,7 +86,6 @@ private:
 
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
-	GameState game_state	= GameState::STOPPED;
 	ImGuizmo::OPERATION	gizmo_operation	= ImGuizmo::TRANSLATE;
 	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
 

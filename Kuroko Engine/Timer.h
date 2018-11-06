@@ -13,6 +13,8 @@ public:
 
 	void Start();
 	void Reset();
+	void Pause();
+	void Resume();
 
 	Uint32 Read() const;
 
@@ -22,6 +24,7 @@ private:
 	bool	reset = false;
 	Uint32	started_at;
 	Uint32	stopped_at;
+	Uint32 time_paused;
 };
 
 #endif //__TIMER_H__

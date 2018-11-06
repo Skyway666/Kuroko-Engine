@@ -8,6 +8,7 @@
 #include "ModuleWindow.h"
 #include "ModuleImporter.h"
 #include "ModuleAudio.h"
+#include "ModuleTimeManager.h"
 #include "Applog.h"
 
 #include "ImGui/imgui_impl_sdl.h"
@@ -1057,18 +1058,18 @@ void ModuleUI::DrawTimeControl()
 
 	int w, h;
 	ui_textures[PLAY]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGameState() == PLAYING ? 1.0f : 0.0f)))
-		App->scene->Play();
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PLAYING ? 1.0f : 0.0f)))
+		App->time->Play();
 
 	ImGui::SameLine();
 	ui_textures[PAUSE]->getSize(w, h);
-	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGameState() == PAUSED ? 1.0f : 0.0f)))
-		App->scene->Pause();
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PAUSED ? 1.0f : 0.0f)))
+		App->time->Pause();
 
 	ImGui::SameLine();
 	ui_textures[STOP]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGameState() == STOPPED ? 1.0f : 0.0f)))
-		App->scene->Stop();
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == STOPPED ? 1.0f : 0.0f)))
+		App->time->Stop();
 
 	ImGui::End();
 }
