@@ -169,7 +169,14 @@ update_status ModuleUI::Update(float dt) {
 				std::string file_path = openFileWID();
 				App->importer->Import(file_path.c_str());
 			}
-			if (ImGui::MenuItem("Save scene"))
+			if (ImGui::MenuItem("Save scene")) {
+				if (App->scene->existingScene())
+					App->scene->AskSceneSave((char*)App->scene->getWorkigSceneName().c_str());
+				else
+					file_save = true;
+				
+			}
+			if (ImGui::MenuItem("Save scene as..."))
 				file_save = true;
 			if (ImGui::MenuItem("Load scene")){
 				std::string file_path = openFileWID();

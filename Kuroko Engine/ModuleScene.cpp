@@ -400,6 +400,8 @@ void ModuleScene::SaveScene(std::string name) {
 
 	App->fs->CreateEmptyFile(name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
 
+	current_working_scene = name;
+	working_on_existing_scene = true;
 
 	JSON_Value* scene = json_value_init_object();	// Full file object
 	JSON_Value* objects_array = json_value_init_array();	// Array of objects in the scene
@@ -430,6 +432,12 @@ void ModuleScene::LoadScene(const char* path) {
 	}
 
 	ClearScene();
+
+	// Store current working scene
+	std::string name = path;
+	App->fs->getFileNameFromPath(name);
+	current_working_scene = name;
+	working_on_existing_scene = true;
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 

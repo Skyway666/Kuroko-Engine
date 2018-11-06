@@ -55,6 +55,8 @@ public:
 	GameObject* getGameObject(uint id) const;
 	Mesh* getMesh(uint id) const;
 	Texture* getTexture(uint id) const;
+	bool existingScene() { return working_on_existing_scene;}
+	std::string getWorkigSceneName() { return current_working_scene; }
 
 	void deleteMaterial(Material* mat)		{ materials_to_delete.push_back(mat); };
 	void deleteGameObject(GameObject* gobj)	{ game_objs_to_delete.push_back(gobj); };
@@ -92,8 +94,10 @@ private:
 	ImGuizmo::OPERATION	gizmo_operation	= ImGuizmo::TRANSLATE;
 	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
 
-	bool want_save_scene	= false;
-	bool want_load_scene	= false;
+	bool want_save_scene			  = false;
+	bool want_load_scene			  = false;
+	bool working_on_existing_scene	  = false;
+	std::string current_working_scene = ""; // "" means that no scene is being edited
 
 	std::string scene_to_save_name;
 	std::string path_to_load_scene;
