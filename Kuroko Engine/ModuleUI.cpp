@@ -188,7 +188,7 @@ update_status ModuleUI::Update(float dt) {
 			}
 			if (ImGui::MenuItem("Save scene")) {
 				if (App->scene->existingScene())
-					App->scene->AskSceneSave((char*)App->scene->getWorkigSceneName().c_str());
+					App->scene->AskSceneSaveFile((char*)App->scene->getWorkigSceneName().c_str());
 				else
 					file_save = true;
 				
@@ -197,7 +197,7 @@ update_status ModuleUI::Update(float dt) {
 				file_save = true;
 			if (ImGui::MenuItem("Load scene")){
 				std::string file_path = openFileWID();
-				App->scene->AskSceneLoad((char*)file_path.c_str());
+				App->scene->AskSceneLoadFile((char*)file_path.c_str());
 			}
 			if(ImGui::BeginMenu("Configuration")){
 				if (ImGui::MenuItem("Save Configuration"))
@@ -242,7 +242,7 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::InputText("Save as...", rename_buffer, 64);
 		ImGui::SameLine();
 		if (ImGui::Button("Save")) {
-			App->scene->AskSceneSave(rename_buffer);
+			App->scene->AskSceneSaveFile(rename_buffer);
 			for (int i = 0; i < 64; i++)
 				rename_buffer[i] = '\0';
 			file_save = false;

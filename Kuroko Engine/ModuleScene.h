@@ -56,8 +56,10 @@ public:
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
 
-	void AskSceneSave(char* scene_name); 
-	void AskSceneLoad(char* path);
+	void AskSceneSaveFile(char* scene_name); 
+	void AskSceneLoadFile(char* path);
+	void AskLocalSaveScene() { want_local_save = true; }
+	void AskLocalLoadScene() { want_local_load = true; }
 
 	GameObject* MousePicking(float x, float y, GameObject* ignore = nullptr);
 private:
@@ -65,6 +67,8 @@ private:
 	void ManageSceneSaveLoad();
 	void SaveScene(std::string name);
 	void LoadScene(const char* path);
+	JSON_Value* serializeScene();
+	void loadSerializedScene(JSON_Value* scene);
 private:
 
 	std::list<GameObject*>	game_objects; 
@@ -80,13 +84,20 @@ private:
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
 
-	bool want_save_scene			  = false;
-	bool want_load_scene			  = false;
+	bool want_save_scene_file = false;
+	bool want_load_scene_file = false;
+	bool want_local_save      = false;
+	bool want_local_load	  = false;
+
 	bool working_on_existing_scene	  = false;
+
 	std::string current_working_scene = ""; // "" means that no scene is being edited
 
 	std::string scene_to_save_name;
 	std::string path_to_load_scene;
+
+	JSON_Value* local_scene_save = nullptr;		// To use when time starts and resumes
+
 public:
 
 	GameObject* selected_obj	= nullptr;

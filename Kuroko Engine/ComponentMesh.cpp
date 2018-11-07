@@ -21,7 +21,7 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	std::string mesh_name = json_object_get_string(deff, "mesh_name");
 
 	if (whichPrimitive(mesh_name, primitive_type)) { // If it is a primitive, build one, else load from .kr
-		mesh = new Mesh(primitive_type);
+		mesh = new Mesh(primitive_type);			 // TODO: Store the color of the meshes
 	}
 	else{
 		App->fs->FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
