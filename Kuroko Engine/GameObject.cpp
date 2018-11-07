@@ -235,7 +235,8 @@ void GameObject::removeComponent(Component* component)
 			if (component->getType() == MESH)
 				((ComponentAABB*)getComponent(C_AABB))->Reload();
 			
-			break;
+			delete component;
+			return;
 		}
 	}
 	

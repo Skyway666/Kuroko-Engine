@@ -33,7 +33,7 @@ void Camera::LookAt(const float3 &Spot)
 {
 	Reference = Spot;
 
-	Z = (frustum->pos - Reference).Normalized();
+	Z = (Reference - frustum->pos).Normalized();
 	X = float3::unitY.Cross(Z).Normalized();
 	Y = Z.Cross(X);
 
@@ -106,44 +106,9 @@ bool Camera::frustumCull(const OBB& obb)
 	return false;
 }
 
-float4x4 Camera::getViewMatrix() {
-
-	// Other way https://www.3dgep.com/understanding-the-view-matrix/
-
-	// WAY 1
-	//Transform view_matrix;
-
-	//view_matrix.setPosition(frustum->pos);
-	//Quat rotation;
-	//rotation.LookAt(float3(0,0,1),frustum->front, float3(0,1,0), frustum->up);
-	//view_matrix.setRotation(rotation);
-
-	//return view_matrix.CalculateMatrix();
-
-
-	// WAY 2
-	float3 zaxis = frustum->front;
-	float3 xaxis = Cross(frustum->up, zaxis);
-	float3 yaxis = Cross(zaxis, xaxis);
-
-	float4x4 orientation(float4(xaxis.x, xaxis.y, xaxis.z, 0),
-						 float4(yaxis.x, yaxis.y, yaxis.z, 0),
-						 float4(zaxis.x, zaxis.y, zaxis.z, 0),
-						 float4(0, 0, 0, 1));
-
-	float3 eye = frustum->pos;
-	float4x4 translation(float4(1, 0, 0, -eye.x),
-						 float4(0, 1, 0, -eye.y),
-						 float4(0, 0, 1, -eye.z),
-						 float4(0, 0, 0, 1));
-
-	return (orientation*translation);
-}
-
-
 void Camera::updateFrustum()
 {
-	frustum->front = -Z;
+	frustum->front = Z;
 	frustum->up = Y;
 }
 

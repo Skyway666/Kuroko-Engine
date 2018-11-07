@@ -6,6 +6,9 @@
 #include "Applog.h"
 #include "ComponentTransform.h"
 #include "Camera.h"
+#include "GameObject.h"
+#include "ComponentCamera.h"
+#include "Transform.h"
 #include "Material.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
@@ -25,7 +28,7 @@ ModuleCamera3D::~ModuleCamera3D()
 bool ModuleCamera3D::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Setting up the camera");
-	editor_camera = new Camera(float3(0.0, 2.0f, 5.0f), float3::zero);
+	selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
 
 	return true;
 }
@@ -45,106 +48,111 @@ bool ModuleCamera3D::CleanUp()
 update_status ModuleCamera3D::Update(float dt)
 {
 	// Not allow camera to be modified if UI is being operated
-	if (ImGui::IsMouseHoveringAnyWindow())
-		return UPDATE_CONTINUE;
-
-	// Movement
-	Camera aux = *editor_camera;
-
-	float3 newPos = float3::zero;
-	float speed = CAM_SPEED_CONST * dt;
-
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) 
-		speed = 2.0f * speed;
-	
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { newPos.y += speed; };
-	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { newPos.y -= speed; };
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) { newPos -= editor_camera->Z * speed; };
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) { newPos += editor_camera->Z * speed; };
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { newPos -= editor_camera->X * speed; };
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { newPos += editor_camera->X * speed; };
-
-	// panning
-	if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) 
+	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera != editor_camera)))
 	{
-		int dx = App->input->GetMouseXMotion();
-		int dy = App->input->GetMouseYMotion();
+		// Movement
+		float3 newPos = float3::zero;
+		float speed = CAM_SPEED_CONST * dt;
+		bool orbit = (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && selected_camera == editor_camera);
 
-		if (dx)		newPos -= editor_camera->X * dx * speed;
-		if (dy)		newPos += editor_camera->Y * dy * speed;
-	}
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+			speed = 2.0f * speed;
 
-	editor_camera->Move(newPos);
+		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { newPos.y += speed; };
+		if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { newPos.y -= speed; };
 
-	// Rotation / Orbit
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) { newPos += selected_camera->Z * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) { newPos -= selected_camera->Z * speed; };
 
-	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT || (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT))
-	{
-		int dx = -App->input->GetMouseXMotion();
-		int dy = -App->input->GetMouseYMotion();
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { newPos -= selected_camera->X * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { newPos += selected_camera->X * speed; };
 
-		float module = 0.0f;
-		float3 X = editor_camera->X; float3 Y = editor_camera->Y; float3 Z = editor_camera->Z;
-
-		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			module = (editor_camera->Reference - editor_camera->getFrustum()->pos).Length();
-		else
+		// panning
+		if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && !orbit)
 		{
-			editor_camera->LookAtSelectedGeometry();
-			editor_camera->getFrustum()->pos -= editor_camera->Reference;
+			int dx = App->input->GetMouseXMotion();
+			int dy = App->input->GetMouseYMotion();
+
+			if (dx)		newPos += selected_camera->X * dx * speed;
+			if (dy)		newPos += selected_camera->Y * dy * speed;
 		}
 
-		if (dx)
-		{
-			X = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * X;
-			Y = Quat::RotateY( dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
-			Z = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
-		}
+		selected_camera->Move(newPos);
 
-		if (dy)
+		// Rotation / Orbit
+
+		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT || (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && orbit))
 		{
-			Y = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
-			Z = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
-			
-			if (Y.y < 0.0f)
+			int dx = App->input->GetMouseXMotion();
+			int dy = App->input->GetMouseYMotion();
+
+			float module = module = (selected_camera->Reference - selected_camera->getFrustum()->pos).Length();
+			float3 X = selected_camera->X; float3 Y = selected_camera->Y; float3 Z = selected_camera->Z;
+
+			if(orbit)
+				selected_camera->LookAtSelectedGeometry();
+
+			if (dx)
 			{
-				Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = Z.Cross(X);
+				X = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * X;
+				Y = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
+				Z = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
 			}
+
+			if (dy)
+			{
+				Y = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
+				Z = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
+
+				if (Y.y < 0.0f)
+				{
+					Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+					Y = Z.Cross(X);
+				}
+			}
+
+			if (!IsNan(-X.x) && !IsNan(-Y.x) && !IsNan(-Z.x))
+			{
+				selected_camera->X = X; selected_camera->Y = Y; selected_camera->Z = Z;
+			}
+
+			if (!orbit)
+				selected_camera->Reference = selected_camera->getFrustum()->pos + selected_camera->Z * module;
+			else
+				selected_camera->getFrustum()->pos = selected_camera->Reference - selected_camera->Z * module;
 		}
-		
-		if (!IsNan(-X.x) && !IsNan(-Y.x) && !IsNan(-Z.x))
+
+		// Zooming
+
+		if (int mouse_z = App->input->GetMouseZ())
 		{
-			editor_camera->X = X; editor_camera->Y = Y; editor_camera->Z = Z;
+			if (mouse_z > 0)
+			{
+				if ((selected_camera->Reference - selected_camera->getFrustum()->pos).Length() > 1.0f)
+					selected_camera->getFrustum()->pos += selected_camera->Z * (0.3f + ((selected_camera->Reference - selected_camera->getFrustum()->pos).Length() / 20));
+			}
+			else
+				selected_camera->getFrustum()->pos -= selected_camera->Z * (0.3f + ((selected_camera->Reference - selected_camera->getFrustum()->pos).Length() / 20));
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT)
-			editor_camera->Reference = editor_camera->getFrustum()->pos - editor_camera->Z * module;
-		else
-			editor_camera->getFrustum()->pos = editor_camera->Reference + editor_camera->Z * editor_camera->getFrustum()->pos.Length();
-	}
+		// Focus 
+		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !selected_camera->getParent())
+			selected_camera->FitToSizeSelectedGeometry();
 
-	// Zooming
+		// Recalculate matrix -------------
+		selected_camera->updateFrustum();
 
-	if (int mouse_z = App->input->GetMouseZ())
-	{
-		if (mouse_z > 0)
+		if (selected_camera->getParent())
 		{
-			if((editor_camera->Reference - editor_camera->getFrustum()->pos).Length() > 1.0f)
-				editor_camera->getFrustum()->pos -= editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->getFrustum()->pos).Length() / 20));
-		}
-		else															
-			editor_camera->getFrustum()->pos += editor_camera->Z * (0.3f + ((editor_camera->Reference - editor_camera->getFrustum()->pos).Length() / 20));
-	}
-	
-	// Focus 
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		editor_camera->FitToSizeSelectedGeometry();
+			ComponentTransform* transform = (ComponentTransform*)selected_camera->getParent()->getParent()->getComponent(TRANSFORM);
 
-	// Recalculate matrix -------------
-	editor_camera->updateFrustum();
+			transform->local->setPosition(selected_camera->getFrustum()->pos);
+			transform->local->setRotation(Quat::LookAt(transform->local->Forward(), selected_camera->getFrustum()->front, transform->local->Up(), float3::unitY) * transform->local->getRotation());
+			transform->local->CalculateMatrix();
+			transform->LocalToGlobal();
+		}
+
+	}
 
 	return UPDATE_CONTINUE;	
 }

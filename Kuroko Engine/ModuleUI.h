@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "ImGui/imgui.h"
 #include "ImGui\ImGuizmo.h"
+#include "ComponentCamera.h"
 #include <array>
 
 struct ImGuiIO;
@@ -42,7 +43,9 @@ public:
 	void DrawHardware() const;
 	void DrawApplication() const;
 	void DrawTimeControl();
-	void DrawAndSetGizmoOptions(ImGuizmo::OPERATION& operation, ImGuizmo::MODE& mode);
+	void DrawCameraView(const ComponentCamera& camera);
+	void DrawAndSetGizmoOptions();
+	void DrawGuizmo();
 
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
@@ -58,6 +61,7 @@ private:
 	ImGuiIO* io;
 	std::array<Texture*, LAST_UI_TEX> ui_textures;
 	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
+	ImGuizmo::OPERATION	gizmo_operation = ImGuizmo::TRANSLATE;
 };
 #endif
 

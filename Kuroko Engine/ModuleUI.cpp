@@ -142,8 +142,14 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[HIERARCHY])
 		DrawHierarchyTab();
 
+
+	App->camera->selected_camera = nullptr;
+
 	if (open_tabs[OBJ_INSPECTOR])
 		DrawObjectInspectorTab();
+
+	if (!App->camera->selected_camera)
+		App->camera->selected_camera = App->camera->editor_camera;
 
 	if (open_tabs[PRIMITIVE])
 		DrawPrimitivesTab();
@@ -159,6 +165,15 @@ update_status ModuleUI::Update(float dt) {
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
+
+	if (App->scene->selected_obj)
+		App->gui->DrawGuizmo();
+
+	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
+	{
+		if ((*it)->getParent() ? (*it)->getParent()->draw_in_UI : false)
+			DrawCameraView(*(*it)->getParent());
+	}
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -348,7 +363,6 @@ void ModuleUI::DrawObjectInspectorTab()
 		if (ImGui::CollapsingHeader("Add component"))
 		{
 			//if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
-			if (ImGui::Button("Add AABB"))    selected_obj->addComponent(C_AABB);
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 		}
 
@@ -392,6 +406,7 @@ void ModuleUI::DrawObjectInspectorTab()
 
 bool ModuleUI::DrawComponent(Component& component)
 {
+	ComponentCamera* camera = nullptr; // aux pointer
 	switch (component.getType())
 	{
 	case MESH:
@@ -665,16 +680,18 @@ bool ModuleUI::DrawComponent(Component& component)
 		}
 		break;
 	case CAMERA:
+
+		camera = (ComponentCamera*)&component;
+
 		if (ImGui::CollapsingHeader("Camera"))
 		{
-			ComponentCamera* camera = (ComponentCamera*)&component;
-
 			static bool camera_active;
 			camera_active = camera->isActive();
 
-
 			if (ImGui::Checkbox("active camera", &camera_active))
 				camera->setActive(camera_active);
+
+			ImGui::Checkbox("draw camera view", &camera->draw_in_UI);
 
 			if (camera_active)
 			{
@@ -709,13 +726,7 @@ bool ModuleUI::DrawComponent(Component& component)
 				ImGui::DragFloat("o z", &offset.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 				camera->offset = offset;
-
-				if (FrameBuffer* frame_buffer = camera->getCamera()->getFrameBuffer())
-				{
-					uint size_factor = frame_buffer->size_x / 256;
-					ImGui::ImageButton((void*)frame_buffer->tex->gl_id, ImVec2(frame_buffer->size_x / size_factor, frame_buffer->size_y / size_factor), ImVec2(0, 1), ImVec2(1, 0), 2);
-				}
-				else camera->getCamera()->setFrameBuffer(App->camera->initFrameBuffer());
+				
 			}
 
 			if (ImGui::Button("Remove camera"))
@@ -728,6 +739,31 @@ bool ModuleUI::DrawComponent(Component& component)
 	return true;
 }
 
+void ModuleUI::DrawCameraView(const ComponentCamera& camera)
+{
+	if (FrameBuffer* frame_buffer = camera.getCamera()->getFrameBuffer())
+	{
+		ImGui::Begin((camera.getParent()->getName() + " Camera").c_str(), nullptr, ImGuiWindowFlags_NoResize);
+
+		if(ImGui::IsWindowFocused())
+			App->camera->selected_camera = camera.getCamera();
+
+		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x + 10, frame_buffer->size_y + 10));
+
+		if (ImGui::ImageButton((void*)frame_buffer->tex->gl_id, ImVec2(frame_buffer->size_x, frame_buffer->size_y), ImVec2(0, 1), ImVec2(1, 0), 2))
+		{
+			float x = App->input->GetMouseX(); float y = App->input->GetMouseY();
+			ImVec2 window_pos = ImGui::GetWindowPos();
+			x = (((x - window_pos.x) / ImGui::GetWindowSize().x) * 2) - 1;
+			y = (((y - window_pos.y) / ImGui::GetWindowSize().y) * 2) - 1;
+
+			if (GameObject* new_selected = App->scene->MousePicking(x, y, camera.getParent()))
+				App->scene->selected_obj = new_selected;
+		}
+		ImGui::End();
+	}
+	else camera.getCamera()->setFrameBuffer(App->camera->initFrameBuffer());
+}
 
 //void ModuleUI::DrawAudioTab()
 //{
@@ -1073,32 +1109,92 @@ void ModuleUI::DrawTimeControl()
 	ImGui::End();
 }
 
-void ModuleUI::DrawAndSetGizmoOptions(ImGuizmo::OPERATION& operation, ImGuizmo::MODE& mode) {
-
+void ModuleUI::DrawAndSetGizmoOptions() {
 
 	static bool draw = true;
 	ImGui::Begin("Gizmo", &draw);
-
-
+	
 	int w, h;
 	ui_textures[TRANSLATE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[TRANSLATE]->getGLid(), ImVec2(w, h), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGizmoOperation() == ImGuizmo::OPERATION::TRANSLATE ? 1.0f : 0.0f)))
-		operation = ImGuizmo::OPERATION::TRANSLATE;
+	if (ImGui::ImageButton((void*)ui_textures[TRANSLATE]->getGLid(), ImVec2(w, h), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE ? 1.0f : 0.0f)))
+		gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
 
 	ImGui::SameLine();
 	ui_textures[ROTATE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[ROTATE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGizmoOperation() == ImGuizmo::OPERATION::ROTATE ? 1.0f : 0.0f)))
-		operation = ImGuizmo::OPERATION::ROTATE;
+	if (ImGui::ImageButton((void*)ui_textures[ROTATE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE ? 1.0f : 0.0f)))
+		gizmo_operation = ImGuizmo::OPERATION::ROTATE;
 
 	ImGui::SameLine();
 	ui_textures[SCALE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[SCALE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, App->scene->getGizmoOperation() == ImGuizmo::OPERATION::SCALE ? 1.0f : 0.0f)))
-		operation = ImGuizmo::OPERATION::SCALE;
-
+	if (ImGui::ImageButton((void*)ui_textures[SCALE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE ? 1.0f : 0.0f)))
+		gizmo_operation = ImGuizmo::OPERATION::SCALE;
 
 	ImGui::End();
 
 }
+
+
+void ModuleUI::DrawGuizmo()
+{
+	App->gui->DrawAndSetGizmoOptions();
+
+	ImGuizmo::BeginFrame();
+	float4x4 projection4x4;
+	float4x4 view4x4;
+
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
+	glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetOrthographic(true);
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+	ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
+	if (transform->getMode() == LOCAL)
+		transform->LocalToGlobal();
+	else
+		transform->global->CalculateMatrix();
+
+	Transform aux_transform;
+	switch (gizmo_operation)
+	{
+	case ImGuizmo::OPERATION::ROTATE:
+		aux_transform.setPosition(transform->global->getPosition()); 
+		aux_transform.setRotation(transform->global->getRotation()); break;
+	case ImGuizmo::OPERATION::SCALE:
+		aux_transform.setPosition(transform->global->getPosition());
+		aux_transform.setRotation(transform->global->getRotation());
+		aux_transform.setScale(transform->global->getScale()); break;
+	case ImGuizmo::OPERATION::TRANSLATE:
+		aux_transform.setRotation(transform->global->getRotation());
+		aux_transform.setPosition(transform->global->getPosition()); break;
+	default:
+		break;
+	}
+
+	aux_transform.CalculateMatrix();
+	float4x4 mat = float4x4(aux_transform.getMatrix());
+	mat.Transpose();
+	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, gizmo_operation, transform->getMode() == LOCAL ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL, (float*)mat.v);
+	if (ImGuizmo::IsUsing())
+	{
+		mat.Transpose();
+		switch (gizmo_operation)
+		{
+		case ImGuizmo::OPERATION::ROTATE:
+			transform->global->setRotation(mat.RotatePart().ToQuat()); break;
+		case ImGuizmo::OPERATION::SCALE:
+			transform->global->setScale(mat.GetScale()); break;
+		case ImGuizmo::OPERATION::TRANSLATE:
+			transform->global->setPosition(mat.TranslatePart()); break;
+		default:
+			break;
+		}
+		transform->global->CalculateMatrix();
+		transform->GlobalToLocal();
+	}
+}
+
 void ModuleUI::SaveConfig(JSON_Object* config) const
 {
 	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);

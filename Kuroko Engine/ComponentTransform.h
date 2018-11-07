@@ -14,7 +14,8 @@ enum TransformMode { LOCAL, GLOBAL};
 
 class ComponentTransform : public Component {
 
-	friend class ModuleScene;
+	friend class ModuleUI;
+	friend class ModuleCamera3D;
 public:
 
 	ComponentTransform(GameObject* parent, const Quat& rot, const float3& pos, const float3& scl);

@@ -37,14 +37,11 @@ public:
 	bool CleanUp();
 
 	void DrawScene(float3 camera_pos);
-	void DrawGuizmo();
 
 	void Play() { game_state = PLAYING; };
 	void Pause() { game_state = PAUSED; };
 	void Stop() { game_state = STOPPED; };
 	GameState getGameState() { return game_state; };
-	ImGuizmo::OPERATION getGizmoOperation() { return gizmo_operation;}
-	ImGuizmo::MODE getGizmoMode() { return gizmo_mode;}
 
 	void addMaterial(Material* mat)			{ materials.push_back(mat); };
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
@@ -70,7 +67,7 @@ public:
 	void AskSceneSave(char* scene_name); 
 	void AskSceneLoad(char* path);
 
-	GameObject* MousePicking();
+	GameObject* MousePicking(float x, float y, GameObject* ignore = nullptr);
 private:
 	
 	void ManageSceneSaveLoad();
@@ -91,8 +88,6 @@ private:
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
 	GameState game_state	= GameState::STOPPED;
-	ImGuizmo::OPERATION	gizmo_operation	= ImGuizmo::TRANSLATE;
-	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
 
 	bool want_save_scene			  = false;
 	bool want_load_scene			  = false;

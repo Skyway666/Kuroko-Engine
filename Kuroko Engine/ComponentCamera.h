@@ -22,6 +22,7 @@ public:
 	bool lock_rotationY = false;
 	bool lock_rotationZ = false;
 	float3 offset = float3::zero;
+	bool draw_in_UI = false;
 
 private:
 

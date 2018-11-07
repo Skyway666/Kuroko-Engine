@@ -162,9 +162,12 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
-	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver())
+	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver() && App->camera->selected_camera == App->camera->editor_camera)
 	{
-		if (GameObject* new_selected = MousePicking())
+		float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
+		float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
+
+		if (GameObject* new_selected = MousePicking(x, y))
 			selected_obj = new_selected;
 	}
 
@@ -186,56 +189,15 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Draw();
-
-	if (selected_obj)
-		DrawGuizmo();
-
-}
-
-void ModuleScene::DrawGuizmo() {
-
-
-	App->gui->DrawAndSetGizmoOptions(gizmo_operation, gizmo_mode);
-
-	ImGuizmo::BeginFrame();
-	float4x4 projection4x4;
-	float4x4 view4x4;
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
-	glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
-
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetOrthographic(true);
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-
-	ComponentTransform* transform = (ComponentTransform*)selected_obj->getComponent(TRANSFORM);
-	if (transform->getMode() == LOCAL)
-		transform->LocalToGlobal();
-	else
-		transform->global->CalculateMatrix();
-
-	float4x4 mat = float4x4(transform->global->getMatrix());
-	mat.Transpose();
-	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, gizmo_operation, gizmo_mode, (float*)mat.v, NULL, NULL);
-	if (ImGuizmo::IsUsing())
-	{
-		mat.Transpose();
-		transform->global->setPosition(mat.TranslatePart());
-		transform->global->setRotation(mat.RotatePart().ToQuat());
-		transform->global->setScale(mat.GetScale());
-		transform->GlobalToLocal();
-	}
 }
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
 
-GameObject* ModuleScene::MousePicking()
+GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 {
 	GameObject* ret = nullptr;
 
-	float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
-	float y = (((((float)App->window->main_window->height - (float) App->input->GetMouseY()) / (float)App->window->main_window->height) * 2 ) -1);
-	Frustum* f = App->camera->current_camera->getFrustum();
+	Frustum* f = App->camera->selected_camera->getFrustum();
 	Ray ray = f->UnProjectLineSegment(x , y).ToRay();
 
 	std::list<GameObject*> intersected_objs;
@@ -245,7 +207,7 @@ GameObject* ModuleScene::MousePicking()
 		if ((*it)->getComponent(MESH))
 		{
 			OBB* obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->getOBB();
-			if (ray.Intersects(*obb))
+			if (ray.Intersects(*obb) && *it != ignore)
 				intersected_objs.push_back(*it);
 		}
 	}

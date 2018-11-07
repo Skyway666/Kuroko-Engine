@@ -136,17 +136,19 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 			glBindFramebuffer(GL_FRAMEBUFFER, (*cam)->getFrameBuffer()->id);
 		}
 
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf((GLfloat*)(*cam)->getFrustum()->ViewProjMatrix().Transposed().v);
 
-		App->scene->DrawScene((*cam)->getFrustum()->pos);
 		lights[0].SetPos((*cam)->getFrustum()->pos.x, (*cam)->getFrustum()->pos.y, (*cam)->getFrustum()->pos.z);
 
 		for (uint i = 0; i < MAX_LIGHTS; ++i)
 			lights[i].Render();
+
+		App->scene->DrawScene((*cam)->getFrustum()->pos);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

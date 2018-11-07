@@ -30,11 +30,12 @@ public:
 	bool Init(const JSON_Object* config);
 	update_status Update(float dt);
 	bool CleanUp();
-	FrameBuffer* initFrameBuffer(uint size_x = 1024, uint size_y = 768);
+	FrameBuffer* initFrameBuffer(uint size_x = 512, uint size_y = 356);
 
 public:
 	Camera* editor_camera = nullptr;
 	Camera* current_camera = nullptr;
+	Camera* selected_camera = nullptr;
 	std::list<Camera*> game_cameras;
 
 	std::list<FrameBuffer*> frame_buffers;
