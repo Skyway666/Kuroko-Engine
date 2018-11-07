@@ -13,9 +13,6 @@ class Texture;
 class Skybox;
 class Quadtree;
 
-
-
-
 struct RayHit
 {
 	RayHit(float distance, GameObject*obj) : distance(distance), obj(obj) {};
@@ -37,12 +34,6 @@ public:
 	bool CleanUp();
 
 	void DrawScene(float3 camera_pos);
-
-
-	void Play() { game_state = PLAYING; };
-	void Pause() { game_state = PAUSED; };
-	void Stop() { game_state = STOPPED; };
-	GameState getGameState() { return game_state; };
 
 	void addMaterial(Material* mat)			{ materials.push_back(mat); };
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
@@ -88,7 +79,6 @@ private:
 
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
-	GameState game_state	= GameState::STOPPED;
 
 	bool want_save_scene			  = false;
 	bool want_load_scene			  = false;

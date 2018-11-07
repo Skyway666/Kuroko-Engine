@@ -30,7 +30,7 @@ public:
 	bool Init(const JSON_Object* config);
 	update_status Update(float dt);
 	bool CleanUp();
-	FrameBuffer* initFrameBuffer(uint size_x = 512, uint size_y = 356);
+	FrameBuffer* initFrameBuffer();
 
 public:
 	Camera* editor_camera = nullptr;

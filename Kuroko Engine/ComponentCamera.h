@@ -14,6 +14,7 @@ public:
 	~ComponentCamera() {};
 
 	bool Update(float dt);
+	void Draw() const;
 	Camera* getCamera() const { return camera; };
 
 public:
@@ -23,6 +24,7 @@ public:
 	bool lock_rotationZ = false;
 	float3 offset = float3::zero;
 	bool draw_in_UI = false;
+	bool draw_frustum = false;
 
 private:
 

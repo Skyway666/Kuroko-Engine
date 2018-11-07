@@ -1,5 +1,7 @@
 #include "ModuleDebug.h"
 
+#include "MathGeoLib\Geometry\LineSegment.h"
+
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
 
@@ -174,6 +176,25 @@ uint  ModuleDebug::addFrustum(const float3& pos, const Quat& rotation, FrustumTy
 
 }
 
+void ModuleDebug::directDraw(const Frustum& f)
+{
+
+	glLineWidth(1.5f);
+
+	glColor3f(0.0f, 0.7f, 0.0f);
+	glBegin(GL_LINES);
+	
+	for (int i = 0; i < 12; i++)
+	{
+		glVertex3f(f.Edge(i).a.x, f.Edge(i).a.y, f.Edge(i).a.z);
+		glVertex3f(f.Edge(i).b.x, f.Edge(i).b.y, f.Edge(i).b.z);
+	}
+
+	glEnd();
+	glColor3f(0.8f, 0.8f, 0.8f);
+
+	glLineWidth(1.0f);
+}
 
 
 void ModuleDebug::DrawGrid() const

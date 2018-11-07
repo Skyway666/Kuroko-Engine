@@ -695,6 +695,8 @@ bool ModuleUI::DrawComponent(Component& component)
 
 			ImGui::Checkbox("draw camera view", &camera->draw_in_UI);
 
+			ImGui::Checkbox("draw frustum", &camera->draw_frustum);
+
 			if (camera_active)
 			{
 				static bool camera_lock_x_rot;		camera_lock_x_rot = camera->lock_rotationX;
@@ -747,12 +749,16 @@ void ModuleUI::DrawCameraView(const ComponentCamera& camera)
 	{
 		ImGui::Begin((camera.getParent()->getName() + " Camera").c_str(), nullptr, ImGuiWindowFlags_NoResize);
 
+		static bool draw_depth = false;
+
 		if(ImGui::IsWindowFocused())
 			App->camera->selected_camera = camera.getCamera();
+		
+		ImGui::Checkbox("Draw Depth", &draw_depth);
 
-		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x + 10, frame_buffer->size_y + 10));
+		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 50, frame_buffer->size_y / 3 + 70));
 
-		if (ImGui::ImageButton((void*)frame_buffer->tex->gl_id, ImVec2(frame_buffer->size_x, frame_buffer->size_y), ImVec2(0, 1), ImVec2(1, 0), 2))
+		if (ImGui::ImageButton((void*) (draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			float x = App->input->GetMouseX(); float y = App->input->GetMouseY();
 			ImVec2 window_pos = ImGui::GetWindowPos();
