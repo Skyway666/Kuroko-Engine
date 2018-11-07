@@ -176,9 +176,8 @@ uint  ModuleDebug::addFrustum(const float3& pos, const Quat& rotation, FrustumTy
 
 }
 
-void ModuleDebug::directDraw(const Frustum& f)
+void ModuleDebug::directDrawFrustum(const Frustum& f)
 {
-
 	glLineWidth(1.5f);
 
 	glColor3f(0.0f, 0.7f, 0.0f);
@@ -196,6 +195,36 @@ void ModuleDebug::directDraw(const Frustum& f)
 	glLineWidth(1.0f);
 }
 
+void ModuleDebug::directDrawAxis(const float3& position, const Quat& rotation, float length)
+{
+	glLineWidth(1.5f);
+
+	glBegin(GL_LINES);
+
+	float3 X = rotation * float3::unitX;
+	float3 Y = rotation * float3::unitY;
+	float3 Z = rotation * float3::unitZ;
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x + X.x, position.y + X.y, position.z + X.z);
+
+	glColor3f(0.0f, 1.0f, 0.0f);
+
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x + Y.x, position.y + Y.y, position.z + Y.z);
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x + Z.x, position.y + Z.y, position.z + Z.z);
+
+	glEnd();
+	glColor3f(0.8f, 0.8f, 0.8f);
+
+	glLineWidth(1.0f);
+}
 
 void ModuleDebug::DrawGrid() const
 {

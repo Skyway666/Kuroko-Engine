@@ -229,11 +229,17 @@ void GameObject::removeComponent(Component* component)
 			continue;
 		else if (*it == component)
 		{
-			bool mesh = (component->getType() == MESH);
 			components.remove(component);
 
-			if (component->getType() == MESH)
+			switch (component->getType())
+			{
+			case MESH:
 				((ComponentAABB*)getComponent(C_AABB))->Reload();
+				break;
+			case CAMERA:
+				Camera* cam_to_remove = ((ComponentCamera*)component)->getCamera();
+				App->camera->game_cameras.remove(cam_to_remove);
+			}
 			
 			delete component;
 			return;

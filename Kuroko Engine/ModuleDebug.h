@@ -49,7 +49,8 @@ public:
 	uint addRay(const float3& start_point, const float3& end_point, const Color& color = Green);
 	uint addFrustum(const float3& pos, const Quat& rotation = Quat::identity, FrustumType type = PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 10.0f, float h_fov_or_ortho_width = 90.0f, float v_fov_or_ortho_height = 59.0f, const Color& color = Blue);
 
-	void directDraw(const Frustum& f);
+	void directDrawFrustum(const Frustum& f);
+	void directDrawAxis(const float3& position, const Quat& rotation = Quat::identity, float length = 1.0f);
 
 	void removeShape(uint id);
 	void ClearShapes();

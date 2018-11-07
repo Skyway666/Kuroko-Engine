@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "Application.h"
 #include "ModuleScene.h"
+#include "ModuleDebug.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
@@ -107,6 +108,12 @@ void ComponentTransform::LocalToGlobal()
 		global->Set(local->getPosition(), local->getRotation(), local->getScale());
 
 	global->CalculateMatrix();
+}
+
+void ComponentTransform::Draw() const
+{
+	if (draw_axis)
+		App->debug->directDrawAxis(global->getPosition(), global->getRotation());
 }
 
 void ComponentTransform::Save(JSON_Object* config) {

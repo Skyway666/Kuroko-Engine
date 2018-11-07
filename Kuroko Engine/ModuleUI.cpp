@@ -592,6 +592,8 @@ bool ModuleUI::DrawComponent(Component& component)
 				if (ImGui::Button("Local"))
 					c_trans->setMode(LOCAL);
 			}
+			
+			ImGui::Checkbox("draw axis", &c_trans->draw_axis);
 
 			position = transform->getPosition();
 			rotation = transform->getRotationEuler();

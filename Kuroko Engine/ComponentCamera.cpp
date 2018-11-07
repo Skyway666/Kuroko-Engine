@@ -45,5 +45,5 @@ bool ComponentCamera::Update(float dt)
 void ComponentCamera::Draw() const
 {
 	if (draw_frustum)
-		App->debug->directDraw(*getCamera()->getFrustum());
+		App->debug->directDrawFrustum(*getCamera()->getFrustum());
 }

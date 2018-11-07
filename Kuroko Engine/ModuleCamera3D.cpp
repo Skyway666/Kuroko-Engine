@@ -84,7 +84,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT || (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && orbit))
 		{
-			int dx = App->input->GetMouseXMotion();
+			int dx = -App->input->GetMouseXMotion();
 			int dy = App->input->GetMouseYMotion();
 
 			float module = module = (selected_camera->Reference - selected_camera->getFrustum()->pos).Length();

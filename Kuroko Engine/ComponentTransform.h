@@ -26,7 +26,8 @@ public:
 
 	~ComponentTransform();
 
-	bool Update(float dt);
+	bool Update(float dt); 
+	void Draw() const;
 
 	Transform* getInheritedTransform();
 
@@ -43,6 +44,7 @@ public:
 
 	Transform* local = nullptr;
 	Transform* global = nullptr;
+	bool draw_axis = false;
 
 private:
 
