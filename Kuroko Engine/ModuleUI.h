@@ -15,7 +15,8 @@ class Material;
 class Camera;
 
 enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, /*AUDIO,*/ LAST_UI_TAB};  // LAST is an utility value to store the max num of tabs.
-enum UI_textures { PLAY, PAUSE, STOP, ADVANCE, TRANSLATE, ROTATE, SCALE, NO_TEXTURE, LAST_UI_TEX};
+enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
+	GUIZMO_SELECT, LAST_UI_TEX};
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
 
 class ModuleUI :
@@ -44,7 +45,7 @@ public:
 	void DrawApplication() const;
 	void DrawTimeControl();
 	void DrawCameraView(const ComponentCamera& camera);
-	void DrawAndSetGizmoOptions();
+	void DrawGizmoMenu();
 	void DrawGuizmo();
 
 	void InvisibleDockingBegin();
@@ -56,12 +57,14 @@ public:
 private:
 	
 	bool close_app = false;
-	bool docking_background;
+	bool docking_background = true;
 	bool open_tabs[LAST_UI_TAB];  // _serializable_var
 	ImGuiIO* io;
 	std::array<Texture*, LAST_UI_TEX> ui_textures;
 	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
 	ImGuizmo::OPERATION	gizmo_operation = ImGuizmo::TRANSLATE;
+	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
+	bool draw_guizmo = true;
 };
 #endif
 

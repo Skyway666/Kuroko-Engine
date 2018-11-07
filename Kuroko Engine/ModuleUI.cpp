@@ -80,9 +80,12 @@ bool ModuleUI::Start()
 	ui_textures[STOP]		= (Texture*)App->importer->Import("Stop.png", I_TEXTURE);
 	ui_textures[ADVANCE]	= (Texture*)App->importer->Import("Advance.png", I_TEXTURE);
 
-	ui_textures[TRANSLATE] = (Texture*)App->importer->Import("translate.png", I_TEXTURE);
-	ui_textures[ROTATE] = (Texture*)App->importer->Import("rotate.png", I_TEXTURE);
-	ui_textures[SCALE] = (Texture*)App->importer->Import("scale.png", I_TEXTURE);
+	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->Import("translate.png", I_TEXTURE);
+	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->Import("rotate.png", I_TEXTURE);
+	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->Import("scale.png", I_TEXTURE);
+	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->Import("Guizmo_local.png", I_TEXTURE);
+	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->Import("Guizmo_global.png", I_TEXTURE);
+	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->Import("Guizmo_select.png", I_TEXTURE);
 
 	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("no_texture.png", I_TEXTURE);
 
@@ -702,21 +705,6 @@ bool ModuleUI::DrawComponent(Component& component)
 
 			if (camera_active)
 			{
-				static bool camera_lock_x_rot;		camera_lock_x_rot = camera->lock_rotationX;
-				static bool camera_lock_y_rot;		camera_lock_y_rot = camera->lock_rotationY;
-				static bool camera_lock_z_rot;		camera_lock_z_rot = camera->lock_rotationZ;
-
-				if (ImGui::Checkbox("Lock X rot", &camera_lock_x_rot))
-					camera->lock_rotationX = camera_lock_x_rot;
-
-				ImGui::SameLine();
-				if (ImGui::Checkbox("Lock Y rot", &camera_lock_y_rot))
-					camera->lock_rotationY = camera_lock_y_rot;
-
-				ImGui::SameLine();
-				if (ImGui::Checkbox("Lock Z rot", &camera_lock_z_rot))
-					camera->lock_rotationZ = camera_lock_z_rot;
-
 				static float3 offset;
 				offset = camera->offset;
 				ImGui::Text("Offset:");
@@ -733,7 +721,6 @@ bool ModuleUI::DrawComponent(Component& component)
 				ImGui::DragFloat("##o z", &offset.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 				camera->offset = offset;
-				
 			}
 
 			if (ImGui::Button("Remove##Remove camera"))
@@ -1146,25 +1133,42 @@ void ModuleUI::DrawTimeControl()
 	ImGui::End();
 }
 
-void ModuleUI::DrawAndSetGizmoOptions() {
+void ModuleUI::DrawGizmoMenu() {
 
-	static bool draw = true;
-	ImGui::Begin("Gizmo", &draw);
+	ImGui::Begin("##Gizmo menu", nullptr);
+
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
+		draw_guizmo = !draw_guizmo;
 	
-	int w, h;
-	ui_textures[TRANSLATE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[TRANSLATE]->getGLid(), ImVec2(w, h), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+	{
 		gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
+		draw_guizmo = true;
+	}
 
-	ImGui::SameLine();
-	ui_textures[ROTATE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[ROTATE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
+	{
 		gizmo_operation = ImGuizmo::OPERATION::ROTATE;
+		draw_guizmo = true;
+	}
 
-	ImGui::SameLine();
-	ui_textures[SCALE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[SCALE]->getGLid(), ImVec2(w, h), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
+	{
 		gizmo_operation = ImGuizmo::OPERATION::SCALE;
+		draw_guizmo = true;
+	}
+
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
+	{
+		gizmo_mode = ImGuizmo::MODE::LOCAL;
+		draw_guizmo = true;
+	}
+
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
+	{
+		gizmo_mode = ImGuizmo::MODE::WORLD;
+		draw_guizmo = true;
+	}
 
 	ImGui::End();
 
@@ -1173,62 +1177,65 @@ void ModuleUI::DrawAndSetGizmoOptions() {
 
 void ModuleUI::DrawGuizmo()
 {
-	App->gui->DrawAndSetGizmoOptions();
+	App->gui->DrawGizmoMenu();
 
-	ImGuizmo::BeginFrame();
-	float4x4 projection4x4;
-	float4x4 view4x4;
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
-	glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
-
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetOrthographic(true);
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-
-	ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
-	if (transform->getMode() == LOCAL)
-		transform->LocalToGlobal();
-	else
-		transform->global->CalculateMatrix();
-
-	Transform aux_transform;
-	switch (gizmo_operation)
+	if (draw_guizmo)
 	{
-	case ImGuizmo::OPERATION::ROTATE:
-		aux_transform.setPosition(transform->global->getPosition()); 
-		aux_transform.setRotation(transform->global->getRotation()); break;
-	case ImGuizmo::OPERATION::SCALE:
-		aux_transform.setPosition(transform->global->getPosition());
-		aux_transform.setRotation(transform->global->getRotation());
-		aux_transform.setScale(transform->global->getScale()); break;
-	case ImGuizmo::OPERATION::TRANSLATE:
-		aux_transform.setRotation(transform->global->getRotation());
-		aux_transform.setPosition(transform->global->getPosition()); break;
-	default:
-		break;
-	}
+		ImGuizmo::BeginFrame();
+		float4x4 projection4x4;
+		float4x4 view4x4;
 
-	aux_transform.CalculateMatrix();
-	float4x4 mat = float4x4(aux_transform.getMatrix());
-	mat.Transpose();
-	ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, gizmo_operation, transform->getMode() == LOCAL ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL, (float*)mat.v);
-	if (ImGuizmo::IsUsing())
-	{
-		mat.Transpose();
+		glGetFloatv(GL_MODELVIEW_MATRIX, (float*)view4x4.v);
+		glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuizmo::SetOrthographic(true);
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
+		if (transform->getMode() == LOCAL)
+			transform->LocalToGlobal();
+		else
+			transform->global->CalculateMatrix();
+
+		Transform aux_transform;
 		switch (gizmo_operation)
 		{
 		case ImGuizmo::OPERATION::ROTATE:
-			transform->global->setRotation(mat.RotatePart().ToQuat()); break;
+			aux_transform.setPosition(transform->global->getPosition());
+			aux_transform.setRotation(transform->global->getRotation()); break;
 		case ImGuizmo::OPERATION::SCALE:
-			transform->global->setScale(mat.GetScale()); break;
+			aux_transform.setPosition(transform->global->getPosition());
+			aux_transform.setRotation(transform->global->getRotation());
+			aux_transform.setScale(transform->global->getScale()); break;
 		case ImGuizmo::OPERATION::TRANSLATE:
-			transform->global->setPosition(mat.TranslatePart()); break;
+			aux_transform.setRotation(transform->global->getRotation());
+			aux_transform.setPosition(transform->global->getPosition()); break;
 		default:
 			break;
 		}
-		transform->global->CalculateMatrix();
-		transform->GlobalToLocal();
+
+		aux_transform.CalculateMatrix();
+		float4x4 mat = float4x4(aux_transform.getMatrix());
+		mat.Transpose();
+		ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, gizmo_operation, gizmo_mode, (float*)mat.v);
+		if (ImGuizmo::IsUsing())
+		{
+			mat.Transpose();
+			switch (gizmo_operation)
+			{
+			case ImGuizmo::OPERATION::ROTATE:
+				transform->global->setRotation(mat.RotatePart().ToQuat()); break;
+			case ImGuizmo::OPERATION::SCALE:
+				transform->global->setScale(mat.GetScale()); break;
+			case ImGuizmo::OPERATION::TRANSLATE:
+				transform->global->setPosition(mat.TranslatePart()); break;
+			default:
+				break;
+			}
+			transform->global->CalculateMatrix();
+			transform->GlobalToLocal();
+		}
 	}
 }
 
