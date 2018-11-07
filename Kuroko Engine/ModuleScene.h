@@ -22,8 +22,6 @@ struct RayHit
 
 class ModuleScene : public Module
 {
-
-	friend class ModuleUI;
 public:
 	ModuleScene(Application* app, bool start_enabled = true);
 	~ModuleScene();

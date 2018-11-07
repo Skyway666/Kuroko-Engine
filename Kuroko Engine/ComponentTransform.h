@@ -45,7 +45,7 @@ public:
 	Transform* local = nullptr;
 	Transform* global = nullptr;
 	bool draw_axis = false;
-
+	bool constraints[3][3] = { {false, false, false}, {false, false, false}, {false, false, false} };
 private:
 
 	TransformMode mode = LOCAL;

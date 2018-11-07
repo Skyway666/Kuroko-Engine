@@ -604,43 +604,52 @@ bool ModuleUI::DrawComponent(Component& component)
 			ImGui::Text("Position:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
+			if(!c_trans->constraints[0][0])		ImGui::DragFloat("##p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
+			else								ImGui::Text("%.2f", position.x);
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
+			if (!c_trans->constraints[0][1])	ImGui::DragFloat("##p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
+			else								ImGui::Text("%.2f", position.y);
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##p z", &position.z, 0.01f, 0.0f, 0.0f, "%.02f");
-
+			if (!c_trans->constraints[0][2])	ImGui::DragFloat("##p z", &position.z, 0.01f, 0.0f, 0.0f, "%.02f");
+			else								ImGui::Text("%.2f", position.z);
+			
 			//rotation
 			ImGui::Text("Rotation:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##r x", &rotation.x, 0.2f, -180.0f, 180.0f, "%.02f");
+			if (!c_trans->constraints[1][0])	ImGui::DragFloat("##r x", &rotation.x, 0.2f, -180.0f, 180.0f, "%.02f");
+			else								ImGui::Text("%.2f", rotation.z);
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##r y", &rotation.y, 0.2f, -180.0f, 180.0f, "%.02f");
+			if (!c_trans->constraints[1][1])	ImGui::DragFloat("##r y", &rotation.y, 0.2f, -180.0f, 180.0f, "%.02f");
+			else								ImGui::Text("%.2f", rotation.x);
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.02f");
+			if (!c_trans->constraints[1][2])	ImGui::DragFloat("##r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.02f");
+			else								ImGui::Text("%.2f", rotation.y);
 
 			//scale
 			ImGui::Text("   Scale:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##s x", &scale.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			if (!c_trans->constraints[2][0])	ImGui::DragFloat("##s x", &scale.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			else								ImGui::Text("%.2f", scale.x);
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##s y", &scale.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			if (!c_trans->constraints[2][1])	ImGui::DragFloat("##s y", &scale.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			else								ImGui::Text("%.2f", scale.y);
 
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##s z", &scale.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			if (!c_trans->constraints[2][2])	ImGui::DragFloat("##s z", &scale.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			else								ImGui::Text("%.2f", scale.z);
 
 			if (ImGui::Button("Reset Transform"))
 			{
@@ -648,6 +657,50 @@ bool ModuleUI::DrawComponent(Component& component)
 			}
 
 			ImGui::Checkbox("Draw axis", &c_trans->draw_axis);
+			
+			if (ImGui::CollapsingHeader("	Constraints"))
+			{
+				ImGui::Text("Position:");
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint p x", &c_trans->constraints[0][0]);
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint p y", &c_trans->constraints[0][1]);
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint p z", &c_trans->constraints[0][2]);
+
+
+				ImGui::Text("Rotation:");
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint r x", &c_trans->constraints[1][0]);
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint r y", &c_trans->constraints[1][1]);
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint r z", &c_trans->constraints[1][2]);
+
+
+				ImGui::Text("   Scale:");
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint s x", &c_trans->constraints[2][0]);
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint s y", &c_trans->constraints[2][1]);
+
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::Checkbox("##constraint s z", &c_trans->constraints[2][2]);
+			}
 
 			transform->setPosition(position);
 			transform->setRotationEuler(rotation);
@@ -1201,6 +1254,9 @@ void ModuleUI::DrawGuizmo()
 		Transform aux_transform;
 		switch (gizmo_operation)
 		{
+		case ImGuizmo::OPERATION::TRANSLATE:
+			aux_transform.setRotation(transform->global->getRotation());
+			aux_transform.setPosition(transform->global->getPosition()); break;
 		case ImGuizmo::OPERATION::ROTATE:
 			aux_transform.setPosition(transform->global->getPosition());
 			aux_transform.setRotation(transform->global->getRotation()); break;
@@ -1208,9 +1264,6 @@ void ModuleUI::DrawGuizmo()
 			aux_transform.setPosition(transform->global->getPosition());
 			aux_transform.setRotation(transform->global->getRotation());
 			aux_transform.setScale(transform->global->getScale()); break;
-		case ImGuizmo::OPERATION::TRANSLATE:
-			aux_transform.setRotation(transform->global->getRotation());
-			aux_transform.setPosition(transform->global->getPosition()); break;
 		default:
 			break;
 		}
@@ -1221,15 +1274,30 @@ void ModuleUI::DrawGuizmo()
 		ImGuizmo::Manipulate((float*)view4x4.v, (float*)projection4x4.v, gizmo_operation, gizmo_mode, (float*)mat.v);
 		if (ImGuizmo::IsUsing())
 		{
+			float3 new_pos = float3::zero;
+			float3 new_rot = float3::zero;
+			float3 new_scale = float3::zero;
 			mat.Transpose();
 			switch (gizmo_operation)
 			{
-			case ImGuizmo::OPERATION::ROTATE:
-				transform->global->setRotation(mat.RotatePart().ToQuat()); break;
-			case ImGuizmo::OPERATION::SCALE:
-				transform->global->setScale(mat.GetScale()); break;
 			case ImGuizmo::OPERATION::TRANSLATE:
-				transform->global->setPosition(mat.TranslatePart()); break;
+				new_pos.x = transform->constraints[0][0] ? transform->global->getPosition().x : mat.TranslatePart().x;
+				new_pos.y = transform->constraints[0][1] ? transform->global->getPosition().y : mat.TranslatePart().y;
+				new_pos.z = transform->constraints[0][2] ? transform->global->getPosition().z : mat.TranslatePart().z;
+				transform->global->setPosition(new_pos);
+				break;
+			case ImGuizmo::OPERATION::ROTATE:
+				new_rot.x = transform->constraints[1][0] ? transform->global->getRotationEuler().x : mat.RotatePart().ToEulerXYZ().x;
+				new_rot.y = transform->constraints[1][1] ? transform->global->getRotationEuler().y : mat.RotatePart().ToEulerXYZ().y;
+				new_rot.z = transform->constraints[1][2] ? transform->global->getRotationEuler().z : mat.RotatePart().ToEulerXYZ().z;
+				transform->global->setRotation(Quat::FromEulerXYZ(new_rot.x, new_rot.y, new_rot.z)); 
+				break;
+			case ImGuizmo::OPERATION::SCALE:
+				new_scale.x = transform->constraints[2][0] ? transform->global->getScale().x : mat.GetScale().x;
+				new_scale.y = transform->constraints[2][1] ? transform->global->getScale().y : mat.GetScale().y;
+				new_scale.z = transform->constraints[2][2] ? transform->global->getScale().z : mat.GetScale().z;
+				transform->global->setScale(new_scale);
+				break;
 			default:
 				break;
 			}

@@ -52,21 +52,25 @@ update_status ModuleCamera3D::Update(float dt)
 	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera != editor_camera)))
 	{
 		// Movement
-		float3 newPos = float3::zero;
+		float3 displacement = float3::zero;
 		float speed = CAM_SPEED_CONST * dt;
 		bool orbit = (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && selected_camera == editor_camera);
+
+		ComponentTransform* transform = nullptr;
+		if (selected_camera->getParent())
+			transform = (ComponentTransform*)selected_camera->getParent()->getParent()->getComponent(TRANSFORM);
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 			speed = 2.0f * speed;
 
-		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { newPos.y += speed; };
-		if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { newPos.y -= speed; };
+		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { displacement.y += speed; };
+		if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { displacement.y -= speed; };
 
-		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) { newPos += selected_camera->Z * speed; };
-		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) { newPos -= selected_camera->Z * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) { displacement += selected_camera->Z * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) { displacement -= selected_camera->Z * speed; };
 
-		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { newPos -= selected_camera->X * speed; };
-		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { newPos += selected_camera->X * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { displacement -= selected_camera->X * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { displacement += selected_camera->X * speed; };
 
 		// panning
 		if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && !orbit)
@@ -74,18 +78,35 @@ update_status ModuleCamera3D::Update(float dt)
 			int dx = App->input->GetMouseXMotion();
 			int dy = App->input->GetMouseYMotion();
 
-			if (dx)		newPos += selected_camera->X * dx * speed;
-			if (dy)		newPos += selected_camera->Y * dy * speed;
+			if (dx)		displacement += selected_camera->X * dx * speed;
+			if (dy)		displacement += selected_camera->Y * dy * speed;
 		}
 
-		selected_camera->Move(newPos);
+		if (transform)
+		{
+			if (transform->constraints[0][0]) displacement.x = 0;
+			if (transform->constraints[0][1]) displacement.y = 0;
+			if (transform->constraints[0][2]) displacement.z = 0;
+		}
+
+		selected_camera->Move(displacement);
 
 		// Rotation / Orbit
 
 		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT || (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && orbit))
 		{
-			int dx = -App->input->GetMouseXMotion();
-			int dy = App->input->GetMouseYMotion();
+			int dx = 0;
+			int dy = 0;
+			if (transform)
+			{
+				dx = transform->constraints[1][1] ? 0 : -App->input->GetMouseXMotion();
+				dy = transform->constraints[1][0] ? 0 : App->input->GetMouseYMotion();
+			}
+			else
+			{
+				dx = -App->input->GetMouseXMotion();
+				dy = App->input->GetMouseYMotion();
+			}
 
 			float module = module = (selected_camera->Reference - selected_camera->getFrustum()->pos).Length();
 			float3 X = selected_camera->X; float3 Y = selected_camera->Y; float3 Z = selected_camera->Z;
@@ -143,10 +164,8 @@ update_status ModuleCamera3D::Update(float dt)
 		// Recalculate matrix -------------
 		selected_camera->updateFrustum();
 
-		if (selected_camera->getParent())
+		if (transform)
 		{
-			ComponentTransform* transform = (ComponentTransform*)selected_camera->getParent()->getParent()->getComponent(TRANSFORM);
-
 			transform->local->setPosition(selected_camera->getFrustum()->pos);
 			transform->local->setRotation(Quat::LookAt(transform->local->Forward(), selected_camera->getFrustum()->front, transform->local->Up(), float3::unitY) * transform->local->getRotation());
 			transform->local->CalculateMatrix();

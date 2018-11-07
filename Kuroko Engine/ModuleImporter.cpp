@@ -138,6 +138,12 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 					app_log->AddLog("%s could not be copied to Library/Textures", file);
 			}
 
+			ILinfo ImageInfo;
+			iluGetImageInfo(&ImageInfo);
+			if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+				iluFlipImage();
+
+
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}
