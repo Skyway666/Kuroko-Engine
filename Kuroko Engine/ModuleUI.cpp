@@ -392,10 +392,10 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::PushFont(ui_fonts[REGULAR]);
 
 		static char rename_buffer[64];
-		ImGui::InputText("Rename to", rename_buffer, 64);
+		ImGui::InputText("##Rename to", rename_buffer, 64);
 
 		ImGui::SameLine();
-		if (ImGui::Button("Change"))
+		if (ImGui::Button("OK##Change name"))
 		{
 			selected_obj->Rename(rename_buffer);
 			show_rename = false;
@@ -423,7 +423,7 @@ bool ModuleUI::DrawComponent(Component& component)
 			draw_normals = c_mesh->getDrawNormals();
 			mesh_active = c_mesh->isActive();
 
-			if (ImGui::Checkbox("Is active", &mesh_active))
+			if (ImGui::Checkbox("Active## mesh_active", &mesh_active))
 				c_mesh->setActive(mesh_active);
 
 			if (mesh_active)
@@ -450,7 +450,7 @@ bool ModuleUI::DrawComponent(Component& component)
 							return true;
 						}
 
-						ImGui::Text("preview size");
+						ImGui::Text("Preview size");
 						ImGui::SameLine();
 						if (ImGui::Button("64")) preview_size = 64;
 						ImGui::SameLine();
@@ -471,10 +471,10 @@ bool ModuleUI::DrawComponent(Component& component)
 
 							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
-							if (ImGui::Button("Dif: Load checkered "))
+							if (ImGui::Button("Load checkered##Dif: Load checkered"))
 								material->setCheckeredTexture(DIFFUSE);
 							ImGui::SameLine();
-							if (ImGui::Button("Dif: Load "))
+							if (ImGui::Button("Load##Dif: Load"))
 							{
 								std::string texture_path = openFileWID();
 								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
@@ -487,10 +487,10 @@ bool ModuleUI::DrawComponent(Component& component)
 						{
 							ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-							if (ImGui::Button("Amb: Load checkered texture"))
+							if (ImGui::Button("Load checkered##Amb: Load checkered"))
 								material->setCheckeredTexture(AMBIENT);
 							ImGui::SameLine();
-							if (ImGui::Button("Amb: Load texture"))
+							if (ImGui::Button("Load##Amb: Load"))
 							{
 								std::string texture_path = openFileWID();
 								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
@@ -503,10 +503,10 @@ bool ModuleUI::DrawComponent(Component& component)
 						{
 							ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-							if (ImGui::Button("Nor: Load checkered texture"))
+							if (ImGui::Button("Load checkered##Nor: Load checkered"))
 								material->setCheckeredTexture(NORMALS);
 							ImGui::SameLine();
-							if (ImGui::Button("Nor: Load texture"))
+							if (ImGui::Button("Load##Nor: Load"))
 							{
 								std::string texture_path = openFileWID();
 								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
@@ -519,10 +519,10 @@ bool ModuleUI::DrawComponent(Component& component)
 						{
 							ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-							if (ImGui::Button("Lgm: Load checkered texture"))
+							if (ImGui::Button("Load checkered##Lgm: Load checkered"))
 								material->setCheckeredTexture(LIGHTMAP);
 							ImGui::SameLine();
-							if (ImGui::Button("Lgm: Load texture"))
+							if (ImGui::Button("Load##Lgm: Load"))
 							{
 								std::string texture_path = openFileWID();
 								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
@@ -560,14 +560,14 @@ bool ModuleUI::DrawComponent(Component& component)
 				}
 			}
 
-			if (ImGui::Button("Remove mesh"))
+			if (ImGui::Button("Remove##Remove mesh"))
 				return false;
 		}
 		break;
 	case TRANSFORM:
-		if (ImGui::CollapsingHeader("Transform") && !component.getParent()->isStatic()) // Don't allow to modify transform if the object is static
+		if (ImGui::CollapsingHeader("Transform")) 
 		{
-			ImGui::Text("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
+			ImGui::TextWrapped("Drag the parameters to change them, or ctrl+click on one of them to set it's value");
 			ComponentTransform* c_trans = (ComponentTransform*)&component;
 
 			static float3 position;
@@ -592,59 +592,59 @@ bool ModuleUI::DrawComponent(Component& component)
 				if (ImGui::Button("Local"))
 					c_trans->setMode(LOCAL);
 			}
-			
-			ImGui::Checkbox("draw axis", &c_trans->draw_axis);
 
 			position = transform->getPosition();
 			rotation = transform->getRotationEuler();
 			scale = transform->getScale();
+
+			//position
+			ImGui::Text("Position:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##p z", &position.z, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			//rotation
+			ImGui::Text("Rotation:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##r x", &rotation.x, 0.2f, -180.0f, 180.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##r y", &rotation.y, 0.2f, -180.0f, 180.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.02f");
+
+			//scale
+			ImGui::Text("   Scale:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##s x", &scale.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##s y", &scale.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
+
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##s z", &scale.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 			if (ImGui::Button("Reset Transform"))
 			{
 				position = float3::zero; rotation = float3::zero, scale = float3::one;
 			}
 
-			//position
-			ImGui::Text("Position:");
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
-
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
-
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("p z", &position.z, 0.01f, 0.0f, 0.0f, "%.02f");
-
-			//rotation
-			ImGui::Text("Rotation:");
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("r x", &rotation.x, 0.2f, -180.0f, 180.0f, "%.02f");
-
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("r y", &rotation.y, 0.2f, -180.0f, 180.0f, "%.02f");
-
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("r z", &rotation.z, 0.2f, -180.0f, 180.0f, "%.02f");
-
-			//scale
-			ImGui::Text("   Scale:");
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s x", &scale.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
-
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s y", &scale.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
-
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("s z", &scale.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
+			ImGui::Checkbox("Draw axis", &c_trans->draw_axis);
 
 			transform->setPosition(position);
 			transform->setRotationEuler(rotation);
@@ -660,7 +660,7 @@ bool ModuleUI::DrawComponent(Component& component)
 			static bool aabb_active;
 			aabb_active = aabb->isActive();
 
-			if (ImGui::Checkbox("active AABB", &aabb_active))
+			if (ImGui::Checkbox("Active##active AABB", &aabb_active))
 				aabb->setActive(aabb_active);
 
 			if (aabb_active)
@@ -668,16 +668,17 @@ bool ModuleUI::DrawComponent(Component& component)
 				static bool aabb_drawn;
 				aabb_drawn = aabb->draw_aabb;
 
-				if (ImGui::Checkbox("AABB drawn", &aabb_drawn))
+				if (ImGui::Checkbox("draw AABB", &aabb_drawn))
 					aabb->draw_aabb = aabb_drawn;
 
 				static bool obb_drawn;
 				obb_drawn = aabb->draw_obb;
 
-				if (ImGui::Checkbox("OBB drawn", &obb_drawn))
+				ImGui::SameLine();
+				if (ImGui::Checkbox("draw OBB", &obb_drawn))
 					aabb->draw_obb = obb_drawn;
 
-				if (ImGui::Button("Reload AABB"))
+				if (ImGui::Button("Reload##Reload AABB"))
 					aabb->Reload();
 			}
 
@@ -692,12 +693,12 @@ bool ModuleUI::DrawComponent(Component& component)
 			static bool camera_active;
 			camera_active = camera->isActive();
 
-			if (ImGui::Checkbox("active camera", &camera_active))
+			if (ImGui::Checkbox("Active##active camera", &camera_active))
 				camera->setActive(camera_active);
 
-			ImGui::Checkbox("draw camera view", &camera->draw_in_UI);
+			ImGui::Checkbox("Draw camera view", &camera->draw_in_UI);
 
-			ImGui::Checkbox("draw frustum", &camera->draw_frustum);
+			ImGui::Checkbox("Draw frustum", &camera->draw_frustum);
 
 			if (camera_active)
 			{
@@ -721,21 +722,21 @@ bool ModuleUI::DrawComponent(Component& component)
 				ImGui::Text("Offset:");
 				ImGui::SameLine();
 				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-				ImGui::DragFloat("o x", &offset.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("##o x", &offset.x, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 				ImGui::SameLine();
 				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-				ImGui::DragFloat("o y", &offset.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("##o y", &offset.y, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 				ImGui::SameLine();
 				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-				ImGui::DragFloat("o z", &offset.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
+				ImGui::DragFloat("##o z", &offset.z, 0.01f, -1000.0f, 1000.0f, "%.02f");
 
 				camera->offset = offset;
 				
 			}
 
-			if (ImGui::Button("Remove camera"))
+			if (ImGui::Button("Remove##Remove camera"))
 				return false;
 		}
 	default:
@@ -915,35 +916,35 @@ void ModuleUI::DrawGraphicsTab() const {
 	ImGui::Text("Use this tab to enable/disable openGL characteristics");
 
 	if (ImGui::TreeNode("Depth test")) {
-		if (ImGui::Checkbox("DT Enabled", &depth_test)) {
+		if (ImGui::Checkbox("Enabled##DT Enabled", &depth_test)) {
 			if (depth_test)			glEnable(GL_DEPTH_TEST);
 			else					glDisable(GL_DEPTH_TEST);
 		}
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Face culling")) {
-		if (ImGui::Checkbox("FC Enabled", &face_culling)) {
+		if (ImGui::Checkbox("Enabled##FC Enabled", &face_culling)) {
 			if (face_culling)		glEnable(GL_CULL_FACE);
 			else					glDisable(GL_CULL_FACE);
 		}
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Lighting")) {
-		if (ImGui::Checkbox("L Enabled", &lighting)) {
+		if (ImGui::Checkbox("Enabled##L Enabled", &lighting)) {
 			if (lighting)			glEnable(GL_LIGHTING);
 			else					glDisable(GL_LIGHTING);
 		}
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Material color")) {
-		if (ImGui::Checkbox("M Enabled", &material_color)) {
+		if (ImGui::Checkbox("Enabled##M Enabled", &material_color)) {
 			if (material_color)		glEnable(GL_COLOR_MATERIAL);
 			else					glDisable(GL_COLOR_MATERIAL);
 		}
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Textures")) {
-		if (ImGui::Checkbox("T Enabled", &textures)) {
+		if (ImGui::Checkbox("Enabled##T Enabled", &textures)) {
 			if (textures)			glEnable(GL_TEXTURE_2D);
 			else					glDisable(GL_TEXTURE_2D);
 		}
@@ -951,7 +952,7 @@ void ModuleUI::DrawGraphicsTab() const {
 	}
 	if (ImGui::TreeNode("Fog")) {
 		static float fog_distance = 0.5f;
-		if (ImGui::Checkbox("F Enabled", &fog)) {
+		if (ImGui::Checkbox("Enabled##F Enabled", &fog)) {
 			if (fog)				glEnable(GL_FOG);
 			else					glDisable(GL_FOG);
 
@@ -967,18 +968,18 @@ void ModuleUI::DrawGraphicsTab() const {
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Antialias")) {
-		if (ImGui::Checkbox("A Enabled", &antialias)) {
+		if (ImGui::Checkbox("Enabled##A Enabled", &antialias)) {
 			if (antialias)			glEnable(GL_LINE_SMOOTH);
 			else					glDisable(GL_LINE_SMOOTH);
 		}
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Wireframe")) {
-		ImGui::Checkbox("WF Enabled", &App->scene->global_wireframe);
+		ImGui::Checkbox("Enabled##WF Enabled", &App->scene->global_wireframe);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Normals")) {
-		ImGui::Checkbox("N Enabled", &App->scene->global_normals);
+		ImGui::Checkbox("Enabled##N Enabled", &App->scene->global_normals);
 		ImGui::TreePop();
 	}
 	ImGui::PopFont();
