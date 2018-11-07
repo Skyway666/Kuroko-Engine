@@ -1,6 +1,7 @@
 #include "ModuleTimeManager.h"
 #include "Applog.h"
-
+#include "ModuleScene.h"
+#include "Application.h"
 
 
 
@@ -55,6 +56,7 @@ void ModuleTimeManager::ManageGameStopped() {
 	case PAUSED:
 		real_time.Reset();
 		game_time.Reset();
+		App->scene->AskLocalLoadScene();
 		frame_count = 0;
 		state_changed = true;
 		break;
@@ -78,6 +80,7 @@ void ModuleTimeManager::ManageGamePlaying() {
 	case STOPPED:
 		real_time.Start();
 		game_time.Start();
+		App->scene->AskLocalSaveScene();
 		state_changed = true;
 		break;
 	}

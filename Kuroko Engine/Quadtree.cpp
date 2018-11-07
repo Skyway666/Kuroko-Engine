@@ -154,7 +154,6 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size, int max_splits) 
 			if (childs[i]->AddObject(obj, bucket_size, max_splits))				// If a child can already hold the object break the loop
 				break;												
 		
-		// TODO : Make that when the maximum number of splits is reach, the bucket size stop mattering
 	}
 	return true;
 

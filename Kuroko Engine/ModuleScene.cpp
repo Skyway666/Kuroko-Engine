@@ -39,8 +39,8 @@ ModuleScene::~ModuleScene(){}
 bool ModuleScene::Start()
 {
 	skybox = new Skybox();
-	want_save_scene = false;
-	want_load_scene = false;
+	want_save_scene_file = false;
+	want_load_scene_file = false;
 
 	std::array<Texture*, 6> skybox_texs;
 	skybox_texs[LEFT]	= (Texture*)App->importer->Import("skybox_default_left.png", I_TEXTURE);
@@ -333,25 +333,40 @@ void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
 		deleteGameObjectRecursive(*it);
 }
 
-void ModuleScene::AskSceneSave(char * scene_name) {
-	want_save_scene = true;
+void ModuleScene::AskSceneSaveFile(char * scene_name) {
+	want_save_scene_file = true;
 	scene_to_save_name = scene_name;
 }
 
-void ModuleScene::AskSceneLoad(char * path) {
-	want_load_scene = true;
+void ModuleScene::AskSceneLoadFile(char * path) {
+	want_load_scene_file = true;
 	path_to_load_scene = path;
 }
 
 
 void ModuleScene::ManageSceneSaveLoad() {
-	if (want_save_scene) {
+	if (want_save_scene_file) {
 		SaveScene(scene_to_save_name);
-		want_save_scene = false;
+		want_save_scene_file = false;
 	}
-	if (want_load_scene) {
+	if (want_load_scene_file) {
 		LoadScene(path_to_load_scene.c_str());
-		want_load_scene = false;
+		want_load_scene_file = false;
+	}
+	if (want_local_save) {
+		local_scene_save = serializeScene();
+		want_local_save = false;
+	}
+	if (want_local_load) {
+		if (local_scene_save) {
+			loadSerializedScene(local_scene_save);
+			json_value_free(local_scene_save);
+			local_scene_save = nullptr;
+		}
+		else
+			app_log->AddLog("Couldn't load locally serialized scene, value was NULL");
+
+		want_local_load = false;
 	}
 }
 
@@ -365,19 +380,8 @@ void ModuleScene::SaveScene(std::string name) {
 	current_working_scene = name;
 	working_on_existing_scene = true;
 
-	JSON_Value* scene = json_value_init_object();	// Full file object
-	JSON_Value* objects_array = json_value_init_array();	// Array of objects in the scene
+	JSON_Value* scene = serializeScene();
 
-	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
-		JSON_Value* object = json_value_init_object();	// Object in the arrat
-		(*it)->Save(json_object(object));				// Fill content
-		json_array_append_value(json_array(objects_array), object); // Add object to array
-	}
-
-	json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
-	
-
-	// TODO store editor camera
 	std::string path;
 	App->fs->FormFullPath(path, name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
 	json_serialize_to_file(scene, path.c_str());
@@ -393,19 +397,44 @@ void ModuleScene::LoadScene(const char* path) {
 		return;
 	}
 
-	ClearScene();
-
 	// Store current working scene
 	std::string name = path;
 	App->fs->getFileNameFromPath(name);
 	current_working_scene = name;
 	working_on_existing_scene = true;
+	
+	loadSerializedScene(scene);
+
+	json_value_free(scene);
+}
+
+JSON_Value * ModuleScene::serializeScene() {
+
+	JSON_Value* scene = json_value_init_object();	// Full file object
+	JSON_Value* objects_array = json_value_init_array();	// Array of objects in the scene
+
+	json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
+
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+		JSON_Value* object = json_value_init_object();	// Object in the array
+		(*it)->Save(json_object(object));				// Fill content
+		json_array_append_value(json_array(objects_array), object); // Add object to array
+	}
+
+	// TODO store editor camera(?)
+
+	return scene;
+}
+
+void ModuleScene::loadSerializedScene(JSON_Value * scene) {
+
+	ClearScene();
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
 	uint obj_num = json_array_get_count(objects);
 	uint* parents = new uint[obj_num];  // Allocate all the parents in an array
-	// Load all the objects and put them in the scene array
+										// Load all the objects and put them in the scene array
 	for (int i = 0; i < json_array_get_count(objects); i++) {
 		JSON_Object* obj_deff = json_array_get_object(objects, i);
 		GameObject* obj = new GameObject(obj_deff);
@@ -415,12 +444,12 @@ void ModuleScene::LoadScene(const char* path) {
 
 	int i = 0;
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
-		if(parents[i] != 0) {			// If the UUID of the parent is 0, it means that it has no parent
+		if (parents[i] != 0) {			// If the UUID of the parent is 0, it means that it has no parent
 			GameObject* child = (*it);
 			GameObject* parent = nullptr;
 			// Look for the parent among all gameobjects
-			for (auto pos_par = game_objects.begin(); pos_par != game_objects.end(); pos_par++){
-				if((*pos_par)->getUUID() == parents[i]){	// We find the parent
+			for (auto pos_par = game_objects.begin(); pos_par != game_objects.end(); pos_par++) {
+				if ((*pos_par)->getUUID() == parents[i]) {	// We find the parent
 					parent = (*pos_par);
 					break;									// Only one parent/child, no need to keep looping
 				}
@@ -432,11 +461,7 @@ void ModuleScene::LoadScene(const char* path) {
 		i++;
 	}
 
-	
-
-	// TODO: Manage the object's parenting
 	delete parents;
-	json_value_free(scene);
 }
 
 
