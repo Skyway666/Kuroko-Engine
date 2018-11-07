@@ -13,7 +13,7 @@ class Texture;
 class Skybox;
 class Quadtree;
 
-enum GameState { STOPPED, PAUSED, PLAYING};
+
 
 
 struct RayHit
@@ -37,6 +37,7 @@ public:
 	bool CleanUp();
 
 	void DrawScene(float3 camera_pos);
+
 
 	void Play() { game_state = PLAYING; };
 	void Pause() { game_state = PAUSED; };
