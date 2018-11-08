@@ -165,6 +165,7 @@
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleDebug.h" />
     <ClInclude Include="ModuleImporter.h" />
+    <ClInclude Include="ModuleResourcesManager.h" />
     <ClInclude Include="ModuleTimeManager.h" />
     <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="ModuleRenderer3D.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleDebug.cpp" />
     <ClCompile Include="ModuleImporter.cpp" />
+    <ClCompile Include="ModuleResourcesManager.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
     <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="ModuleInput.cpp" />

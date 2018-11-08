@@ -64,6 +64,9 @@
     <Filter Include="Sources\ImGuizmo\cpps">
       <UniqueIdentifier>{61c95dc2-d3a8-489e-ba78-f49dd8075845}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Resources">
+      <UniqueIdentifier>{dd60d601-ee0a-4a54-b013-c19ee2fce428}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -390,6 +393,7 @@
     <ClInclude Include="ModuleTimeManager.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleResourcesManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -602,6 +606,7 @@
     <ClCompile Include="ModuleTimeManager.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleResourcesManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Math\Matrix.inl">

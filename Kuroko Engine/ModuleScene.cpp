@@ -43,12 +43,12 @@ bool ModuleScene::Start()
 	want_load_scene_file = false;
 
 	std::array<Texture*, 6> skybox_texs;
-	skybox_texs[LEFT]	= (Texture*)App->importer->Import("skybox_default_left.png", I_TEXTURE);
-	skybox_texs[RIGHT]	= (Texture*)App->importer->Import("skybox_default_right.png", I_TEXTURE);
-	skybox_texs[UP]		= (Texture*)App->importer->Import("skybox_default_up.png", I_TEXTURE);
-	skybox_texs[DOWN]	= (Texture*)App->importer->Import("skybox_default_down.png", I_TEXTURE);
-	skybox_texs[FRONT]	= (Texture*)App->importer->Import("skybox_default_front.png", I_TEXTURE);
-	skybox_texs[BACK]	= (Texture*)App->importer->Import("skybox_default_back.png", I_TEXTURE);
+	skybox_texs[LEFT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_left.png", I_TEXTURE);
+	skybox_texs[RIGHT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_right.png", I_TEXTURE);
+	skybox_texs[UP]		= (Texture*)App->importer->Import("Assets/Textures/skybox_default_up.png", I_TEXTURE);
+	skybox_texs[DOWN]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_down.png", I_TEXTURE);
+	skybox_texs[FRONT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_front.png", I_TEXTURE);
+	skybox_texs[BACK]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_back.png", I_TEXTURE);
 	skybox->setAllTextures(skybox_texs);
 
 	// TEST FOR QUADTREE
