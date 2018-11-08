@@ -33,13 +33,34 @@ bool ModuleResourcesManager::CleanUp()
 	return true;
 }
 
-Resource * ModuleResourcesManager::ExportToLibrary(const char * file)
-{
+Resource * ModuleResourcesManager::getResource(uint uuid) {
 	return nullptr;
+}
+
+Resource * ModuleResourcesManager::newResource(uint uuid) {
+	return nullptr;
+}
+
+uint ModuleResourcesManager::ImportToLibrary(const char * file)
+{
+	return 0;
 }
 
 void ModuleResourcesManager::GenerateLibraryFromAssets()
 {
+}
+
+void ModuleResourcesManager::CreateResourcesFromMetadata() {
+}
+
+void ModuleResourcesManager::LoadResource(uint uuid) {
+}
+
+void ModuleResourcesManager::LoadFileToScene(const char * file) {
+}
+
+char * ModuleResourcesManager::uuid2string(uint uuid) {
+	return nullptr;
 }
 
 void Resource::LoadToMemory()

@@ -4,18 +4,21 @@
 #include "Module.h"
 #include <list>
 
+enum ResourceType{MESH, TEXTURE, SCENE};
 class Resource {
 
 public:
 	uint uuid;
-	void LoadToMemory();		// Load resource to memory
-	void UnloadFromMemory();    // Unload resource from memory (should put resource pointer to null)
+	virtual void LoadToMemory();		// Load resource to memory
+	virtual void UnloadFromMemory();    // Unload resource from memory (should put resource pointer to null)
 	bool IsLoaded();			// If the resource is loaded to memory
-
 protected:
 
 	uint components_used_by = 0; // How many components use this resource
-
+	bool loaded_in_memory;
+	std::string file;
+	std::string exported_file;
+	ResourceType type;
 
 };
 
@@ -27,17 +30,44 @@ public:
 
 	bool Init(const JSON_Object* config); // Set values from config
 	bool Start();						  // Export everything on the assets folder if it has no metadata
-	//update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	//update_status PostUpdate(float dt);
+	// Check assets library and test all the assets against their .meta files every 3 seconds
+	// If:
+	// 1. Metadata has no asset -> Erase metadata and file from library
+	// 2. Asset has no metadata -> Generate metadata and import it to library
+	// 3. Asset and metadata have different "last edited time" values -> Destroy old file in library, reimport file to library and change metadata
+	update_status Update(float dt);		
 	bool CleanUp();						  // Unload all the ocupied resources
 
 
-	Resource* ExportToLibrary(const char* file); // Generates .meta and imports file to library. Returns UID of the given resource
-	void GenerateLibraryFromAssets();		// To be executed allways when engine starts. 
-											// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
 
-	std::list<Resource*> resources;
+	Resource* getResource(uint uuid);
+	Resource* newResource(uint uuid);		// Creates a resource from a file in JSON format that contains uuid, type and other stuff
+
+	// Generates .meta and imports file to library. Returns id of the imported resource, without the resource loaded.
+	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different files, and only one for the FBX which is a scene,
+	// with the transformations and hierarchy, and uuids of the meshes that it contains. Only one .metadata is generated, and it points
+	// to that file.
+	uint ImportToLibrary(const char* file);		 
+
+	// To be executed allways when engine starts. 
+	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
+	void GenerateLibraryFromAssets();			 
+
+	void CreateResourcesFromMetadata();			// Iterates metadata files in assets and creates a resource for each one.
+
+	void LoadResource(uint uuid);				// Iterates resource list, looks for the resource and allows it to load
+
+	// Looks for the file's metadata. If it doesn't find it, it calls ImportToLibrary(const char* file)
+	// When it has it, looks for the resource, and tells it to LoadToMemory(). The only type of asset that
+	// will generate objects in the scene is FBX, as it is a scene itself. The other ones will just be loaded to memory,
+	// and showcased in the resources debug UI
+	void LoadFileToScene(const char* file);		
+
+	std::list<Resource*> resources;		//TODO: Use map as innovation (meh)
+
+
+	// Helpers
+	char* uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
 										  
 };
 
