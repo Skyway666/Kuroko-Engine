@@ -7,6 +7,7 @@
 #define ENGINE_EXTENSION ".kr"
 #define JSON_EXTENSION ".json"
 #define DDS_EXTENSION ".dds"
+#define META_EXTENSION ".meta"
 
 #define MESHES_FOLDER "Library\\Meshes\\"
 #define MATERIALS_FOLDER "Library\\Materials\\"
