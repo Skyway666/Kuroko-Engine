@@ -1253,6 +1253,8 @@ void ModuleUI::DrawQuadtreeConfig() {
 	if (ImGui::Button("Reload")) {
 		App->scene->quadtree_reload = true;
 	}
+
+	// TODO: Be able to change bucket size, max depth and size.
 	ImGui::End();
 }
 
