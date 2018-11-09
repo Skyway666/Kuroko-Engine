@@ -167,11 +167,14 @@ update_status ModuleUI::Update(float dt) {
 
 	if (open_tabs[TIME_CONTROL])
 		DrawTimeControl();
+
+	if (open_tabs[QUADTREE_CONFIG])
+		DrawQuadtreeConfig();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
 
-	if (App->scene->selected_obj)
+	if (App->scene->selected_obj && !App->scene->selected_obj->is_static) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
 
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
@@ -220,6 +223,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
+			ImGui::MenuItem("Quadtree", NULL, &open_tabs[QUADTREE_CONFIG]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -362,7 +366,8 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
 		ImGui::SameLine();
-		ImGui::Checkbox("Static", &selected_obj->is_static);
+		if (ImGui::Checkbox("Static", &selected_obj->is_static)) // If an object is set/unset static, reload the quadtree
+			App->scene->quadtree_reload = true;
 		
 
 		if (ImGui::CollapsingHeader("Add component"))
@@ -1227,6 +1232,30 @@ void ModuleUI::DrawGizmoMenu() {
 
 }
 
+void ModuleUI::DrawQuadtreeConfig() {
+
+	//AABB coll_test;
+
+	//coll_test.SetFromCenterAndSize(float3(20, 0, 20), float3(10, 10, 10));
+	//App->renderer3D->DrawDirectAABB(coll_test);
+
+	//std::list<GameObject*> collected;
+
+	//quadtree->Intersect(collected, coll_test);
+
+	//if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+	//	for (auto it = collected.begin(); it != collected.end(); it++)
+	//		app_log->AddLog("Found %s in quadtree \n", (*it)->getName().c_str());
+	//}
+	ImGui::Begin("Quadtree", &open_tabs[QUADTREE_CONFIG]);
+	ImGui::Checkbox("Draw", &App->scene->draw_quadtree);
+	ImGui::SameLine();
+	if (ImGui::Button("Reload")) {
+		App->scene->quadtree_reload = true;
+	}
+	ImGui::End();
+}
+
 
 void ModuleUI::DrawGuizmo()
 {
@@ -1316,6 +1345,7 @@ void ModuleUI::SaveConfig(JSON_Object* config) const
 	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
 	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
+	json_object_set_boolean(config, "quadtree_config", open_tabs[QUADTREE_CONFIG]);
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
@@ -1328,6 +1358,7 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
+	open_tabs[QUADTREE_CONFIG]	= json_object_get_boolean(config, "quadtree_config");
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 

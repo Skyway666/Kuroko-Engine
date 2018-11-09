@@ -18,14 +18,14 @@ Features of the engine:
 - Transform "Global and Local".
 - About tab with information about the engine and links to the used libraries.
 - UI docking.
-- Time control.
 - Gizmo implemented, with toolbar.
 - Mouse Picking
 - Time control implemented, with serialization of scene reload when stopping time.
+- Camera as component with frustum and frustum culling
 
 INNOVATION: 
 - File import through windows explorer
-- Depth buffer draw
+- Camera can display viewports and the depth buffer
 
 
 Libraries used:

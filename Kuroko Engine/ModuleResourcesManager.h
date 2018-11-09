@@ -40,8 +40,8 @@ public:
 	void CreateResourcesFromMetadata();					
 
 	Resource* getResource(uint uuid);
-	Resource* newResource(uint uuid);		// Creates a resource from a file in JSON format that contains uuid, type and other stuff
-	void LoadResource(uint uuid);				// Iterates resource list, looks for the resource and allows it to load
+	Resource* newResource(uint uuid);		// Creates a resource from a file in JSON format that contains uuid, type, extension, timeCreated...
+	void LoadResource(uint uuid);			// Iterates resource list, looks for the resource and allows it to load
 
 
 	// Looks for the file's metadata. If it doesn't find it, it calls ImportToLibrary(const char* file)

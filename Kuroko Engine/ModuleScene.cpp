@@ -91,37 +91,29 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::PostUpdate(float dt)
 {
-	// TEST FOR QUADTREE
-	quadtree->DebugDraw();
+	// Quadtree management
+	if(draw_quadtree)
+		quadtree->DebugDraw();
 
-	if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
-		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
-			quadtree->Insert(*it);
+	if (quadtree_add) {
+		quadtree->Insert(quadtree_add);
+		quadtree_add = nullptr;
 	}
-
-	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) {
+	if (quadtree_reload) {
 		quadtree->Empty();
+		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+			if ((*it)->isStatic()) 
+				quadtree->Insert(*it);
+
+		quadtree_reload = false;
 	}
-
-	AABB coll_test;
-
-	coll_test.SetFromCenterAndSize(float3(20, 0, 20), float3(10, 10, 10));
-	App->renderer3D->DrawDirectAABB(coll_test);
-
-	std::list<GameObject*> collected;
-
-	quadtree->Intersect(collected, coll_test);
-
-	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
-		for (auto it = collected.begin(); it != collected.end(); it++)
-			app_log->AddLog("Found %s in quadtree \n", (*it)->getName().c_str());
-	}
-	// TEST FOR QUADTREE
-
+	
 
 
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
+		//If something is deleted, ask quadtree to reload
+		quadtree_reload = true;
 		if (*it == selected_obj) selected_obj = nullptr;
 		game_objects.remove(*it);
 
