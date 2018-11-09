@@ -18,7 +18,7 @@ float randomFloat(){
 	return ldexp(pcg32_random(), -32);
 }
 
-int random32bits() {
+uint32_t random32bits() {
 	return pcg32_random();
 }
 

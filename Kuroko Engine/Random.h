@@ -7,7 +7,7 @@ int randomFromTo(int n1, int n2);
 
 float randomFloat();
 
-int random32bits();
+uint32_t random32bits();
 
 void randomizeSeed();
 
