@@ -1,5 +1,6 @@
 #include "ModuleResourcesManager.h"
 #include "FileSystem.h"
+#include "Application.h"
 #include <experimental/filesystem>
 
 ModuleResourcesManager::ModuleResourcesManager(Application* app, bool start_enabled): Module(app, start_enabled)
@@ -55,7 +56,11 @@ void ModuleResourcesManager::GenerateLibraryFromAssets()
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
 
-		std::string path = it.path().generic_string();
+		std::string path, name;
+		path = name = it.path().generic_string();
+		
+		App->fs->getPath(path);
+		App->fs->getFileNameFromPath(name);
 		int a = 0;
 	}
 

@@ -38,6 +38,7 @@ public:
 	void DestroyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	bool ExistisFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	void getFileNameFromPath(std::string& str);
+	bool getPath(std::string & str);
 	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
 	bool copyFileTo(const char* full_path_src, lib_dir dest_lib = NO_LIB, const char* extension = "");
 	private: 

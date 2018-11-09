@@ -121,8 +121,10 @@ bool FileSystem::removeExtension(std::string& str) {
 
 bool FileSystem::removePath(std::string& str) {
 	const size_t last_slash_idx = str.find_last_of("\\/");
-	if (last_slash_idx == std::string::npos)
+	if (last_slash_idx == std::string::npos){
+		app_log->AddLog("Filename %s has no path", str.c_str());
 		return false;
+	}
 	str = str.erase(0, last_slash_idx + 1);
 	return true;
 }
@@ -130,4 +132,13 @@ bool FileSystem::removePath(std::string& str) {
 void FileSystem::getFileNameFromPath(std::string & str) {
 	removeExtension(str);
 	removePath(str);
+}
+
+bool FileSystem::getPath(std::string& str) {
+	const size_t last_slash_idx = str.find_last_of("\\/");
+	if (last_slash_idx == std::string::npos) {
+		app_log->AddLog("Filename %s has no path", str.c_str());
+		return false;
+	}
+	str.erase(last_slash_idx + 1);
 }
