@@ -24,24 +24,25 @@ public:
 	bool CleanUp();						  // Unload all the ocupied resources
 
 
-
-	Resource* getResource(uint uuid);
-	Resource* newResource(uint uuid);		// Creates a resource from a file in JSON format that contains uuid, type and other stuff
-
+	// To be executed allways when engine starts. 
+	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
+	void GenerateLibraryAndMeta();
+	void ManageMeta(std::string path, std::string name, std::string extension);
+	void ManageAsset(std::string path, std::string name, std::string extension);
 	// Generates .meta and imports file to library. Returns id of the imported resource, without the resource loaded.
 	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different files, and only one for the FBX which is a scene,
 	// with the transformations and hierarchy, and uuids of the meshes that it contains. Only one .metadata is generated, and it points
 	// to that file.
-	uint ImportToLibrary(const char* file);		 
+	uint ImportToLibrary(const char* file);		
 
-	// To be executed allways when engine starts. 
-	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
-	void GenerateLibraryFromAssets();			 
-	void ManageMeta(std::string path, std::string name, std::string extension);
-	void ManageAsset(std::string path, std::string name, std::string extension);
-	void CreateResourcesFromMetadata();			// Iterates metadata files in assets and creates a resource for each one.
 
+	// Iterates metadata files in assets and creates a resource for each one.
+	void CreateResourcesFromMetadata();					
+
+	Resource* getResource(uint uuid);
+	Resource* newResource(uint uuid);		// Creates a resource from a file in JSON format that contains uuid, type and other stuff
 	void LoadResource(uint uuid);				// Iterates resource list, looks for the resource and allows it to load
+
 
 	// Looks for the file's metadata. If it doesn't find it, it calls ImportToLibrary(const char* file)
 	// When it has it, looks for the resource, and tells it to LoadToMemory(). The only type of asset that
@@ -49,12 +50,11 @@ public:
 	// and showcased in the resources debug UI
 	void LoadFileToScene(const char* file);		
 
+private:
 	std::list<Resource*> resources;		//TODO: Use map as innovation (meh)
-
-
 	// Helpers
 	char* uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
-	const char* extension2type(const char* extension);
+	const char* extension2type(const char* extension); // Converts an extension into a resource file
 										  
 };
 

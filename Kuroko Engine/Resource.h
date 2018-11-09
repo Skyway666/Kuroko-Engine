@@ -19,8 +19,6 @@ protected:
 	bool loaded_in_memory;
 	std::string file;
 	std::string exported_file;
-
-
 };
 
 
