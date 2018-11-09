@@ -32,10 +32,6 @@
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
 
-#include "shlwapi.h"
-
-#pragma comment (lib, "Shlwapi.lib")
-
 #pragma comment (lib, "Assimp/lib/assimp.lib")
 
 #pragma comment (lib, "DevIL/lib/DevIL.lib")
@@ -81,7 +77,8 @@ bool ModuleImporter::CleanUp()
 
 void* ModuleImporter::Import(const char* file, ImportType expected_filetype) 
 {
-	std::string extension = PathFindExtensionA(file);
+	std::string extension = file;
+	App->fs->getExtension(extension);
 	Timer load_time;
 	load_time.Start();
 

@@ -37,7 +37,8 @@ public:
 	// To be executed allways when engine starts. 
 	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
 	void GenerateLibraryFromAssets();			 
-
+	void ManageMeta(std::string path, std::string name, std::string extension);
+	void ManageAsset(std::string path, std::string name, std::string extension);
 	void CreateResourcesFromMetadata();			// Iterates metadata files in assets and creates a resource for each one.
 
 	void LoadResource(uint uuid);				// Iterates resource list, looks for the resource and allows it to load
@@ -53,6 +54,7 @@ public:
 
 	// Helpers
 	char* uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
+	const char* extension2type(const char* extension);
 										  
 };
 

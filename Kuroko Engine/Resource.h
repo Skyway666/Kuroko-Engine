@@ -4,7 +4,7 @@
 #include <string>
 #include "Globals.h"
 
-enum ResourceType { R_MESH, R_TEXTURE, R_SCENE };
+enum ResourceType { R_MESH, R_TEXTURE, R_SCENE, R_UNKNOWN };
 class Resource {
 
 public:

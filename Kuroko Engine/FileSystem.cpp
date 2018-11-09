@@ -2,7 +2,11 @@
 #include "Applog.h"
 #include <iostream>
 #include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "shlwapi.h"
 
+#pragma comment (lib, "Shlwapi.lib")
 
 FileSystem::FileSystem(Application* app, bool start_enabled):Module(app, start_enabled){
 	name = "FileSystem";
@@ -111,6 +115,21 @@ bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const 
 	return src && dest;
 }
 
+int FileSystem::getFileLastTimeMod(const char * file_name, lib_dir lib, const char * extension) {
+	int ret = 0;
+	std::string path = "";
+	FormFullPath(path, file_name, lib, extension);
+
+	struct stat result;
+	if (stat(path.c_str(), &result) == 0) {
+		ret = result.st_mtime;
+	}
+	else
+		app_log->AddLog("There has been an error getting last modification of %s", path.c_str());
+
+	return ret;
+}
+
 bool FileSystem::removeExtension(std::string& str) {
 	size_t lastdot = str.find_last_of(".");
 	if (lastdot == std::string::npos)
@@ -141,4 +160,9 @@ bool FileSystem::getPath(std::string& str) {
 		return false;
 	}
 	str.erase(last_slash_idx + 1);
+	return true;
+}
+
+void FileSystem::getExtension(std::string & str) {
+	str = PathFindExtensionA(str.c_str());
 }
