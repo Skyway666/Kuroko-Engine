@@ -1,6 +1,6 @@
 #include "ModuleResourcesManager.h"
-
-
+#include "FileSystem.h"
+#include <experimental/filesystem>
 
 ModuleResourcesManager::ModuleResourcesManager(Application* app, bool start_enabled): Module(app, start_enabled)
 {
@@ -15,12 +15,14 @@ ModuleResourcesManager::~ModuleResourcesManager()
 
 bool ModuleResourcesManager::Init(const JSON_Object * config)
 {
+
 	return true;
 }
 
 bool ModuleResourcesManager::Start()
 {
-	return false;
+	GenerateLibraryFromAssets();
+	return true;
 }
 
 update_status ModuleResourcesManager::Update(float dt)
@@ -48,6 +50,15 @@ uint ModuleResourcesManager::ImportToLibrary(const char * file)
 
 void ModuleResourcesManager::GenerateLibraryFromAssets()
 {
+	using std::experimental::filesystem::recursive_directory_iterator;
+	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
+		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
+			continue;
+
+		std::string path = it.path().generic_string();
+		int a = 0;
+	}
+
 }
 
 void ModuleResourcesManager::CreateResourcesFromMetadata() {
@@ -63,15 +74,4 @@ char * ModuleResourcesManager::uuid2string(uint uuid) {
 	return nullptr;
 }
 
-void Resource::LoadToMemory()
-{
-}
 
-void Resource::UnloadFromMemory()
-{
-}
-
-bool Resource::IsLoaded()
-{
-	return false;
-}

@@ -14,6 +14,7 @@
 #define TEXTURES_FOLDER "Library\\Textures\\"
 #define SETTINGS_FOLDER "Settings\\"
 #define SCENES_FOLDER "Assets\\Scenes\\"
+#define ASSETS_FOLDER "Assets"
 
 enum lib_dir {
 	LIBRARY_MESHES,

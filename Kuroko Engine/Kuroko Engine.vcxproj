@@ -178,6 +178,7 @@
     <ClInclude Include="PCG Random\pcg_basic.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="PCG Random\pcg_basic.c" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Resource.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />

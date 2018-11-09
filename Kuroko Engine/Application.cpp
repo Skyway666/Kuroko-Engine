@@ -13,6 +13,7 @@
 #include "Random.h"
 #include "FileSystem.h"
 #include "ModuleTimeManager.h"
+#include "ModuleResourcesManager.h"
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -43,6 +44,8 @@ Application::Application()
 	gui = new ModuleUI(this);
 	fs = new FileSystem(this);
 	time = new ModuleTimeManager(this);
+	resources = new ModuleResourcesManager(this);
+
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -50,11 +53,13 @@ Application::Application()
 
 	// Main Modules
 	list_modules.push_back(time);
+	list_modules.push_back(resources);
 	list_modules.push_back(window);
 	list_modules.push_back(camera);
 	list_modules.push_back(input);
 	//list_modules.push_back(audio);
 	list_modules.push_back(importer);
+
 	
 	
 	// Scenes

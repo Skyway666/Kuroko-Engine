@@ -2,25 +2,10 @@
 #define __MODULE_RESOURCES__
 
 #include "Module.h"
+#include "Resource.h"
 #include <list>
 
-enum ResourceType{MESH, TEXTURE, SCENE};
-class Resource {
 
-public:
-	uint uuid;
-	virtual void LoadToMemory();		// Load resource to memory
-	virtual void UnloadFromMemory();    // Unload resource from memory (should put resource pointer to null)
-	bool IsLoaded();			// If the resource is loaded to memory
-protected:
-
-	uint components_used_by = 0; // How many components use this resource
-	bool loaded_in_memory;
-	std::string file;
-	std::string exported_file;
-	ResourceType type;
-
-};
 
 class ModuleResourcesManager: public Module
 {
