@@ -3,10 +3,12 @@
 #include "Application.h"
 #include "Random.h"
 #include "ModuleImporter.h"
+#include "ResourceTexture.h"
 
 // Temporal debug purposes
 #include "ModuleInput.h"
 #include <experimental/filesystem>
+#include <iostream>
 
 ModuleResourcesManager::ModuleResourcesManager(Application* app, bool start_enabled): Module(app, start_enabled)
 {
@@ -49,8 +51,19 @@ Resource * ModuleResourcesManager::getResource(uint uuid) {
 	return nullptr;
 }
 
-Resource * ModuleResourcesManager::newResource(uint uuid) {
-	return nullptr;
+Resource * ModuleResourcesManager::newResource(resource_deff deff) {
+	Resource* ret = nullptr;
+
+	switch (deff.type) {
+	case R_TEXTURE: ret = (Resource*) new ResourceTexture(deff); break;
+	//case R_MESH: ret = (Resource*) new ResourceMesh(deff); break;
+	//case R_SCENE: ret = (Resource*) new ResourceScene(deff); break;
+	} 
+
+	if (ret)
+		resources[deff.uuid] = ret;
+
+	return ret;
 }
 
 void ModuleResourcesManager::ImportToLibrary(const char* file_original_name, std::string file_binary_name)
@@ -113,8 +126,16 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	if (App->fs->ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
-		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) // Check if the last time that was edited is the .meta timestamp
-			return;																	   // Existing meta, and timestamp is the same, MISSION ACOMPLISHED, return
+		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) { // Check if the last time that was edited is the .meta timestamp
+			resource_deff deff;
+			std::string binary_name = json_object_get_string(json_object(meta), "uuid");
+			deff.type = type2enumType(json_object_get_string(json_object(meta), "type"));
+			deff.asset = full_asset_path;
+			deff.binary = binary_name + enumType2binaryExtension(deff.type);
+			deff.uuid = atoi(binary_name.c_str());
+			newResource(deff);
+			return;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
+		}
 	}
 	else {
 		App->fs->CreateEmptyFile(full_meta_path.c_str());	// If .meta doesn't exist, generate it
@@ -122,7 +143,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 		std::string type;
 		uuid = uuid2string(random32bits());
 		type = extension2type(extension.c_str());
-		asset_type = type2enum(type.c_str());
+		asset_type = type2enumType(type.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
 		json_object_set_string(json_object(meta), "uuid", uuid.c_str());			// Brand new uuid
 		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension (TODO: Delete this when file has original extension in it
@@ -148,8 +169,6 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	// Meta generated and file exported, MISSION ACOMPLISHED, return
 }
 
-void ModuleResourcesManager::CreateResourcesFromMetadata() {
-}
 
 void ModuleResourcesManager::LoadResource(uint uuid) {
 }
@@ -196,7 +215,7 @@ const char * ModuleResourcesManager::extension2type(const char * extension) {
 	return ret;
 }
 
-ResourceType ModuleResourcesManager::type2enum(const char * type) {
+ResourceType ModuleResourcesManager::type2enumType(const char * type) {
 	ResourceType ret = R_UNKNOWN;
 	std::string str_type = type;
 
@@ -204,6 +223,23 @@ ResourceType ModuleResourcesManager::type2enum(const char * type) {
 		ret = R_SCENE;
 	if (str_type == "texture")
 		ret = R_TEXTURE;
+
+	return ret;
+}
+
+const char * ModuleResourcesManager::enumType2binaryExtension(ResourceType type) {
+	const char* ret = "";
+	switch (type) {
+		case R_TEXTURE:
+			ret = "dds";
+			break;
+		case R_MESH:
+			ret = ".kr";
+			break;
+		case R_SCENE:
+			ret = ".json";
+			break;
+	}
 
 	return ret;
 }

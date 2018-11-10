@@ -31,6 +31,7 @@ public:
 	void ExportMeshToKR(const char* file, Mesh* mesh);
 	void ExportTextureToDDS(const char* file);
 	Mesh* ImportMeshFromKR(const char* file); // Code crashes when importing mesh from .kr without importing something first
+	Texture* LoadTextureFromLibrary(const char* file);
 
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;

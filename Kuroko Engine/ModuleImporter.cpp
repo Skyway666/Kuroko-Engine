@@ -540,4 +540,8 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
 }
 
+Texture * ModuleImporter::LoadTextureFromLibrary(const char * file) {
+	return new Texture(ilutGLLoadImage((char*)file), file, false);
+}
+
 

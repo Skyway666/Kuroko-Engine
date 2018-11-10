@@ -399,6 +399,7 @@
     <ClInclude Include="Resource.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -617,6 +618,7 @@
     <ClCompile Include="Resource.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Math\Matrix.inl">
