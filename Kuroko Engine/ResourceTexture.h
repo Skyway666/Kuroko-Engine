@@ -9,9 +9,7 @@ public:
 	~ResourceTexture();
 	void LoadToMemory();
 	void UnloadFromMemory();
-
-private:
-	
+public:
 	Texture* texture;
 };
 
