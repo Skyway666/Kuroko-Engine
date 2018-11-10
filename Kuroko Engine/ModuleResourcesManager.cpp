@@ -33,7 +33,7 @@ bool ModuleResourcesManager::Start()
 
 update_status ModuleResourcesManager::Update(float dt)
 {
-
+	// Debug purpuses
 	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
 		CleanMeta();
 	}
@@ -140,7 +140,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 			App->importer->ImportTexture(full_asset_path.c_str(), uuid);
 			break;
 		case R_SCENE:
-			//App->importer->ImportScene(full_asset_path.c_str(), uuid);
+			App->importer->ImportScene(full_asset_path.c_str(), uuid);
 			break;
 	}
 

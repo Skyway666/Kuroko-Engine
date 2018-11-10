@@ -13,6 +13,7 @@
 #include "ComponentTransform.h"
 #include "Transform.h"
 #include "Timer.h"
+#include "Random.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -92,7 +93,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			if (imported_scene)
 			{
 				std::vector<uint> mat_id;
-				LoadMaterials(*imported_scene, mat_id);
 				GameObject* root_obj = LoadNodeRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
 				aiReleaseImport(imported_scene);
 
@@ -252,6 +252,77 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 	return root_obj;
 }
 
+void ModuleImporter::LoadNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array) {
+
+	for (int i = 0; i < node.mNumMeshes; i++) {
+		JSON_Value* game_object = json_value_init_object();
+		JSON_Value* components = json_value_init_array();
+
+		json_object_set_value(json_object(game_object), "Components", components);
+		// Import, store and delete mesh
+		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
+		JSON_Value* mesh_component = json_value_init_object();							// Create mesh component
+		std::string uuid = std::to_string(random32bits());
+		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
+		json_object_set_string(json_object(mesh_component), "mesh binary", uuid.c_str()); // Add mesh 
+		// TODO: Add material of the mesh												// Add material
+		json_array_append_value(json_array(components), mesh_component);			// Add component to components
+		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
+		//delete mesh;									// Delete mesh
+
+
+		// Import and store transform
+		aiVector3D pos = { 0.0f, 0.0f, 0.0f };
+		aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+		aiQuaternion rot;
+		node.mTransformation.Decompose(scl, rot, pos);
+		Transform* trans = new Transform();
+		JSON_Value* transform_component = json_value_init_object();
+		JSON_Value* local_transform = json_value_init_object();
+		trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+		trans->Save(json_object(local_transform));
+		json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
+		json_object_set_value(json_object(transform_component), "local transform", local_transform); //Set local transform
+		json_array_append_value(json_array(components), transform_component);			// Add component to components
+		delete trans;
+
+		json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
+		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
+	}
+
+	for (int i = 0; i < node.mNumChildren; i++)
+		LoadNodeToSceneRecursive(*node.mChildren[i], scene, objects_array);
+
+}
+
+bool ModuleImporter::ImportScene(const char * file_original_name, std::string file_binary_name) {
+
+	const aiScene* imported_scene = aiImportFile(file_original_name, aiProcessPreset_TargetRealtime_MaxQuality);
+
+	if (imported_scene) {
+		JSON_Value* scene = json_value_init_object();
+		JSON_Value* objects_array = json_value_init_array();	// Array of objects in the scene
+		//std::vector<uint> mat_id;
+		//LoadMaterials(*imported_scene, mat_id);
+
+		json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
+
+		LoadNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array);
+
+		std::string path;
+		App->fs->FormFullPath(path, file_binary_name.c_str(), LIBRARY_PREFABS, JSON_EXTENSION);
+		json_serialize_to_file(scene, path.c_str());
+		json_value_free(scene);
+		aiReleaseImport(imported_scene);
+		app_log->AddLog("Success importing file %s (scene)", file_original_name);
+
+		return true;
+	}
+	else
+		app_log->AddLog("Error importing file %s (scene): imported scene was null", file_original_name);
+
+	return false;
+}
 void logAssimp(const char* message, char* user) {
 	app_log->AddLog("%s", message);
 }
@@ -283,9 +354,7 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 	return tex;
 }
 
-bool ModuleImporter::ImportScene(const char * file_original_name, std::string file_binary_name) {
-	return false;
-}
+
 
 void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	//Create a header for vertices, tris, normals, colors and tex coords

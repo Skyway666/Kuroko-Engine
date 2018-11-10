@@ -26,7 +26,7 @@ public:
 
 	// This functions will eventually replace "Import", when resource manager is working
 	bool ImportTexture(const char* file_original_name, std::string file_binary_name); // Retruns true on successful import and false if it wasn't
-	bool ImportScene(const char* file_original_name, std::string file_binary_name);	  
+	bool ImportScene(const char* file_original_name, std::string file_binary_name);	  // Not gonna handle materials for now, only meshes.
 	//Own file format
 	void ExportMeshToKR(const char* file, Mesh* mesh);
 	void ExportTextureToDDS(const char* file);
@@ -35,6 +35,7 @@ public:
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;
 	GameObject* LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
+	void LoadNodeToSceneRecursive(const aiNode& node, const aiScene& scene, JSON_Value* json_scene);
 
 };
 void logAssimp(const char* message, char* user);
