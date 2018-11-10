@@ -29,6 +29,9 @@ Application::Application()
 	CreateDirectory("Library\\Materials", NULL);
 	CreateDirectory("Library\\Animation", NULL);
 	CreateDirectory("Library\\Textures", NULL);
+	CreateDirectory("Library\\Prefabs", NULL);
+
+
 	CreateDirectory("Assets", NULL);
 	CreateDirectory("Assets\\Scenes", NULL);
 

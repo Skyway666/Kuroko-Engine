@@ -2,6 +2,10 @@
 #include "FileSystem.h"
 #include "Application.h"
 #include "Random.h"
+#include "ModuleImporter.h"
+
+// Temporal debug purposes
+#include "ModuleInput.h"
 #include <experimental/filesystem>
 
 ModuleResourcesManager::ModuleResourcesManager(Application* app, bool start_enabled): Module(app, start_enabled)
@@ -29,6 +33,10 @@ bool ModuleResourcesManager::Start()
 
 update_status ModuleResourcesManager::Update(float dt)
 {
+
+	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+		CleanMeta();
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -45,9 +53,9 @@ Resource * ModuleResourcesManager::newResource(uint uuid) {
 	return nullptr;
 }
 
-uint ModuleResourcesManager::ImportToLibrary(const char * file)
+void ModuleResourcesManager::ImportToLibrary(const char* file_original_name, std::string file_binary_name)
 {
-	return 0;
+
 }
 
 void ModuleResourcesManager::GenerateLibraryAndMeta()
@@ -57,8 +65,8 @@ void ModuleResourcesManager::GenerateLibraryAndMeta()
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
 
-		std::string path, name, extension;	// Separate path, name and extension	
-		extension = path = name = it.path().generic_string();
+		std::string path, name, extension;
+		path = name = extension = it.path().generic_string();	// Separate path, name and extension	
 		App->fs->getExtension(extension);
 		App->fs->getPath(path);
 		App->fs->getFileNameFromPath(name);
@@ -96,8 +104,12 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 
 	JSON_Value* meta;
 	int file_last_mod;
-	std::string full_meta_path = path + name + META_EXTENSION;
+	// Needed for collisioning .meta against asset
+	std::string full_meta_path = path + name + META_EXTENSION; // TODO: Add original extension to .meta
 	std::string full_asset_path = path + name + extension;
+	// Needed for import
+	ResourceType asset_type;
+	std::string uuid;
 	if (App->fs->ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
@@ -107,10 +119,14 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	else {
 		App->fs->CreateEmptyFile(full_meta_path.c_str());	// If .meta doesn't exist, generate it
 		meta = json_value_init_object();
+		std::string type;
+		uuid = uuid2string(random32bits());
+		type = extension2type(extension.c_str());
+		asset_type = type2enum(type.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
-		json_object_set_number(json_object(meta), "uuid", random32bits());			// Brand new uuid
-		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension
-		json_object_set_string(json_object(meta), "type", extension2type(extension.c_str())); // Brand new time
+		json_object_set_string(json_object(meta), "uuid", uuid.c_str());			// Brand new uuid
+		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension (TODO: Delete this when file has original extension in it
+		json_object_set_string(json_object(meta), "type", type.c_str()); // Brand new time
 	}
 
 	// If meta didn't exist, or existed but the asset was changed, 
@@ -119,6 +135,14 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	json_value_free(meta);
 
 	// TODO: Import file
+	switch (asset_type) {
+		case R_TEXTURE:
+			App->importer->ImportTexture(full_asset_path.c_str(), uuid);
+			break;
+		case R_SCENE:
+			//App->importer->ImportScene(full_asset_path.c_str(), uuid);
+			break;
+	}
 
 
 	// Meta generated and file exported, MISSION ACOMPLISHED, return
@@ -133,23 +157,56 @@ void ModuleResourcesManager::LoadResource(uint uuid) {
 void ModuleResourcesManager::LoadFileToScene(const char * file) {
 }
 
-char * ModuleResourcesManager::uuid2string(uint uuid) {
-	return nullptr;
+void ModuleResourcesManager::CleanMeta() {
+	using std::experimental::filesystem::recursive_directory_iterator;
+	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
+		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
+			continue;
+
+		std::string path, name, extension;
+		path = name = extension = it.path().generic_string();	// Separate path, name and extension	
+		App->fs->getExtension(extension);
+		App->fs->getPath(path);
+		App->fs->getFileNameFromPath(name);
+
+		if (extension == META_EXTENSION)
+			App->fs->DestroyFile((path + name + extension).c_str());
+
+	}
+}
+
+std::string ModuleResourcesManager::uuid2string(uint uuid) {
+	return std::to_string(uuid);
 }
 
 const char * ModuleResourcesManager::extension2type(const char * extension) {
+
+	std::string str_ex = extension;
 	char* ret = "unknown";
 
-	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
-		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x" || extension == ".json") {
+	if (str_ex == ".FBX" || str_ex == ".fbx" || str_ex == ".dae" || str_ex == ".blend" || str_ex == ".3ds" || str_ex == ".obj"
+		|| str_ex == ".gltf" || str_ex == ".glb" || str_ex == ".dxf" || str_ex == ".x" || str_ex == ".json") {
 		ret = "scene";
 	}
-	if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
-		|| extension == ".raw" || extension == ".tga" || extension == ".tiff") {
+	if (str_ex == ".bmp" || str_ex == ".dds" || str_ex == ".jpg" || str_ex == ".pcx" || str_ex == ".png"
+		|| str_ex == ".raw" || str_ex == ".tga" || str_ex == ".tiff") {
 		ret = "texture";
 	}
 
 	return ret;
 }
+
+ResourceType ModuleResourcesManager::type2enum(const char * type) {
+	ResourceType ret = R_UNKNOWN;
+	std::string str_type = type;
+
+	if (str_type == "scene")
+		ret = R_SCENE;
+	if (str_type == "texture")
+		ret = R_TEXTURE;
+
+	return ret;
+}
+
 
 

@@ -256,6 +256,37 @@ void logAssimp(const char* message, char* user) {
 	app_log->AddLog("%s", message);
 }
 
+bool ModuleImporter::ImportTexture(const char * file_original_name, std::string file_binary_name) {
+
+	std::string path, name, extension;
+	path = name = extension = file_original_name;
+	App->fs->getExtension(extension);
+	App->fs->getPath(path);
+	App->fs->getFileNameFromPath(name);
+	bool is_dds = extension == ".dds";
+	Texture* tex = new Texture(ilutGLLoadImage((char*)file_original_name), file_binary_name.c_str(), !is_dds);  // If it is a dds, don't compress it
+
+	if (is_dds) { 									// We copy and paste file in library folder.
+		if (!App->fs->copyFileTo(file_original_name, LIBRARY_TEXTURES, DDS_EXTENSION, file_binary_name))
+			app_log->AddLog("%s could not be copied to Library/Textures", file_original_name);
+	}
+
+	ILinfo ImageInfo;
+	iluGetImageInfo(&ImageInfo);
+	if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+		iluFlipImage();
+
+
+	// TODO: delete texture and not add it to scene list (will be done when resources are fully working
+
+	app_log->AddLog("Success importing texture: %s", file_original_name);
+	return tex;
+}
+
+bool ModuleImporter::ImportScene(const char * file_original_name, std::string file_binary_name) {
+	return false;
+}
+
 void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	//Create a header for vertices, tris, normals, colors and tex coords
 	uint header[5]; 

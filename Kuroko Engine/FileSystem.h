@@ -13,15 +13,17 @@
 #define MATERIALS_FOLDER "Library\\Materials\\"
 #define ANIMATIONS_FOLDER "Library\\Animations\\"
 #define TEXTURES_FOLDER "Library\\Textures\\"
+#define PREFABS_FOLDER "Library\\Prefabs\\"
 #define SETTINGS_FOLDER "Settings\\"
 #define SCENES_FOLDER "Assets\\Scenes\\"
 #define ASSETS_FOLDER "Assets"
 
 enum lib_dir {
 	LIBRARY_MESHES,
-	LIBRARY_MATERIALS,
-	LIBRARY_ANIMATIONS,
+	LIBRARY_MATERIALS, // Unused (should be a json pointing to different textures)
+	LIBRARY_ANIMATIONS,// Unused
 	LIBRARY_TEXTURES,
+	LIBRARY_PREFABS,
 	SETTINGS,
 	ASSETS_SCENES,
 	NO_LIB
@@ -42,7 +44,7 @@ public:
 	bool getPath(std::string & str);
 	void getExtension(std::string& str);
 	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
-	bool copyFileTo(const char* full_path_src, lib_dir dest_lib = NO_LIB, const char* extension = "");
+	bool copyFileTo(const char* full_path_src, lib_dir dest_lib = NO_LIB, const char* extension = "", std::string file_new_name = "");
 	int getFileLastTimeMod(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	private: 
 	// Useful functions to work with paths

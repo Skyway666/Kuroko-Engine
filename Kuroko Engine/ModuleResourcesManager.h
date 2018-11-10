@@ -29,11 +29,11 @@ public:
 	void GenerateLibraryAndMeta();
 	void ManageMeta(std::string path, std::string name, std::string extension);
 	void ManageAsset(std::string path, std::string name, std::string extension);
-	// Generates .meta and imports file to library. Returns id of the imported resource, without the resource loaded.
-	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different files, and only one for the FBX which is a scene,
+	// Generates Imports file to library, with the name of the uuid
+	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different binarys, and only one for the FBX which is a scene,
 	// with the transformations and hierarchy, and uuids of the meshes that it contains. Only one .metadata is generated, and it points
 	// to that file.
-	uint ImportToLibrary(const char* file);		
+	void ImportToLibrary(const char* file_original_name, std::string file_binary_name);		
 
 
 	// Iterates metadata files in assets and creates a resource for each one.
@@ -52,9 +52,12 @@ public:
 
 private:
 	std::list<Resource*> resources;		//TODO: Use map as innovation (meh)
+
+	void CleanMeta();
 	// Helpers
-	char* uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
+	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
 	const char* extension2type(const char* extension); // Converts an extension into a resource file
+	ResourceType type2enum(const char* type);
 										  
 };
 

@@ -23,6 +23,10 @@ public:
 	bool CleanUp();
 
 	void* Import(const char* file, ImportType expected_filetype = I_NONE);
+
+	// This functions will eventually replace "Import", when resource manager is working
+	bool ImportTexture(const char* file_original_name, std::string file_binary_name); // Retruns true on successful import and false if it wasn't
+	bool ImportScene(const char* file_original_name, std::string file_binary_name);	  
 	//Own file format
 	void ExportMeshToKR(const char* file, Mesh* mesh);
 	void ExportTextureToDDS(const char* file);

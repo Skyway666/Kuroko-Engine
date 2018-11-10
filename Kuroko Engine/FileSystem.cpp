@@ -81,6 +81,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case LIBRARY_TEXTURES:
 		path = TEXTURES_FOLDER;
 		break;
+	case LIBRARY_PREFABS:
+		path = PREFABS_FOLDER;
+		break;
 	case SETTINGS:
 		path = SETTINGS_FOLDER;
 		break;
@@ -95,13 +98,17 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	path.append(extension);
 }
 
-bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const char * extension) {
+bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const char * extension, std::string file_new_name) {
+
+	if (file_new_name == "") {
+		file_new_name = full_path_src;
+		getFileNameFromPath(file_new_name);
+	}
 
 	// Form destination path
 	std::string dest_path;
-	std::string file_name = full_path_src;
-	getFileNameFromPath(file_name);
-	FormFullPath(dest_path, file_name.c_str(), dest_lib, extension); 
+
+	FormFullPath(dest_path, file_new_name.c_str(), dest_lib, extension);
 
 	if (dest_path.compare(full_path_src) == 0) {
 		app_log->AddLog("Trying to copy/paste same file in same location, avoiding operation");
