@@ -27,6 +27,7 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 				deff.binary = json_object_get_string(mesh_resource, "mesh binary");
 				deff.uuid = json_object_get_number(mesh_resource, "uuid");
 				mesh_found = true;
+				break;
 			}
 		}
 
