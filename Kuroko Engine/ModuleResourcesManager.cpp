@@ -138,11 +138,10 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
 		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) { // Check if the last time that was edited is the .meta timestamp
 			resource_deff deff;
-			std::string binary_name = json_object_get_string(json_object(meta), "uuid");
 			deff.type = type2enumType(json_object_get_string(json_object(meta), "type"));
 			deff.binary = json_object_get_string(json_object(meta), "binary_path");
 			deff.asset = full_asset_path;
-			deff.uuid = atoi(binary_name.c_str());
+			deff.uuid = json_object_get_number(json_object(meta), "uuid_number");
 			newResource(deff);
 			return;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
 		}
@@ -158,6 +157,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 		
 		binary_path = App->fs->getPathFromLibDir(enumType2libDir(enum_type)) + uuid_str + enumType2binaryExtension(enum_type);
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
+		json_object_set_number(json_object(meta), "uuid_number", uuid_number);
 		json_object_set_string(json_object(meta), "uuid", uuid_str.c_str());			// Brand new uuid
 		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension (TODO: Delete this when file has original extension in it
 		json_object_set_string(json_object(meta), "type", str_type.c_str()); // Brand new time
