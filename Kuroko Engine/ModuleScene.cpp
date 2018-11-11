@@ -421,6 +421,7 @@ JSON_Value * ModuleScene::serializeScene() {
 void ModuleScene::loadSerializedScene(JSON_Value * scene) {
 
 	ClearScene();
+	quadtree_reload = true;
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
