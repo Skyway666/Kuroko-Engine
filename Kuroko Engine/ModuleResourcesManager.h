@@ -34,7 +34,10 @@ public:
 	void ImportToLibrary(const char* file_original_name, std::string file_binary_name);				
 
 	Resource* getResource(uint uuid);
-	Resource* newResource(resource_deff deff);		// Creates a resource from a file in JSON format that contains uuid, type, extension, timeCreated...
+	// Creates a resource from a .meta that contains uuid, type, extension, timeCreated...
+	// IMPORTANT: Resources for meshes will be created by the constructor of the scene resource, as it can access
+	// binarys, original asset, uuid, and type, of course.
+	Resource* newResource(resource_deff deff);		
 	void LoadResource(uint uuid);						// Iterates resource list, looks for the resource and allows it to load
 
 
@@ -44,16 +47,19 @@ public:
 	// and showcased in the resources debug UI
 	void LoadFileToScene(const char* file);		
 
+
+
 private:
-	std::map<uint, Resource*> resources;		//TODO: Use map as innovation (meh)
+	std::map<uint, Resource*> resources;		
 
 	void CleanMeta();
 	// Helpers
 	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
-	const char* extension2type(const char* extension); // Converts an extension into a resource file
+	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file
 	ResourceType type2enumType(const char* type);
 	const char* enumType2binaryExtension(ResourceType type);
 	lib_dir enumType2libDir(ResourceType type);
+
 };
 
 #endif

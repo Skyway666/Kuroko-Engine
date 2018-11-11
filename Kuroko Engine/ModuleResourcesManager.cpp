@@ -4,6 +4,8 @@
 #include "Random.h"
 #include "ModuleImporter.h"
 #include "ResourceTexture.h"
+#include "ResourceMesh.h"
+#include "ResourceScene.h"
 
 // Temporal debug purposes
 #include "ModuleInput.h"
@@ -56,8 +58,8 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 
 	switch (deff.type) {
 	case R_TEXTURE: ret = (Resource*) new ResourceTexture(deff); break;
-	//case R_MESH: ret = (Resource*) new ResourceMesh(deff); break;
-	//case R_SCENE: ret = (Resource*) new ResourceScene(deff); break;
+	case R_MESH: ret = (Resource*) new ResourceMesh(deff); break;     
+	case R_SCENE: ret = (Resource*) new ResourceScene(deff); break; 
 	} 
 
 	if (ret)
@@ -128,7 +130,8 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	std::string full_asset_path = path + name + extension;
 	// Needed for import
 	ResourceType enum_type;
-	std::string uuid;
+	std::string uuid_str;
+	std::string binary_path;
 	int uuid_number = 0;
 	if (App->fs->ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
@@ -137,8 +140,8 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 			resource_deff deff;
 			std::string binary_name = json_object_get_string(json_object(meta), "uuid");
 			deff.type = type2enumType(json_object_get_string(json_object(meta), "type"));
+			deff.binary = json_object_get_string(json_object(meta), "binary_path");
 			deff.asset = full_asset_path;
-			deff.binary = binary_name + enumType2binaryExtension(deff.type);
 			deff.uuid = atoi(binary_name.c_str());
 			newResource(deff);
 			return;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
@@ -149,13 +152,16 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 		meta = json_value_init_object();
 		std::string str_type;
 		uuid_number = random32bits();
-		uuid = uuid2string(uuid_number);
-		str_type = extension2type(extension.c_str());
+		uuid_str = uuid2string(uuid_number);
+		str_type = assetExtension2type(extension.c_str());
 		enum_type = type2enumType(str_type.c_str());
+		
+		binary_path = App->fs->getPathFromLibDir(enumType2libDir(enum_type)) + uuid_str + enumType2binaryExtension(enum_type);
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
-		json_object_set_string(json_object(meta), "uuid", uuid.c_str());			// Brand new uuid
+		json_object_set_string(json_object(meta), "uuid", uuid_str.c_str());			// Brand new uuid
 		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension (TODO: Delete this when file has original extension in it
 		json_object_set_string(json_object(meta), "type", str_type.c_str()); // Brand new time
+		json_object_set_string(json_object(meta), "binary_path", binary_path.c_str()); // Brand new binary path
 	}
 
 	// If meta didn't exist, or existed but the asset was changed, 
@@ -166,10 +172,10 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	// TODO: Import file
 	switch (enum_type) {
 		case R_TEXTURE:
-			App->importer->ImportTexture(full_asset_path.c_str(), uuid);
+			App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
 			break;
 		case R_SCENE:
-			App->importer->ImportScene(full_asset_path.c_str(), uuid);
+			App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
 			break;
 	}
 	// Meta generated and file imported, create resource in code
@@ -177,7 +183,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	resource_deff deff;
 	deff.type = enum_type;
 	deff.asset = full_asset_path;
-	deff.binary = uuid + enumType2binaryExtension(deff.type);
+	deff.binary = binary_path;
 	deff.uuid = uuid_number;
 	newResource(deff);
 
@@ -213,7 +219,7 @@ std::string ModuleResourcesManager::uuid2string(uint uuid) {
 	return std::to_string(uuid);
 }
 
-const char * ModuleResourcesManager::extension2type(const char * extension) {
+const char * ModuleResourcesManager::assetExtension2type(const char * extension) {
 
 	std::string str_ex = extension;
 	char* ret = "unknown";
@@ -274,6 +280,4 @@ lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
 	}
 	return ret;
 }
-
-
 
