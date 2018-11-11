@@ -105,9 +105,15 @@ void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std:
 
 	if (App->fs->ExistisFile(full_asset_path.c_str())) // If file exists, MISSION ACOMPLISHED, return
 		return;
-	else {											   // Delete the corresponding file from the library and delete the meta
-		//TODO: Delete file from library using the meta reference that points to it
-		App->fs->DestroyFile(full_meta_path.c_str());
+	else {	
+		std::string full_binary_path;		// Delete file from library using the meta reference that points to it
+		ResourceType r_type = type2enumType(json_object_get_string(json_object(meta), "type"));
+		full_binary_path += App->fs->getPathFromLibDir(enumType2libDir(r_type)); // Path
+		full_binary_path += json_object_get_string(json_object(meta), "uuid");   // Name
+		full_binary_path += enumType2binaryExtension(r_type);					 // Extension
+
+		App->fs->DestroyFile(full_binary_path.c_str());
+		App->fs->DestroyFile(full_meta_path.c_str()); // Destroy meta
 	}
 
 
@@ -116,13 +122,14 @@ void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std:
 void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std::string extension) {
 
 	JSON_Value* meta;
-	int file_last_mod;
+	int file_last_mod = 0;
 	// Needed for collisioning .meta against asset
 	std::string full_meta_path = path + name + META_EXTENSION; // TODO: Add original extension to .meta
 	std::string full_asset_path = path + name + extension;
 	// Needed for import
-	ResourceType asset_type;
+	ResourceType enum_type;
 	std::string uuid;
+	int uuid_number = 0;
 	if (App->fs->ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
@@ -140,14 +147,15 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	else {
 		App->fs->CreateEmptyFile(full_meta_path.c_str());	// If .meta doesn't exist, generate it
 		meta = json_value_init_object();
-		std::string type;
-		uuid = uuid2string(random32bits());
-		type = extension2type(extension.c_str());
-		asset_type = type2enumType(type.c_str());
+		std::string str_type;
+		uuid_number = random32bits();
+		uuid = uuid2string(uuid_number);
+		str_type = extension2type(extension.c_str());
+		enum_type = type2enumType(str_type.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
 		json_object_set_string(json_object(meta), "uuid", uuid.c_str());			// Brand new uuid
 		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension (TODO: Delete this when file has original extension in it
-		json_object_set_string(json_object(meta), "type", type.c_str()); // Brand new time
+		json_object_set_string(json_object(meta), "type", str_type.c_str()); // Brand new time
 	}
 
 	// If meta didn't exist, or existed but the asset was changed, 
@@ -156,7 +164,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	json_value_free(meta);
 
 	// TODO: Import file
-	switch (asset_type) {
+	switch (enum_type) {
 		case R_TEXTURE:
 			App->importer->ImportTexture(full_asset_path.c_str(), uuid);
 			break;
@@ -164,9 +172,16 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 			App->importer->ImportScene(full_asset_path.c_str(), uuid);
 			break;
 	}
+	// Meta generated and file imported, create resource in code
 
+	resource_deff deff;
+	deff.type = enum_type;
+	deff.asset = full_asset_path;
+	deff.binary = uuid + enumType2binaryExtension(deff.type);
+	deff.uuid = uuid_number;
+	newResource(deff);
 
-	// Meta generated and file exported, MISSION ACOMPLISHED, return
+	// Resource generated, MISSION ACOMPLISHED, return
 }
 
 
@@ -231,7 +246,7 @@ const char * ModuleResourcesManager::enumType2binaryExtension(ResourceType type)
 	const char* ret = "";
 	switch (type) {
 		case R_TEXTURE:
-			ret = "dds";
+			ret = ".dds";
 			break;
 		case R_MESH:
 			ret = ".kr";
@@ -241,6 +256,22 @@ const char * ModuleResourcesManager::enumType2binaryExtension(ResourceType type)
 			break;
 	}
 
+	return ret;
+}
+
+lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
+	lib_dir ret = NO_LIB;
+	switch (type) {
+	case R_TEXTURE:
+		ret = LIBRARY_TEXTURES;
+		break;
+	case R_MESH:
+		ret = LIBRARY_MESHES;
+		break;
+	case R_SCENE:
+		ret = LIBRARY_PREFABS;
+		break;
+	}
 	return ret;
 }
 

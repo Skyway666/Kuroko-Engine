@@ -4,7 +4,7 @@
 #include "Module.h"
 #include "Resource.h"
 #include <map>
-
+enum lib_dir;
 class ModuleResourcesManager: public Module
 {
 public:
@@ -53,6 +53,7 @@ private:
 	const char* extension2type(const char* extension); // Converts an extension into a resource file
 	ResourceType type2enumType(const char* type);
 	const char* enumType2binaryExtension(ResourceType type);
+	lib_dir enumType2libDir(ResourceType type);
 };
 
 #endif
