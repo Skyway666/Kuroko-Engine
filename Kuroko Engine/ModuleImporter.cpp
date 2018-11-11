@@ -227,7 +227,7 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 	{
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
 		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
-		if(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
+		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
 			c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
 		else {
 			Material* mat = new Material();
@@ -235,16 +235,16 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 		}
 		root_obj->addComponent(c_m);
 
-		aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-		aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
-		aiQuaternion rot;
-		node.mTransformation.Decompose(scl, rot, pos);
-
-		((ComponentTransform*)root_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
-
 		ExportMeshToKR(node.mName.C_Str(), mesh);
 		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
+
+	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
+	aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+	aiQuaternion rot;
+	node.mTransformation.Decompose(scl, rot, pos);
+
+	((ComponentTransform*)root_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
 
 	for (int i = 0; i < node.mNumChildren; i++)
 		root_obj->addChild(LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, root_obj));
@@ -254,11 +254,11 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 
 void ModuleImporter::LoadNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array) {
 
-	for (int i = 0; i < node.mNumMeshes; i++) {
-		JSON_Value* game_object = json_value_init_object();
-		JSON_Value* components = json_value_init_array();
+	JSON_Value* game_object = json_value_init_object();
+	JSON_Value* components = json_value_init_array();
 
-		json_object_set_value(json_object(game_object), "Components", components);
+	json_object_set_value(json_object(game_object), "Components", components);
+	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
 		JSON_Value* mesh_component = json_value_init_object();							// Create mesh component
@@ -270,25 +270,25 @@ void ModuleImporter::LoadNodeToSceneRecursive(const aiNode & node, const aiScene
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		//delete mesh;									// Delete mesh
 
-
-		// Import and store transform
-		aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-		aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
-		aiQuaternion rot;
-		node.mTransformation.Decompose(scl, rot, pos);
-		Transform* trans = new Transform();
-		JSON_Value* transform_component = json_value_init_object();
-		JSON_Value* local_transform = json_value_init_object();
-		trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
-		trans->Save(json_object(local_transform));
-		json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
-		json_object_set_value(json_object(transform_component), "local transform", local_transform); //Set local transform
-		json_array_append_value(json_array(components), transform_component);			// Add component to components
-		delete trans;
-
-		json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
-		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
+
+	// Import and store transform
+	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
+	aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+	aiQuaternion rot;
+	node.mTransformation.Decompose(scl, rot, pos);
+	Transform* trans = new Transform();
+	JSON_Value* transform_component = json_value_init_object();
+	JSON_Value* local_transform = json_value_init_object();
+	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+	trans->Save(json_object(local_transform));
+	json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
+	json_object_set_value(json_object(transform_component), "local transform", local_transform); //Set local transform
+	json_array_append_value(json_array(components), transform_component);			// Add component to components
+	delete trans;
+
+	json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
+	app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 
 	for (int i = 0; i < node.mNumChildren; i++)
 		LoadNodeToSceneRecursive(*node.mChildren[i], scene, objects_array);
