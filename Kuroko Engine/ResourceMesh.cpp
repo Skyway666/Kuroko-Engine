@@ -21,6 +21,8 @@ void ResourceMesh::LoadToMemory() {
 }
 
 void ResourceMesh::UnloadFromMemory() {
+	if (!mesh)
+		return;
 	delete mesh;
 	mesh = nullptr;
 }

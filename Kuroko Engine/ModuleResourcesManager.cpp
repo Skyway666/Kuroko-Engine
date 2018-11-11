@@ -44,10 +44,6 @@ update_status ModuleResourcesManager::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-bool ModuleResourcesManager::CleanUp()
-{
-	return true;
-}
 
 Resource * ModuleResourcesManager::getResource(uint uuid) {
 	return nullptr;
@@ -86,6 +82,10 @@ void ModuleResourcesManager::GenerateLibraryAndMeta()
 		App->fs->getPath(path);
 		App->fs->getFileNameFromPath(name);
 
+		if (extension == JSON_EXTENSION) // Scenes of our own engine are NOT to be exported to binary, they directly hold pointers to it.
+			continue;
+		
+
 		// Manage meta
 		if (extension == META_EXTENSION) { // If it is a meta file
 			ManageMeta(path, name, extension);  // If has a corresponding asset, continue, else delete file from library and delete .meta
@@ -114,7 +114,7 @@ void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std:
 		full_binary_path += json_object_get_string(json_object(meta), "uuid");   // Name
 		full_binary_path += enumType2binaryExtension(r_type);					 // Extension
 
-		App->fs->DestroyFile(full_binary_path.c_str());
+		App->fs->DestroyFile(full_binary_path.c_str());							// TODO: Handle meshes delete when a scene is deleted(pls kill me)
 		App->fs->DestroyFile(full_meta_path.c_str()); // Destroy meta
 	}
 
@@ -132,7 +132,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	ResourceType enum_type;
 	std::string uuid_str;
 	std::string binary_path;
-	int uuid_number = 0;
+	uint uuid_number = 0;
 	if (App->fs->ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
@@ -225,7 +225,7 @@ const char * ModuleResourcesManager::assetExtension2type(const char * extension)
 	char* ret = "unknown";
 
 	if (str_ex == ".FBX" || str_ex == ".fbx" || str_ex == ".dae" || str_ex == ".blend" || str_ex == ".3ds" || str_ex == ".obj"
-		|| str_ex == ".gltf" || str_ex == ".glb" || str_ex == ".dxf" || str_ex == ".x" || str_ex == ".json") {
+		|| str_ex == ".gltf" || str_ex == ".glb" || str_ex == ".dxf" || str_ex == ".x") {
 		ret = "scene";
 	}
 	if (str_ex == ".bmp" || str_ex == ".dds" || str_ex == ".jpg" || str_ex == ".pcx" || str_ex == ".png"
@@ -281,3 +281,19 @@ lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
 	return ret;
 }
 
+
+bool ModuleResourcesManager::CleanUp() {
+	// Unload all memory from resources and delete resources
+
+
+
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if (Resource* resource = (*it).second) {
+			//TODO: Unload memory from resource
+			delete resource;
+		}
+	}
+	resources.clear();
+
+	return true;
+}

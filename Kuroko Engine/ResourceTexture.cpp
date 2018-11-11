@@ -23,6 +23,8 @@ void ResourceTexture::LoadToMemory() {
 }
 
 void ResourceTexture::UnloadFromMemory() {
+	if (!texture)
+		return;
 	delete texture;
 	texture = nullptr;
 }

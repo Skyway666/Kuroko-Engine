@@ -34,14 +34,12 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 		if (mesh_found) {					  // If a mesh was found create a resource for it
 			App->resources->newResource(deff);
 		}
-		
-		
-		
 	}
 }
 
 
 ResourceScene::~ResourceScene() {
+
 }
 
 void ResourceScene::LoadToMemory() {
