@@ -3,10 +3,8 @@
 
 #include "Module.h"
 #include "Resource.h"
-#include <list>
-
-
-
+#include <map>
+enum lib_dir;
 class ModuleResourcesManager: public Module
 {
 public:
@@ -33,15 +31,14 @@ public:
 	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different binarys, and only one for the FBX which is a scene,
 	// with the transformations and hierarchy, and uuids of the meshes that it contains. Only one .metadata is generated, and it points
 	// to that file.
-	void ImportToLibrary(const char* file_original_name, std::string file_binary_name);		
-
-
-	// Iterates metadata files in assets and creates a resource for each one.
-	void CreateResourcesFromMetadata();					
+	void ImportToLibrary(const char* file_original_name, std::string file_binary_name);				
 
 	Resource* getResource(uint uuid);
-	Resource* newResource(uint uuid);		// Creates a resource from a file in JSON format that contains uuid, type, extension, timeCreated...
-	void LoadResource(uint uuid);			// Iterates resource list, looks for the resource and allows it to load
+	// Creates a resource from a .meta that contains uuid, type, extension, timeCreated...
+	// IMPORTANT: Resources for meshes will be created by the constructor of the scene resource, as it can access
+	// binarys, original asset, uuid, and type, of course.
+	Resource* newResource(resource_deff deff);		
+	void LoadResource(uint uuid);						// Iterates resource list, looks for the resource and allows it to load
 
 
 	// Looks for the file's metadata. If it doesn't find it, it calls ImportToLibrary(const char* file)
@@ -50,15 +47,19 @@ public:
 	// and showcased in the resources debug UI
 	void LoadFileToScene(const char* file);		
 
+
+
 private:
-	std::list<Resource*> resources;		//TODO: Use map as innovation (meh)
+	std::map<uint, Resource*> resources;		
 
 	void CleanMeta();
 	// Helpers
 	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
-	const char* extension2type(const char* extension); // Converts an extension into a resource file
-	ResourceType type2enum(const char* type);
-										  
+	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file
+	ResourceType type2enumType(const char* type);
+	const char* enumType2binaryExtension(ResourceType type);
+	lib_dir enumType2libDir(ResourceType type);
+
 };
 
 #endif

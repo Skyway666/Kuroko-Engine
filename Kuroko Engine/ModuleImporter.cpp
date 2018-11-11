@@ -261,14 +261,17 @@ void ModuleImporter::LoadNodeToSceneRecursive(const aiNode & node, const aiScene
 	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
-		JSON_Value* mesh_component = json_value_init_object();							// Create mesh component
-		std::string uuid = std::to_string(random32bits());
+		JSON_Value* mesh_component = json_value_init_object();	
+		uint uuid_number = random32bits();																// Create mesh component
+		std::string uuid = std::to_string(uuid_number);
+		std::string binary_full_path = MESHES_FOLDER + uuid + ENGINE_EXTENSION;
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
-		json_object_set_string(json_object(mesh_component), "mesh binary", uuid.c_str()); // Add mesh 
+		json_object_set_string(json_object(mesh_component), "mesh binary", binary_full_path.c_str()); // Add mesh 
+		json_object_set_number(json_object(mesh_component), "uuid", uuid_number);
 		// TODO: Add material of the mesh												// Add material
 		json_array_append_value(json_array(components), mesh_component);			// Add component to components
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
-		//delete mesh;									// Delete mesh
+		//delete mesh;									// TODO: Delete mesh
 
 	}
 
@@ -538,6 +541,10 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	//}
 	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
+}
+
+Texture * ModuleImporter::LoadTextureFromLibrary(const char * file) {
+	return new Texture(ilutGLLoadImage((char*)file), file, false);
 }
 
 

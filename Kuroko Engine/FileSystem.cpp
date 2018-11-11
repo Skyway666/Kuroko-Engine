@@ -137,6 +137,38 @@ int FileSystem::getFileLastTimeMod(const char * file_name, lib_dir lib, const ch
 	return ret;
 }
 
+std::string FileSystem::getPathFromLibDir(lib_dir lib_dir) {
+	std::string ret = "";
+
+	switch (lib_dir) {
+	case LIBRARY_MESHES:
+		ret = MESHES_FOLDER;
+		break;
+	case LIBRARY_MATERIALS:
+		ret = MATERIALS_FOLDER;
+		break;
+	case LIBRARY_ANIMATIONS:
+		ret = ANIMATIONS_FOLDER;
+		break;
+	case LIBRARY_TEXTURES:
+		ret = TEXTURES_FOLDER;
+		break;
+	case LIBRARY_PREFABS:
+		ret = PREFABS_FOLDER;
+		break;
+	case SETTINGS:
+		ret = SETTINGS_FOLDER;
+		break;
+	case ASSETS_SCENES:
+		ret = SCENES_FOLDER;
+		break;
+	case NO_LIB:
+		ret = "";
+		break;
+	}
+	return ret;
+}
+
 bool FileSystem::removeExtension(std::string& str) {
 	size_t lastdot = str.find_last_of(".");
 	if (lastdot == std::string::npos)

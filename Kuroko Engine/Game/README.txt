@@ -26,6 +26,7 @@ Features of the engine:
 INNOVATION: 
 - File import through windows explorer
 - Camera can display viewports and the depth buffer
+- Using "map" container to store resources
 
 
 Libraries used:

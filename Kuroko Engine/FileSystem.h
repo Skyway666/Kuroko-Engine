@@ -2,6 +2,7 @@
 #define _FILE_SYSTEM_
 
 #include "Module.h"
+#include "Resource.h"
 
 
 #define ENGINE_EXTENSION ".kr"
@@ -46,6 +47,7 @@ public:
 	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
 	bool copyFileTo(const char* full_path_src, lib_dir dest_lib = NO_LIB, const char* extension = "", std::string file_new_name = "");
 	int getFileLastTimeMod(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
+	std::string getPathFromLibDir(lib_dir r_type);
 	private: 
 	// Useful functions to work with paths
 	bool removeExtension(std::string& str);
