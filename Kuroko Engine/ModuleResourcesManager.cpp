@@ -102,8 +102,7 @@ void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std:
 	std::string full_meta_path = path + name + extension;
 
 	JSON_Value* meta = json_parse_file(full_meta_path.c_str());
-	std::string asset_extension = json_object_get_string(json_object(meta), "asset_extension");
-	std::string full_asset_path = path + name + asset_extension; // Generate path to asset using "asset_extension" in the metadata
+	std::string full_asset_path = path + name; 
 
 	if (App->fs->ExistisFile(full_asset_path.c_str())) // If file exists, MISSION ACOMPLISHED, return
 		return;
@@ -126,7 +125,7 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	JSON_Value* meta;
 	int file_last_mod = 0;
 	// Needed for collisioning .meta against asset
-	std::string full_meta_path = path + name + META_EXTENSION; // TODO: Add original extension to .meta
+	std::string full_meta_path = path + name + extension + META_EXTENSION; // TODO: Add original extension to .meta
 	std::string full_asset_path = path + name + extension;
 	// Needed for import
 	ResourceType enum_type;
@@ -159,7 +158,6 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
 		json_object_set_number(json_object(meta), "uuid_number", uuid_number);
 		json_object_set_string(json_object(meta), "uuid", uuid_str.c_str());			// Brand new uuid
-		json_object_set_string(json_object(meta), "asset_extension", extension.c_str()); // Brand new extension (TODO: Delete this when file has original extension in it
 		json_object_set_string(json_object(meta), "type", str_type.c_str()); // Brand new time
 		json_object_set_string(json_object(meta), "binary_path", binary_path.c_str()); // Brand new binary path
 	}
@@ -284,8 +282,6 @@ lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
 
 bool ModuleResourcesManager::CleanUp() {
 	// Unload all memory from resources and delete resources
-
-
 
 	for (auto it = resources.begin(); it != resources.end(); it++) {
 		if (Resource* resource = (*it).second) {

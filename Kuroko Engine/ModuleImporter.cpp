@@ -273,6 +273,7 @@ void ModuleImporter::LoadNodeToSceneRecursive(const aiNode & node, const aiScene
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		//delete mesh;									// TODO: Delete mesh
 
+		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
 	// Import and store transform
@@ -291,7 +292,7 @@ void ModuleImporter::LoadNodeToSceneRecursive(const aiNode & node, const aiScene
 	delete trans;
 
 	json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
-	app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
+
 
 	for (int i = 0; i < node.mNumChildren; i++)
 		LoadNodeToSceneRecursive(*node.mChildren[i], scene, objects_array);
