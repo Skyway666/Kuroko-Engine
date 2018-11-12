@@ -222,38 +222,58 @@ void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_
 
 GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent)
 {
-	GameObject* root_obj = new GameObject(node.mName.C_Str(), parent);
+	std::string name = node.mName.C_Str();
+	if (name.find("$Assimp") != std::string::npos)
+	{
+		for (int i = 0; i < node.mNumChildren; i++)
+			LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, parent);
+
+		return nullptr;
+	}
+
+	GameObject* new_obj = new GameObject(node.mName.C_Str(), parent);
+	if(parent)
+		parent->addChild(new_obj);
 
 	for (int i = 0; i < node.mNumMeshes; i++)
 	{
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
-		ComponentMesh* c_m = new ComponentMesh(root_obj, mesh);
+		ComponentMesh* c_m = new ComponentMesh(new_obj, mesh);
 		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
 			c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
 		else {
 			Material* mat = new Material();
 			c_m->setMaterial(mat);
 		}
-		root_obj->addComponent(c_m);
+		new_obj->addComponent(c_m);
 
 		ExportMeshToKR(node.mName.C_Str(), mesh);
 		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
 	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+	aiVector3D scl = { 1.0f, 1.0f, 1.0f };
 	aiQuaternion rot;
 	node.mTransformation.Decompose(scl, rot, pos);
 
-	((ComponentTransform*)root_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+	((ComponentTransform*)new_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
 
 	for (int i = 0; i < node.mNumChildren; i++)
-		root_obj->addChild(LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, root_obj));
+		LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, new_obj);
 
-	return root_obj;
+	return new_obj;
 }
 
-void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array) {
+void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array) 
+{
+	std::string name = node.mName.C_Str();
+	if (name.find("$Assimp") != std::string::npos)
+	{
+		for (int i = 0; i < node.mNumChildren; i++)
+			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array);
+
+		return;
+	}
 
 	JSON_Value* game_object = json_value_init_object();
 	JSON_Value* components = json_value_init_array();
