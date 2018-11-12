@@ -24,8 +24,8 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 			JSON_Object* mesh_resource = json_array_get_object(components, a);
 			std::string type = json_object_get_string(mesh_resource, "type");
 			if (type == "mesh") {
-				deff.binary = json_object_get_string(mesh_resource, "mesh binary");
-				deff.uuid = json_object_get_number(mesh_resource, "uuid");
+				deff.binary = json_object_get_string(mesh_resource, "mesh_binary_path");
+				deff.uuid = json_object_get_number(mesh_resource, "mesh_resource_uuid");
 				mesh_found = true;
 				break;
 			}

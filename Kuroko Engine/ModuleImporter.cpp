@@ -296,14 +296,14 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		std::string uuid = std::to_string(uuid_number);
 		std::string binary_full_path = MESHES_FOLDER + uuid + ENGINE_EXTENSION;
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
-		json_object_set_string(json_object(mesh_component), "mesh binary", binary_full_path.c_str()); // Set mesh
-		json_object_set_number(json_object(mesh_component), "uuid", uuid_number);				// Set uuid (not really that interesting)
+		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh
+		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
 
 
 		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size()) {// If it has a material
 		material_resource_deff deff = in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex);
 		JSON_Value* material = json_value_init_object();
-		json_object_set_string(json_object(material), "diffuse binary", deff.binary_path_diffuse.c_str());
+		json_object_set_number(json_object(material), "diffuse_resource_uuid", deff.resource_uuid_diffuse);
 		//json_object_set_string(json_object(material), "ambient binary", deff.binary_path_ambient.c_str());
 		//json_object_set_string(json_object(material), "normal binary", deff.binary_path_normal.c_str());
 		//json_object_set_string(json_object(material), "lightmap binary", deff.binary_path_lightmap.c_str());
@@ -360,7 +360,7 @@ void ModuleImporter::ImportMaterialsFromNode(const aiScene & scene, std::vector<
 				App->fs->getFileNameFromPath(name);
 				App->fs->getExtension(extension);
 				resource_deff managed_res = App->resources->ManageAsset(path, name, extension); 
-				material_deff.binary_path_diffuse = managed_res.binary;
+				material_deff.resource_uuid_diffuse = managed_res.uuid;
 			}
 			else
 				app_log->AddLog("%s texture could not be found", file_name.c_str());

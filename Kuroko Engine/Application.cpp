@@ -170,8 +170,11 @@ bool Application::CleanUp()
 {
 	bool ret = true;
 	
-	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
+	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++) {
 		ret = (*it)->CleanUp();
+		delete (*it);
+	}
+
 
 	return ret;
 }

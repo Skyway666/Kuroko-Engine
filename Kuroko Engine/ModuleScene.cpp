@@ -85,6 +85,10 @@ bool ModuleScene::CleanUp()
 	delete skybox;
 	delete quadtree;
 
+	if (local_scene_save) {
+		json_value_free(local_scene_save);
+	}
+
 	selected_obj = nullptr;
 	return true;
 }

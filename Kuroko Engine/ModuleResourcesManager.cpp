@@ -120,6 +120,7 @@ void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std:
 		}
 		App->fs->DestroyFile(full_binary_path.c_str());	// Destroy binary			
 		App->fs->DestroyFile(full_meta_path.c_str()); // Destroy meta
+		json_value_free(meta);
 	}
 
 
@@ -141,7 +142,7 @@ void ModuleResourcesManager::CleanMeshesFromLibrary(std::string prefab_binary)
 			JSON_Object* mesh_resource = json_array_get_object(components, a);
 			std::string type = json_object_get_string(mesh_resource, "type");
 			if (type == "mesh") {
-				mesh_binary = json_object_get_string(mesh_resource, "mesh binary");
+				mesh_binary = json_object_get_string(mesh_resource, "mesh_binary_path");
 				mesh_found = true;
 				break;
 			}
@@ -174,7 +175,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 			deff.type = type2enumType(json_object_get_string(json_object(meta), "type"));
 			deff.binary = json_object_get_string(json_object(meta), "binary_path");
 			deff.asset = full_asset_path;
-			deff.uuid = json_object_get_number(json_object(meta), "uuid_number");
+			deff.uuid = json_object_get_number(json_object(meta), "resource_uuid");
 			return deff;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
 		}
 	}
@@ -189,8 +190,8 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		
 		binary_path = App->fs->getPathFromLibDir(enumType2libDir(enum_type)) + uuid_str + enumType2binaryExtension(enum_type);
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
-		json_object_set_number(json_object(meta), "uuid_number", uuid_number);
-		json_object_set_string(json_object(meta), "uuid", uuid_str.c_str());			// Brand new uuid
+		json_object_set_number(json_object(meta), "resource_uuid", uuid_number);
+		json_object_set_string(json_object(meta), "string_uuid", uuid_str.c_str());			// Brand new uuid
 		json_object_set_string(json_object(meta), "type", str_type.c_str()); // Brand new time
 		json_object_set_string(json_object(meta), "binary_path", binary_path.c_str()); // Brand new binary path
 	}

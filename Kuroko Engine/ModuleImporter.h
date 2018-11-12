@@ -14,10 +14,10 @@ class Mesh;
 enum ImportType { I_NONE, I_GOBJ, I_TEXTURE, I_FX, I_MUSIC};
 
 struct material_resource_deff {
-	std::string binary_path_diffuse;
-	std::string binary_path_ambient;
-	std::string binary_path_normals;
-	std::string binary_path_lightmap;
+	uint resource_uuid_diffuse;
+	uint resource_uuid_ambient;
+	uint resource_uuid_normals;
+	uint resource_uuid_lightmap;
 };
 
 class ModuleImporter : public Module
