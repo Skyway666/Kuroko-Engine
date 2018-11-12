@@ -30,6 +30,8 @@ bool ComponentCamera::Update(float dt)
 		camera->updateFrustum();
 	}
 
+	getCamera()->active = draw_in_UI;
+
 	return true;
 }
 

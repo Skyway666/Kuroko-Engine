@@ -126,15 +126,10 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 {
 	for (auto cam = App->camera->game_cameras.rbegin(); cam != App->camera->game_cameras.rend(); ++cam)
 	{
+		if (!(*cam)->active && *cam != App->camera->editor_camera)
+			continue;
+
 		App->camera->current_camera = *cam;
-
-		if (*cam != App->camera->editor_camera)
-		{
-			if (!(*cam)->getFrameBuffer())
-				continue;
-
-			glBindFramebuffer(GL_FRAMEBUFFER, (*cam)->getFrameBuffer()->id);
-		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
@@ -149,19 +144,16 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 		App->scene->DrawScene((*cam)->getFrustum()->pos);
 
-		if (*cam != App->camera->editor_camera)
+		if (*cam != App->camera->editor_camera && (*cam)->getFrameBuffer())
 		{
 			glBindTexture(GL_TEXTURE_2D, (*cam)->getFrameBuffer()->depth_tex->gl_id);
-
 			glReadBuffer(GL_BACK); // Ensure we are reading from the back buffer.
 			glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, (*cam)->getFrameBuffer()->size_x, (*cam)->getFrameBuffer()->size_y, 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			glBindTexture(GL_TEXTURE_2D, (*cam)->getFrameBuffer()->tex->gl_id);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, (*cam)->getFrameBuffer()->size_x, (*cam)->getFrameBuffer()->size_y, 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 	}
 

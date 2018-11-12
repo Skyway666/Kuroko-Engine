@@ -4,10 +4,14 @@
 #include "ComponentTransform.h"
 #include "Transform.h"
 #include "ModuleScene.h"
+#include "Material.h"
+#include "ModuleWindow.h"
 #include "ModuleCamera3D.h"
 
 #include "MathGeoLib\Math\Quat.h"
 #include "MathGeoLib\Geometry\Plane.h"
+
+#include "glew-2.1.0\include\GL\glew.h"
 
 Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, float hor_fov, float ver_fov)
 {
@@ -25,6 +29,12 @@ Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, 
 	updateFrustum();
 
 	App->camera->game_cameras.push_back(this);
+}
+
+Camera::~Camera()
+{
+	if (frustum) delete frustum;
+	if (frame_buffer) delete frame_buffer;
 }
 
 
@@ -120,4 +130,37 @@ void  Camera::setFov(float hor_fov, float ver_fov)
 void  Camera::setPlaneDistance(float n_plane, float f_plane)
 {
 	frustum->nearPlaneDistance = n_plane; frustum->farPlaneDistance = f_plane;
+}
+
+
+void Camera::initFrameBuffer()
+{
+	frame_buffer = new FrameBuffer();
+	frame_buffer->size_x = App->window->main_window->width; frame_buffer->size_y = App->window->main_window->height;
+
+	//// set frame buffer texture
+	frame_buffer->tex = new Texture();
+	glGenTextures(1, &frame_buffer->tex->gl_id);
+	glBindTexture(GL_TEXTURE_2D, frame_buffer->tex->gl_id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame_buffer->size_x, frame_buffer->size_y, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//// set depth texture
+	frame_buffer->depth_tex = new Texture();
+	glGenTextures(1, &frame_buffer->depth_tex->gl_id);
+	glBindTexture(GL_TEXTURE_2D, frame_buffer->depth_tex->gl_id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, frame_buffer->size_x, frame_buffer->size_y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 }

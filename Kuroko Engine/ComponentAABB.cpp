@@ -107,8 +107,7 @@ void ComponentAABB::DrawAABB() const
 	}
 
 	glEnd();
-	glColor3f(0.8f, 0.8f, 0.8f);
-
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glLineWidth(1.0f);
 }
 
@@ -127,7 +126,7 @@ void ComponentAABB::DrawOBB() const
 
 	
 	glEnd();
-	glColor3f(0.8f, 0.8f, 0.8f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glLineWidth(1.0f);
 }

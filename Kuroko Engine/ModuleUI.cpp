@@ -818,7 +818,7 @@ void ModuleUI::DrawCameraView(const ComponentCamera& camera)
 		}
 		ImGui::End();
 	}
-	else camera.getCamera()->setFrameBuffer(App->camera->initFrameBuffer());
+	else camera.getCamera()->initFrameBuffer();
 }
 
 //void ModuleUI::DrawAudioTab()

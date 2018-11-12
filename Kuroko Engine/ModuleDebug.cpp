@@ -190,7 +190,7 @@ void ModuleDebug::directDrawFrustum(const Frustum& f)
 	}
 
 	glEnd();
-	glColor3f(0.8f, 0.8f, 0.8f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glLineWidth(1.0f);
 }
@@ -221,7 +221,7 @@ void ModuleDebug::directDrawAxis(const float3& position, const Quat& rotation, f
 	glVertex3f(position.x + Z.x, position.y + Z.y, position.z + Z.z);
 
 	glEnd();
-	glColor3f(0.8f, 0.8f, 0.8f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glLineWidth(1.0f);
 }
@@ -242,6 +242,7 @@ void ModuleDebug::DrawGrid() const
 		glVertex3f(d, 0.0f, i);
 	}
 
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glEnd();
 
 }
