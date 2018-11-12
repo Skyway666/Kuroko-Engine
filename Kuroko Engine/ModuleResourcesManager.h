@@ -36,7 +36,9 @@ public:
 	// to that file.
 	void ImportToLibrary(const char* file_original_name, std::string file_binary_name);				
 
-	Resource* getResource(uint uuid);
+	Resource* getResource(uint uuid); // Returns the resource with the corresponding UUID, if not found returns nullptr
+	int assignResource(uint uuid); // It adds 1 to the "components used by" of a certain resource
+	int deasignResource(uint uuid); // It substracts 1 to the "components used by" of a certain resource
 	// Creates a resource from a .meta that contains uuid, type, extension, timeCreated...
 	// IMPORTANT: Resources for meshes will be created by the constructor of the scene resource, as it can access
 	// binarys, original asset, uuid, and type, of course.

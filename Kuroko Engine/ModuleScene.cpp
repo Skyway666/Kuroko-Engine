@@ -27,6 +27,7 @@
 #include "ImGui\imgui.h"
 
 #include <array>
+#include <map>
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -329,6 +330,10 @@ void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
 		deleteGameObjectRecursive(*it);
 }
 
+void ModuleScene::AskPrefabLoadFile(char * path) {
+
+}
+
 void ModuleScene::AskSceneSaveFile(char * scene_name) {
 	want_save_scene_file = true;
 	scene_to_save_name = scene_name;
@@ -348,6 +353,11 @@ void ModuleScene::ManageSceneSaveLoad() {
 	if (want_load_scene_file) {
 		LoadScene(path_to_load_scene.c_str());
 		want_load_scene_file = false;
+	}
+
+	if (want_load_prefab_file) {
+		LoadPrefab(path_to_load_prefab.c_str());
+		want_load_prefab_file = false;
 	}
 	if (want_local_save) {
 		local_scene_save = serializeScene();
@@ -398,10 +408,14 @@ void ModuleScene::LoadScene(const char* path) {
 	App->fs->getFileNameFromPath(name);
 	current_working_scene = name;
 	working_on_existing_scene = true;
-	
+	ClearScene();
+	quadtree_reload = true;
 	loadSerializedScene(scene);
-
 	json_value_free(scene);
+}
+
+void ModuleScene::LoadPrefab(const char * path) {
+
 }
 
 JSON_Value * ModuleScene::serializeScene() {
@@ -424,18 +438,17 @@ JSON_Value * ModuleScene::serializeScene() {
 
 void ModuleScene::loadSerializedScene(JSON_Value * scene) {
 
-	ClearScene();
-	quadtree_reload = true;
-
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
 	uint obj_num = json_array_get_count(objects);
 	uint* parents = new uint[obj_num];  // Allocate all the parents in an array
 										// Load all the objects and put them in the scene array
+
 	for (int i = 0; i < json_array_get_count(objects); i++) {
 		JSON_Object* obj_deff = json_array_get_object(objects, i);
 		GameObject* obj = new GameObject(obj_deff);
 		parents[i] = json_object_get_number(obj_deff, "Parent");  // Put the UUID of the parent in the same position as the child
+		uint uuid = json_object_get_number(obj_deff, "UUID");
 		game_objects.push_back(obj);
 	}
 
@@ -452,8 +465,10 @@ void ModuleScene::loadSerializedScene(JSON_Value * scene) {
 				}
 			}
 			// Link parent and child
+			if(parent){
 			child->setParent(parent);
 			parent->addChild(child);
+			}
 		}
 		i++;
 	}

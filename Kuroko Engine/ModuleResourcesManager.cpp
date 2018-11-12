@@ -6,6 +6,7 @@
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
 #include "ResourceScene.h"
+#include "Applog.h"
 
 // Temporal debug purposes
 #include "ModuleInput.h"
@@ -45,9 +46,7 @@ update_status ModuleResourcesManager::Update(float dt)
 }
 
 
-Resource * ModuleResourcesManager::getResource(uint uuid) {
-	return nullptr;
-}
+
 
 Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 	Resource* ret = nullptr;
@@ -223,11 +222,58 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 
 
 void ModuleResourcesManager::LoadResource(uint uuid) {
+	auto it = resources.find(uuid);
+	if (it != resources.end()) {
+		resources[uuid]->LoadToMemory();
+	}
+	else
+		app_log->AddLog("WARNING: Trying to load non existing resource");
+}
 
+Resource * ModuleResourcesManager::getResource(uint uuid) {
+
+	Resource* ret = nullptr;
+	auto it = resources.find(uuid);
+	if (it != resources.end()) {
+		ret = resources[uuid];
+	}
+	else
+		app_log->AddLog("WARNING: Asking for non existing resource");
+
+	return ret;
+}
+
+int ModuleResourcesManager::assignResource(uint uuid) {
+
+	auto it = resources.find(uuid);
+	if (it != resources.end()) {
+		resources[uuid]->components_used_by++;
+	}
+	else
+		app_log->AddLog("WARNING: Trying to assing non existing resource");
+
+	return 0;
+}
+
+int ModuleResourcesManager::deasignResource(uint uuid) {
+	auto it = resources.find(uuid);
+	if (it != resources.end()) {
+		resources[uuid]->components_used_by--;
+	}
+	else
+		app_log->AddLog("WARNING: Trying to deasign non existing resource");
+
+	return 0;
 }
 
 void ModuleResourcesManager::LoadFileToScene(const char * file) {
 
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->asset == file) {
+			(*it).second->LoadToMemory();
+			break;
+		}
+	}
 }
 
 void ModuleResourcesManager::CleanMeta() {

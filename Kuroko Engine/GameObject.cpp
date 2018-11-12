@@ -24,7 +24,7 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 	
 }
 
-GameObject::GameObject(JSON_Object* deff): uuid(json_object_get_number(deff, "UUID")) {
+GameObject::GameObject(JSON_Object* deff): uuid(/*random32bits()*/json_object_get_number(deff, "UUID")) {
 	name = json_object_get_string(deff, "name");
 	is_static = json_object_get_boolean(deff, "static");
 

@@ -54,10 +54,13 @@ public:
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
 
+
+	void AskPrefabLoadFile(char* path);
 	void AskSceneSaveFile(char* scene_name); 
 	void AskSceneLoadFile(char* path);
 	void AskLocalSaveScene() { want_local_save = true; }
 	void AskLocalLoadScene() { want_local_load = true; }
+
 
 	GameObject* MousePicking(float x, float y, GameObject* ignore = nullptr);
 private:
@@ -65,6 +68,7 @@ private:
 	void ManageSceneSaveLoad();
 	void SaveScene(std::string name);
 	void LoadScene(const char* path);
+	void LoadPrefab(const char* path);
 	JSON_Value* serializeScene();
 	void loadSerializedScene(JSON_Value* scene);
 private:
@@ -84,6 +88,7 @@ private:
 
 	bool want_save_scene_file = false;
 	bool want_load_scene_file = false;
+	bool want_load_prefab_file = false;
 	bool want_local_save      = false;
 	bool want_local_load	  = false;
 
@@ -93,6 +98,7 @@ private:
 
 	std::string scene_to_save_name;
 	std::string path_to_load_scene;
+	std::string path_to_load_prefab;
 
 	JSON_Value* local_scene_save = nullptr;		// To use when time starts and resumes
 
