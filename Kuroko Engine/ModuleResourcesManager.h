@@ -26,6 +26,7 @@ public:
 	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
 	void GenerateLibraryAndMeta();
 	void ManageMeta(std::string path, std::string name, std::string extension);
+	void CleanMeshesFromLibrary(std::string prefab_binary);
 	void ManageAsset(std::string path, std::string name, std::string extension);
 	// Generates Imports file to library, with the name of the uuid
 	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different binarys, and only one for the FBX which is a scene,

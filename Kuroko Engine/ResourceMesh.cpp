@@ -18,6 +18,8 @@ void ResourceMesh::LoadToMemory() {
 
 	if (!mesh)
 		app_log->AddLog("Error loading binary %s", binary.c_str());
+	else
+		loaded_in_memory = true;
 }
 
 void ResourceMesh::UnloadFromMemory() {
@@ -25,4 +27,5 @@ void ResourceMesh::UnloadFromMemory() {
 		return;
 	delete mesh;
 	mesh = nullptr;
+	loaded_in_memory = false;
 }

@@ -43,7 +43,10 @@ ResourceScene::~ResourceScene() {
 }
 
 void ResourceScene::LoadToMemory() {
+	loaded_in_memory = true;
 }
 
 void ResourceScene::UnloadFromMemory() {
+
+	loaded_in_memory = false;
 }

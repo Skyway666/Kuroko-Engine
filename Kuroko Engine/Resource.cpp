@@ -20,5 +20,5 @@ void Resource::UnloadFromMemory()
 
 bool Resource::IsLoaded()
 {
-	return false;
+	return loaded_in_memory;
 }

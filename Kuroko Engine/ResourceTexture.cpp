@@ -19,6 +19,8 @@ void ResourceTexture::LoadToMemory() {
 
 	if(!texture)
 		app_log->AddLog("Error loading binary %s", binary.c_str());
+	else
+		loaded_in_memory = true;
 
 }
 
@@ -27,4 +29,5 @@ void ResourceTexture::UnloadFromMemory() {
 		return;
 	delete texture;
 	texture = nullptr;
+	loaded_in_memory = false;
 }

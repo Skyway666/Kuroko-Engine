@@ -107,17 +107,46 @@ void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std:
 	if (App->fs->ExistisFile(full_asset_path.c_str())) // If file exists, MISSION ACOMPLISHED, return
 		return;
 	else {	
-		std::string full_binary_path;		// Delete file from library using the meta reference that points to it
+		std::string full_binary_path = json_object_get_string(json_object(meta), "binary_path");		// Delete file from library using the meta reference that points to it
 		ResourceType r_type = type2enumType(json_object_get_string(json_object(meta), "type"));
-		full_binary_path += App->fs->getPathFromLibDir(enumType2libDir(r_type)); // Path
-		full_binary_path += json_object_get_string(json_object(meta), "uuid");   // Name
-		full_binary_path += enumType2binaryExtension(r_type);					 // Extension
 
-		App->fs->DestroyFile(full_binary_path.c_str());							// TODO: Handle meshes delete when a scene is deleted(pls kill me)
+		if (r_type == R_SCENE) {									// Handle meshes delete when a scene is deleted
+			CleanMeshesFromLibrary(full_binary_path.c_str());
+		}
+		App->fs->DestroyFile(full_binary_path.c_str());	// Destroy binary			
 		App->fs->DestroyFile(full_meta_path.c_str()); // Destroy meta
 	}
 
 
+}
+
+void ModuleResourcesManager::CleanMeshesFromLibrary(std::string prefab_binary)
+{
+	JSON_Value* scene = json_parse_file(prefab_binary.c_str());
+	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
+
+	// Delete meshes from library
+	for (int i = 0; i < json_array_get_count(objects); i++) {
+		JSON_Object* obj_deff = json_array_get_object(objects, i);
+		JSON_Array* components = json_object_get_array(obj_deff, "Components");
+		std::string mesh_binary;
+		// Iterate components and look for the mesh
+		bool mesh_found = false;
+		for (int a = 0; a < json_array_get_count(components); a++) {
+			JSON_Object* mesh_resource = json_array_get_object(components, a);
+			std::string type = json_object_get_string(mesh_resource, "type");
+			if (type == "mesh") {
+				mesh_binary = json_object_get_string(mesh_resource, "mesh binary");
+				mesh_found = true;
+				break;
+			}
+		}
+
+		if (mesh_found) {					  // If a mesh was found destroy its binary
+			App->fs->DestroyFile(mesh_binary.c_str());
+		}
+	}
+	
 }
 
 void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std::string extension) {
@@ -285,7 +314,8 @@ bool ModuleResourcesManager::CleanUp() {
 
 	for (auto it = resources.begin(); it != resources.end(); it++) {
 		if (Resource* resource = (*it).second) {
-			//TODO: Unload memory from resource
+			if (resource->IsLoaded())
+				resource->UnloadFromMemory();
 			delete resource;
 		}
 	}
