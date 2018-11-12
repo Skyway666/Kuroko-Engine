@@ -75,26 +75,27 @@ void ModuleResourcesManager::GenerateLibraryAndMeta()
 	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
-
-		std::string path, name, extension;
-		path = name = extension = it.path().generic_string();	// Separate path, name and extension	
-		App->fs->getExtension(extension);
-		App->fs->getPath(path);
-		App->fs->getFileNameFromPath(name);
-
-		if (extension == JSON_EXTENSION) // Scenes of our own engine are NOT to be exported to binary, they directly hold pointers to it.
-			continue;
-		
-
-		// Manage meta
-		if (extension == META_EXTENSION) { // If it is a meta file
-			ManageMeta(path, name, extension);  // If has a corresponding asset, continue, else delete file from library and delete .meta
-			continue;
-		}
-		// Manage asset
-		ManageAsset(path, name, extension); 
+		ManageFile(it.path().generic_string());
 	}
+}
 
+void ModuleResourcesManager::ManageFile(std::string file_path)
+{
+	std::string path, name, extension;
+	path = name = extension = file_path;	// Separate path, name and extension	
+	App->fs->getExtension(extension);
+	App->fs->getPath(path);
+	App->fs->getFileNameFromPath(name);
+
+	if (extension == JSON_EXTENSION) // Scenes of our own engine are NOT to be exported to binary, they directly hold pointers to it.
+		return;
+	// Manage meta
+	if (extension == META_EXTENSION) { // If it is a meta file
+		ManageMeta(path, name, extension);  // If has a corresponding asset, continue, else delete file from library and delete .meta
+		return;
+	}
+	// Manage asset
+	ManageAsset(path, name, extension);
 }
 
 void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std::string extension) {
@@ -219,9 +220,11 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 
 
 void ModuleResourcesManager::LoadResource(uint uuid) {
+
 }
 
 void ModuleResourcesManager::LoadFileToScene(const char * file) {
+
 }
 
 void ModuleResourcesManager::CleanMeta() {

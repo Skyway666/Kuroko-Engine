@@ -36,7 +36,8 @@ public:
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;
 	GameObject* LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
-	void LoadNodeToSceneRecursive(const aiNode& node, const aiScene& scene, JSON_Value* json_scene);
+	void ImportNodeToSceneRecursive(const aiNode& node, const aiScene& scene, JSON_Value* json_scene);  // TODO: Add a parameter for mat id, a vector of JSON_Objects*
+	void ImportMaterialsFromNode(const aiScene& scene, std::vector<JSON_Object*>& out_mat_id);
 
 };
 void logAssimp(const char* message, char* user);

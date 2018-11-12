@@ -4,7 +4,9 @@
 #include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <experimental/filesystem>
 #include "shlwapi.h"
+
 
 #pragma comment (lib, "Shlwapi.lib")
 
@@ -135,6 +137,26 @@ int FileSystem::getFileLastTimeMod(const char * file_name, lib_dir lib, const ch
 		app_log->AddLog("There has been an error getting last modification of %s", path.c_str());
 
 	return ret;
+}
+
+bool FileSystem::FindInDirectory(const char * directory, const char * file_name, std::string final_path)
+{
+	final_path = "";
+	using std::experimental::filesystem::recursive_directory_iterator;
+	for (auto& it : recursive_directory_iterator(directory)) {
+		std::string file_full_path = it.path().generic_string();
+		std::string path, name, extension;
+		path = name = extension = file_full_path;	
+		getExtension(extension);
+		getPath(path);
+		getFileNameFromPath(name);
+
+		if ((path + extension) == file_name) {
+			final_path = file_full_path;
+			return true;
+		}
+	}
+	return false;
 }
 
 std::string FileSystem::getPathFromLibDir(lib_dir lib_dir) {

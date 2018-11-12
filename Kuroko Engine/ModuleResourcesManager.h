@@ -25,6 +25,7 @@ public:
 	// To be executed allways when engine starts. 
 	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
 	void GenerateLibraryAndMeta();
+	void ManageFile(std::string file_path);
 	void ManageMeta(std::string path, std::string name, std::string extension);
 	void CleanMeshesFromLibrary(std::string prefab_binary);
 	void ManageAsset(std::string path, std::string name, std::string extension);
