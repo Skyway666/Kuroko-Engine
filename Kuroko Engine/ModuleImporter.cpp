@@ -14,6 +14,7 @@
 #include "Transform.h"
 #include "Timer.h"
 #include "Random.h"
+#include "ModuleResourcesManager.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -264,20 +265,28 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 	return new_obj;
 }
 
-void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array) 
+void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, uint parent)
 {
 	std::string name = node.mName.C_Str();
 	if (name.find("$Assimp") != std::string::npos)
 	{
+
 		for (int i = 0; i < node.mNumChildren; i++)
-			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array);
+			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, parent);
 
 		return;
 	}
 
+
 	JSON_Value* game_object = json_value_init_object();
 	JSON_Value* components = json_value_init_array();
+	uint object_uuid = random32bits();
 
+	json_object_set_string(json_object(game_object), "name", node.mName.C_Str());
+	json_object_set_boolean(json_object(game_object), "static", false);
+	json_object_set_number(json_object(game_object), "UUID", object_uuid);
+	if (parent != -1)
+		json_object_set_number(json_object(game_object), "Parent", parent);
 	json_object_set_value(json_object(game_object), "Components", components);
 	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
@@ -287,12 +296,21 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		std::string uuid = std::to_string(uuid_number);
 		std::string binary_full_path = MESHES_FOLDER + uuid + ENGINE_EXTENSION;
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
-		json_object_set_string(json_object(mesh_component), "mesh binary", binary_full_path.c_str()); // Add mesh 
-		json_object_set_number(json_object(mesh_component), "uuid", uuid_number);
-		// TODO: Add material of the mesh												// Add material
-		//if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
-		//	material = in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex);
-		json_array_append_value(json_array(components), mesh_component);			// Add component to components
+		json_object_set_string(json_object(mesh_component), "mesh binary", binary_full_path.c_str()); // Set mesh
+		json_object_set_number(json_object(mesh_component), "uuid", uuid_number);				// Set uuid (not really that interesting)
+
+
+		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size()) {// If it has a material
+		material_resource_deff deff = in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex);
+		JSON_Value* material = json_value_init_object();
+		json_object_set_string(json_object(material), "diffuse binary", deff.binary_path_diffuse.c_str());
+		//json_object_set_string(json_object(material), "ambient binary", deff.binary_path_ambient.c_str());
+		//json_object_set_string(json_object(material), "normal binary", deff.binary_path_normal.c_str());
+		//json_object_set_string(json_object(material), "lightmap binary", deff.binary_path_lightmap.c_str());
+		json_object_set_value(json_object(mesh_component), "material", material);			// Add material to component mesh
+		}
+
+		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		//delete mesh;									// TODO: Delete mesh
 
@@ -318,43 +336,57 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 
 	for (int i = 0; i < node.mNumChildren; i++)
-		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array);
+		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, object_uuid);
 
 }
 
-void ModuleImporter::ImportMaterialsFromNode(const aiScene & scene, std::vector<JSON_Object*>& out_mat_id)
+void ModuleImporter::ImportMaterialsFromNode(const aiScene & scene, std::vector<material_resource_deff>& out_mat_id)
 {
 	aiString path;
 	for (int i = 0; i < scene.mNumMaterials; i++)
 	{
-		JSON_Object* material = json_object(json_value_init_object());
-		out_mat_id.push_back(material);
+		material_resource_deff material_deff;
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
 		{
 			scene.mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			// Find the path in assets (or not), ManageFile, then add the uuid to the material
+			// Find the path in assets (or not), ManageAsset, then add the uuid to the material
+			std::string file_name = path.C_Str();
+			std::string final_path;
+			App->fs->removePath(file_name);
+			if (App->fs->FindInDirectory(ASSETS_FOLDER, file_name.c_str(), final_path)) {
+				std::string path, name, extension;
+				path = name = extension = final_path;
+				App->fs->getPath(path);
+				App->fs->getFileNameFromPath(name);
+				App->fs->getExtension(extension);
+				resource_deff managed_res = App->resources->ManageAsset(path, name, extension); 
+				material_deff.binary_path_diffuse = managed_res.binary;
+			}
+			else
+				app_log->AddLog("%s texture could not be found", file_name.c_str());
 		}
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
 		{
 			path.Clear();
 			scene.mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
-			// Find the path in library (or not), ManageFile, then add the binary to the material
+			// Find the path in library (or not), ManageAsset, then add the binary to the material
 
 		}
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
 		{
 			path.Clear();
 			scene.mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
-			// Find the path in library (or not), ManageFile, then add the binary to the material
+			// Find the path in library (or not), ManageAsset, then add the binary to the material
 
 		}
 		if (scene.mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
 		{
 			path.Clear();
 			scene.mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
-			// Find the path in library (or not), ManageFile, then add the binary to the material
+			// Find the path in library (or not), ManageAsset, then add the binary to the material
 
 		}
+		out_mat_id.push_back(material_deff);
 	}
 }
 
@@ -370,9 +402,9 @@ bool ModuleImporter::ImportScene(const char * file_original_name, std::string fi
 
 		json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
 
-		//std::vector<JSON_Object*> out_serializedMat_id;
-		//ImportMaterialsFromNode(*imported_scene, out_serializedMat_id);
-		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array);
+		std::vector<material_resource_deff> out_mat_deff;
+		ImportMaterialsFromNode(*imported_scene, out_mat_deff);
+		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array, out_mat_deff);
 
 		std::string path;
 		App->fs->FormFullPath(path, file_binary_name.c_str(), LIBRARY_PREFABS, JSON_EXTENSION);

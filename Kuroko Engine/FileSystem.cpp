@@ -139,7 +139,7 @@ int FileSystem::getFileLastTimeMod(const char * file_name, lib_dir lib, const ch
 	return ret;
 }
 
-bool FileSystem::FindInDirectory(const char * directory, const char * file_name, std::string final_path)
+bool FileSystem::FindInDirectory(const char * directory, const char * file_name, std::string& final_path)
 {
 	final_path = "";
 	using std::experimental::filesystem::recursive_directory_iterator;
@@ -151,7 +151,7 @@ bool FileSystem::FindInDirectory(const char * directory, const char * file_name,
 		getPath(path);
 		getFileNameFromPath(name);
 
-		if ((path + extension) == file_name) {
+		if ((name + extension) == file_name) {
 			final_path = file_full_path;
 			return true;
 		}

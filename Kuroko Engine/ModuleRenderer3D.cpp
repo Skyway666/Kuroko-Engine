@@ -137,10 +137,10 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf((GLfloat*)(*cam)->getFrustum()->ViewProjMatrix().Transposed().v);
 
-		lights[0].SetPos((*cam)->getFrustum()->pos.x, (*cam)->getFrustum()->pos.y, (*cam)->getFrustum()->pos.z);
+		/*lights[0].SetPos((*cam)->getFrustum()->pos.x, (*cam)->getFrustum()->pos.y, (*cam)->getFrustum()->pos.z);
 
 		for (uint i = 0; i < MAX_LIGHTS; ++i)
-			lights[i].Render();
+			lights[i].Render();*/
 
 		App->scene->DrawScene((*cam)->getFrustum()->pos);
 

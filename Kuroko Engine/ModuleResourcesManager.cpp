@@ -75,11 +75,14 @@ void ModuleResourcesManager::GenerateLibraryAndMeta()
 	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
-		ManageFile(it.path().generic_string());
+
+		resource_deff new_res_deff;
+		if (ManageFile(it.path().generic_string(), new_res_deff))
+			newResource(new_res_deff);
 	}
 }
 
-void ModuleResourcesManager::ManageFile(std::string file_path)
+bool ModuleResourcesManager::ManageFile(std::string file_path, resource_deff& deff)
 {
 	std::string path, name, extension;
 	path = name = extension = file_path;	// Separate path, name and extension	
@@ -88,14 +91,15 @@ void ModuleResourcesManager::ManageFile(std::string file_path)
 	App->fs->getFileNameFromPath(name);
 
 	if (extension == JSON_EXTENSION) // Scenes of our own engine are NOT to be exported to binary, they directly hold pointers to it.
-		return;
+		return false;
 	// Manage meta
 	if (extension == META_EXTENSION) { // If it is a meta file
 		ManageMeta(path, name, extension);  // If has a corresponding asset, continue, else delete file from library and delete .meta
-		return;
+		return false;
 	}
 	// Manage asset
-	ManageAsset(path, name, extension);
+	deff = ManageAsset(path, name, extension);
+	return true;
 }
 
 void ModuleResourcesManager::ManageMeta(std::string path, std::string name, std::string extension) {
@@ -150,7 +154,7 @@ void ModuleResourcesManager::CleanMeshesFromLibrary(std::string prefab_binary)
 	
 }
 
-void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std::string extension) {
+resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string name, std::string extension) {
 
 	JSON_Value* meta;
 	int file_last_mod = 0;
@@ -162,17 +166,16 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	std::string uuid_str;
 	std::string binary_path;
 	uint uuid_number = 0;
+	resource_deff deff;
 	if (App->fs->ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
 		file_last_mod = App->fs->getFileLastTimeMod(full_asset_path.c_str());
 		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) { // Check if the last time that was edited is the .meta timestamp
-			resource_deff deff;
 			deff.type = type2enumType(json_object_get_string(json_object(meta), "type"));
 			deff.binary = json_object_get_string(json_object(meta), "binary_path");
 			deff.asset = full_asset_path;
 			deff.uuid = json_object_get_number(json_object(meta), "uuid_number");
-			newResource(deff);
-			return;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
+			return deff;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
 		}
 	}
 	else {
@@ -208,14 +211,13 @@ void ModuleResourcesManager::ManageAsset(std::string path, std::string name, std
 	}
 	// Meta generated and file imported, create resource in code
 
-	resource_deff deff;
 	deff.type = enum_type;
 	deff.asset = full_asset_path;
 	deff.binary = binary_path;
 	deff.uuid = uuid_number;
-	newResource(deff);
 
 	// Resource generated, MISSION ACOMPLISHED, return
+	return deff;
 }
 
 
