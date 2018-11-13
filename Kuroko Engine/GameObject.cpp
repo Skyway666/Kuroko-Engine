@@ -37,13 +37,13 @@ GameObject::GameObject(JSON_Object* deff): uuid(/*random32bits()*/json_object_ge
 		if(const char* type_c_str = json_object_get_string(component_deff, "type"))
 			 type = type_c_str;
 		Component* component = nullptr;
-		if (type.compare("transform") == 0) {
+		if (type == "transform") {
 			component = new ComponentTransform(component_deff, this);
 		}
-		else if (type.compare("AABB") == 0) {
+		else if (type == "AABB") {
 			component = new ComponentAABB(this);
 		}
-		else if (type.compare("mesh") == 0) {
+		else if (type == "mesh") {
 			component = new ComponentMesh(component_deff, this);
 		}
 

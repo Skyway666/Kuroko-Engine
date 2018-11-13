@@ -23,6 +23,7 @@
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "MathGeoLib\Geometry\LineSegment.h"
 #include "glew-2.1.0\include\GL\glew.h"
+#include "Random.h"
 
 #include "ImGui\imgui.h"
 
@@ -436,44 +437,48 @@ JSON_Value * ModuleScene::serializeScene() {
 	return scene;
 }
 
-void ModuleScene::loadSerializedScene(JSON_Value * scene) {
+void ModuleScene::loadSerializedScene(JSON_Value * scene, bool is_prefab) {
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
 	uint obj_num = json_array_get_count(objects);
-	uint* parents = new uint[obj_num];  // Allocate all the parents in an array
-										// Load all the objects and put them in the scene array
 
+
+	std::map<uint, GameObject*> loaded_gameobjects; // Store objects with parenting uuid
+	std::map<uint, uint> child_parent;	// Store parenting info
+
+	// Load all the objects, put them in the "loaded_gameobjects" array and set their parenting
 	for (int i = 0; i < json_array_get_count(objects); i++) {
 		JSON_Object* obj_deff = json_array_get_object(objects, i);
+		uint parent = json_object_get_number(obj_deff, "Parent");  // Put the UUID of the parent in the same position as the child
+		uint obj_uuid = json_object_get_number(obj_deff, "UUID");
+		if (is_prefab)											   // If it is a prefab, refresh the UUID so the scene does not have duplicated UUIDs, still use the old one for parenting
+			json_object_set_number(obj_deff, "UUID", random32bits());
 		GameObject* obj = new GameObject(obj_deff);
-		parents[i] = json_object_get_number(obj_deff, "Parent");  // Put the UUID of the parent in the same position as the child
-		uint uuid = json_object_get_number(obj_deff, "UUID");
-		game_objects.push_back(obj);
+		child_parent[obj_uuid] = parent;
+		loaded_gameobjects[obj_uuid] = obj;
 	}
 
-	int i = 0;
-	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
-		if (parents[i] != 0) {			// If the UUID of the parent is 0, it means that it has no parent
-			GameObject* child = (*it);
-			GameObject* parent = nullptr;
-			// Look for the parent among all gameobjects
-			for (auto pos_par = game_objects.begin(); pos_par != game_objects.end(); pos_par++) {
-				if ((*pos_par)->getUUID() == parents[i]) {	// We find the parent
-					parent = (*pos_par);
-					break;									// Only one parent/child, no need to keep looping
-				}
-			}
+
+	for (auto it = child_parent.begin(); it != child_parent.end(); it++) {
+		uint obj_uuid = (*it).first;
+		uint parent = (*it).second;
+		if (parent != 0) {			// If the UUID of the parent is 0, it means that it has no parent
+			// Look for the parent and child among gameobjects
+			GameObject* parent_obj = loaded_gameobjects[parent];
+			GameObject* child_obj = loaded_gameobjects[obj_uuid];
 			// Link parent and child
-			if(parent){
-			child->setParent(parent);
-			parent->addChild(child);
+			if(parent_obj){
+				child_obj->setParent(parent_obj);
+				parent_obj->addChild(child_obj);
 			}
 		}
-		i++;
 	}
 
-	delete parents;
+	// Push all gameobjects with handled parenting in the scene
+	for (auto it = loaded_gameobjects.begin(); it != loaded_gameobjects.end(); it++) {
+		game_objects.push_back((*it).second);			
+	}
 }
 
 
