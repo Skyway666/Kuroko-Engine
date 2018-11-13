@@ -170,6 +170,9 @@ update_status ModuleUI::Update(float dt) {
 
 	if (open_tabs[QUADTREE_CONFIG])
 		DrawQuadtreeConfig();
+
+	if (open_tabs[CAMERA_MENU])
+		DrawCameraMenu();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -224,6 +227,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::MenuItem("Quadtree", NULL, &open_tabs[QUADTREE_CONFIG]);
+			ImGui::MenuItem("Camera Menu", NULL, &open_tabs[CAMERA_MENU]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -819,6 +823,46 @@ void ModuleUI::DrawCameraView(const ComponentCamera& camera)
 		ImGui::End();
 	}
 	else camera.getCamera()->initFrameBuffer();
+}
+
+void ModuleUI::DrawCameraMenu()
+{
+	ImGui::Begin("Camera Menu", &open_tabs[CAMERA_MENU]);
+
+	if (App->camera->override_editor_cam_culling)
+	{
+		ImGui::TextWrapped("Editor camera frustum culling overriden by camera %s", App->camera->override_editor_cam_culling->getParent()->getParent()->getName().c_str());
+		if (ImGui::Button("Stop overriding"))
+			App->camera->override_editor_cam_culling = nullptr;
+	}
+
+	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
+	{
+		std::string name;
+		if ((*it)->getParent()) name = (*it)->getParent()->getParent()->getName() + "Camera";
+		else					name = "editor_camera";
+
+		if (ImGui::TreeNode(name.c_str()))
+		{
+			if ((*it)->active) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Active");
+			else				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unactive");
+
+			if (*it != App->camera->editor_camera)
+			{
+				static bool is_overriding;
+				is_overriding = ((*it) == App->camera->override_editor_cam_culling);
+				if (ImGui::Checkbox("Override Frustum Culling", &is_overriding))
+				{
+					if (!is_overriding)  App->camera->override_editor_cam_culling = nullptr;
+					else				 App->camera->override_editor_cam_culling = *it;
+				}
+
+			}
+			ImGui::TreePop();
+		}
+	}
+
+	ImGui::End();
 }
 
 //void ModuleUI::DrawAudioTab()

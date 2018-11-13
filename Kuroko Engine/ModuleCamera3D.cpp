@@ -30,7 +30,7 @@ bool ModuleCamera3D::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Setting up the camera");
 	selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
-
+	editor_camera->active = true;
 	return true;
 }
 

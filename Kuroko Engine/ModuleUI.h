@@ -14,7 +14,7 @@ class Texture;
 class Material;
 class Camera;
 
-enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, QUADTREE_CONFIG /*AUDIO,*/, LAST_UI_TAB};  // LAST is an utility value to store the max num of tabs.
+enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, QUADTREE_CONFIG, CAMERA_MENU /*AUDIO,*/, LAST_UI_TAB};  // LAST is an utility value to store the max num of tabs.
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
 	GUIZMO_SELECT, LAST_UI_TEX};
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
@@ -47,7 +47,7 @@ public:
 	void DrawCameraView(const ComponentCamera& camera);
 	void DrawGizmoMenu();
 	void DrawQuadtreeConfig();
-	
+	void DrawCameraMenu();
 
 	void DrawGuizmo();
 

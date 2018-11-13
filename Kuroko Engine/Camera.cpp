@@ -100,20 +100,23 @@ void Camera::Reset()
 
 bool Camera::frustumCull(const OBB& obb)
 {
+	if (this == App->camera->editor_camera && App->camera->override_editor_cam_culling)
+		return App->camera->override_editor_cam_culling->frustumCull(obb);
+
 	for (int i = 0; i < 6; i++)
 	{
 		Plane plane = frustum->GetPlane(i);
 
 		for (int j = 0; j < 8; j++)
 		{
-			if (plane.IsOnPositiveSide(obb.CornerPoint(j)))
+			if (!plane.IsOnPositiveSide(obb.CornerPoint(j)))
 				continue;
 			else
-				return true;
+				return false;
 		}
 	}
 
-	return false;
+	return true;
 }
 
 void Camera::updateFrustum()
