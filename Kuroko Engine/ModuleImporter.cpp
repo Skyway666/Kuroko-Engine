@@ -460,12 +460,12 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 
 	ilLoadImage(file_original_name);
 
+	GLuint TexId = ilutGLBindTexImage();
+
 	ILinfo ImageInfo;
 	iluGetImageInfo(&ImageInfo);
 	if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
 		iluFlipImage();
-
-	GLuint TexId = ilutGLBindTexImage();
 
 	Texture* tex = new Texture(TexId, file_binary_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 

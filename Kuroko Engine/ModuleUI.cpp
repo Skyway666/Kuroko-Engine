@@ -197,7 +197,6 @@ update_status ModuleUI::Update(float dt) {
 			if (ImGui::MenuItem("Import file"))
 			{
 				std::string file_path = openFileWID();
-				//App->importer->Import(file_path.c_str());
 				App->resources->LoadFileToScene(file_path.c_str());
 			}
 			if (ImGui::MenuItem("Save scene")) {

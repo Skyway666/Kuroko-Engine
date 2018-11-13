@@ -4,6 +4,7 @@
 #include "ModuleScene.h"
 #include "ModuleImporter.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleResourcesManager.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_sdl.h"
@@ -125,7 +126,7 @@ update_status ModuleInput::PreUpdate(float dt)
 			break;
 
 			case SDL_DROPFILE:
-				App->importer->Import(e.drop.file);
+				App->resources->LoadFileToScene(e.drop.file);
 				break;
 
 			default: break;
