@@ -288,6 +288,29 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	if (parent != -1)
 		json_object_set_number(json_object(game_object), "Parent", parent);
 	json_object_set_value(json_object(game_object), "Components", components);
+
+
+	// Import and store transform
+	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
+	aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+	aiQuaternion rot;
+	node.mTransformation.Decompose(scl, rot, pos);
+	Transform* trans = new Transform();
+	JSON_Value* transform_component = json_value_init_object();
+	JSON_Value* local_transform = json_value_init_object();
+	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+	trans->Save(json_object(local_transform));
+	json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
+	json_object_set_value(json_object(transform_component), "local", local_transform); //Set local transform
+	json_array_append_value(json_array(components), transform_component);			// Add component to components
+	delete trans;
+
+
+	// Add aabb so it is reloaded 
+	JSON_Value* aabb_component = json_value_init_object();
+	json_object_set_string(json_object(aabb_component), "type", "AABB");
+	json_array_append_value(json_array(components), aabb_component);
+
 	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
@@ -296,7 +319,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		std::string uuid = std::to_string(uuid_number);
 		std::string binary_full_path = MESHES_FOLDER + uuid + ENGINE_EXTENSION;
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
-		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh
+		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
 
 
@@ -314,23 +337,12 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		//delete mesh;									// TODO: Delete mesh
 
+
+
+
+
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
-
-	// Import and store transform
-	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
-	aiQuaternion rot;
-	node.mTransformation.Decompose(scl, rot, pos);
-	Transform* trans = new Transform();
-	JSON_Value* transform_component = json_value_init_object();
-	JSON_Value* local_transform = json_value_init_object();
-	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
-	trans->Save(json_object(local_transform));
-	json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
-	json_object_set_value(json_object(transform_component), "local transform", local_transform); //Set local transform
-	json_array_append_value(json_array(components), transform_component);			// Add component to components
-	delete trans;
 
 	json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
 

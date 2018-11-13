@@ -331,7 +331,9 @@ void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
 		deleteGameObjectRecursive(*it);
 }
 
-void ModuleScene::AskPrefabLoadFile(char * path) {
+void ModuleScene::AskPrefabLoadFile(const char * path) {
+	want_load_prefab_file = true;
+	path_to_load_prefab = path;
 
 }
 
@@ -416,6 +418,14 @@ void ModuleScene::LoadScene(const char* path) {
 }
 
 void ModuleScene::LoadPrefab(const char * path) {
+	JSON_Value* scene = json_parse_file(path);
+	if (!scene) {
+		app_log->AddLog("Couldn't load %s, no value", path);
+		return;
+	}
+
+	loadSerializedScene(scene, true);
+	json_value_free(scene);
 
 }
 

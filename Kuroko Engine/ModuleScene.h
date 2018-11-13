@@ -55,7 +55,7 @@ public:
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
 
 
-	void AskPrefabLoadFile(char* path);
+	void AskPrefabLoadFile(const char* path);
 	void AskSceneSaveFile(char* scene_name); 
 	void AskSceneLoadFile(char* path);
 	void AskLocalSaveScene() { want_local_save = true; }

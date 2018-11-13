@@ -1,6 +1,7 @@
 #include "ResourceScene.h"
 #include "Parson\parson.h"
 #include "Application.h"
+#include "ModuleScene.h"
 #include "ModuleResourcesManager.h"
 
 
@@ -43,10 +44,11 @@ ResourceScene::~ResourceScene() {
 }
 
 void ResourceScene::LoadToMemory() {
+	App->scene->AskPrefabLoadFile(binary.c_str());
 	loaded_in_memory = true;
 }
 
 void ResourceScene::UnloadFromMemory() {
-
+	// Unload all the meshes and textures(?) Guess not, if gameobjects are deleted resurces will be unloaded
 	loaded_in_memory = false;
 }
