@@ -46,17 +46,17 @@ public:
 	Material();
 	~Material() {};
 
-	Texture* getTexture(TextureType tex_type) const;
-	void setTexture(TextureType tex_type, Texture* texture); // Can recieve nullptr
-	void setCheckeredTexture(TextureType tex_type = DIFFUSE);
+	uint getTextureResource(TextureType tex_type) const;
+	void setTextureResource(TextureType tex_type, uint textureResource); 
+	void setCheckeredTexture(TextureType tex_type = DIFFUSE); // TODO: Should get a special resource from resource manager
 	uint getId() const { return id; };
 
 private:
 	uint id = 0;
-	Texture* diffuse = nullptr;
-	Texture* ambient = nullptr;
-	Texture* normals = nullptr;
-	Texture* lightmap = nullptr;
+	uint diffuse_resource = -1;
+	uint ambient_resource = -1;
+	uint normals_resource = -1;
+	uint lightmap_resource = -1;
 
 };
 #endif

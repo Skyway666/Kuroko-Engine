@@ -34,8 +34,7 @@ public:
 	// Generates Imports file to library, with the name of the uuid
 	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different binarys, and only one for the FBX which is a scene,
 	// with the transformations and hierarchy, and uuids of the meshes that it contains. Only one .metadata is generated, and it points
-	// to that file.
-	void ImportToLibrary(const char* file_original_name, std::string file_binary_name);				
+	// to that file.			
 
 	Resource* getResource(uint uuid); // Returns the resource with the corresponding UUID, if not found returns nullptr
 	int assignResource(uint uuid); // It adds 1 to the "components used by" of a certain resource

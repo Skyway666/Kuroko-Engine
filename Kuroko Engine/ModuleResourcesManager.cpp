@@ -80,10 +80,6 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 	return ret;
 }
 
-void ModuleResourcesManager::ImportToLibrary(const char* file_original_name, std::string file_binary_name)
-{
-
-}
 
 void ModuleResourcesManager::GenerateLibraryAndMeta()
 {
@@ -297,13 +293,24 @@ int ModuleResourcesManager::deasignResource(uint uuid) {
 }
 
 void ModuleResourcesManager::LoadFileToScene(const char * file) {
+	std::string full_meta_path = file;
+	full_meta_path += META_EXTENSION;
+	uint resource_uuid = -1;
 
-	for (auto it = resources.begin(); it != resources.end(); it++) {
-		if ((*it).second->asset == file) {
-			(*it).second->LoadToMemory();
-			break;
-		}
+	if (App->fs.ExistisFile(full_meta_path.c_str())) {
+		JSON_Value* meta = json_parse_file(full_meta_path.c_str());
+		resource_uuid = json_object_get_number(json_object(meta), "resource_uuid");
+		json_value_free(meta);
+
+		resources[resource_uuid]->LoadToMemory();
 	}
+	else{
+		app_log->AddLog("%s has no .meta, can't be loaded", file);
+		return;
+	}
+
+
+	
 }
 
 void ModuleResourcesManager::CleanMeta() {

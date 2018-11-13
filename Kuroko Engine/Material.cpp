@@ -14,40 +14,40 @@ Material::Material() : id(App->scene->last_mat_id++)
 };
 
 
-Texture* Material::getTexture(TextureType tex_type) const
+uint Material::getTextureResource(TextureType tex_type) const
 {
 	switch (tex_type)
 	{
-	case DIFFUSE: return diffuse; break;
-	case AMBIENT: return ambient; break;
-	case NORMALS: return normals; break;
-	case LIGHTMAP: return lightmap; break;
-	default: return nullptr;
+	case DIFFUSE: return diffuse_resource; break;
+	case AMBIENT: return ambient_resource; break;
+	case NORMALS: return normals_resource; break;
+	case LIGHTMAP: return lightmap_resource; break;
+	default: return -1;
 	}
 }
 
-void Material::setTexture(TextureType tex_type, Texture* texture)
+void Material::setTextureResource(TextureType tex_type, uint textureResource)
 {
 	switch (tex_type)
 	{
-	case DIFFUSE: diffuse = texture; break;
-	case AMBIENT: ambient = texture; break;
-	case NORMALS: normals = texture; break;
-	case LIGHTMAP:  lightmap = texture; break;
+	case DIFFUSE: diffuse_resource = textureResource; break;
+	case AMBIENT: ambient_resource = textureResource; break;
+	case NORMALS: normals_resource = textureResource; break;
+	case LIGHTMAP:  lightmap_resource = textureResource; break;
 	}
 }
 
 void Material::setCheckeredTexture(TextureType tex_type)
 {
-	Texture* texture = new Texture();
-	texture->LoadCheckered();
+	//Texture* texture = new Texture();
+	//texture->LoadCheckered();
 
 	switch (tex_type)
 	{
-	case DIFFUSE: diffuse = texture; break;
-	case AMBIENT: ambient = texture; break;
-	case NORMALS: normals = texture; break;
-	case LIGHTMAP: lightmap = texture; break;
+	case DIFFUSE: diffuse_resource = -1; break;
+	case AMBIENT: ambient_resource = -1; break;
+	case NORMALS: normals_resource = -1; break;
+	case LIGHTMAP: lightmap_resource = -1; break;
 	}
 }
 

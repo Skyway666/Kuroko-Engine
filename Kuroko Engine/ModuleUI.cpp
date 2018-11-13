@@ -197,7 +197,8 @@ update_status ModuleUI::Update(float dt) {
 			if (ImGui::MenuItem("Import file"))
 			{
 				std::string file_path = openFileWID();
-				App->importer->Import(file_path.c_str());
+				//App->importer->Import(file_path.c_str());
+				App->resources->LoadFileToScene(file_path.c_str());
 			}
 			if (ImGui::MenuItem("Save scene")) {
 				if (App->scene->existingScene())
@@ -479,73 +480,73 @@ bool ModuleUI::DrawComponent(Component& component)
 
 						if(ImGui::TreeNode("diffuse"))
 						{
-							ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-							ImGui::SameLine();
+							//ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							//ImGui::SameLine();
 
-							int w = 0; int h = 0;
-							if(material->getTexture(DIFFUSE))
-								material->getTexture(DIFFUSE)->getSize(w, h);
+							//int w = 0; int h = 0;
+							//if(material->getTexture(DIFFUSE))
+							//	material->getTexture(DIFFUSE)->getSize(w, h);
 
-							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
+							//ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
-							if (ImGui::Button("Load checkered##Dif: Load checkered"))
-								material->setCheckeredTexture(DIFFUSE);
-							ImGui::SameLine();
-							if (ImGui::Button("Load##Dif: Load"))
-							{
-								std::string texture_path = openFileWID();
-								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-									c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
-							}
+							//if (ImGui::Button("Load checkered##Dif: Load checkered"))
+							//	material->setCheckeredTexture(DIFFUSE);
+							//ImGui::SameLine();
+							//if (ImGui::Button("Load##Dif: Load"))
+							//{
+							//	std::string texture_path = openFileWID();
+							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+							//		c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
+							//}
 							ImGui::TreePop();
 						}
 
 						if (ImGui::TreeNode("ambient (feature not avaliable yet)"))
 						{
-							ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							//ImGui::Image(material->getTexture(AMBIENT) ? (void*)material->getTexture(AMBIENT)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-							if (ImGui::Button("Load checkered##Amb: Load checkered"))
-								material->setCheckeredTexture(AMBIENT);
-							ImGui::SameLine();
-							if (ImGui::Button("Load##Amb: Load"))
-							{
-								std::string texture_path = openFileWID();
-								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-									c_mesh->getMaterial()->setTexture(AMBIENT, tex);
-							}
+							//if (ImGui::Button("Load checkered##Amb: Load checkered"))
+							//	material->setCheckeredTexture(AMBIENT);
+							//ImGui::SameLine();
+							//if (ImGui::Button("Load##Amb: Load"))
+							//{
+							//	std::string texture_path = openFileWID();
+							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+							//		c_mesh->getMaterial()->setTexture(AMBIENT, tex);
+							//}
 							ImGui::TreePop();
 						}
 
 						if (ImGui::TreeNode("normals (feature not avaliable yet)"))
 						{
-							ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							//ImGui::Image(material->getTexture(NORMALS) ? (void*)material->getTexture(NORMALS)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-							if (ImGui::Button("Load checkered##Nor: Load checkered"))
-								material->setCheckeredTexture(NORMALS);
-							ImGui::SameLine();
-							if (ImGui::Button("Load##Nor: Load"))
-							{
-								std::string texture_path = openFileWID();
-								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-									c_mesh->getMaterial()->setTexture(NORMALS, tex);
-							}
+							//if (ImGui::Button("Load checkered##Nor: Load checkered"))
+							//	material->setCheckeredTexture(NORMALS);
+							//ImGui::SameLine();
+							//if (ImGui::Button("Load##Nor: Load"))
+							//{
+							//	std::string texture_path = openFileWID();
+							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+							//		c_mesh->getMaterial()->setTexture(NORMALS, tex);
+							//}
 							ImGui::TreePop();
 						}
 
 						if (ImGui::TreeNode("lightmap (feature not avaliable yet)"))
 						{
-							ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							//ImGui::Image(material->getTexture(LIGHTMAP) ? (void*)material->getTexture(LIGHTMAP)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
 
-							if (ImGui::Button("Load checkered##Lgm: Load checkered"))
-								material->setCheckeredTexture(LIGHTMAP);
-							ImGui::SameLine();
-							if (ImGui::Button("Load##Lgm: Load"))
-							{
-								std::string texture_path = openFileWID();
-								if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-									c_mesh->getMaterial()->setTexture(LIGHTMAP, tex);
-							}
-							ImGui::TreePop();
+							//if (ImGui::Button("Load checkered##Lgm: Load checkered"))
+							//	material->setCheckeredTexture(LIGHTMAP);
+							//ImGui::SameLine();
+							//if (ImGui::Button("Load##Lgm: Load"))
+							//{
+							//	std::string texture_path = openFileWID();
+							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
+							//		c_mesh->getMaterial()->setTexture(LIGHTMAP, tex);
+							//}
+							//ImGui::TreePop();
 						}
 						ImGui::TreePop();
 					}

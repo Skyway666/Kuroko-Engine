@@ -6,6 +6,8 @@
 #include "Application.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include "glew-2.1.0\include\GL\glew.h"
+#include "ModuleResourcesManager.h"
+#include "ResourceTexture.h"
 
 #include "Assimp\include\scene.h"
 
@@ -100,7 +102,15 @@ void Mesh::LoadDataToVRAM()
 
 void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 {
-	Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
+	//Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
+	Texture* diffuse_tex = nullptr;
+	if(mat){
+		uint diffuse_resource_id = mat->getTextureResource(DIFFUSE);
+		if (diffuse_resource_id != -1) {
+			ResourceTexture* diffuse_resource = (ResourceTexture*)App->resources->getResource(diffuse_resource_id);
+			diffuse_tex = diffuse_resource->texture;
+		}
+	}
 
 	if (diffuse_tex)			glEnable(GL_TEXTURE_2D);
 	else if(!draw_as_selected)	glEnableClientState(GL_COLOR_ARRAY);

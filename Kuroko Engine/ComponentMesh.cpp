@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "Applog.h"
 #include "ModuleResourcesManager.h"
+#include "ResourceMesh.h"
 
 ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(parent, MESH) {
 	std::string path;
@@ -21,30 +22,22 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	PrimitiveTypes primitive_type = Primitive_None;
 	std::string mesh_name = json_object_get_string(deff, "mesh_name"); 
 
-	// ASSIGNING RESOURCE
-	mesh_resource = json_object_get_number(deff, "mesh_resource_uuid");
-	App->resources->assignResource(mesh_resource);
-
-
 	if (whichPrimitive(mesh_name, primitive_type)) { // If it is a primitive, build one, else load from .kr
-		mesh = new Mesh(primitive_type);			 // TODO: Store the color of the meshes
+		primitive_mesh = new Mesh(primitive_type);			 // TODO: Store the color of the meshes
+		primitive_mesh->setName(mesh_name.c_str());
 	}
 	else{
-		App->fs.FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
-		mesh = App->importer->ImportMeshFromKR(path.c_str());
-		if (!mesh)
-			return;
+		// ASSIGNING RESOURCE
+		mesh_resource_uuid = json_object_get_number(deff, "mesh_resource_uuid");
+		App->resources->assignResource(mesh_resource_uuid);
 	}
 
-	mesh->setName(mesh_name.c_str());  
+
 	mat = new Material();
-	const char* diffuse_name;
-	if(diffuse_name = json_object_get_string(deff, "diffuse_name")){ // If it has a diffuse texture load it
-		App->fs.FormFullPath(path, diffuse_name, LIBRARY_TEXTURES, DDS_EXTENSION);
-		Texture* diffuse = (Texture*)App->importer->Import(path.c_str(), I_TEXTURE);
-		mat->setTexture(DIFFUSE, diffuse);
-	}
-	
+	// ASSIGNING RESOURCE
+	uint diffuse_resource = json_object_dotget_number(deff, "material.diffuse_resource_uuid");
+	App->resources->assignResource(diffuse_resource);
+	mat->setTextureResource(DIFFUSE, diffuse_resource);
 }
 
 void ComponentMesh::Draw() const
@@ -56,6 +49,7 @@ void ComponentMesh::Draw() const
 		ComponentTransform* transform = nullptr;
 		float4x4 view_mat = float4x4::identity;
 
+
 		if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
 		{
 			GLfloat matrix[16];
@@ -66,13 +60,16 @@ void ComponentMesh::Draw() const
 			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
 		}
 
+		ResourceMesh* mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		Mesh* mesh_from_resource = mesh_resource->mesh;
+
 		if (draw_normals || App->scene->global_normals)
-			mesh->DrawNormals();
+			mesh_from_resource->DrawNormals();
 
 		if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		mesh->Draw(mat);
+		mesh_from_resource->Draw(mat);
 
 		if (transform)
 			glLoadMatrixf((GLfloat*)view_mat.v);
@@ -101,7 +98,9 @@ void ComponentMesh::DrawSelected() const
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		mesh->Draw(nullptr, true);
+		ResourceMesh* mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		Mesh* mesh_from_resource = mesh_resource->mesh;
+		mesh_from_resource->Draw(nullptr, true);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -110,6 +109,18 @@ void ComponentMesh::DrawSelected() const
 	}
 }
 
+Mesh* ComponentMesh::getMesh() const {
+
+	Mesh* ret = nullptr;
+	if (primitive_mesh) {
+		ret = primitive_mesh;
+	}
+	else {
+		ResourceMesh* resource_mesh = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		ret = resource_mesh->mesh;
+	}
+	return ret;
+}
 bool ComponentMesh::whichPrimitive(std::string mesh_name, PrimitiveTypes & which_primitive) {
 
 	which_primitive = Primitive_None; // Just for security
@@ -135,7 +146,7 @@ void ComponentMesh::Save(JSON_Object* config) {
 	// Determine the type of the mesh
  	// Component has two strings, one for mesh name, and another for diffuse texture name
 	json_object_set_string(config, "type", "mesh");
-	json_object_set_string(config, "mesh_name", mesh->getName());
-	if(mat && mat->getTexture(DIFFUSE))  //If it has a material and a diffuse texture
-		json_object_set_string(config, "diffuse_name", mat->getTexture(DIFFUSE)->getName());
+	json_object_set_number(config, "mesh_resource_uuid", mesh_resource_uuid);
+	if(mat)  //If it has a material and a diffuse texture
+		json_object_dotset_number(config, "material.diffuse_resource_uuid", mat->getTextureResource(DIFFUSE));
 }
