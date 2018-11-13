@@ -357,7 +357,6 @@ void ModuleScene::ManageSceneSaveLoad() {
 		LoadScene(path_to_load_scene.c_str());
 		want_load_scene_file = false;
 	}
-
 	if (want_load_prefab_file) {
 		LoadPrefab(path_to_load_prefab.c_str());
 		want_load_prefab_file = false;

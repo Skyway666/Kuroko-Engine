@@ -875,6 +875,8 @@ void ModuleUI::DrawResourcesTab()
 	ImGui::Begin("Resources", &open_tabs[RESOURCES_TAB]);
 	if (ImGui::Button("Reload library"))
 		App->resources->ReloadResources();
+	if (ImGui::Button("Clean library"))
+		App->resources->CleanResources();
 	ImGui::End();
 }
 

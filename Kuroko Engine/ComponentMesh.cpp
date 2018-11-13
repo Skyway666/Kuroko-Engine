@@ -12,14 +12,19 @@
 #include "ModuleCamera3D.h"
 #include "Camera.h"
 #include "Applog.h"
+#include "ModuleResourcesManager.h"
 
 ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(parent, MESH) {
 	std::string path;
 
 	// Load mesh from own file format
 	PrimitiveTypes primitive_type = Primitive_None;
-	std::string mesh_name = json_object_get_string(deff, "mesh_name");
+	std::string mesh_name = json_object_get_string(deff, "mesh_name"); 
+
+	// ASSIGNING RESOURCE
 	mesh_resource = json_object_get_number(deff, "mesh_resource_uuid");
+	App->resources->assignResource(mesh_resource);
+
 
 	if (whichPrimitive(mesh_name, primitive_type)) { // If it is a primitive, build one, else load from .kr
 		mesh = new Mesh(primitive_type);			 // TODO: Store the color of the meshes
@@ -31,7 +36,7 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 			return;
 	}
 
-	mesh->setName(mesh_name.c_str());
+	mesh->setName(mesh_name.c_str());  
 	mat = new Material();
 	const char* diffuse_name;
 	if(diffuse_name = json_object_get_string(deff, "diffuse_name")){ // If it has a diffuse texture load it
