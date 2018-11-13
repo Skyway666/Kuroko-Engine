@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "Timer.h"
 #include "Module.h"
+#include "FileSystem.h"
 #include <list>
 #include <vector>
 
@@ -16,7 +17,6 @@ class ModuleCamera3D;
 class ModuleUI;
 class ModuleImporter;
 class ModuleDebug;
-class FileSystem;
 class ModuleTimeManager;
 class ModuleResourcesManager;
 
@@ -32,10 +32,10 @@ public:
 	ModuleCamera3D* camera;
 	ModuleUI* gui;
 	ModuleImporter* importer;
-	FileSystem* fs;
 	ModuleTimeManager* time;
 	ModuleResourcesManager* resources;
 
+	FileSystem fs;
 private:
 
 	Timer	ms_timer;

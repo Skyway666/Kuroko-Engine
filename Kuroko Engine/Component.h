@@ -11,6 +11,7 @@ class Component
 public:
 
 	Component(GameObject* gameobject, Component_type type) : parent(gameobject), type(type) {};
+	virtual ~Component() {};
 
 	virtual bool Update(float dt) { return true; };
 	virtual void Draw() const {};

@@ -25,7 +25,7 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 		mesh = new Mesh(primitive_type);			 // TODO: Store the color of the meshes
 	}
 	else{
-		App->fs->FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
+		App->fs.FormFullPath(path, mesh_name.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
 		mesh = App->importer->ImportMeshFromKR(path.c_str());
 		if (!mesh)
 			return;
@@ -35,7 +35,7 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	mat = new Material();
 	const char* diffuse_name;
 	if(diffuse_name = json_object_get_string(deff, "diffuse_name")){ // If it has a diffuse texture load it
-		App->fs->FormFullPath(path, diffuse_name, LIBRARY_TEXTURES, DDS_EXTENSION);
+		App->fs.FormFullPath(path, diffuse_name, LIBRARY_TEXTURES, DDS_EXTENSION);
 		Texture* diffuse = (Texture*)App->importer->Import(path.c_str(), I_TEXTURE);
 		mat->setTexture(DIFFUSE, diffuse);
 	}

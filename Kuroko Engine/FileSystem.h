@@ -1,7 +1,6 @@
 #ifndef _FILE_SYSTEM_
 #define _FILE_SYSTEM_
 
-#include "Module.h"
 #include "Resource.h"
 
 
@@ -30,12 +29,13 @@ enum lib_dir {
 	ASSETS_SCENES,
 	NO_LIB
 };
-class FileSystem: public Module {
-public:
-	FileSystem(Application* app, bool start_enabled = true);
-	~FileSystem();
 
-	public:
+class FileSystem {
+public:
+	FileSystem() {};
+	~FileSystem() {};
+
+public:
 	void ExportBuffer(char* data,int size, const char* file_name, lib_dir lib = NO_LIB, const char* extension = ""); // get buffer from a file
 	char* ImportFile(const char* file_name); // recieve buffer from a file
 

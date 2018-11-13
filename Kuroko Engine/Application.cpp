@@ -11,7 +11,6 @@
 #include "ModuleImporter.h"
 #include "AppLog.h"
 #include "Random.h"
-#include "FileSystem.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
 #include <Windows.h>
@@ -45,7 +44,6 @@ Application::Application()
 	importer = new ModuleImporter(this);
 	camera = new ModuleCamera3D(this);
 	gui = new ModuleUI(this);
-	fs = new FileSystem(this);
 	time = new ModuleTimeManager(this);
 	resources = new ModuleResourcesManager(this);
 
@@ -89,20 +87,22 @@ bool Application::Init()
 	bool ret = true;
 	//JASON Stuff
 	JSON_Object* config;
-
+	JSON_Value* config_value;
 
 	config_file_name = "Settings/config.json";
 	custom_config_file_name = "Settings/custom_config.json";
 
-	bool custom_config = App->fs->ExistisFile("custom_config", SETTINGS, JSON_EXTENSION);
+	bool custom_config = fs.ExistisFile("custom_config", SETTINGS, JSON_EXTENSION);
 
 	App = this;
 
 	// Check if there is editor saved data, load custom if there is, load default if there isn't
 	if (custom_config)
-		config = json_value_get_object(json_parse_file(custom_config_file_name.c_str()));
+		config_value = json_parse_file(custom_config_file_name.c_str());
 	else
-		config = json_value_get_object(json_parse_file(config_file_name.c_str()));
+		config_value = json_parse_file(config_file_name.c_str());
+
+	config = json_value_get_object(config_value);
 
 	app_log->AddLog("Application Init --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
@@ -112,6 +112,8 @@ bool Application::Init()
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Start();
 	
+	json_value_free(config_value);
+
 	ms_timer.Start();
 	return ret;
 }
@@ -184,8 +186,8 @@ void Application::requestBrowser(std::string link) {
 }
 void Application::SaveConfig_Real() {
 
-	if (!App->fs->ExistisFile("custom_config", SETTINGS, JSON_EXTENSION))
-		App->fs->CreateEmptyFile(custom_config_file_name.c_str());
+	if (!fs.ExistisFile("custom_config", SETTINGS, JSON_EXTENSION))
+		fs.CreateEmptyFile(custom_config_file_name.c_str());
 
 	JSON_Value* config = json_value_init_object();
 	// Pass one object to each module
@@ -200,7 +202,7 @@ void Application::SaveConfig_Real() {
 }
 
 void Application::DeleteConfig_Real() {
-	App->fs->DestroyFile(custom_config_file_name.c_str());
+	fs.DestroyFile(custom_config_file_name.c_str());
 }
 
 void Application::LoadDefaultConfig_Real() {

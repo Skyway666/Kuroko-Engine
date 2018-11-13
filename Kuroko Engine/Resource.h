@@ -6,8 +6,8 @@
 enum ResourceType { R_MESH, R_TEXTURE, R_SCENE, R_UNKNOWN };
 
 struct resource_deff {
-	uint uuid;
-	ResourceType type;
+	uint uuid = 0;
+	ResourceType type = R_UNKNOWN;
 	std::string binary;
 	std::string asset;
 };
@@ -15,8 +15,8 @@ class Resource {
 
 public:
 	Resource(resource_deff deff);
-	uint uuid;
-	ResourceType type;
+	uint uuid = 0;
+	ResourceType type = R_UNKNOWN;
 	virtual void LoadToMemory();		// Load resource to memory
 	virtual void UnloadFromMemory();    // Unload resource from memory (should put resource pointer to null)
 	bool IsLoaded();			// If the resource is loaded to memory

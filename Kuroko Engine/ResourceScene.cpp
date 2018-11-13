@@ -36,6 +36,8 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 			App->resources->newResource(deff);
 		}
 	}
+
+	json_value_free(scene);
 }
 
 

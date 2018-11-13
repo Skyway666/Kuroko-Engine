@@ -10,14 +10,6 @@
 
 #pragma comment (lib, "Shlwapi.lib")
 
-FileSystem::FileSystem(Application* app, bool start_enabled):Module(app, start_enabled){
-	name = "FileSystem";
-}
-
-
-FileSystem::~FileSystem() {
-}
-
 void FileSystem::ExportBuffer(char * data, int size, const char * file_name, lib_dir lib, const char* extension) {
 
 	std::string path = "";

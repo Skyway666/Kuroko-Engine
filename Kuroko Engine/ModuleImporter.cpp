@@ -80,7 +80,7 @@ bool ModuleImporter::CleanUp()
 void* ModuleImporter::Import(const char* file, ImportType expected_filetype) 
 {
 	std::string extension = file;
-	App->fs->getExtension(extension);
+	App->fs.getExtension(extension);
 	Timer load_time;
 	load_time.Start();
 
@@ -111,7 +111,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 		if (extension == ".kr"){
 			Mesh* mesh = ImportMeshFromKR(file);
 			std::string mesh_name = file;
-			App->fs->getFileNameFromPath(mesh_name);
+			App->fs.getFileNameFromPath(mesh_name);
 			mesh->setName(mesh_name.c_str());
 			if (mesh) {
 				GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
@@ -128,12 +128,12 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
 		{
 			std::string texture_name = file;
-			App->fs->getFileNameFromPath(texture_name);
+			App->fs.getFileNameFromPath(texture_name);
 			bool is_dds = extension == ".dds";
 			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
 			if (is_dds) { 									// We copy and paste file in library folder.
-				if (!App->fs->copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
+				if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
 					app_log->AddLog("%s could not be copied to Library/Textures", file);
 			}
 
@@ -365,13 +365,13 @@ void ModuleImporter::ImportMaterialsFromNode(const aiScene & scene, std::vector<
 			// Find the path in assets (or not), ManageAsset, then add the uuid to the material
 			std::string file_name = path.C_Str();
 			std::string final_path;
-			App->fs->removePath(file_name);
-			if (App->fs->FindInDirectory(ASSETS_FOLDER, file_name.c_str(), final_path)) {
+			App->fs.removePath(file_name);
+			if (App->fs.FindInDirectory(ASSETS_FOLDER, file_name.c_str(), final_path)) {
 				std::string path, name, extension;
 				path = name = extension = final_path;
-				App->fs->getPath(path);
-				App->fs->getFileNameFromPath(name);
-				App->fs->getExtension(extension);
+				App->fs.getPath(path);
+				App->fs.getFileNameFromPath(name);
+				App->fs.getExtension(extension);
 				resource_deff managed_res = App->resources->ManageAsset(path, name, extension); 
 				material_deff.resource_uuid_diffuse = managed_res.uuid;
 			}
@@ -420,7 +420,7 @@ bool ModuleImporter::ImportScene(const char * file_original_name, std::string fi
 		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array, out_mat_deff);
 
 		std::string path;
-		App->fs->FormFullPath(path, file_binary_name.c_str(), LIBRARY_PREFABS, JSON_EXTENSION);
+		App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_PREFABS, JSON_EXTENSION);
 		json_serialize_to_file(scene, path.c_str());
 		json_value_free(scene);
 		aiReleaseImport(imported_scene);
@@ -441,14 +441,14 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 
 	std::string path, name, extension;
 	path = name = extension = file_original_name;
-	App->fs->getExtension(extension);
-	App->fs->getPath(path);
-	App->fs->getFileNameFromPath(name);
+	App->fs.getExtension(extension);
+	App->fs.getPath(path);
+	App->fs.getFileNameFromPath(name);
 	bool is_dds = extension == ".dds";
 	Texture* tex = new Texture(ilutGLLoadImage((char*)file_original_name), file_binary_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
 	if (is_dds) { 									// We copy and paste file in library folder.
-		if (!App->fs->copyFileTo(file_original_name, LIBRARY_TEXTURES, DDS_EXTENSION, file_binary_name))
+		if (!App->fs.copyFileTo(file_original_name, LIBRARY_TEXTURES, DDS_EXTENSION, file_binary_name))
 			app_log->AddLog("%s could not be copied to Library/Textures", file_original_name);
 	}
 
@@ -546,8 +546,8 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	//}
 	
 	std::string filename = file;
-	App->fs->getFileNameFromPath(filename);
-	App->fs->ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
+	App->fs.getFileNameFromPath(filename);
+	App->fs.ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
 	app_log->AddLog("Saved %s as own file format", filename.c_str());
 
 	delete data;
@@ -561,7 +561,7 @@ void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
 	if (size > 0) {
 		data = new char[size]; // allocate data buffer
 		if (ilSaveL(IL_DDS, data, size) > 0) // Save to buffer with the ilSaveIL function
-			App->fs->ExportBuffer(data, size, texture_name, LIBRARY_TEXTURES, DDS_EXTENSION);
+			App->fs.ExportBuffer(data, size, texture_name, LIBRARY_TEXTURES, DDS_EXTENSION);
 		delete data; 
 	}
 }
@@ -581,13 +581,13 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	float2* tex_coords = nullptr;
 
 	// Import buffer from file
-	if (!App->fs->ExistisFile(file)) {
+	if (!App->fs.ExistisFile(file)) {
 		app_log->AddLog("Couldn't load mesh, not found in library");
 		return nullptr;
 	}
 
 
-	char* buffer = App->fs->ImportFile(file);
+	char* buffer = App->fs.ImportFile(file);
 	char* cursor = buffer;
 
 	// Read the header
