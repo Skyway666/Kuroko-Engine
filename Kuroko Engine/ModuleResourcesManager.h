@@ -20,6 +20,7 @@ public:
 	// 2. Asset has no metadata -> Generate metadata and import it to library
 	// 3. Asset and metadata have different "last edited time" values -> Destroy old file in library, reimport file to library and change metadata
 	update_status Update(float dt);		
+	update_status PostUpdate(float dt);
 	bool CleanUp();						  // Unload all the ocupied resources
 
 
@@ -53,11 +54,14 @@ public:
 	void LoadFileToScene(const char* file);		
 
 
+	void ReloadResources() { reloadResources = true; }
 
 private:
 	std::map<uint, Resource*> resources;		
 
 	void CleanMeta();
+	void CleanLibrary();
+	bool reloadResources = false;
 	// Helpers
 	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
 	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file

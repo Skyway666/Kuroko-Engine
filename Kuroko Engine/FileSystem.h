@@ -10,6 +10,7 @@
 #define DDS_EXTENSION ".dds"
 #define META_EXTENSION ".meta"
 
+#define LIBRARY_FOLDER "Library\\"
 #define MESHES_FOLDER "Library\\Meshes\\"
 #define MATERIALS_FOLDER "Library\\Materials\\"
 #define ANIMATIONS_FOLDER "Library\\Animations\\"

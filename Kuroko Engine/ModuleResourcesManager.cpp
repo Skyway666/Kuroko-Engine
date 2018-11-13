@@ -38,10 +38,20 @@ bool ModuleResourcesManager::Start()
 
 update_status ModuleResourcesManager::Update(float dt)
 {
+
+	return UPDATE_CONTINUE;
+}
+
+update_status ModuleResourcesManager::PostUpdate(float dt)
+{
 	// Debug purpuses
-	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+	if (reloadResources) {
 		CleanMeta();
+		CleanLibrary();
+		GenerateLibraryAndMeta();
+		reloadResources = false;
 	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -291,6 +301,16 @@ void ModuleResourcesManager::CleanMeta() {
 		if (extension == META_EXTENSION)
 			App->fs->DestroyFile((path + name + extension).c_str());
 
+	}
+}
+
+void ModuleResourcesManager::CleanLibrary()
+{
+	using std::experimental::filesystem::recursive_directory_iterator;
+	for (auto& it : recursive_directory_iterator(LIBRARY_FOLDER)) {
+		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
+			continue;
+		App->fs->DestroyFile(it.path().generic_string().c_str());
 	}
 }
 

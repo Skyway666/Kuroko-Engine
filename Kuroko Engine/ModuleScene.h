@@ -70,7 +70,7 @@ private:
 	void LoadScene(const char* path);
 	void LoadPrefab(const char* path);
 	JSON_Value* serializeScene();
-	void loadSerializedScene(JSON_Value* scene, bool is_prefab = false);
+	void loadSerializedScene(JSON_Value* scene);
 private:
 
 	std::list<GameObject*>	game_objects; 

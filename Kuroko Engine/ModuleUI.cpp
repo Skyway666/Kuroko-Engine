@@ -9,6 +9,7 @@
 #include "ModuleImporter.h"
 #include "ModuleAudio.h"
 #include "ModuleTimeManager.h"
+#include "ModuleResourcesManager.h"
 #include "Applog.h"
 
 #include "ImGui/imgui_impl_sdl.h"
@@ -173,6 +174,9 @@ update_status ModuleUI::Update(float dt) {
 
 	if (open_tabs[CAMERA_MENU])
 		DrawCameraMenu();
+
+	if (open_tabs[RESOURCES_TAB])
+		DrawResourcesTab();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -228,6 +232,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::MenuItem("Quadtree", NULL, &open_tabs[QUADTREE_CONFIG]);
 			ImGui::MenuItem("Camera Menu", NULL, &open_tabs[CAMERA_MENU]);
+			ImGui::MenuItem("Resources", NULL, &open_tabs[RESOURCES_TAB]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -865,6 +870,14 @@ void ModuleUI::DrawCameraMenu()
 	ImGui::End();
 }
 
+void ModuleUI::DrawResourcesTab()
+{
+	ImGui::Begin("Resources", &open_tabs[RESOURCES_TAB]);
+	if (ImGui::Button("Reload library"))
+		App->resources->ReloadResources();
+	ImGui::End();
+}
+
 //void ModuleUI::DrawAudioTab()
 //{
 //	ImGui::Begin("Audio", &open_tabs[AUDIO]);
@@ -1392,6 +1405,8 @@ void ModuleUI::SaveConfig(JSON_Object* config) const
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
 	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
 	json_object_set_boolean(config, "quadtree_config", open_tabs[QUADTREE_CONFIG]);
+	json_object_set_boolean(config, "resources_tab", open_tabs[RESOURCES_TAB]);
+	json_object_set_boolean(config, "camera_menu", open_tabs[CAMERA_MENU]);
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
@@ -1405,6 +1420,8 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 	open_tabs[QUADTREE_CONFIG]	= json_object_get_boolean(config, "quadtree_config");
+	open_tabs[RESOURCES_TAB]	= json_object_get_boolean(config, "resources_tab");
+	open_tabs[CAMERA_MENU]		= json_object_get_boolean(config, "camera_menu");
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 

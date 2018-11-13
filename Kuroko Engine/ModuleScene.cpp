@@ -424,7 +424,7 @@ void ModuleScene::LoadPrefab(const char * path) {
 		return;
 	}
 
-	loadSerializedScene(scene, true);
+	loadSerializedScene(scene);
 	json_value_free(scene);
 
 }
@@ -447,7 +447,7 @@ JSON_Value * ModuleScene::serializeScene() {
 	return scene;
 }
 
-void ModuleScene::loadSerializedScene(JSON_Value * scene, bool is_prefab) {
+void ModuleScene::loadSerializedScene(JSON_Value * scene) {
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
@@ -462,8 +462,6 @@ void ModuleScene::loadSerializedScene(JSON_Value * scene, bool is_prefab) {
 		JSON_Object* obj_deff = json_array_get_object(objects, i);
 		uint parent = json_object_get_number(obj_deff, "Parent");  // Put the UUID of the parent in the same position as the child
 		uint obj_uuid = json_object_get_number(obj_deff, "UUID");
-		if (is_prefab)											   // If it is a prefab, refresh the UUID so the scene does not have duplicated UUIDs, still use the old one for parenting
-			json_object_set_number(obj_deff, "UUID", random32bits());
 		GameObject* obj = new GameObject(obj_deff);
 		child_parent[obj_uuid] = parent;
 		loaded_gameobjects[obj_uuid] = obj;
