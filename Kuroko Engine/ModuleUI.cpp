@@ -1252,34 +1252,34 @@ void ModuleUI::DrawGizmoMenu() {
 
 	ImGui::Begin("##Gizmo menu", nullptr);
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
 		draw_guizmo = !draw_guizmo;
 	
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_operation = ImGuizmo::OPERATION::ROTATE;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_operation = ImGuizmo::OPERATION::SCALE;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_mode = ImGuizmo::MODE::LOCAL;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_mode = ImGuizmo::MODE::WORLD;
 		draw_guizmo = true;

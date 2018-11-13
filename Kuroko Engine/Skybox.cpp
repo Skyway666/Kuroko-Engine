@@ -30,8 +30,8 @@ Skybox::Skybox(float distance) : distance(distance)
 			vertices[2] = { -distance + SKYBOX_OVERLAP_VALUE, distance, -distance };	
 			vertices[3] = { -distance + SKYBOX_OVERLAP_VALUE, -distance, -distance };
 
-			tex_coords[0] = { 0.0f, 1.0f };   tex_coords[1] = { 0.0f, 0.0f };
-			tex_coords[2] = { 1.0f, 1.0f };   tex_coords[3] = { 1.0f, 0.0f };
+			tex_coords[0] = { 0.0f, 0.0f };   tex_coords[1] = { 0.0f, 1.0f };
+			tex_coords[2] = { 1.0f, 0.0f };   tex_coords[3] = { 1.0f, 1.0f };
 			break;
 		case RIGHT:		// right face
 			vertices[0] = { distance - SKYBOX_OVERLAP_VALUE, distance, distance };	
@@ -39,8 +39,8 @@ Skybox::Skybox(float distance) : distance(distance)
 			vertices[2] = { distance - SKYBOX_OVERLAP_VALUE, distance, -distance };	
 			vertices[3] = { distance - SKYBOX_OVERLAP_VALUE, -distance, -distance };
 
-			tex_coords[0] = { 1.0f, 1.0f };   tex_coords[1] = { 1.0f, 0.0f };
-			tex_coords[2] = { 0.0f, 1.0f };   tex_coords[3] = { 0.0f, 0.0f };
+			tex_coords[0] = { 1.0f, 0.0f };   tex_coords[1] = { 1.0f, 1.0f };
+			tex_coords[2] = { 0.0f, 0.0f };   tex_coords[3] = { 0.0f, 1.0f };
 			break;
 		case UP:		// up face
 			vertices[0] = { distance, distance  - SKYBOX_OVERLAP_VALUE, distance };	
@@ -48,8 +48,8 @@ Skybox::Skybox(float distance) : distance(distance)
 			vertices[2] = { distance, distance  - SKYBOX_OVERLAP_VALUE, -distance };	
 			vertices[3] = { -distance, distance -  SKYBOX_OVERLAP_VALUE, -distance };
 
-			tex_coords[0] = { 1.0f, 0.0f };   tex_coords[1] = { 1.0f, 1.0f };
-			tex_coords[2] = { 0.0f, 0.0f };   tex_coords[3] = { 0.0f, 1.0f };
+			tex_coords[0] = { 1.0f, 1.0f };   tex_coords[1] = { 1.0f, 0.0f };
+			tex_coords[2] = { 0.0f, 1.0f };   tex_coords[3] = { 0.0f, 0.0f };
 			break;
 		case DOWN:		// down face
 			vertices[0] = { distance, -distance  + SKYBOX_OVERLAP_VALUE, distance };		
@@ -57,8 +57,8 @@ Skybox::Skybox(float distance) : distance(distance)
 			vertices[2] = { distance, -distance  + SKYBOX_OVERLAP_VALUE, -distance };	
 			vertices[3] = { -distance, -distance +  SKYBOX_OVERLAP_VALUE, -distance };
 
-			tex_coords[0] = { 1.0f, 1.0f };   tex_coords[1] = { 0.0f, 1.0f };
-			tex_coords[2] = { 0.0f, 1.0f };   tex_coords[3] = { 0.0f, 0.0f };
+			tex_coords[0] = { 1.0f, 0.0f };   tex_coords[1] = { 0.0f, 0.0f };
+			tex_coords[2] = { 0.0f, 0.0f };   tex_coords[3] = { 0.0f, 1.0f };
 			break;
 		case BACK:		// back face
 			vertices[0] = { distance, distance, -distance + SKYBOX_OVERLAP_VALUE };	
@@ -66,8 +66,8 @@ Skybox::Skybox(float distance) : distance(distance)
 			vertices[2] = { distance, -distance, -distance + SKYBOX_OVERLAP_VALUE };	
 			vertices[3] = { -distance, -distance, -distance + SKYBOX_OVERLAP_VALUE };
 
-			tex_coords[0] = { 1.0f, 1.0f };   tex_coords[1] = { 0.0f, 1.0f };
-			tex_coords[2] = { 1.0f, 0.0f };   tex_coords[3] = { 0.0f, 0.0f };
+			tex_coords[0] = { 1.0f, 0.0f };   tex_coords[1] = { 0.0f, 0.0f };
+			tex_coords[2] = { 1.0f, 1.0f };   tex_coords[3] = { 0.0f, 1.0f };
 			break;
 		case FRONT:		// front face
 			vertices[0] = { distance, distance, distance - SKYBOX_OVERLAP_VALUE };		
@@ -75,8 +75,8 @@ Skybox::Skybox(float distance) : distance(distance)
 			vertices[2] = { distance, -distance, distance - SKYBOX_OVERLAP_VALUE };	
 			vertices[3] = { -distance, -distance, distance - SKYBOX_OVERLAP_VALUE };
 
-			tex_coords[0] = { 0.0f, 1.0f };						tex_coords[1] = { 1.0f, 1.0f };
-			tex_coords[2] = { 0.0f, 0.0f };						tex_coords[3] = { 1.0f, 0.0f };
+			tex_coords[0] = { 0.0f, 0.0f };						tex_coords[1] = { 1.0f, 0.0f };
+			tex_coords[2] = { 0.0f, 1.0f };						tex_coords[3] = { 1.0f, 1.0f };
 			break;
 		}
 
