@@ -48,8 +48,15 @@ update_status ModuleResourcesManager::PostUpdate(float dt)
 	if (reloadResources) {
 		CleanMeta();
 		CleanLibrary();
+		CleanUp();
 		GenerateLibraryAndMeta();
 		reloadResources = false;
+	}
+	if (cleanResources) {
+		CleanMeta();
+		CleanLibrary();
+		CleanUp();
+		cleanResources = false;
 	}
 
 	return UPDATE_CONTINUE;
@@ -265,6 +272,9 @@ int ModuleResourcesManager::assignResource(uint uuid) {
 	auto it = resources.find(uuid);
 	if (it != resources.end()) {
 		resources[uuid]->components_used_by++;
+		if (!resources[uuid]->IsLoaded()) {
+			resources[uuid]->LoadToMemory();
+		}
 	}
 	else
 		app_log->AddLog("WARNING: Trying to assing non existing resource");
@@ -276,6 +286,9 @@ int ModuleResourcesManager::deasignResource(uint uuid) {
 	auto it = resources.find(uuid);
 	if (it != resources.end()) {
 		resources[uuid]->components_used_by--;
+		if (resources[uuid]->components_used_by == 0) {
+			resources[uuid]->UnloadFromMemory();
+		}
 	}
 	else
 		app_log->AddLog("WARNING: Trying to deasign non existing resource");

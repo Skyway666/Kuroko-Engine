@@ -55,6 +55,7 @@ public:
 
 
 	void ReloadResources() { reloadResources = true; }
+	void CleanResources() { cleanResources = true; }
 
 private:
 	std::map<uint, Resource*> resources;		
@@ -62,6 +63,7 @@ private:
 	void CleanMeta();
 	void CleanLibrary();
 	bool reloadResources = false;
+	bool cleanResources = false;
 	// Helpers
 	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
 	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file
