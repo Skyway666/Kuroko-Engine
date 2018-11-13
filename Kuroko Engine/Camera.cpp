@@ -106,14 +106,16 @@ bool Camera::frustumCull(const OBB& obb)
 	for (int i = 0; i < 6; i++)
 	{
 		Plane plane = frustum->GetPlane(i);
-
+		uint count = 0;
 		for (int j = 0; j < 8; j++)
 		{
-			if (!plane.IsOnPositiveSide(obb.CornerPoint(j)))
-				continue;
-			else
-				return false;
+			if (plane.IsOnPositiveSide(obb.CornerPoint(j)))
+				count++;
+			else break;
 		}
+
+		if (count == 8)
+			return false;
 	}
 
 	return true;

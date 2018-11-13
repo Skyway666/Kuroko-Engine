@@ -40,7 +40,6 @@
 #pragma comment (lib, "DevIL/lib/ILU.lib")
 #pragma comment (lib, "DevIL/lib/ILUT.lib")
 
-
 #include "ModuleCamera3D.h"
 
 ModuleImporter::ModuleImporter(Application* app, bool start_enabled) : Module(app, start_enabled) {
@@ -130,19 +129,29 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			std::string texture_name = file;
 			App->fs.getFileNameFromPath(texture_name);
 			bool is_dds = extension == ".dds";
-			Texture* tex = new Texture(ilutGLLoadImage((char*)file), texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
-			if (is_dds) { 									// We copy and paste file in library folder.
-				if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
-					app_log->AddLog("%s could not be copied to Library/Textures", file);
-			}
+			ILuint il_id = 0;
+			ilGenImages(1, &il_id);
+			ilBindImage(il_id);
 
+			ilLoadImage(file);
+			
 			ILinfo ImageInfo;
 			iluGetImageInfo(&ImageInfo);
 			if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
 				iluFlipImage();
 
+			GLuint TexId = ilutGLBindTexImage();
 
+			Texture* tex = new Texture(TexId, texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
+
+			ilDeleteImage(il_id);
+
+			if (is_dds) { 									// We copy and paste file in library folder.
+				if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
+					app_log->AddLog("%s could not be copied to Library/Textures", file);
+			}
+			
 			app_log->AddLog("Success loading texture: %s", file);
 			return tex;
 		}
@@ -444,17 +453,29 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 	App->fs.getPath(path);
 	App->fs.getFileNameFromPath(name);
 	bool is_dds = extension == ".dds";
-	Texture* tex = new Texture(ilutGLLoadImage((char*)file_original_name), file_binary_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
-	if (is_dds) { 									// We copy and paste file in library folder.
-		if (!App->fs.copyFileTo(file_original_name, LIBRARY_TEXTURES, DDS_EXTENSION, file_binary_name))
-			app_log->AddLog("%s could not be copied to Library/Textures", file_original_name);
-	}
+	ILuint il_id = 0;
+	ilGenImages(1, &il_id);
+	ilBindImage(il_id);
+
+	ilLoadImage(file_original_name);
 
 	ILinfo ImageInfo;
 	iluGetImageInfo(&ImageInfo);
 	if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
 		iluFlipImage();
+
+	GLuint TexId = ilutGLBindTexImage();
+
+	Texture* tex = new Texture(TexId, path.c_str(), !is_dds);  // If it is a dds, don't compress it
+
+	ilDeleteImage(il_id);
+
+
+	if (is_dds) { 									// We copy and paste file in library folder.
+		if (!App->fs.copyFileTo(file_original_name, LIBRARY_TEXTURES, DDS_EXTENSION, file_binary_name))
+			app_log->AddLog("%s could not be copied to Library/Textures", file_original_name);
+	}
 
 
 	// TODO: delete texture and not add it to scene list (will be done when resources are fully working
