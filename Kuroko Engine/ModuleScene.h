@@ -33,23 +33,14 @@ public:
 
 	void DrawScene(float3 camera_pos);
 
-	void addMaterial(Material* mat)			{ materials.push_back(mat); };
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
-	void addMesh(Mesh* mesh)				{ meshes.push_back(mesh); };
-	void addTexture(Texture* tex)			{ textures.push_back(tex); };
 
-	Material* getMaterial(uint id) const;
-	GameObject* getGameObject(uint id) const;
-	Mesh* getMesh(uint id) const;
-	Texture* getTexture(uint id) const;
+	GameObject* getGameObject(uint id) const;;
 	bool existingScene() { return working_on_existing_scene;}
 	std::string getWorkigSceneName() { return current_working_scene; }
 
-	void deleteMaterial(Material* mat)		{ materials_to_delete.push_back(mat); };
 	void deleteGameObject(GameObject* gobj)	{ game_objs_to_delete.push_back(gobj); };
 	void deleteGameObjectRecursive(GameObject* gobj);
-	void deleteMesh(Mesh* mesh)				{ meshes_to_delete.push_back(mesh); };
-	void deleteTexture(Texture* tex)		{ textures_to_delete.push_back(tex); };
 	void ClearScene();
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
@@ -74,14 +65,8 @@ private:
 private:
 
 	std::list<GameObject*>	game_objects; 
-	std::list<Material*>	materials;
-	std::list<Mesh*>		meshes;
-	std::list<Texture*>		textures;
 
 	std::list<GameObject*>	game_objs_to_delete;
-	std::list<Material*>	materials_to_delete;
-	std::list<Mesh*>		meshes_to_delete;
-	std::list<Texture*>		textures_to_delete;
 
 	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;

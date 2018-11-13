@@ -65,24 +65,8 @@ bool ModuleScene::CleanUp()
 	for (auto it = game_objects.begin(); it != game_objects.end();it++)
 		delete *it;
 
-	for (auto it = materials.begin(); it != materials.end(); it++)
-		delete *it;
-
-	for (auto it = meshes.begin(); it != meshes.end(); it++)
-		delete *it;
-
-	for (auto it = textures.begin(); it != textures.end(); it++)
-		delete *it;
-
 	game_objects.clear();
-	materials.clear();
-	meshes.clear();
-	textures.clear();
-
 	game_objs_to_delete.clear();
-	materials_to_delete.clear();
-	meshes_to_delete.clear();
-	textures_to_delete.clear();
 
 	delete skybox;
 	delete quadtree;
@@ -129,28 +113,7 @@ update_status ModuleScene::PostUpdate(float dt)
 		delete *it;
 	}
 
-	for (auto it = materials_to_delete.begin(); it != materials_to_delete.end(); it++)
-	{
-		materials.remove(*it);
-		delete *it;
-	}
-
-	for (auto it = textures_to_delete.begin(); it != textures_to_delete.end(); it++)
-	{
-		textures.remove(*it);
-		delete *it;
-	}
-
-	for (auto it = meshes_to_delete.begin(); it != meshes_to_delete.end(); it++)
-	{
-		meshes.remove(*it);
-		delete *it;
-	}
-
 	game_objs_to_delete.clear();
-	materials_to_delete.clear();
-	textures_to_delete.clear();
-	meshes_to_delete.clear();
 
 	ManageSceneSaveLoad();
 
@@ -248,18 +211,6 @@ GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 		return ray_hits.front().obj;
 	}
 }
-Material* ModuleScene::getMaterial(uint id)  const
-{
-	for (auto it = materials_to_delete.begin(); it != materials_to_delete.end(); it++)
-		if (id == (*it)->getId())
-			return nullptr;
-
-	for (auto it = materials.begin(); it != materials.end(); it++)
-		if (id == (*it)->getId())
-			return *it;
-
-	return nullptr;
-}
 
 GameObject* ModuleScene::getGameObject(uint id) const
 {
@@ -273,30 +224,7 @@ GameObject* ModuleScene::getGameObject(uint id) const
 
 	return nullptr;
 }
-Mesh* ModuleScene::getMesh(uint id) const
-{
-	for (auto it = meshes_to_delete.begin(); it != meshes_to_delete.end(); it++)
-		if (id == (*it)->getId())
-			return nullptr;
 
-	for (auto it = meshes.begin(); it != meshes.end(); it++)
-		if (id == (*it)->getId())
-			return *it;
-
-	return nullptr;
-}
-Texture* ModuleScene::getTexture(uint id) const
-{
-	for (auto it = textures_to_delete.begin(); it != textures_to_delete.end(); it++)
-		if (id == (*it)->getId())
-			return nullptr;
-
-	for (auto it = textures.begin(); it != textures.end(); it++)
-		if (id == (*it)->getId())
-			return *it;
-
-	return nullptr;
-}
 
 void ModuleScene::ClearScene()
 {

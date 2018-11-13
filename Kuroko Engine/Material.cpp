@@ -10,7 +10,6 @@
 
 Material::Material() : id(App->scene->last_mat_id++) 
 {
-	App->scene->addMaterial(this);
 };
 
 
@@ -53,7 +52,6 @@ void Material::setCheckeredTexture(TextureType tex_type)
 
 Texture::Texture() : id(App->scene->last_tex_id++)
 {
-	App->scene->addTexture(this);
 }
 
 Texture::Texture(uint GL_id, const char* texture_name, bool compress) : id(App->scene->last_tex_id++)
@@ -67,7 +65,6 @@ Texture::Texture(uint GL_id, const char* texture_name, bool compress) : id(App->
 		App->importer->ExportTextureToDDS(texture_name);
 	this->texture_name = texture_name;
 	glBindTexture(GL_TEXTURE_2D, 0);
-	App->scene->addTexture(this);
 }
 
 Texture::~Texture()

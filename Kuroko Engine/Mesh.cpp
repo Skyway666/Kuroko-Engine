@@ -18,7 +18,6 @@ Mesh::Mesh(const aiMesh& imported_mesh, const char* file_name) : id(App->scene->
 
 	mesh_name = file_name;
 	
-	App->scene->addMesh(this);
 }
 
 Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, float2* _tex_coords, uint _num_vertices, uint _num_tris): id(App->scene->last_mesh_id++) 
@@ -37,8 +36,6 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 
 	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
-
-	App->scene->addMesh(this);
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
@@ -56,7 +53,6 @@ Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
 	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
 
-	App->scene->addMesh(this);
 }
 
 

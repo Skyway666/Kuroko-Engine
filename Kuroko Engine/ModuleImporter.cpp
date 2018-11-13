@@ -248,12 +248,12 @@ GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene&
 	{
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
 		ComponentMesh* c_m = new ComponentMesh(new_obj, mesh);
-		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
-			c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
-		else {
-			Material* mat = new Material();
-			c_m->setMaterial(mat);
-		}
+		//if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
+		//	c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
+		//else {
+		//	Material* mat = new Material();
+		//	c_m->setMaterial(mat);
+		//}
 		new_obj->addComponent(c_m);
 
 		ExportMeshToKR(node.mName.C_Str(), mesh);
@@ -344,7 +344,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
-		//delete mesh;									// TODO: Delete mesh
+		delete mesh;									// TODO: Delete mesh
 
 
 
@@ -467,10 +467,9 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 
 	GLuint TexId = ilutGLBindTexImage();
 
-	Texture* tex = new Texture(TexId, path.c_str(), !is_dds);  // If it is a dds, don't compress it
+	Texture* tex = new Texture(TexId, file_binary_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
 	ilDeleteImage(il_id);
-
 
 	if (is_dds) { 									// We copy and paste file in library folder.
 		if (!App->fs.copyFileTo(file_original_name, LIBRARY_TEXTURES, DDS_EXTENSION, file_binary_name))
@@ -478,10 +477,10 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 	}
 
 
-	// TODO: delete texture and not add it to scene list (will be done when resources are fully working
+	delete tex;
 
 	app_log->AddLog("Success importing texture: %s", file_original_name);
-	return tex;
+	return true;
 }
 
 

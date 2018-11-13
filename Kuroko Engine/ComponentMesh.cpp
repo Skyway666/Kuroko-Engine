@@ -62,6 +62,7 @@ void ComponentMesh::Draw() const
 
 		ResourceMesh* mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
 		Mesh* mesh_from_resource = mesh_resource->mesh;
+		
 
 		if (draw_normals || App->scene->global_normals)
 			mesh_from_resource->DrawNormals();
@@ -116,7 +117,7 @@ Mesh* ComponentMesh::getMesh() const {
 		ret = primitive_mesh;
 	}
 	else {
-		ResourceMesh* resource_mesh = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		if(ResourceMesh* resource_mesh = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid))
 		ret = resource_mesh->mesh;
 	}
 	return ret;
