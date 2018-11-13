@@ -34,5 +34,7 @@ private:
 
 	Material* mat = nullptr;
 	Mesh* mesh = nullptr;
+
+	uint mesh_resource;
 };
 #endif

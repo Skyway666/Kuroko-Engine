@@ -321,6 +321,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
+		json_object_set_string(json_object(mesh_component), "mesh_name", node.mName.C_Str());
 
 
 		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size()) {// If it has a material
