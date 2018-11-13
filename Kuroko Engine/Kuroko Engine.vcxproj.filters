@@ -408,6 +408,9 @@
     <ClInclude Include="FileSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="MD5.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -633,6 +636,9 @@
       <Filter>Sources\Resources</Filter>
     </ClCompile>
     <ClCompile Include="FileSystem.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="MD5.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
