@@ -287,6 +287,9 @@ update_status ModuleUI::PostUpdate(float dt) {
 
 bool ModuleUI::CleanUp() 
 {	
+	for (int i = 0; i < LAST_UI_TEX; i++) { // Cleanup textures
+		delete ui_textures[i];
+	}
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
@@ -873,8 +876,6 @@ void ModuleUI::DrawCameraMenu()
 void ModuleUI::DrawResourcesTab()
 {
 	ImGui::Begin("Resources", &open_tabs[RESOURCES_TAB]);
-	if (ImGui::Button("Reload library"))
-		App->resources->ReloadResources();
 	if (ImGui::Button("Clean library"))
 		App->resources->CleanResources();
 	ImGui::End();
@@ -912,37 +913,25 @@ void ModuleUI::DrawPrimitivesTab()
 
 	if (ImGui::Button("Add cube")){
 		GameObject* cube = new GameObject("Cube");
-		Mesh* mesh = new Mesh(Primitive_Cube);
-		cube->addComponent(new ComponentMesh(cube, mesh));
-		Material* mat = new Material();
-		ComponentMesh* comp_mesh = (ComponentMesh*)cube->getComponent(MESH);
-		comp_mesh->setMaterial(mat);
+		cube->addComponent(C_AABB);
+		cube->addComponent(new ComponentMesh(cube, Primitive_Cube));
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add plane")){
 		GameObject* plane = new GameObject("Plane");
-		Mesh* mesh = new Mesh(Primitive_Plane);
-		plane->addComponent(new ComponentMesh(plane, mesh));
-		Material* mat = new Material();
-		ComponentMesh* comp_mesh = (ComponentMesh*)plane->getComponent(MESH);
-		comp_mesh->setMaterial(mat);
+		plane->addComponent(C_AABB);
+		plane->addComponent(new ComponentMesh(plane, Primitive_Plane));
 	}
 	if (ImGui::Button("Add sphere")) {
 		GameObject* sphere = new GameObject("Sphere");
-		Mesh* mesh = new Mesh(Primitive_Sphere);
-		sphere->addComponent(new ComponentMesh(sphere, mesh));
-		Material* mat = new Material();
-		ComponentMesh* comp_mesh = (ComponentMesh*)sphere->getComponent(MESH);
-		comp_mesh->setMaterial(mat);
+		sphere->addComponent(C_AABB);
+		sphere->addComponent(new ComponentMesh(sphere, Primitive_Sphere));
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Add cylinder")) {
 		GameObject* cylinder = new GameObject("Cylinder");
-		Mesh* mesh = new Mesh(Primitive_Cylinder);
-		cylinder->addComponent(new ComponentMesh(cylinder, mesh));
-		Material* mat = new Material();
-		ComponentMesh* comp_mesh = (ComponentMesh*)cylinder->getComponent(MESH);
-		comp_mesh->setMaterial(mat);
+		cylinder->addComponent(C_AABB);
+		cylinder->addComponent(new ComponentMesh(cylinder, Primitive_Cylinder));
 	}
 
 	ImGui::PopFont();

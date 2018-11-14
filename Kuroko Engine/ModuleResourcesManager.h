@@ -6,6 +6,7 @@
 #include <map>
 
 enum lib_dir;
+enum PrimitiveTypes;
 class ModuleResourcesManager: public Module
 {
 public:
@@ -26,6 +27,7 @@ public:
 
 	// To be executed allways when engine starts. 
 	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
+	void GeneratePrimitiveResources();
 	void GenerateLibraryAndMeta();
 	bool ManageFile(std::string file_path, resource_deff& deff); // Retruns true if a new resource has to be generated
 	void ManageMeta(std::string path, std::string name, std::string extension);
@@ -37,6 +39,7 @@ public:
 	// to that file.			
 
 	Resource* getResource(uint uuid); // Returns the resource with the corresponding UUID, if not found returns nullptr
+	Resource* getPrimitiveMeshResource(PrimitiveTypes primitive);
 	int assignResource(uint uuid); // It adds 1 to the "components used by" of a certain resource
 	int deasignResource(uint uuid); // It substracts 1 to the "components used by" of a certain resource
 	// Creates a resource from a .meta that contains uuid, type, extension, timeCreated...
@@ -53,11 +56,11 @@ public:
 	void LoadFileToScene(const char* file);		
 
 
-	void ReloadResources() { reloadResources = true; }
 	void CleanResources() { cleanResources = true; }
 
 private:
-	std::map<uint, Resource*> resources;		
+	std::map<uint, Resource*> resources;	
+	std::map<PrimitiveTypes, Resource*> primitive_resources;
 
 	void CleanMeta();
 	void CleanLibrary();

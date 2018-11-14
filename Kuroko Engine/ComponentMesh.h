@@ -11,7 +11,8 @@ public:
 
 	ComponentMesh(GameObject* gameobject) : Component(gameobject, MESH) {};   // empty constructor
 	ComponentMesh(JSON_Object* deff, GameObject* parent);
-	ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), primitive_mesh(mesh) {};
+	//ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), primitive_mesh(mesh) {};
+	ComponentMesh(GameObject* gameobject, PrimitiveTypes type);
 
 	void Draw() const;
 	void DrawSelected() const;
@@ -24,8 +25,9 @@ public:
 
 	Mesh* getMesh()	const;
 	void setMaterial(Material* new_mat) { mat = new_mat; };// Can recieve nullptr
-	void setMesh(Mesh* new_mesh)		{ primitive_mesh = new_mesh; }// Can recieve nullptr
-	bool whichPrimitive(std::string mesh_name, PrimitiveTypes& which_primitive); 
+	void setMeshResourceId(uint _mesh_resource_uuid) { mesh_resource_uuid = _mesh_resource_uuid; }
+	PrimitiveTypes primitiveString2PrimitiveType(std::string primitive_type_string);
+	std::string PrimitiveType2primitiveString(PrimitiveTypes type);
 
 	void Save(JSON_Object* config);
 
@@ -34,8 +36,8 @@ private:
 	bool draw_normals = false;
 
 	Material* mat = nullptr;
-	Mesh* primitive_mesh = nullptr;
 
-	uint mesh_resource_uuid;
+	uint mesh_resource_uuid = -1;
+	PrimitiveTypes primitive_type = PrimitiveTypes::Primitive_None;
 };
 #endif

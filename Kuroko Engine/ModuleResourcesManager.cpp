@@ -7,6 +7,7 @@
 #include "ResourceMesh.h"
 #include "ResourceScene.h"
 #include "Applog.h"
+#include "Mesh.h"
 
 // Temporal debug purposes
 #include "ModuleInput.h"
@@ -32,6 +33,7 @@ bool ModuleResourcesManager::Init(const JSON_Object * config)
 
 bool ModuleResourcesManager::Start()
 {
+	GeneratePrimitiveResources();
 	GenerateLibraryAndMeta();
 	return true;
 }
@@ -45,17 +47,9 @@ update_status ModuleResourcesManager::Update(float dt)
 update_status ModuleResourcesManager::PostUpdate(float dt)
 {
 	// Debug purpuses
-	if (reloadResources) {
-		CleanMeta();
-		CleanLibrary();
-		CleanUp();
-		GenerateLibraryAndMeta();
-		reloadResources = false;
-	}
 	if (cleanResources) {
 		CleanMeta();
 		CleanLibrary();
-		CleanUp();
 		cleanResources = false;
 	}
 
@@ -78,6 +72,25 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 		resources[deff.uuid] = ret;
 
 	return ret;
+}
+
+void ModuleResourcesManager::GeneratePrimitiveResources() {
+	ResourceMesh* cube = new ResourceMesh(resource_deff());
+	cube->mesh = new Mesh(PrimitiveTypes::Primitive_Cube);
+	primitive_resources[Primitive_Cube] = cube;
+
+	ResourceMesh* plane = new ResourceMesh(resource_deff());
+	plane->mesh = new Mesh(PrimitiveTypes::Primitive_Plane);
+	primitive_resources[Primitive_Plane] = plane;
+
+
+	ResourceMesh* sphere = new ResourceMesh(resource_deff());
+	sphere->mesh = new Mesh(PrimitiveTypes::Primitive_Sphere);
+	primitive_resources[Primitive_Sphere] = sphere;
+
+	ResourceMesh* cylinder = new ResourceMesh(resource_deff());
+	cylinder->mesh = new Mesh(PrimitiveTypes::Primitive_Cylinder);
+	primitive_resources[Primitive_Cylinder] = cylinder;
 }
 
 
@@ -263,6 +276,10 @@ Resource * ModuleResourcesManager::getResource(uint uuid) {
 	return ret;
 }
 
+Resource * ModuleResourcesManager::getPrimitiveMeshResource(PrimitiveTypes type) {
+	return primitive_resources[type];
+}
+
 int ModuleResourcesManager::assignResource(uint uuid) {
 
 	auto it = resources.find(uuid);
@@ -418,6 +435,12 @@ bool ModuleResourcesManager::CleanUp() {
 		}
 	}
 	resources.clear();
+
+	for (auto it = primitive_resources.begin(); it != primitive_resources.end(); it++) {
+		Resource* resource = (*it).second;
+		resource->UnloadFromMemory();
+		delete resource;
+	}
 
 	return true;
 }

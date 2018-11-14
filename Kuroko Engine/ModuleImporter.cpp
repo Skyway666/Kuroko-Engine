@@ -80,47 +80,47 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 {
 	std::string extension = file;
 	App->fs.getExtension(extension);
-	Timer load_time;
-	load_time.Start();
+	//Timer load_time;
+	//load_time.Start();
 
-	if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
-	{
-		if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
-			|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
-		{
-			const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
+	//if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
+	//{
+	//	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
+	//		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
+	//	{
+	//		const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
 
-			if (imported_scene)
-			{
-				std::vector<uint> mat_id;
-				//LoadMaterials(*imported_scene, mat_id);
-				GameObject* root_obj = LoadNodeRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
-				aiReleaseImport(imported_scene);
+	//		if (imported_scene)
+	//		{
+	//			std::vector<uint> mat_id;
+	//			//LoadMaterials(*imported_scene, mat_id);
+	//			GameObject* root_obj = LoadNodeRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
+	//			aiReleaseImport(imported_scene);
 
-				App->scene->selected_obj = root_obj;
-				App->camera->editor_camera->FitToSizeSelectedGeometry(); 
-				app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
+	//			App->scene->selected_obj = root_obj;
+	//			App->camera->editor_camera->FitToSizeSelectedGeometry(); 
+	//			app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
 
-				return root_obj;
-			}
-			else
-				app_log->AddLog("Error loading scene %s", file);
-		}
-		// Import own file format
-		if (extension == ".kr"){
-			Mesh* mesh = ImportMeshFromKR(file);
-			std::string mesh_name = file;
-			App->fs.getFileNameFromPath(mesh_name);
-			mesh->setName(mesh_name.c_str());
-			if (mesh) {
-				GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
-				ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
-				mesh_object->addComponent(c_mesh);
-				app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
-			}
+	//			return root_obj;
+	//		}
+	//		else
+	//			app_log->AddLog("Error loading scene %s", file);
+	//	}
+	//	// Import own file format
+	//	if (extension == ".kr"){
+	//		Mesh* mesh = ImportMeshFromKR(file);
+	//		std::string mesh_name = file;
+	//		App->fs.getFileNameFromPath(mesh_name);
+	//		mesh->setName(mesh_name.c_str());
+	//		if (mesh) {
+	//			GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
+	//			//ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
+	//			mesh_object->addComponent(c_mesh);
+	//			app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
+	//		}
 
-		}
-	}
+	//	}
+	//}
 	if (expected_filetype == I_NONE || expected_filetype == I_TEXTURE)
 	{
 		if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
@@ -156,34 +156,34 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 			return tex;
 		}
 	}/*
-	if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
-	{
-		if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
-		{
-			std::string name = PathFindFileNameA(file);
-			if (AudioFile* last_audio_file = App->audio->LoadAudio(file, name.c_str(), MUSIC))
-			{
-				app_log->AddLog("Success loading music: %s", file);
-				return last_audio_file;
-			}
-			else 
-				app_log->AddLog("Error loading music: %s", file);
-		}
-	}
-	if (expected_filetype == I_NONE || expected_filetype == I_FX)
-	{
-		if (extension == ".wav" || extension == ".aiff" || extension == ".riff" || extension == ".ogg" || extension == ".voc")
-		{
-			std::string name = PathFindFileNameA(file);
-			if (AudioFile* last_audio_file = App->audio->LoadAudio(file, name.c_str(), FX))
-			{
-				app_log->AddLog("Success loading fx: %s", file);
-				return last_audio_file;
-			}
-			else
-				app_log->AddLog("Error loading fx: %s", file);
-		}
-	}*/
+	//if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
+	//{
+	//	if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
+	//	{
+	//		std::string name = PathFindFileNameA(file);
+	//		if (AudioFile* last_audio_file = App->audio->LoadAudio(file, name.c_str(), MUSIC))
+	//		{
+	//			app_log->AddLog("Success loading music: %s", file);
+	//			return last_audio_file;
+	//		}
+	//		else 
+	//			app_log->AddLog("Error loading music: %s", file);
+	//	}
+	//}
+	//if (expected_filetype == I_NONE || expected_filetype == I_FX)
+	//{
+	//	if (extension == ".wav" || extension == ".aiff" || extension == ".riff" || extension == ".ogg" || extension == ".voc")
+	//	{
+	//		std::string name = PathFindFileNameA(file);
+	//		if (AudioFile* last_audio_file = App->audio->LoadAudio(file, name.c_str(), FX))
+	//		{
+	//			app_log->AddLog("Success loading fx: %s", file);
+	//			return last_audio_file;
+	//		}
+	//		else
+	//			app_log->AddLog("Error loading fx: %s", file);
+	//	}
+	//}*/
 
 	app_log->AddLog("Error loading file [incompatible format]: %s", file);
 
@@ -231,46 +231,47 @@ void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_
 
 GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent)
 {
-	std::string name = node.mName.C_Str();
-	if (name.find("$Assimp") != std::string::npos)
-	{
-		for (int i = 0; i < node.mNumChildren; i++)
-			LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, parent);
+	//std::string name = node.mName.C_Str();
+	//if (name.find("$Assimp") != std::string::npos)
+	//{
+	//	for (int i = 0; i < node.mNumChildren; i++)
+	//		LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, parent);
 
-		return nullptr;
-	}
+	//	return nullptr;
+	//}
 
-	GameObject* new_obj = new GameObject(node.mName.C_Str(), parent);
-	if(parent)
-		parent->addChild(new_obj);
+	//GameObject* new_obj = new GameObject(node.mName.C_Str(), parent);
+	//if(parent)
+	//	parent->addChild(new_obj);
 
-	for (int i = 0; i < node.mNumMeshes; i++)
-	{
-		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
-		ComponentMesh* c_m = new ComponentMesh(new_obj, mesh);
-		//if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
-		//	c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
-		//else {
-		//	Material* mat = new Material();
-		//	c_m->setMaterial(mat);
-		//}
-		new_obj->addComponent(c_m);
+	//for (int i = 0; i < node.mNumMeshes; i++)
+	//{
+	//	Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
+	//	ComponentMesh* c_m = new ComponentMesh(new_obj, mesh);
+	//	//if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
+	//	//	c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
+	//	//else {
+	//	//	Material* mat = new Material();
+	//	//	c_m->setMaterial(mat);
+	//	//}
+	//	new_obj->addComponent(c_m);
 
-		ExportMeshToKR(node.mName.C_Str(), mesh);
-		app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
-	}
+	//	ExportMeshToKR(node.mName.C_Str(), mesh);
+	//	app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
+	//}
 
-	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	aiVector3D scl = { 1.0f, 1.0f, 1.0f };
-	aiQuaternion rot;
-	node.mTransformation.Decompose(scl, rot, pos);
+	//aiVector3D pos = { 0.0f, 0.0f, 0.0f };
+	//aiVector3D scl = { 1.0f, 1.0f, 1.0f };
+	//aiQuaternion rot;
+	//node.mTransformation.Decompose(scl, rot, pos);
 
-	((ComponentTransform*)new_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+	//((ComponentTransform*)new_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
 
-	for (int i = 0; i < node.mNumChildren; i++)
-		LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, new_obj);
+	//for (int i = 0; i < node.mNumChildren; i++)
+	//	LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, new_obj);
 
-	return new_obj;
+	//return newobj;
+	return nullptr;
 }
 
 void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, uint parent)
@@ -330,6 +331,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
 		json_object_set_string(json_object(mesh_component), "mesh_name", node.mName.C_Str());
+		json_object_set_string(json_object(mesh_component), "primitive_type", "NONE");
 
 
 		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size()) {// If it has a material

@@ -19,14 +19,14 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	std::string path;
 
 	// Load mesh from own file format
-	PrimitiveTypes primitive_type = Primitive_None;
-	std::string mesh_name = json_object_get_string(deff, "mesh_name"); 
+	
+	//std::string mesh_name = json_object_get_string(deff, "mesh_name"); // Mesh name not used for now
 
-	if (whichPrimitive(mesh_name, primitive_type)) { // If it is a primitive, build one, else load from .kr
-		primitive_mesh = new Mesh(primitive_type);			 // TODO: Store the color of the meshes
-		primitive_mesh->setName(mesh_name.c_str());
-	}
-	else{
+	primitive_type = primitiveString2PrimitiveType(json_object_get_string(deff, "primitive_type"));
+
+
+															 
+	if(primitive_type == Primitive_None){			// TODO: Store the color of the meshes
 		// ASSIGNING RESOURCE
 		mesh_resource_uuid = json_object_get_number(deff, "mesh_resource_uuid");
 		App->resources->assignResource(mesh_resource_uuid);
@@ -40,6 +40,11 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	mat->setTextureResource(DIFFUSE, diffuse_resource);
 }
 
+ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes type) : Component(gameobject, MESH) {
+	primitive_type = type;
+	mat = new Material();
+
+}
 void ComponentMesh::Draw() const
 {
 	OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
@@ -60,7 +65,15 @@ void ComponentMesh::Draw() const
 			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
 		}
 
-		ResourceMesh* mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		ResourceMesh* mesh_resource = nullptr;
+
+		if(primitive_type == Primitive_None){
+			mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		}
+		else {
+			mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
+		}
+
 		Mesh* mesh_from_resource = mesh_resource->mesh;
 		
 
@@ -99,7 +112,14 @@ void ComponentMesh::DrawSelected() const
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		ResourceMesh* mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		ResourceMesh* mesh_resource = nullptr;
+		if (primitive_type == Primitive_None) {
+			mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		}
+		else {
+			mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
+		}
+
 		Mesh* mesh_from_resource = mesh_resource->mesh;
 		mesh_from_resource->Draw(nullptr, true);
 
@@ -113,34 +133,51 @@ void ComponentMesh::DrawSelected() const
 Mesh* ComponentMesh::getMesh() const {
 
 	Mesh* ret = nullptr;
-	if (primitive_mesh) {
-		ret = primitive_mesh;
+	ResourceMesh* mesh_resource = nullptr;
+	if (primitive_type == Primitive_None) {
+		mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		ret = mesh_resource->mesh;
 	}
 	else {
-		if(ResourceMesh* resource_mesh = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid))
-		ret = resource_mesh->mesh;
+		mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
+		ret = mesh_resource->mesh;
 	}
 	return ret;
 }
-bool ComponentMesh::whichPrimitive(std::string mesh_name, PrimitiveTypes & which_primitive) {
+PrimitiveTypes ComponentMesh::primitiveString2PrimitiveType(std::string primitive_type_string) {
 
-	which_primitive = Primitive_None; // Just for security
-	if (mesh_name.compare("CUBE") == 0) 
-		which_primitive = Primitive_Cube;
-
-	else if (mesh_name.compare("PLANE") == 0) 
-		which_primitive = Primitive_Plane;
-
-	else if (mesh_name.compare("SPHERE") == 0) 
-		which_primitive = Primitive_Sphere;
-
-	else if (mesh_name.compare("CYLINDER") == 0) 
-		which_primitive = Primitive_Cylinder;
+	PrimitiveTypes ret = Primitive_None; // Just for security
+	if (primitive_type_string == "CUBE")
+		ret = Primitive_Cube;
+	else if (primitive_type_string == "PLANE")
+		ret = Primitive_Plane;
+	else if (primitive_type_string == "SPHERE")
+		ret = Primitive_Sphere;
+	else if (primitive_type_string == "CYLINDER")
+		ret = Primitive_Cylinder;
 	
-	if (which_primitive != Primitive_None)
-		return true;
+	return ret;
+}
 
-	return false;
+std::string ComponentMesh::PrimitiveType2primitiveString(PrimitiveTypes type) {
+	std::string ret = "NONE";
+
+	switch (type) {
+	case Primitive_Cube:
+		ret = "CUBE";
+		break;
+	case Primitive_Plane:
+		ret = "PLANE";
+		break;
+	case Primitive_Sphere:
+		ret = "SPHERE";
+		break;
+	case Primitive_Cylinder:
+		ret = "CYLINDER";
+		break;
+
+	}
+	return ret;
 }
 
 void ComponentMesh::Save(JSON_Object* config) {
@@ -148,6 +185,7 @@ void ComponentMesh::Save(JSON_Object* config) {
  	// Component has two strings, one for mesh name, and another for diffuse texture name
 	json_object_set_string(config, "type", "mesh");
 	json_object_set_number(config, "mesh_resource_uuid", mesh_resource_uuid);
+	json_object_set_string(config, "primitive_type", PrimitiveType2primitiveString(primitive_type).c_str());
 	if(mat)  //If it has a material and a diffuse texture
 		json_object_dotset_number(config, "material.diffuse_resource_uuid", mat->getTextureResource(DIFFUSE));
 }
