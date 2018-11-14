@@ -14,6 +14,7 @@ public:
 	//ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), primitive_mesh(mesh) {};
 	ComponentMesh(GameObject* gameobject, PrimitiveTypes type);
 
+	~ComponentMesh();
 	void Draw() const;
 	void DrawSelected() const;
 	bool getWireframe() const			{ return wireframe; };

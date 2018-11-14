@@ -28,13 +28,14 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 				deff.binary = json_object_get_string(mesh_resource, "mesh_binary_path");
 				deff.uuid = json_object_get_number(mesh_resource, "mesh_resource_uuid");
 				mesh_found = true;
-				break;
+			}
+
+			if (mesh_found) {					  // If a mesh was found create a resource for it
+				App->resources->newResource(deff);
 			}
 		}
 
-		if (mesh_found) {					  // If a mesh was found create a resource for it
-			App->resources->newResource(deff);
-		}
+
 	}
 
 	json_value_free(scene);

@@ -6,11 +6,28 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Applog.h"
 #include "ModuleImporter.h"
+#include "ModuleResourcesManager.h"
 
 
 Material::Material() : id(App->scene->last_mat_id++) 
 {
+}
+Material::~Material() {
+	if (diffuse_resource != -1) {
+		App->resources->deasignResource(diffuse_resource);
+	}
+	if (ambient_resource != -1) {
+		App->resources->deasignResource(ambient_resource);
+	}
+	if (normals_resource != -1) {
+		App->resources->deasignResource(normals_resource);
+	}
+	if (lightmap_resource != -1) {
+		App->resources->deasignResource(lightmap_resource);
+	}
+
 };
+
 
 
 uint Material::getTextureResource(TextureType tex_type) const

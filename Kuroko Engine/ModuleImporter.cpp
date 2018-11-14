@@ -330,7 +330,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
-		json_object_set_string(json_object(mesh_component), "mesh_name", node.mName.C_Str());
+		json_object_set_string(json_object(mesh_component), "mesh_name", node.mName.C_Str());				// Mesh name(only for file readability)
 		json_object_set_string(json_object(mesh_component), "primitive_type", "NONE");
 
 
@@ -347,10 +347,6 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
 		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		delete mesh;									// TODO: Delete mesh
-
-
-
-
 
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}

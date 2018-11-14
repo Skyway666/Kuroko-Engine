@@ -45,6 +45,11 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes type) : Comp
 	mat = new Material();
 
 }
+ComponentMesh::~ComponentMesh() {
+	// Deassign all the components that the element had if it is deleted
+	App->resources->deasignResource(mesh_resource_uuid);
+	delete mat;
+}
 void ComponentMesh::Draw() const
 {
 	OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();

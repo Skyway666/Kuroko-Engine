@@ -1,4 +1,5 @@
 #include "ResourceMesh.h"
+#include "Mesh.h"
 #include "Application.h"
 #include "ModuleImporter.h"
 #include "Applog.h"

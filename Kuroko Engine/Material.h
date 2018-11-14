@@ -44,7 +44,7 @@ class Material
 public:
 
 	Material();
-	~Material() {};
+	~Material();
 
 	uint getTextureResource(TextureType tex_type) const;
 	void setTextureResource(TextureType tex_type, uint textureResource); 
