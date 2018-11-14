@@ -53,10 +53,10 @@ public:
 
 private:
 	uint id = 0;
-	uint diffuse_resource = -1;
-	uint ambient_resource = -1;
-	uint normals_resource = -1;
-	uint lightmap_resource = -1;
+	uint diffuse_resource = 0;
+	uint ambient_resource = 0;
+	uint normals_resource = 0;
+	uint lightmap_resource = 0;
 
 };
 #endif

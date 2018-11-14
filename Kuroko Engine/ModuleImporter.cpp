@@ -294,7 +294,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	json_object_set_string(json_object(game_object), "name", node.mName.C_Str());
 	json_object_set_boolean(json_object(game_object), "static", false);
 	json_object_set_number(json_object(game_object), "UUID", object_uuid);
-	if (parent != -1)
+	if (parent != 0)
 		json_object_set_number(json_object(game_object), "Parent", parent);
 	json_object_set_value(json_object(game_object), "Components", components);
 

@@ -54,7 +54,6 @@ Application::Application()
 
 	// Main Modules
 	list_modules.push_back(time);
-	list_modules.push_back(resources);
 	list_modules.push_back(window);
 	list_modules.push_back(camera);
 	list_modules.push_back(input);
@@ -70,6 +69,7 @@ Application::Application()
 	// Renderer last!
 	//AddModule(renderer2D);
 	list_modules.push_back(gui);
+	list_modules.push_back(resources);
 	list_modules.push_back(renderer3D);
 
 	// HARDCODED

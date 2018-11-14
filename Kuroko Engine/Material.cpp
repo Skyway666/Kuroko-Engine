@@ -13,16 +13,16 @@ Material::Material() : id(App->scene->last_mat_id++)
 {
 }
 Material::~Material() {
-	if (diffuse_resource != -1) {
+	if (diffuse_resource != 0) {
 		App->resources->deasignResource(diffuse_resource);
 	}
-	if (ambient_resource != -1) {
+	if (ambient_resource != 0) {
 		App->resources->deasignResource(ambient_resource);
 	}
-	if (normals_resource != -1) {
+	if (normals_resource != 0) {
 		App->resources->deasignResource(normals_resource);
 	}
-	if (lightmap_resource != -1) {
+	if (lightmap_resource != 0) {
 		App->resources->deasignResource(lightmap_resource);
 	}
 
@@ -38,7 +38,7 @@ uint Material::getTextureResource(TextureType tex_type) const
 	case AMBIENT: return ambient_resource; break;
 	case NORMALS: return normals_resource; break;
 	case LIGHTMAP: return lightmap_resource; break;
-	default: return -1;
+	default: return 0;
 	}
 }
 
@@ -60,10 +60,10 @@ void Material::setCheckeredTexture(TextureType tex_type)
 
 	switch (tex_type)
 	{
-	case DIFFUSE: diffuse_resource = -1; break;
-	case AMBIENT: ambient_resource = -1; break;
-	case NORMALS: normals_resource = -1; break;
-	case LIGHTMAP: lightmap_resource = -1; break;
+	case DIFFUSE: diffuse_resource = 0; break;
+	case AMBIENT: ambient_resource = 0; break;
+	case NORMALS: normals_resource = 0; break;
+	case LIGHTMAP: lightmap_resource = 0; break;
 	}
 }
 

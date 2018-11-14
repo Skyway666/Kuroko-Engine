@@ -14,10 +14,10 @@ class Mesh;
 enum ImportType { I_NONE, I_GOBJ, I_TEXTURE, I_FX, I_MUSIC};
 
 struct material_resource_deff {
-	uint resource_uuid_diffuse;
-	uint resource_uuid_ambient;
-	uint resource_uuid_normals;
-	uint resource_uuid_lightmap;
+	uint resource_uuid_diffuse = 0;
+	uint resource_uuid_ambient = 0;
+	uint resource_uuid_normals = 0;
+	uint resource_uuid_lightmap = 0;
 };
 
 class ModuleImporter : public Module
@@ -43,7 +43,7 @@ public:
 private:
 	void LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const;
 	GameObject* LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent = nullptr);
-	void ImportNodeToSceneRecursive(const aiNode& node, const aiScene& scene, JSON_Value* json_scene, const std::vector<material_resource_deff>& in_mat_id, uint parent = -1);  // TODO: Add a parameter for mat id, a vector of JSON_Objects*
+	void ImportNodeToSceneRecursive(const aiNode& node, const aiScene& scene, JSON_Value* json_scene, const std::vector<material_resource_deff>& in_mat_id, uint parent = 0);  // TODO: Add a parameter for mat id, a vector of JSON_Objects*
 	void ImportMaterialsFromNode(const aiScene& scene, std::vector<material_resource_deff>& out_mat_id);
 
 };

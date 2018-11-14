@@ -19,7 +19,7 @@ float randomFloat(){
 }
 
 uint32_t random32bits() {
-	return pcg32_random();
+	return pcg32_random() + 1;
 }
 
 void randomizeSeed() {

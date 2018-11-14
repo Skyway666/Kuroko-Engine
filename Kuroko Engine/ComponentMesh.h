@@ -38,7 +38,7 @@ private:
 
 	Material* mat = nullptr;
 
-	uint mesh_resource_uuid = -1;
+	uint mesh_resource_uuid = 0;
 	PrimitiveTypes primitive_type = PrimitiveTypes::Primitive_None;
 };
 #endif
