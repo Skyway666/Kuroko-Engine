@@ -28,6 +28,7 @@ INNOVATION:
 - Camera can display viewports and the depth buffer
 - Using "map" container to store resources
 - Notifications of memory leaks in console
+- Skybox
 
 
 Libraries used:
