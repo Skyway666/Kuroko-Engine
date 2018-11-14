@@ -329,6 +329,22 @@ void ModuleResourcesManager::LoadFileToScene(const char * file) {
 	
 }
 
+uint ModuleResourcesManager::getResourceUuid(const char * file) {
+	std::string full_meta_path = file;
+	full_meta_path += META_EXTENSION;
+	uint ret = -1;
+	if (App->fs.ExistisFile(full_meta_path.c_str())) {
+		JSON_Value* meta = json_parse_file(full_meta_path.c_str());
+		ret = json_object_get_number(json_object(meta), "resource_uuid");
+		json_value_free(meta);
+	}
+	else {
+		app_log->AddLog("%s has no .meta, can't be loaded", file);
+	}
+
+	return ret;
+}
+
 void ModuleResourcesManager::CleanMeta() {
 	using std::experimental::filesystem::recursive_directory_iterator;
 	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
