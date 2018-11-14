@@ -484,84 +484,81 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 
 
 void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
-	//Create a header for vertices, tris, normals, colors and tex coords
-	uint header[5]; 
+
+	uint header[5];
 	uint vert_num, poly_count = 0;
 	bool has_normals, has_colors, has_texcoords = false;
 
 	// Get the data
 	mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
 
-	// Fill the header with data
 	header[0] = vert_num;
 	header[1] = poly_count;
-	//if (has_normals)
-		header[2] = vert_num;
-	//else
-	//	header[2] = 0;
-	//if (has_colors)
-		header[3] = vert_num;
-	//else
-	//	header[3] = 0;
-	//if (has_texcoords)
-		header[4] = vert_num;
-	//else
-	//	header[4] = 0;
+	header[2] = has_normals;
+	header[3] = has_colors;
+	header[4] = has_texcoords;
 
 	// Knowing the size of the file, we can create the buffer in which it all will be stored
-	uint size = sizeof(header) + sizeof(float3)*vert_num + sizeof(Tri)*poly_count;
-	//if (has_normals)
-		size += sizeof(float3)*vert_num;
-	//if (has_colors)
-		size += sizeof(float3)*vert_num;
-	//if (has_texcoords)
-		size += sizeof(float2)*vert_num;
+	uint size = sizeof(header);			// header
+	size += sizeof(float3);				// centroid
+	size += sizeof(float3)*vert_num;	// vertices
+	size += sizeof(Tri)*poly_count;		// tris
+
+	if(has_normals)		size += sizeof(float3)*vert_num;	// normals
+	if(has_colors)		size += sizeof(float3)*vert_num;	// colors
+	if(has_texcoords)	size += sizeof(float2)*vert_num;	// texcoords
 
 	char* data = new char[size];
 	char* cursor = data;
-
-	// Get the data
-	const float3* vertices = mesh->getVertices();
-	const Tri* tris = mesh->getTris();
-	const float3* normals = mesh->getNormals();
-	const float3* colors = mesh->getColors();
-	const float2* tex_coords = mesh->getTexCoords();
 
 	// First we store the header
 	uint bytes = sizeof(header);
 	memcpy(cursor, header, bytes);
 	cursor += bytes;
 
+	// Centroid
+	bytes = sizeof(float3);
+	memcpy(cursor, &mesh->getCentroid(), bytes);
+	cursor += bytes;
+
 	// Vertices
+	const float3* vertices = mesh->getVertices();
 	bytes = sizeof(float3)*vert_num;
 	memcpy(cursor, vertices, bytes);
 	cursor += bytes;
 
 	// Tris
+	const Tri* tris = mesh->getTris();
 	bytes = sizeof(Tri)*poly_count;
 	memcpy(cursor, tris, bytes);
 	cursor += bytes;
 
-	// Normals
-	//if (has_normals) {
+	// Normlas
+	if (has_normals)
+	{
+		const float3* normals = mesh->getNormals();
 		bytes = sizeof(float3)*vert_num;
 		memcpy(cursor, normals, bytes);
 		cursor += bytes;
-	//}
+	}
 
 	// Colors
-	//if (has_colors) {
+	if (has_colors)
+	{
+		const float3* colors = mesh->getColors();
 		bytes = sizeof(float3)*vert_num;
 		memcpy(cursor, colors, bytes);
 		cursor += bytes;
-	//}
+	}
 
 	// Tex coords
-	//if (has_texcoords) {
+	if (has_texcoords)
+	{
+		const float2* tex_coords = mesh->getTexCoords();
 		bytes = sizeof(float2)*vert_num;
 		memcpy(cursor, tex_coords, bytes);
-	//}
-	
+	}
+
 	std::string filename = file;
 	App->fs.getFileNameFromPath(filename);
 	App->fs.ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, OWN_MESH_EXTENSION);
@@ -585,24 +582,24 @@ void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
 
 Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 {
-	uint num_vertices = 0;
-	uint num_tris = 0;
-	bool imported_normals = false;
-	bool imported_colors = false;
-	bool imported_tex_coords = false;
+	uint num_vertices		= 0;
+	uint num_tris			= 0;
+	bool import_normals		= false;
+	bool import_colors		= false;
+	bool import_tex_coords	= false;
 
-	float3* vertices = nullptr;
-	Tri* tris = nullptr;
-	float3* normals = nullptr;
-	float3* colors = nullptr;
-	float2* tex_coords = nullptr;
+	float3* vertices	= nullptr;
+	Tri* tris			= nullptr;
+	float3* normals		= nullptr;
+	float3* colors		= nullptr;
+	float2* tex_coords	= nullptr;
+	float3 centroid		= float3::zero;
 
 	// Import buffer from file
 	if (!App->fs.ExistisFile(file)) {
 		app_log->AddLog("Couldn't load mesh, not found in library");
 		return nullptr;
 	}
-
 
 	char* buffer = App->fs.ImportFile(file);
 	char* cursor = buffer;
@@ -611,60 +608,58 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 	uint header[5];
 	uint bytes = sizeof(header);
 	memcpy(header, cursor, bytes);
+	cursor += bytes;
+
 	num_vertices = header[0];
 	num_tris = header[1];
-	//if (header[2] > 0)
-	//	imported_normals = true;
-	//if (header[3] > 0)
-	//	imported_colors = true;
-	//if (header[4] > 0)
-	//	imported_tex_coords = true;
-	// Increment cursor
+	import_normals = header[2];
+	import_colors = header[3];
+	import_tex_coords = header[4];
+
+	bytes = sizeof(float3);
+	memcpy(&centroid, cursor, bytes);
 	cursor += bytes;
 
 	// Read vertices
 	bytes = sizeof(float3)*num_vertices;
 	vertices = new float3[num_vertices];
 	memcpy(vertices, cursor, bytes);
-	// Increment cursor
 	cursor += bytes;
 
 	// Read tris
 	bytes = sizeof(Tri)*num_tris;
 	tris = new Tri[num_tris];
 	memcpy(tris, cursor, bytes);
-	// Increment cursor
 	cursor += bytes;
 
 	// Read normals (if any)
-	//if(imported_normals){
-	// Read tris
-	bytes = sizeof(float3)*num_vertices;
-	normals = new float3[num_vertices];
-	memcpy(normals, cursor, bytes);
-	// Increment cursor
-	cursor += bytes;
-	//}
+	if (import_normals) 
+	{
+		bytes = sizeof(float3)*num_vertices;
+		normals = new float3[num_vertices];
+		memcpy(normals, cursor, bytes);
+		cursor += bytes;
+	}
 
 	// Read colors (if any)
-	//if (imported_colors) {
-		// Read tris
+	if (import_colors) 
+	{
 		bytes = sizeof(float3)*num_vertices;
 		colors = new float3[num_vertices];
 		memcpy(colors, cursor, bytes);
-		// Increment cursor
 		cursor += bytes;
-	//}
+	}
 
 	// Read tex_coords (if any)
-	//if (imported_tex_coords) {
-		// Read tris
+	if (import_tex_coords) 
+	{
 		bytes = sizeof(float2)*num_vertices;
 		tex_coords = new float2[num_vertices];
 		memcpy(tex_coords, cursor, bytes);
-	//}
+	}
+
 	app_log->AddLog("Loaded mesh %s from own file format", file);
-	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris);
+	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris, centroid);
 }
 
 Texture * ModuleImporter::LoadTextureFromLibrary(const char * file) {

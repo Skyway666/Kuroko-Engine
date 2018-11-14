@@ -8,7 +8,7 @@
 #pragma comment( lib, "SDL/lib/SDL2main.lib" )
 
 #include <stdlib.h>  
-//#include <vld.h>
+#include <vld.h>
 
 enum main_states
 {
@@ -92,8 +92,6 @@ int main(int argc, char ** argv)
 	delete App;
 	app_log->AddLog("Exiting game '%s'...\n", TITLE);
 	delete app_log;
-
-	_CrtDumpMemoryLeaks();
 
 	return main_return;
 }

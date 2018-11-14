@@ -20,21 +20,52 @@ Mesh::Mesh(const aiMesh& imported_mesh, const char* file_name) : id(App->scene->
 	
 }
 
-Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, float2* _tex_coords, uint _num_vertices, uint _num_tris): id(App->scene->last_mesh_id++) 
+Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, float2* _tex_coords, uint _num_vertices, uint _num_tris, const float3& centroid): id(App->scene->last_mesh_id++) 
 {
-	vertices = _vertices;
-	tris = _tris;
-	normals = _normals;
-	colors = _colors;
-	tex_coords = _tex_coords;
-	num_vertices = _num_vertices;
-	num_tris = _num_tris;
+	num_vertices	= _num_vertices;
+	vertices		= _vertices;
+	num_tris		= _num_tris;
+	tris			= _tris;
 
-	if (normals) imported_normals = true;
-	if (colors) imported_colors = true;
-	if (tex_coords) imported_tex_coords = true;
+	if (_normals)
+	{
+		imported_normals = true;
+		normals = _normals;
+	}
+	else 
+	{
+		normals = new float3[num_vertices];
+		for (int i = 0; i < num_vertices; i++)	normals[i] = { 0.0f, 0.0f, 0.0f };
+	}
+
+	if (_colors)
+	{
+		imported_colors = true;
+		colors = _colors;
+	}
+	else
+	{
+		colors = new float3[num_vertices];
+		Color random_color;
+		random_color.setRandom();
+
+		for (int i = 0; i < num_vertices; i++)	colors[i] = { random_color.r, random_color.g, random_color.b };
+	}
+
+	if (_tex_coords)
+	{
+		imported_tex_coords = true;
+		tex_coords = _tex_coords;
+	}
+	else 
+	{
+		tex_coords = new float2[num_vertices];
+		for (int i = 0; i < num_vertices; i++)
+			tex_coords[i] = float2::zero;
+	}
 
 	calculateCentroidandHalfsize();
+	this->centroid = centroid;
 	LoadDataToVRAM();
 }
 

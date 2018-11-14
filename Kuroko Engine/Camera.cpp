@@ -74,7 +74,6 @@ void Camera::FitToSizeSelectedGeometry(float distance)
 	{
 		float3 new_pos = selected_obj->getCentroid() + selected_obj->getHalfsize() + float3(distance, distance, distance);
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->global->getRotationEuler().y) * new_pos;
-
 		frustum->pos = new_pos;
 		LookAt(selected_obj->getCentroid());
 	}
