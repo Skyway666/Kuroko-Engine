@@ -4,7 +4,7 @@
 #include "Resource.h"
 
 
-#define ENGINE_EXTENSION ".kr"
+#define OWN_MESH_EXTENSION ".kr"
 #define JSON_EXTENSION ".json"
 #define DDS_EXTENSION ".dds"
 #define META_EXTENSION ".meta"

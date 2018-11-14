@@ -326,7 +326,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		JSON_Value* mesh_component = json_value_init_object();	
 		uint uuid_number = random32bits();																// Create mesh component
 		std::string uuid = std::to_string(uuid_number);
-		std::string binary_full_path = MESHES_FOLDER + uuid + ENGINE_EXTENSION;
+		std::string binary_full_path = MESHES_FOLDER + uuid + OWN_MESH_EXTENSION;
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
@@ -568,7 +568,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	
 	std::string filename = file;
 	App->fs.getFileNameFromPath(filename);
-	App->fs.ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, ENGINE_EXTENSION);
+	App->fs.ExportBuffer(data, size, filename.c_str(), LIBRARY_MESHES, OWN_MESH_EXTENSION);
 	app_log->AddLog("Saved %s as own file format", filename.c_str());
 
 	delete data;
