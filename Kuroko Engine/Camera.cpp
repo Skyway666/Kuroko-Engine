@@ -14,17 +14,30 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 
-Camera::Camera(float3 position, float3 reference, math::FrustumType f_type, float n_plane, float f_plane, float hor_fov, float ver_fov)
+#define INIT_HOR_FOV 90.0f
+#define INIT_VER_FOV 59.0f
+#define INIT_N_PLANE 0.5f
+#define INIT_F_PLANE 1250.0f
+#define INIT_ORT_SIZE 40.0f
+
+Camera::Camera(float3 position, float3 reference, math::FrustumType f_type)
 {
 	frustum = new Frustum();
 	frustum->pos = position;
 	frustum->front = float3::unitZ;
 	frustum->up = float3::unitY;
-	frustum->nearPlaneDistance = n_plane;
-	frustum->farPlaneDistance = f_plane;
 	frustum->type = f_type;
-	frustum->orthographicHeight = ver_fov;				frustum->orthographicWidth = hor_fov;
-	frustum->verticalFov = DEGTORAD * ver_fov;			frustum->horizontalFov = DEGTORAD * hor_fov;
+
+	if (f_type == math::FrustumType::OrthographicFrustum)
+	{
+		frustum->orthographicHeight = INIT_ORT_SIZE;			frustum->orthographicWidth = INIT_ORT_SIZE;
+		frustum->nearPlaneDistance = INIT_N_PLANE;				frustum->farPlaneDistance = INIT_F_PLANE;
+	}
+	else
+	{
+		frustum->verticalFov = DEGTORAD * INIT_VER_FOV;			frustum->horizontalFov = DEGTORAD * INIT_HOR_FOV;
+		frustum->nearPlaneDistance = INIT_N_PLANE;				frustum->farPlaneDistance = INIT_F_PLANE;
+	}
 
 	LookAt(reference);
 	updateFrustum();

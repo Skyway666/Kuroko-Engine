@@ -30,7 +30,7 @@ class Camera
 	friend class ModuleCamera3D;
 	friend class ComponentCamera;
 public:
-	Camera(float3 position = float3::zero, float3 reference = float3(0.0f, 0.0f, 5.0f), math::FrustumType frustum_type = math::FrustumType::PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 1250.0f, float hor_fov = 90.0f, float ver_fov = 59.0f);
+	Camera(float3 position = float3::zero, float3 reference = float3(0.0f, 0.0f, 5.0f), math::FrustumType frustum_type = math::FrustumType::PerspectiveFrustum);
 	~Camera();
 
 	void LookAt(const float3 &Spot);
