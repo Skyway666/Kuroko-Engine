@@ -32,12 +32,12 @@ bool ModuleCamera3D::Init(const JSON_Object* config)
 	background_camera = selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
 	editor_camera->active = true;
 
-	viewports[VP_RIGHT] = new Camera(float3(10.0, 0.0f, 0.0f ), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_LEFT]	= new Camera(float3(-10.0, 0.0f, 0.0f), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_UP]	= new Camera(float3(0.0, 10.0f, 0.0f ), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_DOWN]	= new Camera(float3(0.0, -10.0f, 0.0f), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_FRONT] = new Camera(float3(0.0, 0.0f, 10.0f ), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_BACK]	= new Camera(float3(0.0, 0.0f, -10.0f), float3::zero, math::FrustumType::OrthographicFrustum);
+	viewports[VP_RIGHT] = new Camera(float3(10.0, 0.0f, 0.0f ), float3::zero);
+	viewports[VP_LEFT]	= new Camera(float3(-10.0, 0.0f, 0.0f), float3::zero);
+	viewports[VP_UP]	= new Camera(float3(0.0, 10.0f, 0.0f ), float3::zero);
+	viewports[VP_DOWN]	= new Camera(float3(0.0, -10.0f, 0.0f), float3::zero);
+	viewports[VP_FRONT] = new Camera(float3(0.0, 0.0f, 10.0f ), float3::zero);
+	viewports[VP_BACK]	= new Camera(float3(0.0, 0.0f, -10.0f), float3::zero);
 
 	return true;
 }
