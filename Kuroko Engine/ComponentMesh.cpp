@@ -47,7 +47,8 @@ ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes type) : Comp
 }
 ComponentMesh::~ComponentMesh() {
 	// Deassign all the components that the element had if it is deleted
-	App->resources->deasignResource(mesh_resource_uuid);
+	if(primitive_type == Primitive_None)
+		App->resources->deasignResource(mesh_resource_uuid);
 	delete mat;
 }
 void ComponentMesh::Draw() const

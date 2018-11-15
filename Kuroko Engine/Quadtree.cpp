@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
-
+#include "ComponentAABB.h"
 
 // Quadtree
 
@@ -133,7 +133,8 @@ void QuadTreeNode::Split() {
 bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size, int max_splits) {
 
 	// If the gameobject is not in this node we do nothing
-	if (!box.Contains(obj->getCentroid()))
+	AABB check_box = *((ComponentAABB*)obj->getComponent(C_AABB))->getAABB();
+	if (!box.Intersects(check_box))
 		return false;
 
 	if(is_leaf && (objects.size() < bucket_size || node_depth >= max_splits))// If the node is a leaf bucket size accepts another object or has reached its maximum depth
@@ -144,15 +145,13 @@ bool QuadTreeNode::AddObject(GameObject * obj, int bucket_size, int max_splits) 
 			Split();		
 			for (auto it = objects.begin(); it != objects.end(); it++)
 				for (int i = 0; i < 4; i++)
-					if (childs[i]->AddObject(*it, bucket_size, max_splits))		// If a child can already hold the object break the loop
-						break;
+					childs[i]->AddObject(*it, bucket_size, max_splits);	// If a child can already hold the object break the loop
 
 			objects.clear();
 		}
 											
 		for (int i = 0; i < 4; i++)									// We fill childs with the original object we wanted to add.
-			if (childs[i]->AddObject(obj, bucket_size, max_splits))				// If a child can already hold the object break the loop
-				break;												
+			childs[i]->AddObject(obj, bucket_size, max_splits);				// If a child can already hold the object break the loop
 		
 	}
 	return true;
