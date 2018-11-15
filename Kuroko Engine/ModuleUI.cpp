@@ -1452,7 +1452,6 @@ void ModuleUI::DrawGuizmo()
 		glGetFloatv(GL_PROJECTION_MATRIX, (float*)projection4x4.v);
 
 		ImGuiIO& io = ImGui::GetIO();
-		ImGuizmo::SetOrthographic(true);
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
 		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
