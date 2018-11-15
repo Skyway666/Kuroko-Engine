@@ -135,7 +135,8 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 		uint diffuse_resource_id = mat->getTextureResource(DIFFUSE);
 		if (diffuse_resource_id != 0) {
 			ResourceTexture* diffuse_resource = (ResourceTexture*)App->resources->getResource(diffuse_resource_id);
-			diffuse_tex = diffuse_resource->texture;
+			if(diffuse_resource)
+				diffuse_tex = diffuse_resource->texture;
 		}
 	}
 

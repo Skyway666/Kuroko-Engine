@@ -180,9 +180,6 @@ void ModuleResourcesManager::CleanMeshesFromLibrary(std::string prefab_binary)
 			App->fs.DestroyFile(mesh_binary.c_str());
 		}
 	}
-
-	json_value_free(scene);
-	json_array_clear(objects);
 	
 }
 

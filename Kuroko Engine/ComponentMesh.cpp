@@ -70,17 +70,10 @@ void ComponentMesh::Draw() const
 			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
 		}
 
-		ResourceMesh* mesh_resource = nullptr;
-
-		if(primitive_type == Primitive_None){
-			mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
-		}
-		else {
-			mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
-		}
-
-		Mesh* mesh_from_resource = mesh_resource->mesh;
+		Mesh* mesh_from_resource = getMeshFromResource();
 		
+		if (!mesh_from_resource)
+			return;
 
 		if (draw_normals || App->scene->global_normals)
 			mesh_from_resource->DrawNormals();
@@ -116,16 +109,13 @@ void ComponentMesh::DrawSelected() const
 		}
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		
 
-		ResourceMesh* mesh_resource = nullptr;
-		if (primitive_type == Primitive_None) {
-			mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
-		}
-		else {
-			mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
-		}
+		Mesh* mesh_from_resource = getMeshFromResource();
 
-		Mesh* mesh_from_resource = mesh_resource->mesh;
+		if (!mesh_from_resource)
+			return;
+
 		mesh_from_resource->Draw(nullptr, true);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -141,7 +131,8 @@ Mesh* ComponentMesh::getMesh() const {
 	ResourceMesh* mesh_resource = nullptr;
 	if (primitive_type == Primitive_None) {
 		mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
-		ret = mesh_resource->mesh;
+		if(mesh_resource)
+			ret = mesh_resource->mesh;
 	}
 	else {
 		mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
@@ -193,4 +184,21 @@ void ComponentMesh::Save(JSON_Object* config) {
 	json_object_set_string(config, "primitive_type", PrimitiveType2primitiveString(primitive_type).c_str());
 	if(mat)  //If it has a material and a diffuse texture
 		json_object_dotset_number(config, "material.diffuse_resource_uuid", mat->getTextureResource(DIFFUSE));
+}
+
+Mesh * ComponentMesh::getMeshFromResource() const
+{
+	ResourceMesh* mesh_resource = nullptr;
+	Mesh* mesh = nullptr;
+
+	if (primitive_type == Primitive_None) {
+		mesh_resource = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		if (mesh_resource)
+			mesh = mesh_resource->mesh;
+	}
+	else {
+		mesh_resource = (ResourceMesh*)App->resources->getPrimitiveMeshResource(primitive_type);
+		mesh = mesh_resource->mesh;
+	}
+	return mesh;
 }

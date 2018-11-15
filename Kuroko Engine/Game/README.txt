@@ -29,6 +29,7 @@ INNOVATION:
 - Using "map" container to store resources
 - Notifications of memory leaks in console
 - Skybox
+- Viewports
 
 
 Libraries used:

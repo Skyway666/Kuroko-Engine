@@ -33,6 +33,8 @@ public:
 	void Save(JSON_Object* config);
 
 private:
+
+	Mesh * getMeshFromResource() const;
 	bool wireframe = false;
 	bool draw_normals = false;
 

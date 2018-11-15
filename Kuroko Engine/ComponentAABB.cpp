@@ -36,6 +36,8 @@ void ComponentAABB::Reload()
 	for (auto it = meshes.begin(); it != meshes.end(); it++)
 	{
 		Mesh* mesh = ((ComponentMesh*)(*it))->getMesh();
+		if (!mesh)
+			continue;
 
 		if (min_point.x > (mesh->getCentroid() - mesh->getHalfSize()).x) min_point.x = (mesh->getCentroid() - mesh->getHalfSize()).x;
 		if (min_point.y > (mesh->getCentroid() - mesh->getHalfSize()).y) min_point.y = (mesh->getCentroid() - mesh->getHalfSize()).y;
