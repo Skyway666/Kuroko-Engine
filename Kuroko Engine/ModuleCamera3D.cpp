@@ -29,8 +29,24 @@ ModuleCamera3D::~ModuleCamera3D()
 bool ModuleCamera3D::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Setting up the camera");
-	selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
+	background_camera = selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
 	editor_camera->active = true;
+
+	viewports[VP_RIGHT] = new Camera(float3(10.0, 0.0f, 0.0f), float3::zero);
+	viewports[VP_LEFT]	= new Camera(float3(-10.0, 0.0f, 0.0f), float3::zero);
+	viewports[VP_UP]	= new Camera(float3(0.0, 10.0f, 0.0f), float3::zero);
+	viewports[VP_DOWN]	= new Camera(float3(0.0, -10.0f, 0.0f), float3::zero);
+	viewports[VP_FRONT] = new Camera(float3(0.0, 0.0f, 10.0f), float3::zero);
+	viewports[VP_BACK]	= new Camera(float3(0.0, 0.0f, -10.0f), float3::zero);
+
+	return true;
+}
+
+bool ModuleCamera3D::Start()
+{
+	for (int i = 0; i < 6; i++)
+		viewports[i]->initFrameBuffer();
+
 	return true;
 }
 
@@ -69,8 +85,8 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) { displacement += selected_camera->Z * speed; };
 		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) { displacement -= selected_camera->Z * speed; };
 
-		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { displacement -= selected_camera->X * speed; };
-		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { displacement += selected_camera->X * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) { displacement += selected_camera->X * speed; };
+		if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) { displacement -= selected_camera->X * speed; };
 
 		// panning
 		if (App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT && !orbit)
@@ -95,8 +111,8 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT || (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT && orbit))
 		{
-			int dx = 0;
-			int dy = 0;
+			int dx = 0; int dy = 0;
+
 			if (transform)
 			{
 				dx = transform->constraints[1][1] ? 0 : -App->input->GetMouseXMotion();
@@ -104,8 +120,11 @@ update_status ModuleCamera3D::Update(float dt)
 			}
 			else
 			{
-				dx = -App->input->GetMouseXMotion();
-				dy = App->input->GetMouseYMotion();
+				if (!selected_camera->IsViewport())
+				{
+					dx = -App->input->GetMouseXMotion();
+					dy = App->input->GetMouseYMotion();
+				}
 			}
 
 			float module = module = (selected_camera->Reference - selected_camera->getFrustum()->pos).Length();

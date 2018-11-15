@@ -20,8 +20,6 @@ public:
 public:
 
 	float3 offset = float3::zero;
-	bool draw_in_UI = false;
-	bool draw_frustum = false;
 
 private:
 

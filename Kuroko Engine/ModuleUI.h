@@ -15,9 +15,12 @@ class Material;
 class Camera;
 
 enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION,
-QUADTREE_CONFIG, CAMERA_MENU /*AUDIO,*/, RESOURCES_TAB, LAST_UI_TAB };  // LAST is an utility value to store the max num of tabs.
+				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, RESOURCES_TAB, LAST_UI_TAB };  
+				// LAST is an utility value to store the max num of tabs.
+
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
-	GUIZMO_SELECT, LAST_UI_TEX};
+					GUIZMO_SELECT, LAST_UI_TEX};
+
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
 
 class ModuleUI :
@@ -33,23 +36,24 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	void DrawGraphicsTab() const;
+	void DrawGraphicsLeaf() const;
 	void DrawHierarchyTab();
 	void DrawHierarchyNode(const GameObject& game_object, int& id) const;
 	void DrawObjectInspectorTab();
 	bool DrawComponent(Component& component);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab();
-	void DrawAboutWindow();
-	void DrawWindowConfig() const;
-	void DrawHardware() const;
-	void DrawApplication() const;
-	void DrawTimeControl();
-	void DrawCameraView(const ComponentCamera& camera);
-	void DrawGizmoMenu();
-	void DrawQuadtreeConfig();
-	void DrawCameraMenu();
-	void DrawResourcesTab();
+	void DrawAboutLeaf();
+	void DrawWindowConfigLeaf() const;
+	void DrawHardwareLeaf() const;
+	void DrawApplicationLeaf() const;
+	void DrawTimeControlWindow();
+	void DrawCameraViewWindow(Camera& camera);
+	void DrawGizmoMenuTab();
+	void DrawQuadtreeConfigWindow();
+	void DrawCameraMenuWindow();
+	void DrawResourcesTabWindow();
+	void DrawViewportsWindow();
 
 	void DrawGuizmo();
 

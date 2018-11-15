@@ -7,13 +7,14 @@
 #include "Material.h"
 #include "ModuleWindow.h"
 #include "ModuleCamera3D.h"
+#include "ComponentAABB.h"
 
 #include "MathGeoLib\Math\Quat.h"
 #include "MathGeoLib\Geometry\Plane.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
-Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, float hor_fov, float ver_fov)
+Camera::Camera(float3 position, float3 reference, math::FrustumType f_type, float n_plane, float f_plane, float hor_fov, float ver_fov)
 {
 	frustum = new Frustum();
 	frustum->pos = position;
@@ -21,7 +22,7 @@ Camera::Camera(float3 position, float3 reference, float n_plane, float f_plane, 
 	frustum->up = float3::unitY;
 	frustum->nearPlaneDistance = n_plane;
 	frustum->farPlaneDistance = f_plane;
-	frustum->type = PerspectiveFrustum;
+	frustum->type = f_type;
 	frustum->orthographicHeight = ver_fov;				frustum->orthographicWidth = hor_fov;
 	frustum->verticalFov = DEGTORAD * ver_fov;			frustum->horizontalFov = DEGTORAD * hor_fov;
 
@@ -72,7 +73,8 @@ void Camera::FitToSizeSelectedGeometry(float distance)
 {
 	if (GameObject* selected_obj = App->scene->selected_obj)
 	{
-		float3 new_pos = selected_obj->getCentroid() + selected_obj->getHalfsize() + float3(distance, distance, distance);
+		AABB* aabb = ((ComponentAABB*)selected_obj->getComponent(C_AABB))->getAABB(); 
+		float3 new_pos = aabb->Centroid() + aabb->HalfSize();
 		new_pos = Quat::RotateY(((ComponentTransform*)selected_obj->getComponent(TRANSFORM))->global->getRotationEuler().y) * new_pos;
 		frustum->pos = new_pos;
 		LookAt(selected_obj->getCentroid());
@@ -97,9 +99,44 @@ void Camera::Reset()
 	updateFrustum();
 }
 
+bool Camera::IsViewport()
+{
+	for (int i = 0; i < 6; i++)
+		if (App->camera->viewports[i] == this)
+			return true;
+
+	return false;
+}
+
+ViewportDir Camera::getViewportDir()
+{
+	for (int i = 0; i < 6; i++)
+		if (App->camera->viewports[i] == this)
+			return (ViewportDir)i;
+
+	return VP_NONE;
+}
+
+
+std::string Camera::getViewportDirString()
+{
+	std::string ret;
+	switch (getViewportDir())
+	{
+	case VP_RIGHT:	ret = "Right"; break;
+	case VP_LEFT:	ret = "Left"; break;
+	case VP_UP:		ret = "Up"; break;
+	case VP_DOWN:	ret = "Down"; break;
+	case VP_FRONT:	ret = "Front"; break;
+	case VP_BACK:	ret = "Back"; break;
+	default: break;
+	}
+	return ret;
+}
+
 bool Camera::frustumCull(const OBB& obb)
 {
-	if (this == App->camera->editor_camera && App->camera->override_editor_cam_culling)
+	if (this == App->camera->background_camera && App->camera->override_editor_cam_culling)
 		return App->camera->override_editor_cam_culling->frustumCull(obb);
 
 	for (int i = 0; i < 6; i++)

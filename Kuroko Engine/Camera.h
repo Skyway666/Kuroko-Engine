@@ -14,6 +14,8 @@ class Texture;
 
 #define EXTRA_DIST 3.0f
 
+enum ViewportDir { VP_RIGHT, VP_LEFT, VP_UP, VP_DOWN, VP_FRONT, VP_BACK, VP_NONE };
+
 struct FrameBuffer
 {
 	Texture* tex = nullptr;
@@ -28,7 +30,7 @@ class Camera
 	friend class ModuleCamera3D;
 	friend class ComponentCamera;
 public:
-	Camera(float3 position = float3::zero, float3 reference = float3(0.0f, 0.0f, 5.0f), float n_plane = 0.5f, float f_plane = 1250.0f, float hor_fov = 90.0f, float ver_fov = 59.0f);
+	Camera(float3 position = float3::zero, float3 reference = float3(0.0f, 0.0f, 5.0f), math::FrustumType frustum_type = math::FrustumType::PerspectiveFrustum, float n_plane = 0.5f, float f_plane = 1250.0f, float hor_fov = 90.0f, float ver_fov = 59.0f);
 	~Camera();
 
 	void LookAt(const float3 &Spot);
@@ -47,6 +49,10 @@ public:
 	void setPlaneDistance(float n_plane, float f_plane);
 	bool frustumCull(const OBB& obb);  // returns true if inside the frustum
 
+	bool IsViewport();
+	ViewportDir getViewportDir();
+	std::string getViewportDirString();
+
 	void updateFrustum();
 	void initFrameBuffer();
 
@@ -56,13 +62,18 @@ public:
 	float3 Y = { 0.0f,1.0f,0.0f };
 	float3 Z = { 0.0f,0.0f,1.0f };
 	float3 Reference = { 0.0f,0.0f,5.0f };
+
 	bool active = false;
+	bool draw_in_UI = false;
+	bool draw_frustum = false;
+	bool draw_depth = false;
 
 private:
 
 	ComponentCamera* attached_to = nullptr;  // can be null
 	FrameBuffer* frame_buffer = nullptr;
 	Frustum* frustum = nullptr;
+	math::FrustumType frustum_type = math::FrustumType::PerspectiveFrustum;
 
 };
 

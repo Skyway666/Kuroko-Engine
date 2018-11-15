@@ -101,6 +101,7 @@ bool ModuleUI::Start()
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 	close_app = false;
+	open_tabs[VIEWPORT_MENU] = false;	// must always start closed
 
 	return true;
 }
@@ -125,19 +126,25 @@ update_status ModuleUI::Update(float dt) {
 	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
 		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
 
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+	{
+		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
+		for (int i = 0; i < 6; i++)
+			App->camera->viewports[i]->active = open_tabs[VIEWPORT_MENU];
+	}
 
 	if (open_tabs[CONFIGURATION]) 
 	{
 		ImGui::Begin("Configuration", &open_tabs[CONFIGURATION]);
 
 		if (ImGui::CollapsingHeader("Graphics")) 
-			DrawGraphicsTab();
+			DrawGraphicsLeaf();
 		if (ImGui::CollapsingHeader("Window"))
-			DrawWindowConfig();
+			DrawWindowConfigLeaf();
 		if (ImGui::CollapsingHeader("Hardware"))
-			DrawHardware();
+			DrawHardwareLeaf();
 		if (ImGui::CollapsingHeader("Application"))
-			DrawApplication();
+			DrawApplicationLeaf();
 
 		if (ImGui::Button("Reset Camera"))
 			App->camera->editor_camera->Reset();
@@ -148,35 +155,38 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[HIERARCHY])
 		DrawHierarchyTab();
 
-
+	Camera* prev_selected = App->camera->background_camera;
 	App->camera->selected_camera = nullptr;
 
 	if (open_tabs[OBJ_INSPECTOR])
 		DrawObjectInspectorTab();
 
 	if (!App->camera->selected_camera)
-		App->camera->selected_camera = App->camera->editor_camera;
+		App->camera->selected_camera = prev_selected;
 
 	if (open_tabs[PRIMITIVE])
 		DrawPrimitivesTab();
 
 	if (open_tabs[ABOUT])
-		DrawAboutWindow();
+		DrawAboutLeaf();
 	
 	if (open_tabs[LOG])
 		app_log->Draw("App log",&open_tabs[LOG]);
 
 	if (open_tabs[TIME_CONTROL])
-		DrawTimeControl();
+		DrawTimeControlWindow();
 
 	if (open_tabs[QUADTREE_CONFIG])
-		DrawQuadtreeConfig();
+		DrawQuadtreeConfigWindow();
 
 	if (open_tabs[CAMERA_MENU])
-		DrawCameraMenu();
+		DrawCameraMenuWindow();
 
 	if (open_tabs[RESOURCES_TAB])
-		DrawResourcesTab();
+		DrawResourcesTabWindow();
+
+	if (open_tabs[VIEWPORT_MENU])
+		DrawViewportsWindow();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -186,8 +196,8 @@ update_status ModuleUI::Update(float dt) {
 
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
 	{
-		if ((*it)->getParent() ? (*it)->getParent()->draw_in_UI : false)
-			DrawCameraView(*(*it)->getParent());
+		if ((*it)->draw_in_UI)
+			DrawCameraViewWindow(*(*it));
 	}
 
 	if (ImGui::BeginMainMenuBar()) {
@@ -244,6 +254,50 @@ update_status ModuleUI::Update(float dt) {
 				App->requestBrowser("https://github.com/Skyway666/Kuroko-Engine/releases");
 			if(ImGui::MenuItem("Report a bug"))
 				App->requestBrowser("https://github.com/Skyway666/Kuroko-Engine/issues");
+			ImGui::EndMenu();
+		}
+
+		std::string current_viewport = "Viewport: Free camera";
+
+		switch (App->camera->selected_camera->getViewportDir())
+		{
+		case VP_RIGHT: current_viewport = "Viewport: Right"; break;
+		case VP_LEFT: current_viewport	= "Viewport: Left"; break;
+		case VP_UP: current_viewport	= "Viewport: Up"; break;
+		case VP_DOWN: current_viewport	= "Viewport: Down"; break;
+		case VP_FRONT: current_viewport = "Viewport: Front"; break;
+		case VP_BACK: current_viewport	= "Viewport: Back"; break;
+		default: break;
+		}
+			
+		if (ImGui::BeginMenu(current_viewport.c_str())) 
+		{
+			if (App->camera->selected_camera != App->camera->editor_camera)
+			{
+				if (ImGui::MenuItem("Free Camera"))
+				{
+					App->camera->selected_camera->active = false;
+					App->camera->selected_camera = App->camera->background_camera = App->camera->editor_camera;
+					App->camera->selected_camera->active = true;
+				}
+			}
+
+			std::string viewport_name;
+			for (int i = 0; i < 6; i++)
+			{
+				if (App->camera->selected_camera != App->camera->viewports[i])
+				{
+					if (ImGui::MenuItem(App->camera->viewports[i]->getViewportDirString().c_str()))
+					{
+						App->camera->background_camera->active = false;
+						App->camera->background_camera = App->camera->selected_camera = App->camera->viewports[i];
+						App->camera->background_camera->active = true;
+					}
+				}
+			}
+
+			ImGui::MenuItem("Open viewport menu", nullptr, open_tabs[VIEWPORT_MENU]);
+			
 			ImGui::EndMenu();
 		}
 	
@@ -769,9 +823,11 @@ bool ModuleUI::DrawComponent(Component& component)
 			if (ImGui::Checkbox("Active##active camera", &camera_active))
 				camera->setActive(camera_active);
 
-			ImGui::Checkbox("Draw camera view", &camera->draw_in_UI);
+			ImGui::Checkbox("Draw camera view", &camera->getCamera()->draw_in_UI);
 
-			ImGui::Checkbox("Draw frustum", &camera->draw_frustum);
+			ImGui::Checkbox("Draw frustum", &camera->getCamera()->draw_frustum);
+
+			ImGui::Checkbox("Draw depth", &camera->getCamera()->draw_depth);
 
 			if (camera_active)
 			{
@@ -803,59 +859,125 @@ bool ModuleUI::DrawComponent(Component& component)
 	return true;
 }
 
-void ModuleUI::DrawCameraView(const ComponentCamera& camera)
+void ModuleUI::DrawCameraViewWindow(Camera& camera)
 {
-	if (FrameBuffer* frame_buffer = camera.getCamera()->getFrameBuffer())
+	if (FrameBuffer* frame_buffer = camera.getFrameBuffer())
 	{
-		ImGui::Begin((camera.getParent()->getName() + " Camera").c_str(), nullptr, ImGuiWindowFlags_NoResize);
+		std::string window_name;
 
-		static bool draw_depth = false;
+		if (camera.getParent())
+			window_name = camera.getParent()->getParent()->getName() + " Camera";
+		else
+			window_name = camera.getViewportDirString();
+
+		ImGui::Begin(window_name.c_str(), &camera.draw_in_UI, ImGuiWindowFlags_NoResize);
 
 		if(ImGui::IsWindowFocused())
-			App->camera->selected_camera = camera.getCamera();
+			App->camera->selected_camera = &camera;
 		
-		ImGui::Checkbox("Draw Depth", &draw_depth);
+		ImGui::Checkbox("Draw Depth", &camera.draw_depth);
 
 		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 50, frame_buffer->size_y / 3 + 70));
 
-		if (ImGui::ImageButton((void*) (draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), ImVec2(0, 1), ImVec2(1, 0)))
+		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			float x = App->input->GetMouseX(); float y = App->input->GetMouseY();
 			ImVec2 window_pos = ImGui::GetWindowPos();
 			x = (((x - window_pos.x) / ImGui::GetWindowSize().x) * 2) - 1;
 			y = (((y - window_pos.y) / ImGui::GetWindowSize().y) * 2) - 1;
 
-			if (GameObject* new_selected = App->scene->MousePicking(x, y, camera.getParent()))
+			if (GameObject* new_selected = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr))
 				App->scene->selected_obj = new_selected;
 		}
 		ImGui::End();
 	}
-	else camera.getCamera()->initFrameBuffer();
+	else camera.initFrameBuffer();
 }
 
-void ModuleUI::DrawCameraMenu()
+void ModuleUI::DrawViewportsWindow()
+{
+	ImGui::Begin("Viewports", nullptr);
+
+	if (ImGui::Button("Close##Close viewports"))
+	{
+		for (int i = 0; i < 6; i++)
+			App->camera->viewports[i]->active = false;
+
+		open_tabs[VIEWPORT_MENU] = false;
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		if (i != 0 && i != 3)
+			ImGui::SameLine();
+
+		FrameBuffer* fb = App->camera->viewports[i]->getFrameBuffer();
+
+		std::string viewport_name;
+		switch (App->camera->viewports[i]->getViewportDir())
+		{
+		case VP_RIGHT:	ImGui::Text("Right"); break;
+		case VP_LEFT:	ImGui::Text(" Left"); break;
+		case VP_UP:		ImGui::Text("   Up"); break;
+		case VP_DOWN:	ImGui::Text(" Down"); break;
+		case VP_FRONT:	ImGui::Text("Front"); break;
+		case VP_BACK:	ImGui::Text(" Back"); break;
+		default: break;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::ImageButton((void*)(App->camera->viewports[i]->draw_depth ? fb->depth_tex->gl_id : fb->tex->gl_id), ImVec2(fb->size_x / 4, fb->size_y / 4), ImVec2(0, 1), ImVec2(1, 0)))
+		{
+			for (int i = 0; i < 6; i++)
+				App->camera->viewports[i]->active = false;
+
+			App->camera->background_camera->active = false;
+			App->camera->background_camera = App->camera->selected_camera = App->camera->viewports[i];
+			App->camera->background_camera->active = true;
+			open_tabs[VIEWPORT_MENU] = false;
+		}
+	}
+	ImGui::End();
+}
+
+void ModuleUI::DrawCameraMenuWindow()
 {
 	ImGui::Begin("Camera Menu", &open_tabs[CAMERA_MENU]);
 
 	if (App->camera->override_editor_cam_culling)
 	{
-		ImGui::TextWrapped("Editor camera frustum culling overriden by camera %s", App->camera->override_editor_cam_culling->getParent()->getParent()->getName().c_str());
+		ImGui::TextWrapped("Background camera frustum culling overriden by camera %s", App->camera->override_editor_cam_culling->getParent()->getParent()->getName().c_str());
 		if (ImGui::Button("Stop overriding"))
 			App->camera->override_editor_cam_culling = nullptr;
 	}
 
+	static bool hide_viewports = false;
+
+	ImGui::Checkbox("Hide viewports", &hide_viewports);
+
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
 	{
+		if ((*it)->IsViewport() && hide_viewports)
+			continue;
+
 		std::string name;
-		if ((*it)->getParent()) name = (*it)->getParent()->getParent()->getName() + "Camera";
-		else					name = "editor_camera";
+		if ((*it)->getParent()) 
+			name = (*it)->getParent()->getParent()->getName() + "Camera";
+		else
+		{
+			if ((*it) == App->camera->editor_camera)
+				name = "Free camera";
+			else
+				name = (*it)->getViewportDirString();
+		}
 
 		if (ImGui::TreeNode(name.c_str()))
 		{
-			if ((*it)->active) ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Active");
+			if ((*it)->active)  ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Active");
 			else				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unactive");
 
-			if (*it != App->camera->editor_camera)
+			if (*it != App->camera->background_camera)
 			{
 				static bool is_overriding;
 				is_overriding = ((*it) == App->camera->override_editor_cam_culling);
@@ -866,6 +988,15 @@ void ModuleUI::DrawCameraMenu()
 				}
 
 			}
+			else
+				ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Background camera");
+			
+			ImGui::Checkbox("Draw camera view", &(*it)->draw_in_UI);
+
+			ImGui::Checkbox("Draw frustum", &(*it)->draw_frustum);
+
+			ImGui::Checkbox("Draw depth", &(*it)->draw_depth);
+
 			ImGui::TreePop();
 		}
 	}
@@ -873,7 +1004,7 @@ void ModuleUI::DrawCameraMenu()
 	ImGui::End();
 }
 
-void ModuleUI::DrawResourcesTab()
+void ModuleUI::DrawResourcesTabWindow()
 {
 	ImGui::Begin("Resources", &open_tabs[RESOURCES_TAB]);
 	if (ImGui::Button("Clean library"))
@@ -939,7 +1070,7 @@ void ModuleUI::DrawPrimitivesTab()
 }
 
 
-void ModuleUI::DrawAboutWindow()
+void ModuleUI::DrawAboutLeaf()
 {
 	ImGui::Begin("About", &open_tabs[ABOUT]); 
 	ImGui::PushFont(ui_fonts[REGULAR]);
@@ -995,7 +1126,7 @@ void ModuleUI::DrawAboutWindow()
 	ImGui::End();
 }
 
-void ModuleUI::DrawGraphicsTab() const {
+void ModuleUI::DrawGraphicsLeaf() const {
 	//starting values
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
@@ -1078,7 +1209,7 @@ void ModuleUI::DrawGraphicsTab() const {
 	ImGui::PopFont();
 }
 
-void ModuleUI::DrawWindowConfig() const
+void ModuleUI::DrawWindowConfigLeaf() const
 {
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
@@ -1110,7 +1241,7 @@ void ModuleUI::DrawWindowConfig() const
 	ImGui::PopFont();
 }
 
-void ModuleUI::DrawHardware() const 
+void ModuleUI::DrawHardwareLeaf() const 
 {
 	ImGui::PushFont(ui_fonts[REGULAR]);
 	
@@ -1175,7 +1306,7 @@ void ModuleUI::DrawHardware() const
 	ImGui::PopFont();
 }
 
-void ModuleUI::DrawApplication() const 
+void ModuleUI::DrawApplicationLeaf() const 
 {
 	// HARDCODED (?)
 	ImGui::PushFont(ui_fonts[REGULAR]);
@@ -1191,7 +1322,7 @@ void ModuleUI::DrawApplication() const
 	ImGui::PopFont();
 }
 
-void ModuleUI::DrawTimeControl()
+void ModuleUI::DrawTimeControlWindow()
 {
 	ImGui::Begin("Time control", &open_tabs[TIME_CONTROL]);
 
@@ -1239,7 +1370,7 @@ void ModuleUI::DrawTimeControl()
 	ImGui::End();
 }
 
-void ModuleUI::DrawGizmoMenu() {
+void ModuleUI::DrawGizmoMenuTab() {
 
 	ImGui::Begin("##Gizmo menu", nullptr);
 
@@ -1280,7 +1411,7 @@ void ModuleUI::DrawGizmoMenu() {
 
 }
 
-void ModuleUI::DrawQuadtreeConfig() {
+void ModuleUI::DrawQuadtreeConfigWindow() {
 
 	//AABB coll_test;
 
@@ -1309,7 +1440,7 @@ void ModuleUI::DrawQuadtreeConfig() {
 
 void ModuleUI::DrawGuizmo()
 {
-	App->gui->DrawGizmoMenu();
+	App->gui->DrawGizmoMenuTab();
 
 	if (draw_guizmo)
 	{

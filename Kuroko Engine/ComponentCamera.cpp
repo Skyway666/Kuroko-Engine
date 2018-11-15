@@ -30,13 +30,13 @@ bool ComponentCamera::Update(float dt)
 		camera->updateFrustum();
 	}
 
-	getCamera()->active = draw_in_UI;
+	getCamera()->active = getCamera()->draw_in_UI;
 
 	return true;
 }
 
 void ComponentCamera::Draw() const
 {
-	if (draw_frustum)
+	if (getCamera()->draw_frustum)
 		App->debug->directDrawFrustum(*getCamera()->getFrustum());
 }
