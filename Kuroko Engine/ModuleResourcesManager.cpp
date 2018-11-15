@@ -40,7 +40,7 @@ bool ModuleResourcesManager::Start()
 
 update_status ModuleResourcesManager::Update(float dt)
 {
-
+	ManageAssetModification();
 	return UPDATE_CONTINUE;
 }
 
@@ -199,11 +199,15 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 	if (App->fs.ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
 		meta = json_parse_file(full_meta_path.c_str());
 		file_last_mod = App->fs.getFileLastTimeMod(full_asset_path.c_str());
+		binary_path = json_object_get_string(json_object(meta), "binary_path");
+		enum_type = type2enumType(json_object_get_string(json_object(meta), "type"));
+		uuid_number = json_object_get_number(json_object(meta), "resource_uuid");
+		uuid_str = uuid2string(uuid_number);
 		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) { // Check if the last time that was edited is the .meta timestamp
-			deff.type = type2enumType(json_object_get_string(json_object(meta), "type"));
-			deff.binary = json_object_get_string(json_object(meta), "binary_path");
+			deff.type = enum_type;
+			deff.binary = binary_path;
 			deff.asset = full_asset_path;
-			deff.uuid = json_object_get_number(json_object(meta), "resource_uuid");
+			deff.uuid = uuid_number;
 			json_value_free(meta);
 			return deff;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
 		}
@@ -213,10 +217,9 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		meta = json_value_init_object();
 		std::string str_type;
 		uuid_number = random32bits();
-		uuid_str = uuid2string(uuid_number);
 		str_type = assetExtension2type(extension.c_str());
 		enum_type = type2enumType(str_type.c_str());
-		
+		uuid_str = uuid2string(uuid_number);
 		binary_path = App->fs.getPathFromLibDir(enumType2libDir(enum_type)) + uuid_str + enumType2binaryExtension(enum_type);
 		file_last_mod = App->fs.getFileLastTimeMod(full_asset_path.c_str());
 		json_object_set_number(json_object(meta), "resource_uuid", uuid_number); // Brand new uuid
@@ -257,6 +260,58 @@ void ModuleResourcesManager::LoadResource(uint uuid) {
 	}
 	else
 		app_log->AddLog("WARNING: Trying to load non existing resource");
+}
+
+void ModuleResourcesManager::ManageAssetModification()
+{
+	using std::experimental::filesystem::recursive_directory_iterator;
+	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
+
+		std::string path, name, extension;
+		path = name = extension = it.path().generic_string();	// Separate path, name and extension	
+		App->fs.getExtension(extension);
+		App->fs.getPath(path);
+		App->fs.getFileNameFromPath(name);
+
+		JSON_Value* meta;
+		int file_last_mod = 0;
+		// Needed for collisioning .meta against asset
+		std::string full_meta_path = path + name + extension + META_EXTENSION; // TODO: Add original extension to .meta
+		std::string full_asset_path = path + name + extension;
+
+		if (App->fs.ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
+			meta = json_parse_file(full_meta_path.c_str());
+			file_last_mod = App->fs.getFileLastTimeMod(full_asset_path.c_str());
+			if (json_object_get_number(json_object(meta), "timeCreated") != file_last_mod) { // Check if the last time that was edited is the .meta timestamp
+
+				// Update .meta with time created
+				json_object_set_number(json_object(meta), "timeCreated", file_last_mod);
+				json_serialize_to_file(meta, full_meta_path.c_str());
+				// Set variable to update resource
+				uint uuid_number = json_object_get_number(json_object(meta), "resource_uuid");		
+				// Set variable to reimport
+				std::string uuid_str = uuid2string(uuid_number);
+				ResourceType enum_type = type2enumType(json_object_get_string(json_object(meta), "type"));
+
+				switch (enum_type) {
+				case R_TEXTURE:
+					App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
+					break;
+				case R_SCENE:
+					App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
+					break;
+				}
+
+				Resource* texture_resource =  resources[uuid_number];
+				// Reload to memory using new binary
+				texture_resource->UnloadFromMemory();
+				texture_resource->LoadToMemory();
+			}
+			json_value_free(meta);
+
+		}
+	}
+
 }
 
 Resource * ModuleResourcesManager::getResource(uint uuid) {

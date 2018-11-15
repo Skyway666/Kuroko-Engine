@@ -32,11 +32,16 @@ public:
 	bool ManageFile(std::string file_path, resource_deff& deff); // Retruns true if a new resource has to be generated
 	void ManageMeta(std::string path, std::string name, std::string extension);
 	void CleanMeshesFromLibrary(std::string prefab_binary);
-	resource_deff ManageAsset(std::string path, std::string name, std::string extension);
 	// Generates Imports file to library, with the name of the uuid
 	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different binarys, and only one for the FBX which is a scene,
 	// with the transformations and hierarchy, and uuids of the meshes that it contains. Only one .metadata is generated, and it points
-	// to that file.			
+	// to that file.	
+	resource_deff ManageAsset(std::string path, std::string name, std::string extension);
+		
+
+
+	// Regenerate resources if the file is modified (for the moment)
+	void ManageAssetModification();
 
 	Resource* getResource(uint uuid); // Returns the resource with the corresponding UUID, if not found returns nullptr
 	Resource* getPrimitiveMeshResource(PrimitiveTypes primitive);

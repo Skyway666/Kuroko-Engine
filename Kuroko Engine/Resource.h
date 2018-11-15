@@ -22,13 +22,10 @@ public:
 	bool IsLoaded();			// If the resource is loaded to memory
 
 	uint components_used_by = 0; // How many components use this resource
-	std::string asset;
-protected:
-
-
-	bool loaded_in_memory = false;
 	std::string binary;
-
+protected:
+	std::string asset;
+	bool loaded_in_memory = false;
 };
 
 
