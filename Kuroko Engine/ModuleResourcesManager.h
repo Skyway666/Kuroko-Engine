@@ -54,6 +54,7 @@ public:
 	// will generate objects in the scene is FBX, as it is a scene itself. The other ones will just be loaded to memory,
 	// and showcased in the resources debug UI
 	void LoadFileToScene(const char* file);		
+	uint getResourceUuid(const char* file); // Will not assign the resource 
 
 
 	void CleanResources() { cleanResources = true; }
