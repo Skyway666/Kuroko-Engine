@@ -7,10 +7,10 @@
 #include "ModuleImporter.h"
 #include "ModuleCamera3D.h"
 #include "Camera.h"
+#include "ModuleScene.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
-#include "ModuleScene.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -125,9 +125,13 @@ bool ModuleRenderer3D::Start()
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
 	for (auto cam = App->camera->game_cameras.rbegin(); cam != App->camera->game_cameras.rend(); ++cam)
-	{
+	{	
+
 		if (!(*cam)->active)
-			continue;
+		{
+			if(((*cam)->IsViewport() || (*cam) == App->camera->editor_camera) && !(*cam)->draw_in_UI)
+				continue;
+		}
 
 		App->camera->current_camera = *cam;
 
@@ -163,6 +167,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 		}
+
+		
 	}
 
 	return UPDATE_CONTINUE;

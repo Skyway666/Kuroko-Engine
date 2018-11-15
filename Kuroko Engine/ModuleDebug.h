@@ -9,6 +9,7 @@
 #include "MathGeoLib\Math\float2.h"
 #include "MathGeoLib\Geometry\Frustum.h"
 #include "MathGeoLib\Math\Quat.h"
+#include "MathGeoLib\Geometry\OBB.h"
 
 #include <list>
 
@@ -42,6 +43,7 @@ public:
 	~ModuleDebug() { ClearShapes(); };
 
 	void DrawShapes();
+	bool Start();
 	bool CleanUp();
 
 	uint addArrow(const float3& start_point, const float3& end_point, const Color& color = Red);
@@ -65,5 +67,6 @@ public:
 private:
 	std::list<DebugShape*> shapes;
 	uint last_shape_id = 0;
+	math::OBB grid_obb;
 };
 #endif

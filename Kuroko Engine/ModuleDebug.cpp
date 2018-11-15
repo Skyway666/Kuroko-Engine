@@ -1,4 +1,7 @@
 #include "ModuleDebug.h"
+#include "Application.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 #include "MathGeoLib\Geometry\LineSegment.h"
 
@@ -7,6 +10,17 @@
 
 #include <gl/GL.h>
 #include <gl/GLU.h>
+
+bool ModuleDebug::Start()
+{
+	grid_obb.r = { 20.0f, 0.1f, 20.0f };
+	grid_obb.pos = float3::zero;
+	grid_obb.axis[0] = float3::unitX;
+	grid_obb.axis[1] = float3::unitX;
+	grid_obb.axis[2] = float3::unitZ;
+
+	return true;
+}
 
 bool ModuleDebug::CleanUp()
 {
@@ -21,6 +35,12 @@ void ModuleDebug::DrawShapes()
 {
 	if (draw_grid)	
 		DrawGrid();
+
+	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
+	{
+		if ((*it)->draw_frustum)
+			directDrawFrustum(*(*it)->getFrustum());
+	}
 
 	for (std::list<DebugShape*>::iterator it = shapes.begin(); it != shapes.end(); it++)
 		(*it)->Draw();
@@ -185,6 +205,8 @@ void ModuleDebug::directDrawFrustum(const Frustum& f)
 	
 	for (int i = 0; i < 12; i++)
 	{
+		float3 a = f.Edge(i).a;
+		float3 b = f.Edge(i).b;
 		glVertex3f(f.Edge(i).a.x, f.Edge(i).a.y, f.Edge(i).a.z);
 		glVertex3f(f.Edge(i).b.x, f.Edge(i).b.y, f.Edge(i).b.z);
 	}
@@ -228,6 +250,9 @@ void ModuleDebug::directDrawAxis(const float3& position, const Quat& rotation, f
 
 void ModuleDebug::DrawGrid() const
 {
+	if (!App->camera->current_camera->frustumCull(grid_obb))
+		return;
+
 	glLineWidth(1.0f);
 	glColor3f(0.5f, 0.5f, 0.5f);
 	glBegin(GL_LINES);

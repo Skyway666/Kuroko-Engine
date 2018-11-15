@@ -875,8 +875,6 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 		if(ImGui::IsWindowFocused())
 			App->camera->selected_camera = &camera;
 		
-		ImGui::Checkbox("Draw Depth", &camera.draw_depth);
-
 		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 50, frame_buffer->size_y / 3 + 70));
 
 		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), ImVec2(0, 1), ImVec2(1, 0)))
@@ -912,19 +910,7 @@ void ModuleUI::DrawViewportsWindow()
 			ImGui::SameLine();
 
 		FrameBuffer* fb = App->camera->viewports[i]->getFrameBuffer();
-
-		std::string viewport_name;
-		switch (App->camera->viewports[i]->getViewportDir())
-		{
-		case VP_RIGHT:	ImGui::Text("Right"); break;
-		case VP_LEFT:	ImGui::Text(" Left"); break;
-		case VP_UP:		ImGui::Text("   Up"); break;
-		case VP_DOWN:	ImGui::Text(" Down"); break;
-		case VP_FRONT:	ImGui::Text("Front"); break;
-		case VP_BACK:	ImGui::Text(" Back"); break;
-		default: break;
-		}
-
+		ImGui::TextWrapped(App->camera->viewports[i]->getViewportDirString().c_str());
 		ImGui::SameLine();
 
 		if (ImGui::ImageButton((void*)(App->camera->viewports[i]->draw_depth ? fb->depth_tex->gl_id : fb->tex->gl_id), ImVec2(fb->size_x / 4, fb->size_y / 4), ImVec2(0, 1), ImVec2(1, 0)))
@@ -977,6 +963,7 @@ void ModuleUI::DrawCameraMenuWindow()
 			if ((*it)->active)  ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Active");
 			else				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unactive");
 
+			ImGui::SameLine();
 			if (*it != App->camera->background_camera)
 			{
 				static bool is_overriding;
@@ -986,7 +973,6 @@ void ModuleUI::DrawCameraMenuWindow()
 					if (!is_overriding)  App->camera->override_editor_cam_culling = nullptr;
 					else				 App->camera->override_editor_cam_culling = *it;
 				}
-
 			}
 			else
 				ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Background camera");
@@ -996,6 +982,70 @@ void ModuleUI::DrawCameraMenuWindow()
 			ImGui::Checkbox("Draw frustum", &(*it)->draw_frustum);
 
 			ImGui::Checkbox("Draw depth", &(*it)->draw_depth);
+
+			if(ImGui::CollapsingHeader("Frustum"))
+			{
+				if ((*it)->getFrustum()->type == math::FrustumType::PerspectiveFrustum)
+				{
+					ImGui::Text("Current mode: Perspective");
+					ImGui::SameLine();
+					if (ImGui::Button("Set ortographic"))
+					{
+						(*it)->getFrustum()->type = math::FrustumType::OrthographicFrustum;
+						(*it)->getFrustum()->orthographicHeight = (*it)->getFrustum()->orthographicWidth = INIT_ORT_SIZE;
+					}
+
+					static float hor_fov = RADTODEG * (*it)->getFrustum()->horizontalFov;
+					static float ver_fov = RADTODEG * (*it)->getFrustum()->verticalFov;
+
+					ImGui::Text("Horizontal FOV:");
+					ImGui::SameLine();
+					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+					if (ImGui::DragFloat("##Horizontal FOV", &hor_fov, 1.0f, 1.0f, 179.0f, "%.02f"))
+						(*it)->getFrustum()->horizontalFov = DEGTORAD * hor_fov;
+
+					ImGui::Text("Vertical FOV:");
+					ImGui::SameLine();
+					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+					if (ImGui::DragFloat("##Vertical FOV", &ver_fov, 1.0f, 1.0f, 179.0f, "%.02f"))
+						(*it)->getFrustum()->verticalFov = DEGTORAD * ver_fov;
+
+				}
+				else
+				{
+
+					ImGui::Text("Current mode: Ortographic");
+					ImGui::SameLine();
+
+					if (ImGui::Button("Set perspective"))
+					{
+						(*it)->getFrustum()->type = math::FrustumType::PerspectiveFrustum;
+						(*it)->getFrustum()->horizontalFov = DEGTORAD * INIT_HOR_FOV; (*it)->getFrustum()->verticalFov = DEGTORAD * INIT_VER_FOV;
+					}
+
+					ImGui::Text("Ortographic Width:");
+					ImGui::SameLine();
+					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+					ImGui::DragFloat("##Ortographic Width", &(*it)->getFrustum()->orthographicWidth, 1.0f, 1.0f, 500.0f, "%.02f");
+
+					ImGui::Text("Ortographic Height:");
+					ImGui::SameLine();
+					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+					ImGui::DragFloat("##Ortographic Height", &(*it)->getFrustum()->orthographicHeight, 1.0f, 1.0f, 500.0f, "%.02f");
+
+				}
+
+				ImGui::Text("Near Plane:");
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::DragFloat("##Near Plane:", &(*it)->getFrustum()->nearPlaneDistance, 0.1f, 0.0f, 500.0f, "%.02f");
+
+				ImGui::Text("Far Plane:");
+				ImGui::SameLine();
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+				ImGui::DragFloat("##Far Plane:", &(*it)->getFrustum()->farPlaneDistance, 0.1f, 1.0f, 1500.0f, "%.02f");
+
+			}
 
 			ImGui::TreePop();
 		}

@@ -14,7 +14,6 @@ public:
 	~ComponentCamera() {};
 
 	bool Update(float dt);
-	void Draw() const;
 	Camera* getCamera() const { return camera; };
 
 public:

@@ -5,7 +5,6 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "ModuleCamera3D.h"
-#include "ModuleDebug.h"
 
 #include "MathGeoLib\Math\Quat.h"
 
@@ -33,10 +32,4 @@ bool ComponentCamera::Update(float dt)
 	getCamera()->active = getCamera()->draw_in_UI;
 
 	return true;
-}
-
-void ComponentCamera::Draw() const
-{
-	if (getCamera()->draw_frustum)
-		App->debug->directDrawFrustum(*getCamera()->getFrustum());
 }

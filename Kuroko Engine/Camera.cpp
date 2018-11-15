@@ -14,12 +14,6 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 
-#define INIT_HOR_FOV 90.0f
-#define INIT_VER_FOV 59.0f
-#define INIT_N_PLANE 0.5f
-#define INIT_F_PLANE 1250.0f
-#define INIT_ORT_SIZE 40.0f
-
 Camera::Camera(float3 position, float3 reference, math::FrustumType f_type)
 {
 	frustum = new Frustum();
@@ -31,7 +25,7 @@ Camera::Camera(float3 position, float3 reference, math::FrustumType f_type)
 	if (f_type == math::FrustumType::OrthographicFrustum)
 	{
 		frustum->orthographicHeight = INIT_ORT_SIZE;			frustum->orthographicWidth = INIT_ORT_SIZE;
-		frustum->nearPlaneDistance = INIT_N_PLANE;				frustum->farPlaneDistance = INIT_F_PLANE;
+		frustum->nearPlaneDistance = INIT_N_PLANE;				frustum->farPlaneDistance = INIT_F_PLANE / 2;
 	}
 	else
 	{

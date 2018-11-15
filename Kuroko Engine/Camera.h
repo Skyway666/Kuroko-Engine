@@ -13,6 +13,11 @@ class FrameBuffer;
 class Texture;
 
 #define EXTRA_DIST 3.0f
+#define INIT_HOR_FOV 90.0f
+#define INIT_VER_FOV 59.0f
+#define INIT_N_PLANE 0.5f
+#define INIT_F_PLANE 1250.0f
+#define INIT_ORT_SIZE 20.0f
 
 enum ViewportDir { VP_RIGHT, VP_LEFT, VP_UP, VP_DOWN, VP_FRONT, VP_BACK, VP_NONE };
 
