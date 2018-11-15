@@ -295,6 +295,7 @@ void ModuleScene::ManageSceneSaveLoad() {
 	}
 	if (want_local_load) {
 		if (local_scene_save) {
+			ClearScene();
 			loadSerializedScene(local_scene_save);
 			json_value_free(local_scene_save);
 			local_scene_save = nullptr;
