@@ -307,7 +307,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	Transform* trans = new Transform();
 	JSON_Value* transform_component = json_value_init_object();
 	JSON_Value* local_transform = json_value_init_object();
-	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
+	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.z, rot.w), float3(scl.x, scl.y, scl.z));
 	trans->Save(json_object(local_transform));
 	json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
 	json_object_set_value(json_object(transform_component), "local", local_transform); //Set local transform
