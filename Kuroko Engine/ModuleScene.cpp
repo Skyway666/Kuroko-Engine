@@ -148,8 +148,30 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 	App->debug->DrawShapes();
 
-	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
-		(*it)->Draw();
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+		if (!(*it)->isStatic())
+			(*it)->Draw();
+	}
+
+	if (App->camera->override_editor_cam_culling) { // Check if there is a camera overriting editor
+		std::list<GameObject*> drawable_gameobjects;
+		quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
+		for (auto it = drawable_gameobjects.begin(); it != drawable_gameobjects.end(); it++) {
+			// Only draw objects inside frustum and corresponding quadtree node
+			(*it)->Draw();
+		}
+	}
+	else {
+		// Draw all static gameobjects if no camera is overriting
+		for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+			if ((*it)->isStatic())
+				(*it)->Draw();
+		}
+	}
+
+
+
+
 }
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }

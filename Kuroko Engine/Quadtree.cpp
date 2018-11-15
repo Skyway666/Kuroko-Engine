@@ -49,7 +49,7 @@ void Quadtree::Empty() {
 	root->is_leaf = true;
 }
 
-void Quadtree::Intersect(std::list<GameObject*>& found_obj, AABB primitive) {
+void Quadtree::Intersect(std::list<GameObject*>& found_obj, Frustum primitive) {
 	root->CollectIntersections(found_obj, primitive);
 }
 
@@ -76,13 +76,14 @@ QuadTreeNode::~QuadTreeNode() {
 	}
 }
 
-void QuadTreeNode::CollectIntersections(std::list<GameObject*>& found_obj, const AABB& primitive) {
+void QuadTreeNode::CollectIntersections(std::list<GameObject*>& found_obj, const Frustum& primitive) {
 
 	if (!is_leaf) {													// If not leaf call the function for all childs
 		for (int i = 0; i < 4; i++)
 			childs[i]->CollectIntersections(found_obj, primitive);
 	}
-	else if (primitive.Intersects(box)) {
+
+	if (primitive.Intersects(box)) {
 		for (auto it = objects.begin(); it != objects.end(); it++)
 			found_obj.push_back((*it));							// TODO: Should be collided against global gameobject aabb, but still doesn't exist
 	}
