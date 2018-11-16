@@ -27,7 +27,7 @@ Rodrigo De Pedro Lombao
 - Camera as component with frustum, frustum culling and rendering window
 - Gizmo implemented, with toolbar.
 - Mouse Picking
-- Asset viewer window with previews and info about the files in Asset folder.
+
 
 INNOVATION: 
 Rodrigo De Pedro Lombao
@@ -39,12 +39,14 @@ modifying the transform of the game object that contains it
 - Viewports
 - Transform with Global and Local modes and constraints.
 - Camera menu with information about all game cameras and tweakable options.
+- Asset viewer window with previews and info about the files in Asset folder.
 
 Lucas García Mateu
-- Using "map" container to store resources
+- Using "map" container to store resources.
 - When loading a scene, the engine will keep the name of the scene, and if "save" is selected it will be automatically saved
-in the "scene folder" in assets, while if "save as" is clicked it will allow to rename it and save as a different scene
-- Menu with options on the quadtree, included how many objects are being discarted
+in the "scene folder" in assets, while if "save as" is clicked it will allow to rename it and save as a different scene.
+- Menu with options on the quadtree, included how many objects are being discarted.
+- "Duplicate" button
 
 Libraries used:
 - Assimp 	(http://www.assimp.org/)

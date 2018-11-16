@@ -227,6 +227,30 @@ GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 	}
 }
 
+GameObject* ModuleScene::duplicateGameObject(GameObject * gobj) {
+
+	// Duplicate go
+	JSON_Value* go_deff = json_value_init_object();
+	gobj->Save(json_object(go_deff));
+	GameObject* duplicated_go = new GameObject(json_object(go_deff));
+	App->scene->addGameObject(duplicated_go);
+	json_value_free(go_deff);
+
+	// Duplicate children
+	std::list<GameObject*> children;
+	gobj->getChildren(children);
+	
+	for (auto it = children.begin(); it != children.end(); it++) {
+		// Duplicate child
+		GameObject* curr_child = *it;
+		GameObject* duplicated_child = duplicateGameObject(curr_child);
+		duplicated_child->setParent(duplicated_go);
+		duplicated_go->addChild(duplicated_child);
+	}
+
+	return duplicated_go;
+}
+
 GameObject* ModuleScene::getGameObject(uint id) const
 {
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)

@@ -377,6 +377,12 @@ void ModuleUI::DrawHierarchyTab()
 			App->scene->selected_obj->addChild(go);
 	}
 
+	ImGui::SameLine();
+
+	if (ImGui::Button("Duplicate Selected")) {
+		App->scene->duplicateGameObject(App->scene->selected_obj);
+	}
+
 	int id = 0;
 	std::list<GameObject*> root_objs;
 	App->scene->getRootObjs(root_objs);
