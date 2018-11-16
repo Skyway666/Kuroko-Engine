@@ -68,8 +68,8 @@ bool ModuleScene::CleanUp()
 	game_objects.clear();
 	game_objs_to_delete.clear();
 
-	delete skybox;
-	delete quadtree;
+	if(skybox) delete skybox;
+	if(quadtree) delete quadtree;
 
 	if (local_scene_save) {
 		json_value_free(local_scene_save);
