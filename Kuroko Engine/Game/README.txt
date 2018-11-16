@@ -4,34 +4,42 @@ This is a videogame engine in process, developed by Rodrigo de Pedro Lombao and 
 
 Features of the engine:
 
+Lucas García Mateu
 - Information about the hardware and application.
 - Rendering and window options.
-- Geometry storage and render in real time.
-- Primitive shapes (Plane, Cube, Sphere and Cylinder).
+- Primitive shapes (Sphere and Cylinder).
 - File import through drag and drop.
-- Game object system, with parenting and components.
-- Load and Save of the editor configuration through JSON.
-- Own File Format for meshes and all textures stored in dds in automatically created libraries.
-- Camera as a component (the camera shows what it sees in the inspector).
+- Load and Save of the editor configuration through JSON (open tabs and window options).
+- Own File Format for meshes and all textures.
 - Quadtree.
-- Save and Load of scene, fully from the library.
-- Transform "Global and Local".
-- About tab with information about the engine and links to the used libraries.
 - UI docking.
+- Save and Load of scene.
+- About tab with information about the engine and links to the used libraries.
+- Time control implemented, with serialization of scene reload when stopping time.
+- Resource manager with online functionalities (add, modify and delete resources)
+
+Rodrigo De Pedro Lombao
+- Geometry storage and render in real time.
+- Primitive shapes (Plane, Cube,)
+- Game object system, with parenting and components.
+- Camera as component with frustum, frustum culling and rendering window
 - Gizmo implemented, with toolbar.
 - Mouse Picking
-- Time control implemented, with serialization of scene reload when stopping time.
-- Camera as component with frustum and frustum culling
 
 INNOVATION: 
-- File import through windows explorer
+Rodrigo De Pedro Lombao
+- File import through windows explorer: 
 - Camera can display viewports and the depth buffer
-- Using "map" container to store resources
 - Notifications of memory leaks in console
 - Skybox
 - Viewports
+- Transform with "Global and Local" options.
+
+Lucas García Mateu
+- Using "map" container to store resources
 - When loading a scene, the engine will keep the name of the scene, and if "save" is selected it will be automatically saved
 in the "scene folder" in assets, while if "save as" is clicked it will allow to rename it and save as a different scene
+
 
 Libraries used:
 - Assimp 	(http://www.assimp.org/)
