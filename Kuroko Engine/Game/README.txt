@@ -6,22 +6,22 @@ Features of the engine:
 
 Lucas García Mateu
 - Information about hardware and application.
+- Application log and performance indicators as UI items.
 - Rendering and window options.
+- About tab with information about the engine and links to the used libraries.
 - Primitive shapes (Sphere and Cylinder).
 - File import through drag and drop.
 - Load and Save of the editor configuration through JSON (open tabs and window options).
+- UI docking.
 - Own File Format for meshes and all textures.
 - Quadtree.
-- UI docking.
 - Save and Load of scene.
-- About tab with information about the engine and links to the used libraries.
 - Time control implemented, with serialization of scene reload when stopping time.
 - Resource manager with online functionalities (add, modify and delete resources)
-- Application log and performance indicators as UI items.
 
 Rodrigo De Pedro Lombao
 - Geometry storage and render in real time.
-- Primitive shapes .
+- Primitive shapes.
 - Hierarchy viewer and game object inspector.
 - Game object system, with parenting and components.
 - Camera as component with frustum, frustum culling and rendering window
@@ -32,7 +32,8 @@ Rodrigo De Pedro Lombao
 INNOVATION: 
 Rodrigo De Pedro Lombao
 - File import through windows explorer
-- Camera can display viewports and the depth buffer
+- Component camera can display a viewport, which can show depth buffer and can be operated with the mouse,
+modifying the transform of the game object that contains it
 - Notifications of memory leaks in console
 - Skybox
 - Viewports
@@ -43,7 +44,7 @@ Lucas García Mateu
 - Using "map" container to store resources
 - When loading a scene, the engine will keep the name of the scene, and if "save" is selected it will be automatically saved
 in the "scene folder" in assets, while if "save as" is clicked it will allow to rename it and save as a different scene
-- Menu with options on the quadtree
+- Menu with options on the quadtree, included how many objects are being discarted
 
 Libraries used:
 - Assimp 	(http://www.assimp.org/)
