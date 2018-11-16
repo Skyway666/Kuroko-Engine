@@ -389,10 +389,8 @@ void ModuleUI::DrawHierarchyTab()
 	std::list<GameObject*> root_objs;
 	App->scene->getRootObjs(root_objs);
 
-	for (auto it = root_objs.begin(); it != root_objs.end(); it++){
+	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
 		DrawHierarchyNode(*(*it), id);
-		id++;
-	}
 
 	if (ImGui::IsWindowHovered())
 	{
@@ -416,7 +414,7 @@ void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 	if(children.empty())
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
-	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object.getName().c_str(), id) && !children.empty();
+	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)game_object.getUUID(), node_flags, game_object.getName().c_str()) && !children.empty();
 
 	if(App->scene->selected_obj == (GameObject*)&game_object)
 		selection_mask = (1 << id);

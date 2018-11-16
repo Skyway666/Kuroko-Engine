@@ -24,7 +24,7 @@ public:
 	void DrawSelected() const;
 	
 	uint getId() { return id; }
-	uint getUUID() { return uuid; }
+	uint getUUID() const{ return uuid; }
 
 	void addComponent(Component* component);
 	Component* addComponent(Component_type type);
