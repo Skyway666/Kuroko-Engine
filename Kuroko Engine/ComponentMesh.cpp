@@ -84,8 +84,8 @@ void ComponentMesh::Draw() const
 
 		mesh_from_resource->Draw(mat);
 
-		//if (transform)
-		//	glLoadMatrixf((GLfloat*)view_mat.v);
+		if (transform)
+			glLoadMatrixf((GLfloat*)view_mat.v);
 	}
 }
 
