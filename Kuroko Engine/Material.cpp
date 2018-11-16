@@ -79,7 +79,7 @@ Texture::Texture(uint GL_id, const char* texture_name, bool compress) : id(App->
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, (GLint*)&size_x);
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&size_y);
 	if(compress)
-		App->importer->ExportTextureToDDS(texture_name);
+		App->importer->ImportTextureToDDS(texture_name);
 	this->texture_name = texture_name;
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

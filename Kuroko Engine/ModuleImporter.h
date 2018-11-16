@@ -31,13 +31,13 @@ public:
 
 	void* ImportTexturePointer(const char* file);
 
-	// This functions will eventually replace "Import", when resource manager is working
+
 	bool ImportTexture(const char* file_original_name, std::string file_binary_name); // Retruns true on successful import and false if it wasn't
-	bool ImportScene(const char* file_original_name, std::string file_binary_name);	  // Not gonna handle materials for now, only meshes.
+	bool ImportScene(const char* file_original_name, std::string file_binary_name);	  
 	//Own file format
-	void ExportMeshToKR(const char* file, Mesh* mesh);
-	void ExportTextureToDDS(const char* file);
-	Mesh* ImportMeshFromKR(const char* file); // Code crashes when importing mesh from .kr without importing something first
+	void ImportMeshToKR(const char* file, Mesh* mesh);
+	void ImportTextureToDDS(const char* file);
+	Mesh* ExportMeshFromKR(const char* file); 
 	Texture* LoadTextureFromLibrary(const char* file);
 
 private:

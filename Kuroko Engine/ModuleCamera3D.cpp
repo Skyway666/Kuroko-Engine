@@ -77,7 +77,7 @@ update_status ModuleCamera3D::Update(float dt)
 			transform = (ComponentTransform*)selected_camera->getParent()->getParent()->getComponent(TRANSFORM);
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-			speed = 2.0f * speed;
+			speed = 5.0f * speed;
 
 		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { displacement.y += speed; };
 		if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { displacement.y -= speed; };

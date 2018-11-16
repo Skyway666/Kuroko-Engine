@@ -19,6 +19,7 @@
 #include "Transform.h"
 #include "ComponentMesh.h"
 #include "ModuleUI.h"
+#include "ModuleResourcesManager.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "MathGeoLib\Geometry\LineSegment.h"
@@ -53,9 +54,7 @@ bool ModuleScene::Start()
 	skybox_texs[BACK]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_back.png");
 	skybox->setAllTextures(skybox_texs);
 
-	// TEST FOR QUADTREE
 	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)));
-	// TEST FOR QUADTREE
 	return true;
 }
 

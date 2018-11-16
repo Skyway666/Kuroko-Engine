@@ -15,7 +15,7 @@ ResourceMesh::~ResourceMesh() {
 }
 
 void ResourceMesh::LoadToMemory() {
-	mesh = App->importer->ImportMeshFromKR(binary.c_str());
+	mesh = App->importer->ExportMeshFromKR(binary.c_str());
 
 	if (!mesh)
 		app_log->AddLog("Error loading binary %s", binary.c_str());

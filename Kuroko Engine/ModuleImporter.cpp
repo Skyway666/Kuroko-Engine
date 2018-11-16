@@ -217,7 +217,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		}
 
 		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
-		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
+		ImportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		delete mesh;									// TODO: Delete mesh
 
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
@@ -355,7 +355,7 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 
 
 
-void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
+void ModuleImporter::ImportMeshToKR(const char * file, Mesh* mesh) {
 
 	uint header[5];
 	uint vert_num, poly_count = 0;
@@ -439,7 +439,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	delete data;
 }
 
-void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
+void ModuleImporter::ImportTextureToDDS(const char* texture_name) {
 	ILuint size;
 	char *data;
 	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
@@ -452,7 +452,7 @@ void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
 	}
 }
 
-Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
+Mesh * ModuleImporter::ExportMeshFromKR(const char * file)
 {
 	uint num_vertices		= 0;
 	uint num_tris			= 0;
@@ -529,7 +529,7 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 		tex_coords = new float2[num_vertices];
 		memcpy(tex_coords, cursor, bytes);
 	}
-
+	delete buffer;
 	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris, centroid);
 }

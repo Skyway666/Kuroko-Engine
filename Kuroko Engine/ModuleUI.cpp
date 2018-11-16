@@ -536,6 +536,9 @@ bool ModuleUI::DrawComponent(Component& component)
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
 					c_mesh->setDrawNormals(draw_normals);
 				
+		/*		if (!c_mesh->getMesh()) {
+					
+				}*/
 				
 				if (Material* material = c_mesh->getMaterial())
 				{

@@ -28,6 +28,7 @@ public:
 
 	// To be executed allways when engine starts. 
 	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
+	void ManageUITextures();
 	void GeneratePrimitiveResources();
 	void GenerateLibraryAndMeta();
 	bool ManageFile(std::string file_path, resource_deff& deff); // Retruns true if a new resource has to be generated

@@ -35,31 +35,20 @@ bool ModuleResourcesManager::Start()
 {
 	GeneratePrimitiveResources();
 	GenerateLibraryAndMeta();
+	LoadFileToScene("Assets/Meshes/Street environment_V01.FBX");
 	update_timer.Start();
 	return true;
 }
 
 update_status ModuleResourcesManager::Update(float dt)
 {
-	for (auto it = resources.begin(); it != resources.end(); it++)
-	{
-		if ((*it).second->type == R_TEXTURE)
-		{
-			ResourceTexture* res_tex = (ResourceTexture*)(*it).second;
-			if (res_tex->IsLoaded() && res_tex->components_used_by == 0)
-			{
-				if (res_tex->drawn_in_UI)	res_tex->drawn_in_UI = false;
-				else						res_tex->UnloadFromMemory();
-			}
-
-			res_tex->drawn_in_UI = 0;
-		}
-	}
-
+	ManageUITextures();
 	if(update_timer.Read() > update_ratio){
 		ManageAssetModification();
 		update_timer.Start();
 	}
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -93,6 +82,20 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 		resources[deff.uuid] = ret;
 
 	return ret;
+}
+
+void ModuleResourcesManager::ManageUITextures() {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_TEXTURE) {
+			ResourceTexture* res_tex = (ResourceTexture*)(*it).second;
+			if (res_tex->IsLoaded() && res_tex->components_used_by == 0) {
+				if (res_tex->drawn_in_UI)	res_tex->drawn_in_UI = false;
+				else						res_tex->UnloadFromMemory();
+			}
+
+			res_tex->drawn_in_UI = 0;
+		}
+	}
 }
 
 void ModuleResourcesManager::GeneratePrimitiveResources() {
