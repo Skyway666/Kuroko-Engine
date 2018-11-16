@@ -24,6 +24,8 @@
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
 #include "Camera.h"
+#include "Quadtree.h"
+#include "ResourceTexture.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -36,7 +38,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
-#include "Quadtree.h"
+#include <experimental/filesystem>
 
 #pragma comment( lib, "glew-2.1.0/lib/glew32.lib")
 #pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
@@ -101,7 +103,6 @@ bool ModuleUI::Start()
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 	close_app = false;
-	open_tabs[VIEWPORT_MENU] = false;	// must always start closed
 
 	return true;
 }
@@ -182,11 +183,11 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[CAMERA_MENU])
 		DrawCameraMenuWindow();
 
-	if (open_tabs[RESOURCES_TAB])
-		DrawResourcesTabWindow();
-
 	if (open_tabs[VIEWPORT_MENU])
 		DrawViewportsWindow();
+
+	if (open_tabs[ASSET_WINDOW])
+		DrawAssetsWindow();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -231,6 +232,10 @@ update_status ModuleUI::Update(float dt) {
 					App->LoadDefaultConfig();
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::MenuItem("Clean library"))
+				App->resources->CleanResources();
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
@@ -242,7 +247,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::MenuItem("Quadtree", NULL, &open_tabs[QUADTREE_CONFIG]);
 			ImGui::MenuItem("Camera Menu", NULL, &open_tabs[CAMERA_MENU]);
-			ImGui::MenuItem("Resources", NULL, &open_tabs[RESOURCES_TAB]);
+			ImGui::MenuItem("Asset Window", NULL, &open_tabs[ASSET_WINDOW]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -1054,11 +1059,101 @@ void ModuleUI::DrawCameraMenuWindow()
 	ImGui::End();
 }
 
-void ModuleUI::DrawResourcesTabWindow()
+void ModuleUI::DrawAssetsWindow()
 {
-	ImGui::Begin("Resources", &open_tabs[RESOURCES_TAB]);
-	if (ImGui::Button("Clean library"))
-		App->resources->CleanResources();
+	ImGui::Begin("Assets Window", &open_tabs[ASSET_WINDOW]);
+	int element_size = 64;
+	
+	int column_num = (int)trunc(ImGui::GetWindowSize().x / element_size);
+
+	if (column_num != 0)
+	{
+		int count = 0;
+		int iteration = 0;
+
+		std::string path, name, extension;
+
+		if (ImGui::Button("Return"))
+		{
+			if (!App->fs.getPath(asset_window_path))
+				asset_window_path = ASSETS_FOLDER;
+		}
+
+		using std::experimental::filesystem::directory_iterator;
+		for (auto& it : directory_iterator(asset_window_path))
+		{
+			extension = it.path().generic_string();
+			App->fs.getExtension(extension);
+			if(extension != ".meta")
+				count++;
+		}
+
+		if (count < column_num) column_num = count;
+		count = 0;
+
+		ImGui::Columns(column_num, (std::to_string(iteration) + " asset columns").c_str(), false);
+
+		for (auto& it : directory_iterator(asset_window_path)) {
+
+			path = name = extension = it.path().generic_string();	// Separate path, name and extension	
+			App->fs.getExtension(extension);
+			App->fs.getPath(path);
+			App->fs.getFileNameFromPath(name);
+
+			if (extension == ".meta")
+				continue;
+
+			if (count == column_num)
+			{
+				ImGui::EndColumns();
+				ImGui::NewLine();
+				iteration++;
+				ImGui::Columns(column_num, (std::to_string(iteration) + " asset columns").c_str(), false);
+			}
+			count++;
+
+			ImGui::SetColumnWidth(ImGui::GetColumnIndex(), element_size + 20);
+
+
+			if (it.status().type() == std::experimental::filesystem::v1::file_type::directory)
+			{
+				if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size)))
+					asset_window_path = it.path().generic_string();
+			}
+			else
+			{
+				const char* type = App->resources->assetExtension2type(extension.c_str());
+
+				if (type == "scene")
+				{
+					if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(element_size, element_size)))
+					{
+
+					}
+				}
+				if (type == "texture")
+				{
+					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
+					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size)))
+					{
+
+					}
+				}
+				if (type == "json")
+				{
+					if (ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(element_size, element_size)))
+					{
+
+					}
+				}
+			}
+			
+			ImGui::TextWrapped(name.c_str());
+			ImGui::NextColumn();
+		}
+		ImGui::EndColumns();
+		ImGui::Columns(1);
+	}
 	ImGui::End();
 }
 
@@ -1526,7 +1621,7 @@ void ModuleUI::DrawGuizmo()
 		default:
 			break;
 		}
-
+		
 		aux_transform.CalculateMatrix();
 		float4x4 mat = float4x4(aux_transform.getMatrix());
 		mat.Transpose();
@@ -1576,8 +1671,8 @@ void ModuleUI::SaveConfig(JSON_Object* config) const
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
 	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
 	json_object_set_boolean(config, "quadtree_config", open_tabs[QUADTREE_CONFIG]);
-	json_object_set_boolean(config, "resources_tab", open_tabs[RESOURCES_TAB]);
 	json_object_set_boolean(config, "camera_menu", open_tabs[CAMERA_MENU]);
+	json_object_set_boolean(config, "asset_window", open_tabs[ASSET_WINDOW]);
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
@@ -1591,8 +1686,10 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 	open_tabs[QUADTREE_CONFIG]	= json_object_get_boolean(config, "quadtree_config");
-	open_tabs[RESOURCES_TAB]	= json_object_get_boolean(config, "resources_tab");
 	open_tabs[CAMERA_MENU]		= json_object_get_boolean(config, "camera_menu");
+	open_tabs[ASSET_WINDOW]		= json_object_get_boolean(config, "asset_window");
+
+	open_tabs[VIEWPORT_MENU]	= false;	// must always start closed
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 

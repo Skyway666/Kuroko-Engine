@@ -5,6 +5,7 @@
 #include "ImGui/imgui.h"
 #include "ImGui\ImGuizmo.h"
 #include "ComponentCamera.h"
+#include "FileSystem.h"
 #include <array>
 
 struct ImGuiIO;
@@ -15,7 +16,7 @@ class Material;
 class Camera;
 
 enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION,
-				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, RESOURCES_TAB, LAST_UI_TAB };  
+				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, ASSET_WINDOW, LAST_UI_TAB };  
 				// LAST is an utility value to store the max num of tabs.
 
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
@@ -52,8 +53,8 @@ public:
 	void DrawGizmoMenuTab();
 	void DrawQuadtreeConfigWindow();
 	void DrawCameraMenuWindow();
-	void DrawResourcesTabWindow();
 	void DrawViewportsWindow();
+	void DrawAssetsWindow();
 
 	void DrawGuizmo();
 
@@ -68,13 +69,17 @@ private:
 	
 	bool close_app = false;
 	bool docking_background = true;
-	bool open_tabs[LAST_UI_TAB];  // _serializable_var
+	bool draw_guizmo = true;
+
 	ImGuiIO* io;
-	std::array<Texture*, LAST_UI_TEX> ui_textures;
-	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
 	ImGuizmo::OPERATION	gizmo_operation = ImGuizmo::TRANSLATE;
 	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
-	bool draw_guizmo = true;
+
+	bool open_tabs[LAST_UI_TAB];  // _serializable_var
+	std::array<Texture*, LAST_UI_TEX> ui_textures;
+	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
+
+	std::string asset_window_path = ASSETS_FOLDER;
 };
 #endif
 

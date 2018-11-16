@@ -61,8 +61,14 @@ public:
 	void LoadFileToScene(const char* file);		
 	uint getResourceUuid(const char* file); // Will not assign the resource 
 
-
 	void CleanResources() { cleanResources = true; }
+
+	// Helpers
+	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
+	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file
+	ResourceType type2enumType(const char* type);
+	const char* enumType2binaryExtension(ResourceType type);
+	lib_dir enumType2libDir(ResourceType type);
 
 private:
 	std::map<uint, Resource*> resources;	
@@ -72,12 +78,6 @@ private:
 	void CleanLibrary();
 	bool reloadResources = false;
 	bool cleanResources = false;
-	// Helpers
-	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
-	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file
-	ResourceType type2enumType(const char* type);
-	const char* enumType2binaryExtension(ResourceType type);
-	lib_dir enumType2libDir(ResourceType type);
 
 };
 

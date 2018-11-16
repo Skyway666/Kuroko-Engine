@@ -429,19 +429,22 @@ std::string ModuleResourcesManager::uuid2string(uint uuid) {
 	return std::to_string(uuid);
 }
 
-const char * ModuleResourcesManager::assetExtension2type(const char * extension) {
+const char * ModuleResourcesManager::assetExtension2type(const char * _extension) {
 
-	std::string str_ex = extension;
 	char* ret = "unknown";
 
-	if (str_ex == ".FBX" || str_ex == ".fbx" || str_ex == ".dae" || str_ex == ".blend" || str_ex == ".3ds" || str_ex == ".obj"
-		|| str_ex == ".gltf" || str_ex == ".glb" || str_ex == ".dxf" || str_ex == ".x") {
+	std::string extension = _extension;
+
+	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
+		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x") 
 		ret = "scene";
-	}
-	if (str_ex == ".bmp" || str_ex == ".dds" || str_ex == ".jpg" || str_ex == ".pcx" || str_ex == ".png"
-		|| str_ex == ".raw" || str_ex == ".tga" || str_ex == ".tiff") {
+	else if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
+		|| extension == ".raw" || extension == ".tga" || extension == ".tiff") 
 		ret = "texture";
-	}
+	else if (extension == ".json")
+		ret = "json";
+	else if (extension == ".meta")
+		ret = "meta";
 
 	return ret;
 }
