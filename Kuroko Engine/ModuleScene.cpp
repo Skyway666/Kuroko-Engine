@@ -85,10 +85,6 @@ update_status ModuleScene::PostUpdate(float dt)
 	if(draw_quadtree)
 		quadtree->DebugDraw();
 
-	if (quadtree_add) {
-		quadtree->Insert(quadtree_add);
-		quadtree_add = nullptr;
-	}
 	if (quadtree_reload) {
 		quadtree->Empty();
 		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -157,8 +153,12 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 	if(App->camera->override_editor_cam_culling)
 		quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
-	else
-		quadtree->Intersect(drawable_gameobjects, *App->camera->current_camera->getFrustum());
+	else{
+		for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+			if ((*it)->isStatic())
+				drawable_gameobjects.push_back(*it);
+		}
+	}
 	
 	for (auto it = drawable_gameobjects.begin(); it != drawable_gameobjects.end(); it++)
 		(*it)->Draw();

@@ -102,7 +102,6 @@ public:
 	// Dirty bools related to quadtee
 	bool draw_quadtree			= true;
 	bool quadtree_reload		= false;
-	GameObject* quadtree_add	= nullptr;
 
 };
 #endif
