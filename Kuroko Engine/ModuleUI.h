@@ -55,6 +55,7 @@ public:
 	void DrawCameraMenuWindow();
 	void DrawViewportsWindow();
 	void DrawAssetsWindow();
+	void DrawAssetInspector();
 	void DrawResourcesWindow(); // A list where you can see all the resources
 
 
@@ -82,6 +83,7 @@ private:
 	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
 
 	std::string asset_window_path = ASSETS_FOLDER;
+	std::string selected_asset;
 };
 #endif
 

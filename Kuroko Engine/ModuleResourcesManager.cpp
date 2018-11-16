@@ -46,8 +46,11 @@ update_status ModuleResourcesManager::Update(float dt)
 		if ((*it).second->type == R_TEXTURE)
 		{
 			ResourceTexture* res_tex = (ResourceTexture*)(*it).second;
-			for (int i = 0; i < res_tex->drawn_in_UI; i++)
-				deasignResource(res_tex->uuid);
+			if (res_tex->IsLoaded() && res_tex->components_used_by == 0)
+			{
+				if (res_tex->drawn_in_UI)	res_tex->drawn_in_UI = false;
+				else						res_tex->UnloadFromMemory();
+			}
 
 			res_tex->drawn_in_UI = 0;
 		}

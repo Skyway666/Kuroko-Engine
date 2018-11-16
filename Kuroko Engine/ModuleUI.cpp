@@ -26,6 +26,7 @@
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
+#include "ResourceScene.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -839,6 +840,14 @@ bool ModuleUI::DrawComponent(Component& component)
 
 			ImGui::Checkbox("Draw depth", &camera->getCamera()->draw_depth);
 
+			static bool overriding;
+			overriding = (camera->getCamera() == App->camera->override_editor_cam_culling);
+			if (ImGui::Checkbox("Override Frustum Culling", &overriding))
+			{
+				if (!overriding)	App->camera->override_editor_cam_culling = nullptr;
+				else				App->camera->override_editor_cam_culling = camera->getCamera();
+			}
+
 			if (camera_active)
 			{
 				static float3 offset;
@@ -1068,6 +1077,7 @@ void ModuleUI::DrawAssetsWindow()
 {
 	ImGui::Begin("Assets Window", &open_tabs[ASSET_WINDOW]);
 	int element_size = 64;
+	std::string path, name, extension;
 	
 	int column_num = (int)trunc(ImGui::GetWindowSize().x / (element_size + 20));
 
@@ -1076,13 +1086,15 @@ void ModuleUI::DrawAssetsWindow()
 		int count = 0;
 		int iteration = 0;
 
-		std::string path, name, extension;
 
 		if (ImGui::Button("Return"))
 		{
 			if (!App->fs.getPath(asset_window_path))
 				asset_window_path = ASSETS_FOLDER;
 		}
+
+		ImGui::SameLine();
+		ImGui::Text(asset_window_path.c_str());
 
 		using std::experimental::filesystem::directory_iterator;
 		for (auto& it : directory_iterator(asset_window_path))
@@ -1122,8 +1134,17 @@ void ModuleUI::DrawAssetsWindow()
 
 			if (it.status().type() == std::experimental::filesystem::v1::file_type::directory)
 			{
-				if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str()))
-					asset_window_path = it.path().generic_string();
+
+				if (ImGui::IsMouseDoubleClicked(0))
+				{
+					ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+					if(ImGui::IsItemHovered())
+						asset_window_path = it.path().generic_string();
+				}
+				else {
+					if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+						selected_asset = it.path().generic_string();
+				}
 			}
 			else
 			{
@@ -1131,26 +1152,29 @@ void ModuleUI::DrawAssetsWindow()
 
 				if (type == "scene")
 				{
-					if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(element_size, element_size)))
+					if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 					{
-
+						selected_asset = it.path().generic_string();
 					}
 				}
 				if (type == "texture")
 				{
 					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
-					App->resources->assignResource(res_tex->uuid);
-					res_tex->drawn_in_UI++;
-					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size)))
-					{
+					
+					res_tex->drawn_in_UI = true;
+					if (!res_tex->IsLoaded())
+						res_tex->LoadToMemory();
 
+					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+					{
+						selected_asset = it.path().generic_string();
 					}
 				}
 				if (type == "json")
 				{
-					if (ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(element_size, element_size)))
+					if (ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 					{
-
+						selected_asset = it.path().generic_string();
 					}
 				}
 			}
@@ -1160,6 +1184,65 @@ void ModuleUI::DrawAssetsWindow()
 		}
 		ImGui::Columns(1);
 	}
+	ImGui::End();
+
+	DrawAssetInspector();
+}
+
+void ModuleUI::DrawAssetInspector()
+{
+	ImGui::Begin("Asset inspector", nullptr);
+
+	if (!selected_asset.empty())
+	{
+		std::string name, extension;
+		extension = name = selected_asset;
+		App->fs.getExtension(extension);
+		App->fs.getFileNameFromPath(name);
+
+		ImGui::Text(name.c_str());
+		
+		if (extension.empty())  // is directory
+		{
+			ImGui::Text("type: directory");
+			ImGui::End();
+			return;
+		}
+		else if (extension == ".json")
+		{
+			ImGui::Text("type: scene");
+			ImGui::End();
+			return;
+		}
+
+		const char* type = App->resources->assetExtension2type(extension.c_str());
+		if(type == "scene")
+			ImGui::Text("type: 3D object");
+		else
+			ImGui::Text("type: %s", &type);
+
+		Resource* res = App->resources->getResource(App->resources->getResourceUuid(selected_asset.c_str()));
+		ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
+
+		if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
+		else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
+
+		if (type == "texture")
+		{
+			ResourceTexture* res_tex = (ResourceTexture*)res;
+
+			res_tex->drawn_in_UI = true;
+			if (!res_tex->IsLoaded())
+				res_tex->LoadToMemory();
+
+			int size_x, size_y;
+			res_tex->texture->getSize(size_x, size_y);
+			ImGui::Image((void*)res_tex->texture->getGLid(), ImVec2((float)size_x, (float)size_y));
+
+			ImGui::Scrollbar(ImGuiLayoutType_::ImGuiLayoutType_Horizontal);
+		}
+	}
+
 	ImGui::End();
 }
 
