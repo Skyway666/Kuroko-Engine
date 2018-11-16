@@ -887,7 +887,7 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 		
 		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 50, frame_buffer->size_y / 3 + 70));
 
-		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), ImVec2(0, 1), ImVec2(1, 0)))
+		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), nullptr, ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			float x = App->input->GetMouseX(); float y = App->input->GetMouseY();
 			ImVec2 window_pos = ImGui::GetWindowPos();
@@ -923,7 +923,7 @@ void ModuleUI::DrawViewportsWindow()
 		ImGui::TextWrapped(App->camera->viewports[i]->getViewportDirString().c_str());
 		ImGui::SameLine();
 
-		if (ImGui::ImageButton((void*)(App->camera->viewports[i]->draw_depth ? fb->depth_tex->gl_id : fb->tex->gl_id), ImVec2(fb->size_x / 4, fb->size_y / 4), ImVec2(0, 1), ImVec2(1, 0)))
+		if (ImGui::ImageButton((void*)(App->camera->viewports[i]->draw_depth ? fb->depth_tex->gl_id : fb->tex->gl_id), ImVec2(fb->size_x / 4, fb->size_y / 4), nullptr, ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			for (int i = 0; i < 6; i++)
 				App->camera->viewports[i]->active = false;
@@ -1069,7 +1069,7 @@ void ModuleUI::DrawAssetsWindow()
 	ImGui::Begin("Assets Window", &open_tabs[ASSET_WINDOW]);
 	int element_size = 64;
 	
-	int column_num = (int)trunc(ImGui::GetWindowSize().x / element_size);
+	int column_num = (int)trunc(ImGui::GetWindowSize().x / (element_size + 20));
 
 	if (column_num != 0)
 	{
@@ -1110,19 +1110,19 @@ void ModuleUI::DrawAssetsWindow()
 
 			if (count == column_num)
 			{
-				ImGui::EndColumns();
 				ImGui::NewLine();
 				iteration++;
+				count = 0;
 				ImGui::Columns(column_num, (std::to_string(iteration) + " asset columns").c_str(), false);
 			}
 			count++;
 
-			ImGui::SetColumnWidth(ImGui::GetColumnIndex(), element_size + 20);
-
+			if(column_num > 1)
+				ImGui::SetColumnWidth(ImGui::GetColumnIndex(), element_size + 20);
 
 			if (it.status().type() == std::experimental::filesystem::v1::file_type::directory)
 			{
-				if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size)))
+				if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str()))
 					asset_window_path = it.path().generic_string();
 			}
 			else
@@ -1139,6 +1139,8 @@ void ModuleUI::DrawAssetsWindow()
 				if (type == "texture")
 				{
 					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
+					App->resources->assignResource(res_tex->uuid);
+					res_tex->drawn_in_UI++;
 					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size)))
 					{
 
@@ -1156,7 +1158,6 @@ void ModuleUI::DrawAssetsWindow()
 			ImGui::TextWrapped(name.c_str());
 			ImGui::NextColumn();
 		}
-		ImGui::EndColumns();
 		ImGui::Columns(1);
 	}
 	ImGui::End();
@@ -1489,17 +1490,17 @@ void ModuleUI::DrawTimeControlWindow()
 
 	int w, h;
 	ui_textures[PLAY]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PLAYING ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PLAYING ? 1.0f : 0.0f)))
 		App->time->Play();
 
 	ImGui::SameLine();
 	ui_textures[PAUSE]->getSize(w, h);
-	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PAUSED ? 1.0f : 0.0f)))
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PAUSED ? 1.0f : 0.0f)))
 		App->time->Pause();
 
 	ImGui::SameLine();
 	ui_textures[STOP]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == STOPPED ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == STOPPED ? 1.0f : 0.0f)))
 		App->time->Stop();
 	
 
@@ -1508,7 +1509,7 @@ void ModuleUI::DrawTimeControlWindow()
 
 	ImGui::SameLine();
 	ui_textures[ADVANCE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[ADVANCE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[ADVANCE]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, 0.0f)))
 		App->time->Advance(advance_frames);
 
 
@@ -1535,34 +1536,34 @@ void ModuleUI::DrawGizmoMenuTab() {
 
 	ImGui::Begin("##Gizmo menu", nullptr);
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
 		draw_guizmo = !draw_guizmo;
 	
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_operation = ImGuizmo::OPERATION::ROTATE;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_operation = ImGuizmo::OPERATION::SCALE;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_mode = ImGuizmo::MODE::LOCAL;
 		draw_guizmo = true;
 	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
 	{
 		gizmo_mode = ImGuizmo::MODE::WORLD;
 		draw_guizmo = true;

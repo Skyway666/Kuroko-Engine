@@ -67,9 +67,8 @@ Application::Application()
 	list_modules.push_back(debug);
 
 	// Renderer last!
-	//AddModule(renderer2D);
-	list_modules.push_back(gui);
 	list_modules.push_back(resources);
+	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
 
 	// HARDCODED

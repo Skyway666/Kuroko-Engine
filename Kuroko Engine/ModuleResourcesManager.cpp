@@ -41,6 +41,18 @@ bool ModuleResourcesManager::Start()
 
 update_status ModuleResourcesManager::Update(float dt)
 {
+	for (auto it = resources.begin(); it != resources.end(); it++)
+	{
+		if ((*it).second->type == R_TEXTURE)
+		{
+			ResourceTexture* res_tex = (ResourceTexture*)(*it).second;
+			for (int i = 0; i < res_tex->drawn_in_UI; i++)
+				deasignResource(res_tex->uuid);
+
+			res_tex->drawn_in_UI = 0;
+		}
+	}
+
 	if(update_timer.Read() > update_ratio){
 		ManageAssetModification();
 		update_timer.Start();
