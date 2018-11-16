@@ -911,7 +911,7 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 		if(ImGui::IsWindowFocused())
 			App->camera->selected_camera = &camera;
 		
-		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 50, frame_buffer->size_y / 3 + 70));
+		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 40, frame_buffer->size_y / 3 + 60));
 
 		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), nullptr, ImVec2(0, 1), ImVec2(1, 0)))
 		{
@@ -920,8 +920,7 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 			x = (((x - window_pos.x) / ImGui::GetWindowSize().x) * 2) - 1;
 			y = (((y - window_pos.y) / ImGui::GetWindowSize().y) * 2) - 1;
 
-			if (GameObject* new_selected = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr))
-				App->scene->selected_obj = new_selected;
+			App->scene->selected_obj = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr);
 		}
 		ImGui::End();
 	}
@@ -1627,39 +1626,50 @@ void ModuleUI::DrawTimeControlWindow()
 
 void ModuleUI::DrawGizmoMenuTab() {
 
-	ImGui::Begin("##Gizmo menu", nullptr);
+	ImGui::Begin("Toolbar##Gizmo toolbar", nullptr);
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
-		draw_guizmo = !draw_guizmo;
-	
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+	if (App->camera->background_camera->getFrustum()->type == math::FrustumType::OrthographicFrustum)
+		ImGui::TextColored(ImVec4(1.5f, 1.0f, 0.0f, 1.0), "WARNING: ImGuizmo is not compatible with orthographic camera");
+	else
 	{
-		gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
-		draw_guizmo = true;
-	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_operation = ImGuizmo::OPERATION::ROTATE;
-		draw_guizmo = true;
-	}
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
+			draw_guizmo = !draw_guizmo;
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_operation = ImGuizmo::OPERATION::SCALE;
-		draw_guizmo = true;
-	}
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
+			draw_guizmo = true;
+		}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_mode = ImGuizmo::MODE::LOCAL;
-		draw_guizmo = true;
-	}
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_operation = ImGuizmo::OPERATION::ROTATE;
+			draw_guizmo = true;
+		}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_mode = ImGuizmo::MODE::WORLD;
-		draw_guizmo = true;
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_operation = ImGuizmo::OPERATION::SCALE;
+			draw_guizmo = true;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_mode = ImGuizmo::MODE::LOCAL;
+			draw_guizmo = true;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_mode = ImGuizmo::MODE::WORLD;
+			draw_guizmo = true;
+		}
 	}
 
 	ImGui::End();
@@ -1708,9 +1718,10 @@ void ModuleUI::DrawQuadtreeConfigWindow() {
 
 void ModuleUI::DrawGuizmo()
 {
+
 	App->gui->DrawGizmoMenuTab();
 
-	if (draw_guizmo)
+	if (draw_guizmo && App->camera->background_camera->getFrustum()->type != math::FrustumType::OrthographicFrustum)
 	{
 		ImGuizmo::BeginFrame();
 		float4x4 projection4x4;
