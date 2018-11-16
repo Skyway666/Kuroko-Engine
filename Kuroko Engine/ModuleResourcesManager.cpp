@@ -68,7 +68,7 @@ update_status ModuleResourcesManager::PostUpdate(float dt)
 		CleanMeta();
 		CleanLibrary();
 		cleanResources = false;
-		ret = UPDATE_STOP;
+		App->CLOSE_APP();
 	}
 
 	return ret;
@@ -393,7 +393,7 @@ void ModuleResourcesManager::LoadFileToScene(const char * file) {
 uint ModuleResourcesManager::getResourceUuid(const char * file) {
 	std::string full_meta_path = file;
 	full_meta_path += META_EXTENSION;
-	uint ret = -1;
+	uint ret = 0;
 	if (App->fs.ExistisFile(full_meta_path.c_str())) {
 		JSON_Value* meta = json_parse_file(full_meta_path.c_str());
 		ret = json_object_get_number(json_object(meta), "resource_uuid");

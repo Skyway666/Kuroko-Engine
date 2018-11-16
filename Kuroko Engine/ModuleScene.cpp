@@ -50,7 +50,7 @@ bool ModuleScene::Start()
 	skybox_texs[UP]		= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_up.png");
 	skybox_texs[DOWN]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_down.png");
 	skybox_texs[FRONT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_front.png");
-	skybox_texs[BACK]	= (Texture*)App->importer->ImportTexturePointer("Assets/skybox_default_back.png");
+	skybox_texs[BACK]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_back.png");
 	skybox->setAllTextures(skybox_texs);
 
 	// TEST FOR QUADTREE

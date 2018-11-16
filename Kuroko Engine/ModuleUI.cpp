@@ -102,7 +102,6 @@ bool ModuleUI::Start()
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
-	close_app = false;
 
 	return true;
 }
@@ -208,7 +207,7 @@ update_status ModuleUI::Update(float dt) {
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit"))
-				close_app = true;
+				App->CLOSE_APP();
 			if (ImGui::MenuItem("Import file"))
 			{
 				std::string file_path = openFileWID();
@@ -343,10 +342,8 @@ update_status ModuleUI::PostUpdate(float dt) {
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-	if (!close_app)
-		return UPDATE_CONTINUE;
-	else
-		return UPDATE_STOP;
+	return UPDATE_CONTINUE;
+
 }
 
 bool ModuleUI::CleanUp() 
@@ -367,6 +364,12 @@ void ModuleUI::DrawHierarchyTab()
 {
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
+
+	if (ImGui::Button("Empty gameobject")) {
+		GameObject* go = new GameObject("Empty", App->scene->selected_obj);
+		if(App->scene->selected_obj)
+			App->scene->selected_obj->addChild(go);
+	}
 
 	int id = 0;
 	std::list<GameObject*> root_objs;
@@ -448,7 +451,7 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
-			//if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
+			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); // MAKES SKYBOX DIE
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 		}
 
@@ -546,24 +549,33 @@ bool ModuleUI::DrawComponent(Component& component)
 
 						if(ImGui::TreeNode("diffuse"))
 						{
-							//ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-							//ImGui::SameLine();
+							Texture* texture = nullptr;
+							if(ResourceTexture* tex_res = (ResourceTexture*)App->resources->getResource(material->getTextureResource(DIFFUSE)))
+								texture = tex_res->texture;
 
-							//int w = 0; int h = 0;
-							//if(material->getTexture(DIFFUSE))
-							//	material->getTexture(DIFFUSE)->getSize(w, h);
 
-							//ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
+							ImGui::Image(texture ? (void*)texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							ImGui::SameLine();
+
+							int w = 0; int h = 0;
+							if(texture)
+								texture->getSize(w, h);
+
+							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
 							//if (ImGui::Button("Load checkered##Dif: Load checkered"))
 							//	material->setCheckeredTexture(DIFFUSE);
-							//ImGui::SameLine();
-							//if (ImGui::Button("Load##Dif: Load"))
-							//{
-							//	std::string texture_path = openFileWID();
-							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-							//		c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
-							//}
+							//ImGui::SameLine()
+							if (ImGui::Button("Load##Dif: Load"))
+							{
+								std::string texture_path = openFileWID();
+								uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+								if(new_resource != 0){
+									App->resources->assignResource(new_resource);
+									App->resources->deasignResource(material->getTextureResource(DIFFUSE));
+									material->setTextureResource(DIFFUSE, new_resource);
+								}
+							}
 							ImGui::TreePop();
 						}
 
