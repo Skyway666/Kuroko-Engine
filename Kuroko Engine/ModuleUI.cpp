@@ -78,19 +78,19 @@ bool ModuleUI::Start()
 {
 	io = &ImGui::GetIO();
 
-	ui_textures[PLAY]		= (Texture*)App->importer->Import("Assets/Textures/Play.png", I_TEXTURE);
-	ui_textures[PAUSE]		= (Texture*)App->importer->Import("Assets/Textures/Pause.png", I_TEXTURE);
-	ui_textures[STOP]		= (Texture*)App->importer->Import("Assets/Textures/Stop.png", I_TEXTURE);
-	ui_textures[ADVANCE]	= (Texture*)App->importer->Import("Assets/Textures/Advance.png", I_TEXTURE);
+	ui_textures[PLAY]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Play.png");
+	ui_textures[PAUSE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Pause.png");
+	ui_textures[STOP]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Stop.png");
+	ui_textures[ADVANCE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/Advance.png");
 
-	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->Import("Assets/Textures/translate.png", I_TEXTURE);
-	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->Import("Assets/Textures/rotate.png", I_TEXTURE);
-	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->Import("Assets/Textures/scale.png", I_TEXTURE);
-	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->Import("Assets/Textures/Guizmo_local.png", I_TEXTURE);
-	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->Import("Assets/Textures/Guizmo_global.png", I_TEXTURE);
-	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->Import("Assets/Textures/Guizmo_select.png", I_TEXTURE);
+	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/translate.png");
+	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/rotate.png");
+	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/scale.png");
+	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_local.png");
+	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_global.png");
+	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_select.png");
 
-	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("Assets/Textures/no_texture.png", I_TEXTURE);
+	ui_textures[NO_TEXTURE] = (Texture*)App->importer->ImportTexturePointer("Editor textures/no_texture.png");
 
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
