@@ -85,8 +85,11 @@ void QuadTreeNode::CollectIntersections(std::list<GameObject*>& found_obj, const
 				childs[i]->CollectIntersections(found_obj, primitive);
 			}
 			else{
-				for (auto it = objects.begin(); it != objects.end(); it++)
-					found_obj.push_back((*it));							
+				for (auto it = objects.begin(); it != objects.end(); it++) {
+					if(std::find(found_obj.begin(), found_obj.end(), (*it)) == found_obj.end()) // Don't push go that already are in the list
+						found_obj.push_back((*it));
+				}
+							
 			}
 	}
 

@@ -43,7 +43,7 @@ Lucas García Mateu
 - Using "map" container to store resources
 - When loading a scene, the engine will keep the name of the scene, and if "save" is selected it will be automatically saved
 in the "scene folder" in assets, while if "save as" is clicked it will allow to rename it and save as a different scene
-
+- Menu with options on the quadtree
 
 Libraries used:
 - Assimp 	(http://www.assimp.org/)

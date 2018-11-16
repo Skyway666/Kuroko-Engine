@@ -1619,6 +1619,7 @@ void ModuleUI::DrawQuadtreeConfigWindow() {
 		App->scene->getQuadtree()->Create(aabb, bucket_size, max_depth);
 		App->scene->quadtree_reload = true;
 	}
+	ImGui::Text("Quadtree ignored objects: %i",App->scene->quadtree_ignored_obj);
 	// TODO: Be able to change bucket size, max depth and size.
 	ImGui::End();
 }

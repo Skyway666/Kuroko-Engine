@@ -102,6 +102,7 @@ public:
 	// Dirty bools related to quadtee
 	bool draw_quadtree			= true;
 	bool quadtree_reload		= false;
+	int quadtree_ignored_obj	= 0;
 
 };
 #endif
