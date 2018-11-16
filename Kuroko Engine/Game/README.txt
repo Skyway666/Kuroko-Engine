@@ -5,7 +5,7 @@ This is a videogame engine in process, developed by Rodrigo de Pedro Lombao and 
 Features of the engine:
 
 Lucas García Mateu
-- Information about the hardware and application.
+- Information about hardware and application.
 - Rendering and window options.
 - Primitive shapes (Sphere and Cylinder).
 - File import through drag and drop.
@@ -17,23 +17,27 @@ Lucas García Mateu
 - About tab with information about the engine and links to the used libraries.
 - Time control implemented, with serialization of scene reload when stopping time.
 - Resource manager with online functionalities (add, modify and delete resources)
+- Application log and performance indicators as UI items.
 
 Rodrigo De Pedro Lombao
 - Geometry storage and render in real time.
-- Primitive shapes (Plane, Cube,)
+- Primitive shapes .
+- Hierarchy viewer and game object inspector.
 - Game object system, with parenting and components.
 - Camera as component with frustum, frustum culling and rendering window
 - Gizmo implemented, with toolbar.
 - Mouse Picking
+- Asset viewer window with previews and info about the files in Asset folder.
 
 INNOVATION: 
 Rodrigo De Pedro Lombao
-- File import through windows explorer: 
+- File import through windows explorer
 - Camera can display viewports and the depth buffer
 - Notifications of memory leaks in console
 - Skybox
 - Viewports
-- Transform with "Global and Local" options.
+- Transform with Global and Local modes and constraints.
+- Camera menu with information about all game cameras and tweakable options.
 
 Lucas García Mateu
 - Using "map" container to store resources
@@ -51,6 +55,7 @@ Libraries used:
 - Parson	(https://github.com/kgabis/parson)
 - PCG Random	(http://www.pcg-random.org)
 - ImGuizmo      (https://github.com/CedricGuillemet/ImGuizmo)
+- ImGui		(https://github.com/ocornut/imgui)
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
 
