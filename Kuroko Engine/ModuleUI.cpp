@@ -380,15 +380,19 @@ void ModuleUI::DrawHierarchyTab()
 	ImGui::SameLine();
 
 	if (ImGui::Button("Duplicate Selected")) {
-		App->scene->duplicateGameObject(App->scene->selected_obj);
+		if (!App->scene->duplicateGameObject(App->scene->selected_obj)) {
+			app_log->AddLog("Nothing is selected, can't duplicate");
+		}
 	}
 
 	int id = 0;
 	std::list<GameObject*> root_objs;
 	App->scene->getRootObjs(root_objs);
 
-	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
+	for (auto it = root_objs.begin(); it != root_objs.end(); it++){
 		DrawHierarchyNode(*(*it), id);
+		id++;
+	}
 
 	if (ImGui::IsWindowHovered())
 	{

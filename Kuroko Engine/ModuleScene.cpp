@@ -229,6 +229,8 @@ GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 
 GameObject* ModuleScene::duplicateGameObject(GameObject * gobj) {
 
+	if (!gobj)
+		return nullptr;
 	// Duplicate go
 	JSON_Value* go_deff = json_value_init_object();
 	gobj->Save(json_object(go_deff));
