@@ -21,11 +21,12 @@ Quadtree::~Quadtree() {
 }
 
 
-void Quadtree::Create(AABB limits) {
+void Quadtree::Create(AABB limits, int bucket_size, int max_splits) {
 	
-}
-
-void Quadtree::Create(std::list<GameObject*> objects) { // Adaptive (not for now)
+	delete root;
+	root = new QuadTreeNode(limits);
+	this->bucket_size = bucket_size;
+	this->max_splits = max_splits;
 }
 
 
