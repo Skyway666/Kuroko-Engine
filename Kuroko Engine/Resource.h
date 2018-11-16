@@ -4,12 +4,14 @@
 #include <string>
 #include "Globals.h"
 enum ResourceType { R_MESH, R_TEXTURE, R_SCENE, R_UNKNOWN };
+enum ResourceUpdateActions{R_UPDATE, R_DELETE, R_CREATE, R_NOTHING};
 
 struct resource_deff {
 	uint uuid = 0;
 	ResourceType type = R_UNKNOWN;
 	std::string binary;
 	std::string asset;
+	ResourceUpdateActions requested_update = R_NOTHING;
 };
 class Resource {
 

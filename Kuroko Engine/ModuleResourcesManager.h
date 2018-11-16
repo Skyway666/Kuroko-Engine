@@ -30,7 +30,7 @@ public:
 	void GeneratePrimitiveResources();
 	void GenerateLibraryAndMeta();
 	bool ManageFile(std::string file_path, resource_deff& deff); // Retruns true if a new resource has to be generated
-	void ManageMeta(std::string path, std::string name, std::string extension);
+	resource_deff ManageMeta(std::string path, std::string name, std::string extension);
 	void CleanMeshesFromLibrary(std::string prefab_binary);
 	// Generates Imports file to library, with the name of the uuid
 	// IMPORTANT: If the resource is an FBX, it exports all the meshes as different binarys, and only one for the FBX which is a scene,

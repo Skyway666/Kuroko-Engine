@@ -233,7 +233,7 @@ update_status ModuleUI::Update(float dt) {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::MenuItem("Clean library"))
+			if (ImGui::MenuItem("Clean library (App will shut down)"))
 				App->resources->CleanResources();
 
 			ImGui::EndMenu();
