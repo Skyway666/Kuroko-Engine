@@ -118,13 +118,12 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
-	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver() && App->camera->selected_camera == App->camera->editor_camera)
+	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver() && App->camera->selected_camera == App->camera->background_camera)
 	{
 		float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
 		float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
 
-		if (GameObject* new_selected = MousePicking(x, y))
-			selected_obj = new_selected;
+		selected_obj = MousePicking(x, y);
 	}
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
