@@ -79,19 +79,19 @@ bool ModuleUI::Start()
 {
 	io = &ImGui::GetIO();
 
-	ui_textures[PLAY]		= (Texture*)App->importer->Import("Assets/Textures/Play.png", I_TEXTURE);
-	ui_textures[PAUSE]		= (Texture*)App->importer->Import("Assets/Textures/Pause.png", I_TEXTURE);
-	ui_textures[STOP]		= (Texture*)App->importer->Import("Assets/Textures/Stop.png", I_TEXTURE);
-	ui_textures[ADVANCE]	= (Texture*)App->importer->Import("Assets/Textures/Advance.png", I_TEXTURE);
+	ui_textures[PLAY]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Play.png");
+	ui_textures[PAUSE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Pause.png");
+	ui_textures[STOP]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Stop.png");
+	ui_textures[ADVANCE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/Advance.png");
 
-	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->Import("Assets/Textures/translate.png", I_TEXTURE);
-	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->Import("Assets/Textures/rotate.png", I_TEXTURE);
-	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->Import("Assets/Textures/scale.png", I_TEXTURE);
-	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->Import("Assets/Textures/Guizmo_local.png", I_TEXTURE);
-	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->Import("Assets/Textures/Guizmo_global.png", I_TEXTURE);
-	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->Import("Assets/Textures/Guizmo_select.png", I_TEXTURE);
+	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/translate.png");
+	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/rotate.png");
+	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/scale.png");
+	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_local.png");
+	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_global.png");
+	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_select.png");
 
-	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("Assets/Textures/no_texture.png", I_TEXTURE);
+	ui_textures[NO_TEXTURE] = (Texture*)App->importer->ImportTexturePointer("Editor textures/no_texture.png");
 
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
@@ -103,7 +103,6 @@ bool ModuleUI::Start()
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
-	close_app = false;
 
 	return true;
 }
@@ -209,7 +208,7 @@ update_status ModuleUI::Update(float dt) {
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit"))
-				close_app = true;
+				App->CLOSE_APP();
 			if (ImGui::MenuItem("Import file"))
 			{
 				std::string file_path = openFileWID();
@@ -344,10 +343,8 @@ update_status ModuleUI::PostUpdate(float dt) {
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-	if (!close_app)
-		return UPDATE_CONTINUE;
-	else
-		return UPDATE_STOP;
+	return UPDATE_CONTINUE;
+
 }
 
 bool ModuleUI::CleanUp() 
@@ -368,6 +365,12 @@ void ModuleUI::DrawHierarchyTab()
 {
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
+
+	if (ImGui::Button("Empty gameobject")) {
+		GameObject* go = new GameObject("Empty", App->scene->selected_obj);
+		if(App->scene->selected_obj)
+			App->scene->selected_obj->addChild(go);
+	}
 
 	int id = 0;
 	std::list<GameObject*> root_objs;
@@ -449,7 +452,7 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
-			//if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
+			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); // MAKES SKYBOX DIE
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 		}
 
@@ -547,24 +550,33 @@ bool ModuleUI::DrawComponent(Component& component)
 
 						if(ImGui::TreeNode("diffuse"))
 						{
-							//ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-							//ImGui::SameLine();
+							Texture* texture = nullptr;
+							if(ResourceTexture* tex_res = (ResourceTexture*)App->resources->getResource(material->getTextureResource(DIFFUSE)))
+								texture = tex_res->texture;
 
-							//int w = 0; int h = 0;
-							//if(material->getTexture(DIFFUSE))
-							//	material->getTexture(DIFFUSE)->getSize(w, h);
 
-							//ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
+							ImGui::Image(texture ? (void*)texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							ImGui::SameLine();
+
+							int w = 0; int h = 0;
+							if(texture)
+								texture->getSize(w, h);
+
+							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
 							//if (ImGui::Button("Load checkered##Dif: Load checkered"))
 							//	material->setCheckeredTexture(DIFFUSE);
-							//ImGui::SameLine();
-							//if (ImGui::Button("Load##Dif: Load"))
-							//{
-							//	std::string texture_path = openFileWID();
-							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-							//		c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
-							//}
+							//ImGui::SameLine()
+							if (ImGui::Button("Load##Dif: Load"))
+							{
+								std::string texture_path = openFileWID();
+								uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+								if(new_resource != 0){
+									App->resources->assignResource(new_resource);
+									App->resources->deasignResource(material->getTextureResource(DIFFUSE));
+									material->setTextureResource(DIFFUSE, new_resource);
+								}
+							}
 							ImGui::TreePop();
 						}
 
@@ -1658,26 +1670,39 @@ void ModuleUI::DrawGizmoMenuTab() {
 
 void ModuleUI::DrawQuadtreeConfigWindow() {
 
-	//AABB coll_test;
-
-	//coll_test.SetFromCenterAndSize(float3(20, 0, 20), float3(10, 10, 10));
-	//App->renderer3D->DrawDirectAABB(coll_test);
-
-	//std::list<GameObject*> collected;
-
-	//quadtree->Intersect(collected, coll_test);
-
-	//if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
-	//	for (auto it = collected.begin(); it != collected.end(); it++)
-	//		app_log->AddLog("Found %s in quadtree \n", (*it)->getName().c_str());
-	//}
 	ImGui::Begin("Quadtree", &open_tabs[QUADTREE_CONFIG]);
 	ImGui::Checkbox("Draw", &App->scene->draw_quadtree);
 	ImGui::SameLine();
 	if (ImGui::Button("Reload")) {
 		App->scene->quadtree_reload = true;
 	}
+	static float3 size = float3(0,0,0);
+	static float3 centre = float3(0, 0, 0);
+	static int bucket_size = 1;
+	static int max_depth = 8;
+	static float size_arr[3] = { 0 };
+	static float centre_arr[3] = { 0 };
 
+	ImGui::InputFloat3("Centre", centre_arr);
+	centre.x = centre_arr[0];
+	centre.y = centre_arr[1];
+	centre.z = centre_arr[2];
+
+	ImGui::InputFloat3("Size", size_arr);
+	size.x = size_arr[0];
+	size.y = size_arr[1];
+	size.z = size_arr[2];
+
+	ImGui::InputInt("Bucket size", &bucket_size);
+	ImGui::InputInt("Max depth", &max_depth);
+
+	if (ImGui::Button("Create")) {
+		AABB aabb;
+		aabb.SetFromCenterAndSize(centre, size);
+		App->scene->getQuadtree()->Create(aabb, bucket_size, max_depth);
+		App->scene->quadtree_reload = true;
+	}
+	ImGui::Text("Quadtree ignored objects: %i",App->scene->quadtree_ignored_obj);
 	// TODO: Be able to change bucket size, max depth and size.
 	ImGui::End();
 }

@@ -76,86 +76,46 @@ bool ModuleImporter::CleanUp()
 }
 
 
-void* ModuleImporter::Import(const char* file, ImportType expected_filetype) 
-{
+void* ModuleImporter::ImportTexturePointer(const char* file) {
 	std::string extension = file;
 	App->fs.getExtension(extension);
-	//Timer load_time;
-	//load_time.Start();
 
-	//if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
-	//{
-	//	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
-	//		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
-	//	{
-	//		const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
+	if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
+		|| extension == ".raw" || extension == ".tga" || extension == ".tiff") {
+		std::string texture_name = file;
+		App->fs.getFileNameFromPath(texture_name);
+		bool is_dds = extension == ".dds";
 
-	//		if (imported_scene)
-	//		{
-	//			std::vector<uint> mat_id;
-	//			//LoadMaterials(*imported_scene, mat_id);
-	//			GameObject* root_obj = LoadNodeRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
-	//			aiReleaseImport(imported_scene);
+		ILuint il_id = 0;
+		ilGenImages(1, &il_id);
+		ilBindImage(il_id);
 
-	//			App->scene->selected_obj = root_obj;
-	//			App->camera->editor_camera->FitToSizeSelectedGeometry(); 
-	//			app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
+		ilLoadImage(file);
 
-	//			return root_obj;
-	//		}
-	//		else
-	//			app_log->AddLog("Error loading scene %s", file);
-	//	}
-	//	// Import own file format
-	//	if (extension == ".kr"){
-	//		Mesh* mesh = ImportMeshFromKR(file);
-	//		std::string mesh_name = file;
-	//		App->fs.getFileNameFromPath(mesh_name);
-	//		mesh->setName(mesh_name.c_str());
-	//		if (mesh) {
-	//			GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
-	//			//ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
-	//			mesh_object->addComponent(c_mesh);
-	//			app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
-	//		}
+		ILinfo ImageInfo;
+		iluGetImageInfo(&ImageInfo);
+		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+			iluFlipImage();
 
-	//	}
-	//}
-	if (expected_filetype == I_NONE || expected_filetype == I_TEXTURE)
-	{
-		if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
-			|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
-		{
-			std::string texture_name = file;
-			App->fs.getFileNameFromPath(texture_name);
-			bool is_dds = extension == ".dds";
+		GLuint TexId = ilutGLBindTexImage();
 
-			ILuint il_id = 0;
-			ilGenImages(1, &il_id);
-			ilBindImage(il_id);
+		Texture* tex = new Texture(TexId, texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
 
-			ilLoadImage(file);
-			
-			ILinfo ImageInfo;
-			iluGetImageInfo(&ImageInfo);
-			if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
-				iluFlipImage();
+		ilDeleteImage(il_id);
 
-			GLuint TexId = ilutGLBindTexImage();
-
-			Texture* tex = new Texture(TexId, texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
-
-			ilDeleteImage(il_id);
-
-			if (is_dds) { 									// We copy and paste file in library folder.
-				if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
-					app_log->AddLog("%s could not be copied to Library/Textures", file);
-			}
-			
-			app_log->AddLog("Success loading texture: %s", file);
-			return tex;
+		if (is_dds) { 									// We copy and paste file in library folder.
+			if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
+				app_log->AddLog("%s could not be copied to Library/Textures", file);
 		}
-	}/*
+
+		app_log->AddLog("Success loading texture: %s", file);
+		return tex;
+	}
+
+	app_log->AddLog("Error loading texture [incompatible format]: %s", file);
+
+	return nullptr;
+	/*
 	//if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
 	//{
 	//	if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
@@ -166,7 +126,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 	//			app_log->AddLog("Success loading music: %s", file);
 	//			return last_audio_file;
 	//		}
-	//		else 
+	//		else
 	//			app_log->AddLog("Error loading music: %s", file);
 	//	}
 	//}
@@ -184,94 +144,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 	//			app_log->AddLog("Error loading fx: %s", file);
 	//	}
 	//}*/
-
-	app_log->AddLog("Error loading file [incompatible format]: %s", file);
-
-	return nullptr;
-}
-
-
-
-void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const
-{
-	//aiString path;
-	//for (int i = 0; i < scene.mNumMaterials; i++)
-	//{
-	//	Material* mat = new Material();
-	//	out_mat_id.push_back(App->scene->last_mat_id - 1);
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
-	//	{
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(DIFFUSE, tex);
-	//	}
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
-	//	{
-	//		path.Clear();
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(AMBIENT, tex);
-	//	}
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
-	//	{
-	//		path.Clear();
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(NORMALS, tex);
-	//	}
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
-	//	{
-	//		path.Clear();
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(LIGHTMAP, tex);
-	//	}
-	//}
-}
-
-GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent)
-{
-	//std::string name = node.mName.C_Str();
-	//if (name.find("$Assimp") != std::string::npos)
-	//{
-	//	for (int i = 0; i < node.mNumChildren; i++)
-	//		LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, parent);
-
-	//	return nullptr;
-	//}
-
-	//GameObject* new_obj = new GameObject(node.mName.C_Str(), parent);
-	//if(parent)
-	//	parent->addChild(new_obj);
-
-	//for (int i = 0; i < node.mNumMeshes; i++)
-	//{
-	//	Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
-	//	ComponentMesh* c_m = new ComponentMesh(new_obj, mesh);
-	//	//if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
-	//	//	c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
-	//	//else {
-	//	//	Material* mat = new Material();
-	//	//	c_m->setMaterial(mat);
-	//	//}
-	//	new_obj->addComponent(c_m);
-
-	//	ExportMeshToKR(node.mName.C_Str(), mesh);
-	//	app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
-	//}
-
-	//aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	//aiVector3D scl = { 1.0f, 1.0f, 1.0f };
-	//aiQuaternion rot;
-	//node.mTransformation.Decompose(scl, rot, pos);
-
-	//((ComponentTransform*)new_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
-
-	//for (int i = 0; i < node.mNumChildren; i++)
-	//	LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, new_obj);
-
-	//return newobj;
-	return nullptr;
 }
 
 void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, uint parent)

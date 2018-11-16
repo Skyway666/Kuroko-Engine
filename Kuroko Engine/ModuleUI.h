@@ -70,7 +70,6 @@ public:
 
 private:
 	
-	bool close_app = false;
 	bool docking_background = true;
 	bool draw_guizmo = true;
 

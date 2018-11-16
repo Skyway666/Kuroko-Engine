@@ -21,11 +21,12 @@ Quadtree::~Quadtree() {
 }
 
 
-void Quadtree::Create(AABB limits) {
+void Quadtree::Create(AABB limits, int bucket_size, int max_splits) {
 	
-}
-
-void Quadtree::Create(std::list<GameObject*> objects) { // Adaptive (not for now)
+	delete root;
+	root = new QuadTreeNode(limits);
+	this->bucket_size = bucket_size;
+	this->max_splits = max_splits;
 }
 
 
@@ -78,14 +79,18 @@ QuadTreeNode::~QuadTreeNode() {
 
 void QuadTreeNode::CollectIntersections(std::list<GameObject*>& found_obj, const Frustum& primitive) {
 
-	if (!is_leaf) {													// If not leaf call the function for all childs
-		for (int i = 0; i < 4; i++)
-			childs[i]->CollectIntersections(found_obj, primitive);
-	}
-
 	if (primitive.Intersects(box)) {
-		for (auto it = objects.begin(); it != objects.end(); it++)
-			found_obj.push_back((*it));							// TODO: Should be collided against global gameobject aabb, but still doesn't exist
+			if (!is_leaf) {													// If not leaf call the function for all childs
+				for (int i = 0; i < 4; i++)
+				childs[i]->CollectIntersections(found_obj, primitive);
+			}
+			else{
+				for (auto it = objects.begin(); it != objects.end(); it++) {
+					if(std::find(found_obj.begin(), found_obj.end(), (*it)) == found_obj.end()) // Don't push go that already are in the list
+						found_obj.push_back((*it));
+				}
+							
+			}
 	}
 
 

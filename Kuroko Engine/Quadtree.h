@@ -30,8 +30,7 @@ public:
 	Quadtree(AABB limits, int bucket_size = 1, int max_splits = 8);
 	Quadtree(std::list<GameObject*> objects);	  // Adaptive(not for now)
 	~Quadtree();
-	void Create(AABB limits); 	
-	void Create(std::list<GameObject*> objects);	  // Adaptive(not for now)
+	void Create(AABB limits, int bucket_size = 1, int max_splits = 8); 	
 	bool Insert(GameObject* object);			  // Insert an object into the quadtree so it blends to fit it
 	void Fill(std::list<GameObject*> objects);    //Multiple "Inserts" at once
 	void Empty();

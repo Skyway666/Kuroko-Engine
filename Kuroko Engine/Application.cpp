@@ -164,6 +164,9 @@ update_status Application::Update()
 		ret = (*it)->PostUpdate(dt);
 
 	FinishUpdate();
+	if (close_app) {
+		ret = UPDATE_STOP;
+	}
 	return ret;
 }
 

@@ -8,7 +8,7 @@
 #pragma comment( lib, "SDL/lib/SDL2main.lib" )
 
 #include <stdlib.h>  
-//#include <vld.h>
+#include <vld.h>
 
 enum main_states
 {

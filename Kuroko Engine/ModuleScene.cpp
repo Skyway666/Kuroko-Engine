@@ -45,12 +45,12 @@ bool ModuleScene::Start()
 	want_load_scene_file = false;
 
 	std::array<Texture*, 6> skybox_texs;
-	skybox_texs[LEFT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_left.png", I_TEXTURE);
-	skybox_texs[RIGHT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_right.png", I_TEXTURE);
-	skybox_texs[UP]		= (Texture*)App->importer->Import("Assets/Textures/skybox_default_up.png", I_TEXTURE);
-	skybox_texs[DOWN]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_down.png", I_TEXTURE);
-	skybox_texs[FRONT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_front.png", I_TEXTURE);
-	skybox_texs[BACK]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_back.png", I_TEXTURE);
+	skybox_texs[LEFT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_left.png");
+	skybox_texs[RIGHT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_right.png");
+	skybox_texs[UP]		= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_up.png");
+	skybox_texs[DOWN]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_down.png");
+	skybox_texs[FRONT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_front.png");
+	skybox_texs[BACK]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_back.png");
 	skybox->setAllTextures(skybox_texs);
 
 	// TEST FOR QUADTREE
@@ -85,10 +85,6 @@ update_status ModuleScene::PostUpdate(float dt)
 	if(draw_quadtree)
 		quadtree->DebugDraw();
 
-	if (quadtree_add) {
-		quadtree->Insert(quadtree_add);
-		quadtree_add = nullptr;
-	}
 	if (quadtree_reload) {
 		quadtree->Empty();
 		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -151,17 +147,24 @@ void ModuleScene::DrawScene(float3 camera_pos)
 	std::list<GameObject*> drawable_gameobjects;
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
-		if (!(*it)->isStatic()) 
+		if (!(*it)->isStatic())
 			drawable_gameobjects.push_back(*it);
 	}
 
-	if(App->camera->override_editor_cam_culling)
+	if(App->camera->override_editor_cam_culling){
 		quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
-	else
-		quadtree->Intersect(drawable_gameobjects, *App->camera->current_camera->getFrustum());
+	}
+	else{
+		for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+			if ((*it)->isStatic())
+				drawable_gameobjects.push_back(*it);
+		}
+	}
 	
 	for (auto it = drawable_gameobjects.begin(); it != drawable_gameobjects.end(); it++)
 		(*it)->Draw();
+
+	quadtree_ignored_obj = game_objects.size() - drawable_gameobjects.size(); // Dynamic_objects objects*2 because dynamic_objects objects are also in drawable
 }
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
