@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Resource.h"
+#include "Timer.h"
 #include <map>
 
 enum lib_dir;
@@ -63,6 +64,14 @@ public:
 
 	void CleanResources() { cleanResources = true; }
 
+
+	// Set
+	void setRefreshRatio(int refresh_ratio) { update_ratio = refresh_ratio; }
+	// Get
+	// get mesh list
+	// get texture list
+	// get scene list
+	// To put in UI remember
 	// Helpers
 	std::string uuid2string(uint uuid);			// Converts a uuid into a file name, to be able to read from the library
 	const char* assetExtension2type(const char* extension); // Converts an extension into a resource file
@@ -73,6 +82,9 @@ public:
 private:
 	std::map<uint, Resource*> resources;	
 	std::map<PrimitiveTypes, Resource*> primitive_resources;
+
+	int update_ratio; // Library will update every second, not every frame
+	Timer update_timer;
 
 	void CleanMeta();
 	void CleanLibrary();

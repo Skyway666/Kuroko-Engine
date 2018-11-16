@@ -16,7 +16,6 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 		JSON_Object* obj_deff = json_array_get_object(objects, i);
 		JSON_Array* components = json_object_get_array(obj_deff, "Components");
 		resource_deff deff;
-		deff.asset = asset;
 		deff.type = R_MESH;
 
 		// Iterate components and look for the mesh
@@ -27,6 +26,7 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 			if (type == "mesh") {
 				deff.binary = json_object_get_string(mesh_resource, "mesh_binary_path");
 				deff.uuid = json_object_get_number(mesh_resource, "mesh_resource_uuid");
+				deff.asset = json_object_get_string(mesh_resource, "mesh_name");
 				mesh_found = true;
 			}
 

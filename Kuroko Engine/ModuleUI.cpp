@@ -188,6 +188,10 @@ update_status ModuleUI::Update(float dt) {
 
 	if (open_tabs[ASSET_WINDOW])
 		DrawAssetsWindow();
+
+	if (open_tabs[RESOURCES_TAB]) {
+		DrawResourcesWindow();
+	}
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -248,6 +252,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Quadtree", NULL, &open_tabs[QUADTREE_CONFIG]);
 			ImGui::MenuItem("Camera Menu", NULL, &open_tabs[CAMERA_MENU]);
 			ImGui::MenuItem("Asset Window", NULL, &open_tabs[ASSET_WINDOW]);
+			ImGui::MenuItem("Resources Window", NULL, &open_tabs[RESOURCES_TAB]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -1157,6 +1162,17 @@ void ModuleUI::DrawAssetsWindow()
 	ImGui::End();
 }
 
+void ModuleUI::DrawResourcesWindow()
+{
+	ImGui::Begin("Resources Window", &open_tabs[RESOURCES_TAB]);
+	static float refresh_ratio = 1;
+	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
+	if (ImGui::InputFloat("Refresh ratio (seconds)", &refresh_ratio)) {
+		App->resources->setRefreshRatio(refresh_ratio * 1000);
+	}
+	ImGui::End();
+}
+
 //void ModuleUI::DrawAudioTab()
 //{
 //	ImGui::Begin("Audio", &open_tabs[AUDIO]);
@@ -1673,6 +1689,7 @@ void ModuleUI::SaveConfig(JSON_Object* config) const
 	json_object_set_boolean(config, "quadtree_config", open_tabs[QUADTREE_CONFIG]);
 	json_object_set_boolean(config, "camera_menu", open_tabs[CAMERA_MENU]);
 	json_object_set_boolean(config, "asset_window", open_tabs[ASSET_WINDOW]);
+	json_object_set_boolean(config, "resources_window", open_tabs[RESOURCES_TAB]);
 	//json_object_set_boolean(config, "audio", open_tabs[AUDIO]);
 }
 
@@ -1688,6 +1705,7 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[QUADTREE_CONFIG]	= json_object_get_boolean(config, "quadtree_config");
 	open_tabs[CAMERA_MENU]		= json_object_get_boolean(config, "camera_menu");
 	open_tabs[ASSET_WINDOW]		= json_object_get_boolean(config, "asset_window");
+	open_tabs[RESOURCES_TAB]	= json_object_get_boolean(config, "resources_window");
 
 	open_tabs[VIEWPORT_MENU]	= false;	// must always start closed
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");

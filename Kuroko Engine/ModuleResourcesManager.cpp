@@ -27,7 +27,7 @@ ModuleResourcesManager::~ModuleResourcesManager()
 
 bool ModuleResourcesManager::Init(const JSON_Object * config)
 {
-
+	update_ratio = 1000;
 	return true;
 }
 
@@ -35,12 +35,16 @@ bool ModuleResourcesManager::Start()
 {
 	GeneratePrimitiveResources();
 	GenerateLibraryAndMeta();
+	update_timer.Start();
 	return true;
 }
 
 update_status ModuleResourcesManager::Update(float dt)
 {
-	ManageAssetModification();
+	if(update_timer.Read() > update_ratio){
+		ManageAssetModification();
+		update_timer.Start();
+	}
 	return UPDATE_CONTINUE;
 }
 
