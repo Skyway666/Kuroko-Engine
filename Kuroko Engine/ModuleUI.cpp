@@ -377,6 +377,14 @@ void ModuleUI::DrawHierarchyTab()
 			App->scene->selected_obj->addChild(go);
 	}
 
+	ImGui::SameLine();
+
+	if (ImGui::Button("Duplicate Selected")) {
+		if (!App->scene->duplicateGameObject(App->scene->selected_obj)) {
+			app_log->AddLog("Nothing is selected, can't duplicate");
+		}
+	}
+
 	int id = 0;
 	std::list<GameObject*> root_objs;
 	App->scene->getRootObjs(root_objs);
@@ -406,7 +414,7 @@ void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 	if(children.empty())
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
-	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object.getName().c_str(), id) && !children.empty();
+	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)game_object.getUUID(), node_flags, game_object.getName().c_str()) && !children.empty();
 
 	if(App->scene->selected_obj == (GameObject*)&game_object)
 		selection_mask = (1 << id);
@@ -1173,13 +1181,15 @@ void ModuleUI::DrawAssetsWindow()
 				if (type == "texture")
 				{
 					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
-					
-					res_tex->drawn_in_UI = true;
-					if (!res_tex->IsLoaded())
-						res_tex->LoadToMemory();
+					if(res_tex){
+						res_tex->drawn_in_UI = true;
+						if (!res_tex->IsLoaded())
+							res_tex->LoadToMemory();
+						if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+					}
 
-					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-						selected_asset = it.path().generic_string();
+
 				}
 				if (type == "json")
 				{
@@ -1231,24 +1241,26 @@ void ModuleUI::DrawAssetInspector()
 			ImGui::Text("type: %s", &type);
 
 		Resource* res = App->resources->getResource(App->resources->getResourceUuid(selected_asset.c_str()));
-		ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
-
-		if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
-		else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
+		if(res){
+			ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
+			if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
+			else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
+		}
 
 		if (type == "texture")
 		{
 			ResourceTexture* res_tex = (ResourceTexture*)res;
+			if(res_tex){
+				res_tex->drawn_in_UI = true;
+				if (!res_tex->IsLoaded())
+					res_tex->LoadToMemory();
 
-			res_tex->drawn_in_UI = true;
-			if (!res_tex->IsLoaded())
-				res_tex->LoadToMemory();
+				int size_x, size_y;
+				res_tex->texture->getSize(size_x, size_y);
+				ImGui::Image((void*)res_tex->texture->getGLid(), ImVec2((float)size_x, (float)size_y));
 
-			int size_x, size_y;
-			res_tex->texture->getSize(size_x, size_y);
-			ImGui::Image((void*)res_tex->texture->getGLid(), ImVec2((float)size_x, (float)size_y));
-
-			ImGui::Scrollbar(ImGuiLayoutType_::ImGuiLayoutType_Horizontal);
+				ImGui::Scrollbar(ImGuiLayoutType_::ImGuiLayoutType_Horizontal);
+			}
 		}
 	}
 

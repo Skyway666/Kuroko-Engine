@@ -34,6 +34,7 @@ public:
 	void DrawScene(float3 camera_pos);
 
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
+	GameObject* duplicateGameObject(GameObject* gobj);
 
 	GameObject* getGameObject(uint id) const;;
 	Quadtree* getQuadtree() { return quadtree; }
