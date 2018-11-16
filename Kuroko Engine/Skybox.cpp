@@ -87,6 +87,15 @@ Skybox::Skybox(float distance) : distance(distance)
 	}
 }
 
+Skybox::~Skybox()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		if (planes[i]) delete planes[i];
+		if (textures[i]) delete textures[i];
+	}
+}
+
 void Skybox::Draw() const
 {
 	if (planes.size() == 6 && textures.size() == 6)

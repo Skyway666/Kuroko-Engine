@@ -45,6 +45,12 @@ Camera::~Camera()
 	if (frame_buffer) delete frame_buffer;
 }
 
+FrameBuffer::~FrameBuffer()
+{
+	if (tex) delete tex;
+	if (depth_tex) delete depth_tex;
+}
+
 
 // -----------------------------------------------------------------
 void Camera::LookAt(const float3 &Spot)

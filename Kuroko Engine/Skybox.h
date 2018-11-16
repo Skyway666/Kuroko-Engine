@@ -15,6 +15,7 @@ class Skybox
 {
 public:
 	Skybox(float distance = 100.0f);
+	~Skybox();
 
 	void updatePosition(const float3& new_pos) { transform_mat.SetTranslatePart(new_pos); };
 	void setAllTextures(std::array<Texture*, 6>& texs)	{ for(int i = 0; i < 6; i++)	textures[i] = texs[i]; };
