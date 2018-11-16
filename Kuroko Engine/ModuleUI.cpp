@@ -1182,13 +1182,15 @@ void ModuleUI::DrawAssetsWindow()
 				if (type == "texture")
 				{
 					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
-					
-					res_tex->drawn_in_UI = true;
-					if (!res_tex->IsLoaded())
-						res_tex->LoadToMemory();
+					if(res_tex){
+						res_tex->drawn_in_UI = true;
+						if (!res_tex->IsLoaded())
+							res_tex->LoadToMemory();
+						if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+					}
 
-					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-						selected_asset = it.path().generic_string();
+
 				}
 				if (type == "json")
 				{
@@ -1240,24 +1242,26 @@ void ModuleUI::DrawAssetInspector()
 			ImGui::Text("type: %s", &type);
 
 		Resource* res = App->resources->getResource(App->resources->getResourceUuid(selected_asset.c_str()));
-		ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
-
-		if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
-		else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
+		if(res){
+			ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
+			if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
+			else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
+		}
 
 		if (type == "texture")
 		{
 			ResourceTexture* res_tex = (ResourceTexture*)res;
+			if(res_tex){
+				res_tex->drawn_in_UI = true;
+				if (!res_tex->IsLoaded())
+					res_tex->LoadToMemory();
 
-			res_tex->drawn_in_UI = true;
-			if (!res_tex->IsLoaded())
-				res_tex->LoadToMemory();
+				int size_x, size_y;
+				res_tex->texture->getSize(size_x, size_y);
+				ImGui::Image((void*)res_tex->texture->getGLid(), ImVec2((float)size_x, (float)size_y));
 
-			int size_x, size_y;
-			res_tex->texture->getSize(size_x, size_y);
-			ImGui::Image((void*)res_tex->texture->getGLid(), ImVec2((float)size_x, (float)size_y));
-
-			ImGui::Scrollbar(ImGuiLayoutType_::ImGuiLayoutType_Horizontal);
+				ImGui::Scrollbar(ImGuiLayoutType_::ImGuiLayoutType_Horizontal);
+			}
 		}
 	}
 
