@@ -98,12 +98,20 @@ update_status ModuleScene::PostUpdate(float dt)
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
 		//If something is deleted, ask quadtree to reload
+		GameObject* current = (*it);
 		quadtree_reload = true;
-		if (*it == selected_obj) selected_obj = nullptr;
-		game_objects.remove(*it);
+		if (current == selected_obj) selected_obj = nullptr;
+		game_objects.remove(current);
 
-		if (GameObject* parent = (*it)->getParent())
-			parent->removeChild(*it);
+		// Remove child from parent
+		if (GameObject* parent = (current)->getParent())
+			parent->removeChild(current);
+
+		// Set parent of the children nullptr, they are all going to die
+		std::list<GameObject*> children;
+		current->getChildren(children);
+		for (auto it = children.begin(); it != children.end(); it++)
+			(*it)->setParent(nullptr);
 
 		delete *it;
 	}
