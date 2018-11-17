@@ -188,7 +188,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
-		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
+		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], scene, node.mName.C_Str());
 		JSON_Value* mesh_component = json_value_init_object();	
 		uint uuid_number = random32bits();																// Create mesh component
 		std::string uuid = std::to_string(uuid_number);

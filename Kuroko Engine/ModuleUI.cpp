@@ -383,12 +383,12 @@ void ModuleUI::DrawHierarchyTab()
 			App->scene->selected_obj->addChild(go);
 	}
 
-	ImGui::SameLine();
 
-	if (ImGui::Button("Duplicate Selected")) {
-		if (!App->scene->duplicateGameObject(App->scene->selected_obj)) {
-			app_log->AddLog("Nothing is selected, can't duplicate");
-		}
+	if (App->scene->selected_obj)
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Duplicate Selected")) 
+			App->scene->duplicateGameObject(App->scene->selected_obj);
 	}
 
 	int id = 0;
