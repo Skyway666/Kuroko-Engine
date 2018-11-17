@@ -11,6 +11,7 @@
 #include "Transform.h"
 #include "ModuleWindow.h"
 #include "Material.h"
+#include "ModuleUI.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
@@ -69,7 +70,7 @@ bool ModuleCamera3D::CleanUp()
 update_status ModuleCamera3D::Update(float dt)
 {
 	// Not allow camera to be modified if UI is being operated
-	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera->draw_in_UI)))
+	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera->draw_in_UI)) && !App->gui->disable_keyboard_control)
 	{
 		// Movement
 		float3 displacement = float3::zero;
