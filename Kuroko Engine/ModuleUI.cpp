@@ -957,19 +957,19 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 		else
 			window_name = camera.getViewportDirString();
 
-		ImGui::Begin(window_name.c_str(), &camera.draw_in_UI, ImGuiWindowFlags_NoResize);
+		ImGui::Begin(window_name.c_str(), &camera.draw_in_UI, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
 
 		if(ImGui::IsWindowFocused())
 			App->camera->selected_camera = &camera;
 		
-		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 40, frame_buffer->size_y / 3 + 60));
+		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 30 , frame_buffer->size_y / 3 + 40));
 
 		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), nullptr, ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			float x = App->input->GetMouseX(); float y = App->input->GetMouseY();
-			ImVec2 window_pos = ImGui::GetWindowPos();
-			x = (((x - window_pos.x) / ImGui::GetWindowSize().x) * 2) - 1;
-			y = (((y - window_pos.y) / ImGui::GetWindowSize().y) * 2) - 1;
+			ImVec2 window_pos = ImGui::GetItemRectMin();
+			x = (((x - window_pos.x) / ImGui::GetItemRectSize().x) * 2)  - 1;
+			y = (((y - window_pos.y) / ImGui::GetItemRectSize().y) * -2) + 1;
 
 			App->scene->selected_obj = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr);
 		}
