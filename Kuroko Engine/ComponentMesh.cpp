@@ -141,6 +141,12 @@ Mesh* ComponentMesh::getMesh() const {
 	}
 	return ret;
 }
+void ComponentMesh::setMeshResourceId(uint _mesh_resource_uuid) {
+
+	mesh_resource_uuid = _mesh_resource_uuid;
+	((ComponentAABB*)getParent()->getComponent(C_AABB))->Reload();
+
+}
 PrimitiveTypes ComponentMesh::primitiveString2PrimitiveType(std::string primitive_type_string) {
 
 	PrimitiveTypes ret = Primitive_None; // Just for security

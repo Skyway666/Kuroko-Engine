@@ -41,7 +41,7 @@ public:
 	void DrawHierarchyTab();
 	void DrawHierarchyNode(const GameObject& game_object, int& id) const;
 	void DrawObjectInspectorTab();
-	bool DrawComponent(Component& component);
+	bool DrawComponent(Component& component, int id);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab();
 	void DrawAboutLeaf();

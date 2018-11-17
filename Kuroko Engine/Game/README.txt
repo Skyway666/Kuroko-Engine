@@ -17,16 +17,16 @@ Lucas García Mateu
 - Quadtree.
 - Save and Load of scene.
 - Time control implemented, with serialization of scene reload when stopping time.
-- Resource manager with online functionalities (add, modify and delete resources)
+- Resource manager with online functionalities (add, modify and delete resources).
 
 Rodrigo De Pedro Lombao
 - Geometry storage and render in real time.
 - Primitive shapes.
 - Hierarchy viewer and game object inspector.
 - Game object system, with parenting and components.
-- Camera as component with frustum, frustum culling and rendering window
-- Gizmo implemented, with toolbar.
-- Mouse Picking
+- Camera as component with frustum, frustum culling and rendering window.
+- Gizmo implemented, with toolbar (does not work in ortographic mode).
+- Mouse Picking.
 
 
 INNOVATION: 

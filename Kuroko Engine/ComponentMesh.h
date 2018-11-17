@@ -27,7 +27,7 @@ public:
 	Mesh* getMesh()	const;
 	uint getMeshResource() { return mesh_resource_uuid; }
 	void setMaterial(Material* new_mat) { mat = new_mat; };// Can recieve nullptr
-	void setMeshResourceId(uint _mesh_resource_uuid) { mesh_resource_uuid = _mesh_resource_uuid; }
+	void setMeshResourceId(uint _mesh_resource_uuid); 
 	PrimitiveTypes primitiveString2PrimitiveType(std::string primitive_type_string);
 	std::string PrimitiveType2primitiveString(PrimitiveTypes type);
 

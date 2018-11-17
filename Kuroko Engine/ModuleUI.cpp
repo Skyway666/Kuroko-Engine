@@ -121,7 +121,7 @@ update_status ModuleUI::PreUpdate(float dt) {
 	ImGui_ImplSDL2_NewFrame(App->window->main_window->window);
 	ImGui::NewFrame();
 
-
+	//ImGui::ShowDemoWindow();
 	return UPDATE_CONTINUE;
 }
 
@@ -475,9 +475,12 @@ void ModuleUI::DrawObjectInspectorTab()
 		selected_obj->getComponents(components);
 
 		std::list<Component*> components_to_erase;
-		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
-			if (!DrawComponent(*(*it)))
+		int id = 0;
+		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++){
+			if (!DrawComponent(*(*it), id))
 				components_to_erase.push_back(*it);
+			id++;
+		}
 
 		for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
 			selected_obj->removeComponent(*it);
@@ -509,13 +512,15 @@ void ModuleUI::DrawObjectInspectorTab()
 	}
 }
 
-bool ModuleUI::DrawComponent(Component& component)
+bool ModuleUI::DrawComponent(Component& component, int id)
 {
 	ComponentCamera* camera = nullptr; // aux pointer
+	std::string tag;
 	switch (component.getType())
 	{
 	case MESH:
-		if (ImGui::CollapsingHeader("Mesh"))
+		tag = "Mesh##" + std::to_string(id);
+		if (ImGui::CollapsingHeader(tag.c_str()))
 		{
 			ComponentMesh* c_mesh = (ComponentMesh*)&component;
 			static bool wireframe_enabled;
@@ -539,25 +544,29 @@ bool ModuleUI::DrawComponent(Component& component)
 					c_mesh->setDrawNormals(draw_normals);
 				
 				if (!c_mesh->getMesh()) {
-					if (ImGui::Button("Add mesh"))
-						ImGui::OpenPopup("Meshes popup");
+					static bool add_mesh_menu = false;
+					if (ImGui::Button("Add mesh")) {
+						add_mesh_menu = true;
+					}
 
-					if (ImGui::BeginPopup("Meshes popup")) {
+					if (add_mesh_menu) {
 
 						std::list<resource_deff> mesh_res;
 						App->resources->getMeshResourceList(mesh_res);
 
+						ImGui::Begin("Mesh selector", &add_mesh_menu);
 						for (auto it = mesh_res.begin(); it != mesh_res.end(); it++) {
 							resource_deff mesh_deff = (*it);
 							if (ImGui::MenuItem(mesh_deff.asset.c_str())) {
 								App->resources->deasignResource(c_mesh->getMeshResource());
 								App->resources->assignResource(mesh_deff.uuid);
 								c_mesh->setMeshResourceId(mesh_deff.uuid);
+								add_mesh_menu = false;
 								break;
 							}
 						}
 
-						ImGui::EndPopup();
+						ImGui::End();
 					}
 				}
 				
@@ -570,6 +579,7 @@ bool ModuleUI::DrawComponent(Component& component)
 						ImGui::SameLine();
 						if (ImGui::Button("remove material"))
 						{
+							delete c_mesh->getMaterial();
 							c_mesh->setMaterial(nullptr);
 							ImGui::TreePop();
 							return true;
@@ -678,11 +688,14 @@ bool ModuleUI::DrawComponent(Component& component)
 
 				if (Mesh* mesh = c_mesh->getMesh())
 				{
-					if (ImGui::TreeNode("Mesh Data"))
+					if (ImGui::TreeNode("Mesh Options"))
 					{
 						uint vert_num, poly_count;
 						bool has_normals, has_colors, has_texcoords;
-
+						if (ImGui::Button("Remove mesh")) {
+							App->resources->deasignResource(c_mesh->getMeshResource());
+							c_mesh->setMeshResourceId(0);
+						}
 						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
 						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
 						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
@@ -690,11 +703,13 @@ bool ModuleUI::DrawComponent(Component& component)
 						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
 
 						ImGui::TreePop();
+
+						
 					}
 				}
 			}
 
-			if (ImGui::Button("Remove##Remove mesh"))
+			if (ImGui::Button("Remove Component##Remove mesh"))
 				return false;
 		}
 		break;
