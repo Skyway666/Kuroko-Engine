@@ -65,6 +65,8 @@ Extra information:
 - Press "Space" to see all the viewports at the same time
 - Use "Empty object" to create an empty object, which will be a child of the currently selected object
 - You can add mesh components to an object, and assign them their material and mesh
+- Using "Import File" or "Drag and drop" on files will add them to the assets folder of the project. 
+if a hole fbx wants to be loaded to the scene, double click on its icon in the asset window.
 
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine

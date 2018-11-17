@@ -25,8 +25,6 @@ Application::Application()
 	// Create library directory if it does not exist
 	CreateDirectory("Library", NULL);
 	CreateDirectory("Library\\Meshes", NULL);
-	CreateDirectory("Library\\Materials", NULL);
-	CreateDirectory("Library\\Animation", NULL);
 	CreateDirectory("Library\\Textures", NULL);
 	CreateDirectory("Library\\Prefabs", NULL);
 

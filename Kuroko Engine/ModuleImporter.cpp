@@ -84,7 +84,6 @@ void* ModuleImporter::ImportTexturePointer(const char* file) {
 		|| extension == ".raw" || extension == ".tga" || extension == ".tiff") {
 		std::string texture_name = file;
 		App->fs.getFileNameFromPath(texture_name);
-		bool is_dds = extension == ".dds";
 
 		ILuint il_id = 0;
 		ilGenImages(1, &il_id);
@@ -99,14 +98,9 @@ void* ModuleImporter::ImportTexturePointer(const char* file) {
 
 		GLuint TexId = ilutGLBindTexImage();
 
-		Texture* tex = new Texture(TexId, texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
+		Texture* tex = new Texture(TexId, texture_name.c_str(), false);  // Never export to library textures used by the editor
 
 		ilDeleteImage(il_id);
-
-		if (is_dds) { 									// We copy and paste file in library folder.
-			if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
-				app_log->AddLog("%s could not be copied to Library/Textures", file);
-		}
 
 		app_log->AddLog("Success loading texture: %s", file);
 		return tex;

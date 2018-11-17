@@ -219,7 +219,11 @@ update_status ModuleUI::Update(float dt) {
 			if (ImGui::MenuItem("Import file"))
 			{
 				std::string file_path = openFileWID();
-				App->resources->LoadFileToScene(file_path.c_str());
+				std::string extension = file_path;
+				App->fs.getExtension(extension);
+				App->fs.copyFileTo(file_path.c_str(), ASSETS, extension.c_str());
+				app_log->AddLog("%s copied to Assets folder", file_path.c_str());
+				//App->resources->LoadFileToScene(file_path.c_str());
 			}
 			if (ImGui::MenuItem("Save scene")) {
 				if (App->scene->existingScene())
@@ -614,7 +618,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							//if (ImGui::Button("Load checkered##Dif: Load checkered"))
 							//	material->setCheckeredTexture(DIFFUSE);
 							//ImGui::SameLine()
-							if (ImGui::Button("Load##Dif: Load"))
+							if (ImGui::Button("Load(from asset folder)##Dif: Load"))
 							{
 								std::string texture_path = openFileWID();
 								uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
@@ -1214,8 +1218,16 @@ void ModuleUI::DrawAssetsWindow()
 
 				if (type == "scene")
 				{
-					if (ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-						selected_asset = it.path().generic_string();
+
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered())
+							App->resources->LoadFileToScene(it.path().generic_string().c_str());
+					}
+					else{
+						if (ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+					}
 				}
 				if (type == "texture")
 				{
@@ -1277,7 +1289,7 @@ void ModuleUI::DrawAssetInspector()
 		if(type == "scene")
 			ImGui::Text("type: 3D object");
 		else
-			ImGui::Text("type: %s", &type);
+			ImGui::Text("type: %s", type);
 
 		Resource* res = App->resources->getResource(App->resources->getResourceUuid(selected_asset.c_str()));
 		if(res){

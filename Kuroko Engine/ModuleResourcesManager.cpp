@@ -262,7 +262,6 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 	json_serialize_to_file(meta, full_meta_path.c_str());
 	json_value_free(meta);
 
-	// TODO: Import file
 	switch (enum_type) {
 		case R_TEXTURE:
 			App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
