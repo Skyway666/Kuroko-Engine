@@ -1762,6 +1762,7 @@ void ModuleUI::DrawQuadtreeConfigWindow() {
 		App->scene->quadtree_reload = true;
 	}
 	ImGui::Text("Quadtree ignored objects: %i",App->scene->quadtree_ignored_obj);
+	ImGui::Text("Frustum checks against quadtree: %i", App->scene->quadtree_checks);
 	// TODO: Be able to change bucket size, max depth and size.
 	ImGui::End();
 }

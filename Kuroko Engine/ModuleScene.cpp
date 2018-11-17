@@ -149,9 +149,10 @@ void ModuleScene::DrawScene(float3 camera_pos)
 	}
 
 	if(App->camera->override_editor_cam_culling){
-		quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
+		quadtree_checks = quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
 	}
 	else{
+		quadtree_checks = 0;
 		for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
 			if ((*it)->isStatic())
 				drawable_gameobjects.push_back(*it);
@@ -161,7 +162,7 @@ void ModuleScene::DrawScene(float3 camera_pos)
 	for (auto it = drawable_gameobjects.begin(); it != drawable_gameobjects.end(); it++)
 		(*it)->Draw();
 
-	quadtree_ignored_obj = game_objects.size() - drawable_gameobjects.size(); // Dynamic_objects objects*2 because dynamic_objects objects are also in drawable
+	quadtree_ignored_obj = game_objects.size() - drawable_gameobjects.size();
 }
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }

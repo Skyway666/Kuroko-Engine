@@ -104,6 +104,7 @@ public:
 	bool draw_quadtree			= true;
 	bool quadtree_reload		= false;
 	int quadtree_ignored_obj	= 0;
+	int quadtree_checks			= 0;
 
 };
 #endif

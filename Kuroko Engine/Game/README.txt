@@ -1,4 +1,4 @@
-Kuroko Engine 0.5
+Kuroko Engine 0.7
 
 This is a videogame engine in process, developed by Rodrigo de Pedro Lombao and Lucas García Mateu.
 
@@ -59,6 +59,13 @@ Libraries used:
 - PCG Random	(http://www.pcg-random.org)
 - ImGuizmo      (https://github.com/CedricGuillemet/ImGuizmo)
 - ImGui		(https://github.com/ocornut/imgui)
+
+Extra information:
+
+- Press "Space" to see all the viewports at the same time
+- Use "Empty object" to create an empty object, which will be a child of the currently selected object
+- You can add mesh components to an object, and assign them their material and mesh
+
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
 

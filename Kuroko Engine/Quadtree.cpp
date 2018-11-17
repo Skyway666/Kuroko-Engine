@@ -50,8 +50,10 @@ void Quadtree::Empty() {
 	root->is_leaf = true;
 }
 
-void Quadtree::Intersect(std::list<GameObject*>& found_obj, Frustum primitive) {
-	root->CollectIntersections(found_obj, primitive);
+int Quadtree::Intersect(std::list<GameObject*>& found_obj, Frustum primitive) {
+	int checks = 0;
+	root->CollectIntersections(found_obj, primitive, checks);
+	return checks;
 }
 
 
@@ -77,12 +79,13 @@ QuadTreeNode::~QuadTreeNode() {
 	}
 }
 
-void QuadTreeNode::CollectIntersections(std::list<GameObject*>& found_obj, const Frustum& primitive) {
+void QuadTreeNode::CollectIntersections(std::list<GameObject*>& found_obj, const Frustum& primitive, int& checks) {
 
-	if (primitive.Intersects(box)) {
+	checks++;
+	if (box.Intersects(primitive)) {
 			if (!is_leaf) {													// If not leaf call the function for all childs
 				for (int i = 0; i < 4; i++)
-				childs[i]->CollectIntersections(found_obj, primitive);
+				childs[i]->CollectIntersections(found_obj, primitive, checks);
 			}
 			else{
 				for (auto it = objects.begin(); it != objects.end(); it++) {
