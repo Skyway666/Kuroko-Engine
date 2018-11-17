@@ -5,6 +5,7 @@
 #include "Resource.h"
 #include "Timer.h"
 #include <map>
+#include <list>
 
 enum lib_dir;
 enum PrimitiveTypes;
@@ -69,7 +70,7 @@ public:
 	// Set
 	void setRefreshRatio(int refresh_ratio) { update_ratio = refresh_ratio; }
 	// Get
-	// get mesh list
+	void getMeshResourceList(std::list<resource_deff>& meshes);
 	// get texture list
 	// get scene list
 	// To put in UI remember

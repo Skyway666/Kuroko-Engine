@@ -15,6 +15,7 @@
 #include "ImGui/imgui_impl_sdl.h"
 #include "ImGui/imgui_impl_opengl2.h"
 #include "ImGui/imgui_internal.h"
+#include "ImGui/imgui.h"
 
 
 #include "GameObject.h"
@@ -119,6 +120,7 @@ update_status ModuleUI::PreUpdate(float dt) {
 
 	ImGui_ImplSDL2_NewFrame(App->window->main_window->window);
 	ImGui::NewFrame();
+
 
 	return UPDATE_CONTINUE;
 }
@@ -536,9 +538,28 @@ bool ModuleUI::DrawComponent(Component& component)
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
 					c_mesh->setDrawNormals(draw_normals);
 				
-		/*		if (!c_mesh->getMesh()) {
-					
-				}*/
+				if (!c_mesh->getMesh()) {
+					if (ImGui::Button("Add mesh"))
+						ImGui::OpenPopup("Meshes popup");
+
+					if (ImGui::BeginPopup("Meshes popup")) {
+
+						std::list<resource_deff> mesh_res;
+						App->resources->getMeshResourceList(mesh_res);
+
+						for (auto it = mesh_res.begin(); it != mesh_res.end(); it++) {
+							resource_deff mesh_deff = (*it);
+							if (ImGui::MenuItem(mesh_deff.asset.c_str())) {
+								App->resources->deasignResource(c_mesh->getMeshResource());
+								App->resources->assignResource(mesh_deff.uuid);
+								c_mesh->setMeshResourceId(mesh_deff.uuid);
+								break;
+							}
+						}
+
+						ImGui::EndPopup();
+					}
+				}
 				
 				if (Material* material = c_mesh->getMaterial())
 				{

@@ -234,10 +234,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		deff.requested_update = R_UPDATE;
 		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) { // Check if the last time that was edited is the .meta timestamp
 			// EXISTING RESOURCE WITH NO MODIFICATION
-			deff.type = enum_type;
-			deff.binary = binary_path;
-			deff.asset = full_asset_path;
-			deff.uuid = uuid_number;
+			deff.set(uuid_number, enum_type, binary_path, full_asset_path);
 			deff.requested_update = R_NOTHING;
 			json_value_free(meta);
 			return deff;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
@@ -276,10 +273,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 	}
 	// Meta generated and file imported, create resource in code
 
-	deff.type = enum_type;
-	deff.asset = full_asset_path;
-	deff.binary = binary_path;
-	deff.uuid = uuid_number;
+	deff.set(uuid_number, enum_type, binary_path, full_asset_path);
 
 	// Resource generated, MISSION ACOMPLISHED, return
 	return deff;
@@ -437,6 +431,16 @@ void ModuleResourcesManager::CleanLibrary()
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
 		App->fs.DestroyFile(it.path().generic_string().c_str());
+	}
+}
+
+void ModuleResourcesManager::getMeshResourceList(std::list<resource_deff>& meshes) {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_MESH) {
+			Resource* curr = (*it).second;
+			resource_deff deff(curr->uuid, curr->type, curr->binary, curr->asset);
+			meshes.push_back(deff);
+		}
 	}
 }
 

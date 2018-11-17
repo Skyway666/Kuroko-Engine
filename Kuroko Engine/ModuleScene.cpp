@@ -109,7 +109,6 @@ update_status ModuleScene::PostUpdate(float dt)
 	}
 
 	game_objs_to_delete.clear();
-
 	ManageSceneSaveLoad();
 
 	return UPDATE_CONTINUE;

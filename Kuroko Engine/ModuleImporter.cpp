@@ -529,6 +529,7 @@ Mesh * ModuleImporter::ExportMeshFromKR(const char * file)
 		tex_coords = new float2[num_vertices];
 		memcpy(tex_coords, cursor, bytes);
 	}
+
 	delete buffer;
 	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris, centroid);
