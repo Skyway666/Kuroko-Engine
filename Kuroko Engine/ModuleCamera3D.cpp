@@ -47,6 +47,10 @@ bool ModuleCamera3D::Start()
 	for (int i = 0; i < 6; i++)
 		viewports[i]->initFrameBuffer();
 
+	editor_camera->frustum->pos = float3(1, 13, 100);
+	editor_camera->LookAt(float3(0, 0, 0));
+
+
 	return true;
 }
 
