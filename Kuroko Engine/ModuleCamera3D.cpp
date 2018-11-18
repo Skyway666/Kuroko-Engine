@@ -69,8 +69,8 @@ bool ModuleCamera3D::CleanUp()
 
 void ModuleCamera3D::updateFOVfromWindow()
 {
-	background_camera->getFrustum()->horizontalFov = DEGTORAD * (MIN_H_FOV + ((MAX_H_FOV - MIN_H_FOV) * (((float)App->window->main_window->width - MIN_WINDOW_WIDTH) / (MAX_WINDOW_WIDTH - MIN_WINDOW_WIDTH))));
-	background_camera->getFrustum()->verticalFov = DEGTORAD * (MIN_V_FOV + ((MAX_V_FOV - MIN_V_FOV) * (((float)App->window->main_window->height - MIN_WINDOW_HEIGHT) / (MAX_WINDOW_HEIGHT - MIN_WINDOW_HEIGHT))));
+	float aspect_ratio = (float)App->window->main_window->width / (float)App->window->main_window->height;
+	background_camera->getFrustum()->horizontalFov = 2* math::Atan(math::Tan(background_camera->getFrustum()->verticalFov/2) * aspect_ratio);
 }
 
 // -----------------------------------------------------------------

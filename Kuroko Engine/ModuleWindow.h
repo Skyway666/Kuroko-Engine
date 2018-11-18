@@ -35,6 +35,7 @@ public:
 	virtual ~ModuleWindow();
 
 	bool Init(const JSON_Object* config);
+	update_status Update(float dt);
 	bool CleanUp();
 
 	// id = 0 assigns to main window
