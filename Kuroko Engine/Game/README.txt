@@ -68,6 +68,7 @@ Extra information:
 - Double click any element in the asset window to add it to the scene.
 - Camera views can be controled as the background camera by focusing their UI window. Mouse picking is also
   enabled and usable.
+- The update ratio of the resource manager can be changed in the "Resources" window
 
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
@@ -76,15 +77,5 @@ Github profiles:
 - Rodrigo De Pedro - (https://github.com/rodrigodpl)
 - Lucas García Mateu - (https://github.com/Skyway666)
 
-=======
-Models provided:
 
-- Baker house:
-"BakerHouse.fbx" and "Baker_house.png"
-
-- Penguin
-"PenguinBaseMesh.fbx" and "Penguin Diffuse.dds"
-
-- Toothbrush and tube
-"Paste Tube.fbx" and "Paste Diffuse.dds"
 
