@@ -1253,8 +1253,16 @@ void ModuleUI::DrawAssetsWindow()
 				}
 				if (type == "json")
 				{
-					if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-						selected_asset = it.path().generic_string();
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered()) {
+							App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
+						}
+					}
+					else {
+						if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+					}
 				}
 			}
 			

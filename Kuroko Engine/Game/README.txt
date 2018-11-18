@@ -65,10 +65,12 @@ Extra information:
 - Use "Empty object" to create an empty object, which will be a child of the currently selected object
 - You can add mesh components to an object, and assign them their material and mesh
 - Using "Import File" or "Drag and drop" on files will add them to the assets folder of the project. 
+- Scenes can be loaded by double clicking them on asset window or using "Load Scene" in main menu.
 - Double click any element in the asset window to add it to the scene.
 - Camera views can be controled as the background camera by focusing their UI window. Mouse picking is also
   enabled and usable.
-- The update ratio of the resource manager can be changed in the "Resources" window
+- The update ratio of the resource manager can be changed in the "Resources" window.
+
 
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
