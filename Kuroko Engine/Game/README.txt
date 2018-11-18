@@ -32,8 +32,7 @@ Rodrigo De Pedro Lombao
 INNOVATION: 
 Rodrigo De Pedro Lombao
 - File import through windows explorer
-- Component camera can display a viewport, which can show depth buffer and can be operated with the mouse,
-modifying the transform of the game object that contains it
+- Camera views are controllable by the user and can display their depth buffer.
 - Notifications of memory leaks in console
 - Skybox
 - Viewports
@@ -66,7 +65,9 @@ Extra information:
 - Use "Empty object" to create an empty object, which will be a child of the currently selected object
 - You can add mesh components to an object, and assign them their material and mesh
 - Using "Import File" or "Drag and drop" on files will add them to the assets folder of the project. 
-if a whole fbx wants to be loaded to the scene, double click on its icon in the asset window.
+- Double click any element in the asset window to add it to the scene.
+- Camera views can be controled as the background camera by focusing their UI window. Mouse picking is also
+  enabled and usable.
 
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
