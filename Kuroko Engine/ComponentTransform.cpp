@@ -86,7 +86,8 @@ void ComponentTransform::GlobalToLocal()
 {
 	if (Transform* inh_transform = getInheritedTransform())
 	{
-		local->setPosition(inh_transform->getRotation().Inverted() * global->getPosition() - inh_transform->getPosition() - (inh_transform->getRotation() * local->getRotation() * getParent()->own_centroid));
+		float3 a = (inh_transform->getRotation() * local->getRotation() * getParent()->own_centroid);
+		local->setPosition(inh_transform->getRotation().Inverted() * (global->getPosition() - (inh_transform->getRotation() * local->getRotation() * getParent()->own_centroid)) - inh_transform->getPosition());
 		local->setRotation(inh_transform->getRotation().Inverted() * global->getRotation());
 		local->setScale(global->getScale().Div(inh_transform->getScale()));
 	}
@@ -100,6 +101,7 @@ void ComponentTransform::LocalToGlobal()
 {
 	if (Transform* inh_transform = getInheritedTransform())
 	{
+		float3 a = (inh_transform->getRotation() * local->getRotation() * getParent()->own_centroid);
 		global->setPosition(inh_transform->getRotation() * local->getPosition() + inh_transform->getPosition() + (inh_transform->getRotation() * local->getRotation() * getParent()->own_centroid));
 		global->setRotation(inh_transform->getRotation() * local->getRotation());
 		global->setScale(local->getScale().Mul(inh_transform->getScale()));

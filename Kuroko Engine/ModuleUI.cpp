@@ -1822,11 +1822,7 @@ void ModuleUI::DrawGuizmo()
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
 		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
-		Transform* trans = nullptr;
-		if (transform->getMode() == LOCAL)
-			trans = transform->local;
-		else
-			trans = transform->global;
+		Transform* trans = transform->global;
 
 		Transform aux_transform;
 		switch (gizmo_operation)
@@ -1858,9 +1854,9 @@ void ModuleUI::DrawGuizmo()
 			switch (gizmo_operation)
 			{
 			case ImGuizmo::OPERATION::TRANSLATE:
-				new_pos.x = transform->constraints[0][0] ? trans->getPosition().x : mat.TranslatePart().x;
-				new_pos.y = transform->constraints[0][1] ? trans->getPosition().y : mat.TranslatePart().y;
-				new_pos.z = transform->constraints[0][2] ? trans->getPosition().z : mat.TranslatePart().z;
+				new_pos.x = transform->constraints[0][0] ? trans->getPosition().x : (mat.TranslatePart().x);
+				new_pos.y = transform->constraints[0][1] ? trans->getPosition().y : (mat.TranslatePart().y);
+				new_pos.z = transform->constraints[0][2] ? trans->getPosition().z : (mat.TranslatePart().z);
 				trans->setPosition(new_pos);
 				break;
 			case ImGuizmo::OPERATION::ROTATE:
@@ -1878,16 +1874,8 @@ void ModuleUI::DrawGuizmo()
 			default:
 				break;
 			}
-			if (transform->getMode() == LOCAL)
-			{
-				transform->local->CalculateMatrix();
-				transform->LocalToGlobal();
-			}
-			else
-			{
-				transform->global->CalculateMatrix();
-				transform->GlobalToLocal();
-			}
+			trans->CalculateMatrix();
+			transform->GlobalToLocal();
 		}
 	}
 }
