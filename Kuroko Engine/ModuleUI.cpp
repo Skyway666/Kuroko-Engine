@@ -1822,24 +1822,25 @@ void ModuleUI::DrawGuizmo()
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
 		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
+		Transform* trans = nullptr;
 		if (transform->getMode() == LOCAL)
-			transform->LocalToGlobal();
+			trans = transform->local;
 		else
-			transform->global->CalculateMatrix();
+			trans = transform->global;
 
 		Transform aux_transform;
 		switch (gizmo_operation)
 		{
 		case ImGuizmo::OPERATION::TRANSLATE:
-			aux_transform.setRotation(transform->global->getRotation());
-			aux_transform.setPosition(transform->global->getPosition()); break;
+			aux_transform.setRotation(trans->getRotation());
+			aux_transform.setPosition(trans->getPosition()); break;
 		case ImGuizmo::OPERATION::ROTATE:
-			aux_transform.setPosition(transform->global->getPosition());
-			aux_transform.setRotation(transform->global->getRotation()); break;
+			aux_transform.setPosition(trans->getPosition());
+			aux_transform.setRotation(trans->getRotation()); break;
 		case ImGuizmo::OPERATION::SCALE:
-			aux_transform.setPosition(transform->global->getPosition());
-			aux_transform.setRotation(transform->global->getRotation());
-			aux_transform.setScale(transform->global->getScale()); break;
+			aux_transform.setPosition(trans->getPosition());
+			aux_transform.setRotation(trans->getRotation());
+			aux_transform.setScale(trans->getScale()); break;
 		default:
 			break;
 		}
@@ -1857,28 +1858,36 @@ void ModuleUI::DrawGuizmo()
 			switch (gizmo_operation)
 			{
 			case ImGuizmo::OPERATION::TRANSLATE:
-				new_pos.x = transform->constraints[0][0] ? transform->global->getPosition().x : mat.TranslatePart().x;
-				new_pos.y = transform->constraints[0][1] ? transform->global->getPosition().y : mat.TranslatePart().y;
-				new_pos.z = transform->constraints[0][2] ? transform->global->getPosition().z : mat.TranslatePart().z;
-				transform->global->setPosition(new_pos);
+				new_pos.x = transform->constraints[0][0] ? trans->getPosition().x : mat.TranslatePart().x;
+				new_pos.y = transform->constraints[0][1] ? trans->getPosition().y : mat.TranslatePart().y;
+				new_pos.z = transform->constraints[0][2] ? trans->getPosition().z : mat.TranslatePart().z;
+				trans->setPosition(new_pos);
 				break;
 			case ImGuizmo::OPERATION::ROTATE:
-				new_rot.x = transform->constraints[1][0] ? transform->global->getRotationEuler().x : mat.RotatePart().ToEulerXYZ().x;
-				new_rot.y = transform->constraints[1][1] ? transform->global->getRotationEuler().y : mat.RotatePart().ToEulerXYZ().y;
-				new_rot.z = transform->constraints[1][2] ? transform->global->getRotationEuler().z : mat.RotatePart().ToEulerXYZ().z;
-				transform->global->setRotation(Quat::FromEulerXYZ(new_rot.x, new_rot.y, new_rot.z)); 
+				new_rot.x = transform->constraints[1][0] ? trans->getRotationEuler().x : mat.RotatePart().ToEulerXYZ().x;
+				new_rot.y = transform->constraints[1][1] ? trans->getRotationEuler().y : mat.RotatePart().ToEulerXYZ().y;
+				new_rot.z = transform->constraints[1][2] ? trans->getRotationEuler().z : mat.RotatePart().ToEulerXYZ().z;
+				trans->setRotation(Quat::FromEulerXYZ(new_rot.x, new_rot.y, new_rot.z));
 				break;
 			case ImGuizmo::OPERATION::SCALE:
-				new_scale.x = transform->constraints[2][0] ? transform->global->getScale().x : mat.GetScale().x;
-				new_scale.y = transform->constraints[2][1] ? transform->global->getScale().y : mat.GetScale().y;
-				new_scale.z = transform->constraints[2][2] ? transform->global->getScale().z : mat.GetScale().z;
-				transform->global->setScale(new_scale);
+				new_scale.x = transform->constraints[2][0] ? trans->getScale().x : mat.GetScale().x;
+				new_scale.y = transform->constraints[2][1] ? trans->getScale().y : mat.GetScale().y;
+				new_scale.z = transform->constraints[2][2] ? trans->getScale().z : mat.GetScale().z;
+				trans->setScale(new_scale);
 				break;
 			default:
 				break;
 			}
-			transform->global->CalculateMatrix();
-			transform->GlobalToLocal();
+			if (transform->getMode() == LOCAL)
+			{
+				transform->local->CalculateMatrix();
+				transform->LocalToGlobal();
+			}
+			else
+			{
+				transform->global->CalculateMatrix();
+				transform->GlobalToLocal();
+			}
 		}
 	}
 }
