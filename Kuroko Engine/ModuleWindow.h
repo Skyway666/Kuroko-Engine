@@ -8,6 +8,11 @@
 
 class Application;
 
+#define MIN_WINDOW_WIDTH 640.0f
+#define MAX_WINDOW_WIDTH 1920.0f
+#define MIN_WINDOW_HEIGHT 480.0f
+#define MAX_WINDOW_HEIGHT 1080.0f
+
 struct Window
 {
 	SDL_Window* window = nullptr;

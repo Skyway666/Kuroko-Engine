@@ -17,6 +17,7 @@
 #define CAM_SPEED_CONST 2.5f
 #define CAM_ROT_SPEED_CONST 0.25f
 
+
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "camera";
@@ -65,9 +66,17 @@ bool ModuleCamera3D::CleanUp()
 	return true;
 }
 
+void ModuleCamera3D::updateFOVfromWindow()
+{
+	background_camera->getFrustum()->horizontalFov = DEGTORAD * (MIN_H_FOV + ((MAX_H_FOV - MIN_H_FOV) * (((float)App->window->main_window->width - MIN_WINDOW_WIDTH) / (MAX_WINDOW_WIDTH - MIN_WINDOW_WIDTH))));
+	background_camera->getFrustum()->verticalFov = DEGTORAD * (MIN_V_FOV + ((MAX_V_FOV - MIN_V_FOV) * (((float)App->window->main_window->height - MIN_WINDOW_HEIGHT) / (MAX_WINDOW_HEIGHT - MIN_WINDOW_HEIGHT))));
+}
+
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
+	updateFOVfromWindow();
+
 	// Not allow camera to be modified if UI is being operated
 	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera->draw_in_UI)))
 	{

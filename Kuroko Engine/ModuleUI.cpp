@@ -1087,13 +1087,13 @@ void ModuleUI::DrawCameraMenuWindow()
 					ImGui::Text("Horizontal FOV:");
 					ImGui::SameLine();
 					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					if (ImGui::DragFloat("##Horizontal FOV", &hor_fov, 1.0f, 1.0f, 179.0f, "%.02f"))
+					if (ImGui::DragFloat("##Horizontal FOV", &hor_fov, 1.0f, MIN_H_FOV, MAX_H_FOV, "%.02f"))
 						(*it)->getFrustum()->horizontalFov = DEGTORAD * hor_fov;
 
 					ImGui::Text("Vertical FOV:");
 					ImGui::SameLine();
 					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					if (ImGui::DragFloat("##Vertical FOV", &ver_fov, 1.0f, 1.0f, 179.0f, "%.02f"))
+					if (ImGui::DragFloat("##Vertical FOV", &ver_fov, 1.0f, MIN_V_FOV, MAX_V_FOV, "%.02f"))
 						(*it)->getFrustum()->verticalFov = DEGTORAD * ver_fov;
 
 				}
@@ -1535,8 +1535,8 @@ void ModuleUI::DrawWindowConfigLeaf() const
 		App->window->setBrightness(window->brightness);
 
 	bool width_mod, height_mod = false;
-	width_mod = ImGui::SliderInt("Width", &window->width, 640, 1920);
-	height_mod = ImGui::SliderInt("Height", &window->height, 480, 1080);
+	width_mod = ImGui::SliderInt("Width", &window->width, MIN_WINDOW_WIDTH, MAX_WINDOW_WIDTH);
+	height_mod = ImGui::SliderInt("Height", &window->height, MIN_WINDOW_HEIGHT, MAX_WINDOW_HEIGHT);
 	
 	if(width_mod || height_mod)
 		App->window->setSize(window->width, window->height);
