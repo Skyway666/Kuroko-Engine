@@ -68,6 +68,8 @@ public:
 	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(const JSON_Object* config);
 
+	bool disable_keyboard_control = false;
+
 private:
 	
 	bool docking_background = true;

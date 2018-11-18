@@ -130,16 +130,8 @@ update_status ModuleUI::Update(float dt) {
 
 	InvisibleDockingBegin();
 	static bool file_save = false;
+	disable_keyboard_control = false;
 
-	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
-		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
-
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
-		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
-		for (int i = 0; i < 6; i++)
-			App->camera->viewports[i]->active = open_tabs[VIEWPORT_MENU];
-	}
 
 	if (open_tabs[CONFIGURATION]) 
 	{
@@ -228,12 +220,14 @@ update_status ModuleUI::Update(float dt) {
 			if (ImGui::MenuItem("Save scene")) {
 				if (App->scene->existingScene())
 					App->scene->AskSceneSaveFile((char*)App->scene->getWorkigSceneName().c_str());
-				else
+				else{
 					file_save = true;
+				}
 				
 			}
-			if (ImGui::MenuItem("Save scene as..."))
+			if (ImGui::MenuItem("Save scene as...")){
 				file_save = true;
+			}
 			if (ImGui::MenuItem("Load scene")){
 				std::string file_path = openFileWID();
 				App->scene->AskSceneLoadFile((char*)file_path.c_str());
@@ -326,7 +320,8 @@ update_status ModuleUI::Update(float dt) {
 	ImGui::EndMainMenuBar();
 
 	if (file_save) {
-		ImGui::Begin("Scene Name");
+		disable_keyboard_control = true;
+		ImGui::Begin("Scene Name", &file_save);
 		ImGui::PushFont(ui_fonts[REGULAR]);
 
 		static char rename_buffer[64];
@@ -340,6 +335,16 @@ update_status ModuleUI::Update(float dt) {
 		}
 		ImGui::PopFont();
 		ImGui::End();
+	}
+
+
+	//if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
+	//	open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
+
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && !disable_keyboard_control) {
+		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
+		for (int i = 0; i < 6; i++)
+			App->camera->viewports[i]->active = open_tabs[VIEWPORT_MENU];
 	}
 	InvisibleDockingEnd();
 	return UPDATE_CONTINUE;
@@ -455,8 +460,9 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::Text("Name: %s", selected_obj->getName().c_str());
 
 		ImGui::SameLine();
-		if (ImGui::Button("Rename"))
+		if (ImGui::Button("Rename")){
 			show_rename = true;
+		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Delete") || App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
@@ -497,8 +503,9 @@ void ModuleUI::DrawObjectInspectorTab()
 	
 	if (show_rename)
 	{
+		disable_keyboard_control = true;
 		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
-		ImGui::Begin("Rename object");
+		ImGui::Begin("Rename object", &show_rename);
 		ImGui::PushFont(ui_fonts[REGULAR]);
 
 		static char rename_buffer[64];
@@ -514,6 +521,8 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::PopFont();
 		ImGui::End();
 	}
+
+
 }
 
 bool ModuleUI::DrawComponent(Component& component, int id)
