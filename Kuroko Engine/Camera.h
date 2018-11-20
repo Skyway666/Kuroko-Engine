@@ -23,6 +23,7 @@ enum ViewportDir { VP_RIGHT, VP_LEFT, VP_UP, VP_DOWN, VP_FRONT, VP_BACK, VP_NONE
 
 struct FrameBuffer
 {
+	~FrameBuffer();
 	Texture* tex = nullptr;
 	Texture* depth_tex = nullptr;
 

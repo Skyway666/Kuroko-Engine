@@ -66,12 +66,6 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case LIBRARY_MESHES:
 		path = MESHES_FOLDER;
 		break;
-	case LIBRARY_MATERIALS:
-		path = MATERIALS_FOLDER;
-		break;
-	case LIBRARY_ANIMATIONS:
-		path = ANIMATIONS_FOLDER;
-		break;
 	case LIBRARY_TEXTURES:
 		path = TEXTURES_FOLDER;
 		break;
@@ -80,6 +74,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 		break;
 	case SETTINGS:
 		path = SETTINGS_FOLDER;
+		break;
+	case ASSETS:
+		path = ASSETS_FOLDER;
 		break;
 	case ASSETS_SCENES:
 		path = SCENES_FOLDER;
@@ -96,7 +93,7 @@ bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const 
 
 	if (file_new_name == "") {
 		file_new_name = full_path_src;
-		getFileNameFromPath(file_new_name);
+		removePath(file_new_name);
 	}
 
 	// Form destination path
@@ -157,12 +154,6 @@ std::string FileSystem::getPathFromLibDir(lib_dir lib_dir) {
 	switch (lib_dir) {
 	case LIBRARY_MESHES:
 		ret = MESHES_FOLDER;
-		break;
-	case LIBRARY_MATERIALS:
-		ret = MATERIALS_FOLDER;
-		break;
-	case LIBRARY_ANIMATIONS:
-		ret = ANIMATIONS_FOLDER;
 		break;
 	case LIBRARY_TEXTURES:
 		ret = TEXTURES_FOLDER;

@@ -5,6 +5,7 @@
 #include "Resource.h"
 #include "Timer.h"
 #include <map>
+#include <list>
 
 enum lib_dir;
 enum PrimitiveTypes;
@@ -28,6 +29,7 @@ public:
 
 	// To be executed allways when engine starts. 
 	// Fills resources list for each file in assets, and the ones which don't have .meta are exported to library and given.meta
+	void ManageUITextures();
 	void GeneratePrimitiveResources();
 	void GenerateLibraryAndMeta();
 	bool ManageFile(std::string file_path, resource_deff& deff); // Retruns true if a new resource has to be generated
@@ -68,7 +70,7 @@ public:
 	// Set
 	void setRefreshRatio(int refresh_ratio) { update_ratio = refresh_ratio; }
 	// Get
-	// get mesh list
+	void getMeshResourceList(std::list<resource_deff>& meshes);
 	// get texture list
 	// get scene list
 	// To put in UI remember

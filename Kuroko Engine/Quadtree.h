@@ -19,7 +19,7 @@ struct QuadTreeNode {
 	int node_depth = 0;
 	std::list<GameObject*> objects;
 
-	void CollectIntersections(std::list<GameObject*>& found_obj, const Frustum& primitive); // See what intersections the nodes have //TODO: Use template
+	void CollectIntersections(std::list<GameObject*>& found_obj, const Frustum& primitive, int& checks); // See what intersections the nodes have //TODO: Use template
 };
 
 
@@ -30,8 +30,7 @@ public:
 	Quadtree(AABB limits, int bucket_size = 1, int max_splits = 8);
 	Quadtree(std::list<GameObject*> objects);	  // Adaptive(not for now)
 	~Quadtree();
-	void Create(AABB limits); 	
-	void Create(std::list<GameObject*> objects);	  // Adaptive(not for now)
+	void Create(AABB limits, int bucket_size = 1, int max_splits = 8); 	
 	bool Insert(GameObject* object);			  // Insert an object into the quadtree so it blends to fit it
 	void Fill(std::list<GameObject*> objects);    //Multiple "Inserts" at once
 	void Empty();
@@ -40,7 +39,7 @@ public:
 	int max_splits; 	// How many splits allowed (not used for now)
 	int bucket_size;	// How much items can be held in a QuadTreeNode
 
-	void Intersect(std::list<GameObject*>& found_obj, Frustum primitive); 	// objects: List to be filled //TODO: Use template
+	int Intersect(std::list<GameObject*>& found_obj, Frustum primitive); 	// objects: List to be filled 
 };
 
 

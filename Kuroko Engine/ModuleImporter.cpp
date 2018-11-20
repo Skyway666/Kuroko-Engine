@@ -76,86 +76,40 @@ bool ModuleImporter::CleanUp()
 }
 
 
-void* ModuleImporter::Import(const char* file, ImportType expected_filetype) 
-{
+void* ModuleImporter::ImportTexturePointer(const char* file) {
 	std::string extension = file;
 	App->fs.getExtension(extension);
-	//Timer load_time;
-	//load_time.Start();
 
-	//if (expected_filetype == I_NONE || expected_filetype == I_GOBJ)
-	//{
-	//	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
-	//		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
-	//	{
-	//		const aiScene* imported_scene = aiImportFile(file, aiProcessPreset_TargetRealtime_MaxQuality);
+	if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
+		|| extension == ".raw" || extension == ".tga" || extension == ".tiff") {
+		std::string texture_name = file;
+		App->fs.getFileNameFromPath(texture_name);
 
-	//		if (imported_scene)
-	//		{
-	//			std::vector<uint> mat_id;
-	//			//LoadMaterials(*imported_scene, mat_id);
-	//			GameObject* root_obj = LoadNodeRecursive(*imported_scene->mRootNode, *imported_scene, mat_id);
-	//			aiReleaseImport(imported_scene);
+		ILuint il_id = 0;
+		ilGenImages(1, &il_id);
+		ilBindImage(il_id);
 
-	//			App->scene->selected_obj = root_obj;
-	//			App->camera->editor_camera->FitToSizeSelectedGeometry(); 
-	//			app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
+		ilLoadImage(file);
 
-	//			return root_obj;
-	//		}
-	//		else
-	//			app_log->AddLog("Error loading scene %s", file);
-	//	}
-	//	// Import own file format
-	//	if (extension == ".kr"){
-	//		Mesh* mesh = ImportMeshFromKR(file);
-	//		std::string mesh_name = file;
-	//		App->fs.getFileNameFromPath(mesh_name);
-	//		mesh->setName(mesh_name.c_str());
-	//		if (mesh) {
-	//			GameObject* mesh_object = new GameObject("mesh_loaded_from_kr");
-	//			//ComponentMesh* c_mesh = new ComponentMesh(mesh_object, mesh);
-	//			mesh_object->addComponent(c_mesh);
-	//			app_log->AddLog("Success loading file: %s in %i ms", file, load_time.Read());
-	//		}
+		ILinfo ImageInfo;
+		iluGetImageInfo(&ImageInfo);
+		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+			iluFlipImage();
 
-	//	}
-	//}
-	if (expected_filetype == I_NONE || expected_filetype == I_TEXTURE)
-	{
-		if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
-			|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
-		{
-			std::string texture_name = file;
-			App->fs.getFileNameFromPath(texture_name);
-			bool is_dds = extension == ".dds";
+		GLuint TexId = ilutGLBindTexImage();
 
-			ILuint il_id = 0;
-			ilGenImages(1, &il_id);
-			ilBindImage(il_id);
+		Texture* tex = new Texture(TexId, texture_name.c_str(), false);  // Never export to library textures used by the editor
 
-			ilLoadImage(file);
-			
-			ILinfo ImageInfo;
-			iluGetImageInfo(&ImageInfo);
-			if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
-				iluFlipImage();
+		ilDeleteImage(il_id);
 
-			GLuint TexId = ilutGLBindTexImage();
+		app_log->AddLog("Success loading texture: %s", file);
+		return tex;
+	}
 
-			Texture* tex = new Texture(TexId, texture_name.c_str(), !is_dds);  // If it is a dds, don't compress it
+	app_log->AddLog("Error loading texture [incompatible format]: %s", file);
 
-			ilDeleteImage(il_id);
-
-			if (is_dds) { 									// We copy and paste file in library folder.
-				if (!App->fs.copyFileTo(file, LIBRARY_TEXTURES, DDS_EXTENSION))
-					app_log->AddLog("%s could not be copied to Library/Textures", file);
-			}
-			
-			app_log->AddLog("Success loading texture: %s", file);
-			return tex;
-		}
-	}/*
+	return nullptr;
+	/*
 	//if (expected_filetype == I_NONE || expected_filetype == I_MUSIC)
 	//{
 	//	if (extension == ".mod" || extension == ".midi" || extension == ".mp3" || extension == ".flac")
@@ -166,7 +120,7 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 	//			app_log->AddLog("Success loading music: %s", file);
 	//			return last_audio_file;
 	//		}
-	//		else 
+	//		else
 	//			app_log->AddLog("Error loading music: %s", file);
 	//	}
 	//}
@@ -184,94 +138,6 @@ void* ModuleImporter::Import(const char* file, ImportType expected_filetype)
 	//			app_log->AddLog("Error loading fx: %s", file);
 	//	}
 	//}*/
-
-	app_log->AddLog("Error loading file [incompatible format]: %s", file);
-
-	return nullptr;
-}
-
-
-
-void ModuleImporter::LoadMaterials(const aiScene& scene, std::vector<uint>& out_mat_id) const
-{
-	//aiString path;
-	//for (int i = 0; i < scene.mNumMaterials; i++)
-	//{
-	//	Material* mat = new Material();
-	//	out_mat_id.push_back(App->scene->last_mat_id - 1);
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
-	//	{
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(DIFFUSE, tex);
-	//	}
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_AMBIENT))
-	//	{
-	//		path.Clear();
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_AMBIENT, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(AMBIENT, tex);
-	//	}
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_NORMALS))
-	//	{
-	//		path.Clear();
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_NORMALS, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(NORMALS, tex);
-	//	}
-	//	if (scene.mMaterials[i]->GetTextureCount(aiTextureType_LIGHTMAP))
-	//	{
-	//		path.Clear();
-	//		scene.mMaterials[i]->GetTexture(aiTextureType_LIGHTMAP, 0, &path);
-	//		if (Texture* tex = (Texture*)App->importer->Import(path.C_Str(), I_TEXTURE))
-	//			mat->setTexture(LIGHTMAP, tex);
-	//	}
-	//}
-}
-
-GameObject* ModuleImporter::LoadNodeRecursive(const aiNode& node, const aiScene& scene, const std::vector<uint>& in_mat_id, GameObject* parent)
-{
-	//std::string name = node.mName.C_Str();
-	//if (name.find("$Assimp") != std::string::npos)
-	//{
-	//	for (int i = 0; i < node.mNumChildren; i++)
-	//		LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, parent);
-
-	//	return nullptr;
-	//}
-
-	//GameObject* new_obj = new GameObject(node.mName.C_Str(), parent);
-	//if(parent)
-	//	parent->addChild(new_obj);
-
-	//for (int i = 0; i < node.mNumMeshes; i++)
-	//{
-	//	Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
-	//	ComponentMesh* c_m = new ComponentMesh(new_obj, mesh);
-	//	//if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size())
-	//	//	c_m->setMaterial(App->scene->getMaterial(in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex)));
-	//	//else {
-	//	//	Material* mat = new Material();
-	//	//	c_m->setMaterial(mat);
-	//	//}
-	//	new_obj->addComponent(c_m);
-
-	//	ExportMeshToKR(node.mName.C_Str(), mesh);
-	//	app_log->AddLog("New mesh with %d vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
-	//}
-
-	//aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	//aiVector3D scl = { 1.0f, 1.0f, 1.0f };
-	//aiQuaternion rot;
-	//node.mTransformation.Decompose(scl, rot, pos);
-
-	//((ComponentTransform*)new_obj->getComponent(TRANSFORM))->local->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.x, rot.w), float3(scl.x, scl.y, scl.z));
-
-	//for (int i = 0; i < node.mNumChildren; i++)
-	//	LoadNodeRecursive(*node.mChildren[i], scene, in_mat_id, new_obj);
-
-	//return newobj;
-	return nullptr;
 }
 
 void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, uint parent)
@@ -279,7 +145,6 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	std::string name = node.mName.C_Str();
 	if (name.find("$Assimp") != std::string::npos)
 	{
-
 		for (int i = 0; i < node.mNumChildren; i++)
 			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, parent);
 
@@ -322,7 +187,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
-		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], node.mName.C_Str());
+		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], scene, node.mName.C_Str());
 		JSON_Value* mesh_component = json_value_init_object();	
 		uint uuid_number = random32bits();																// Create mesh component
 		std::string uuid = std::to_string(uuid_number);
@@ -345,7 +210,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		}
 
 		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
-		ExportMeshToKR(uuid.c_str(), mesh);				// Import mesh
+		ImportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		delete mesh;									// TODO: Delete mesh
 
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
@@ -483,7 +348,7 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 
 
 
-void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
+void ModuleImporter::ImportMeshToKR(const char * file, Mesh* mesh) {
 
 	uint header[5];
 	uint vert_num, poly_count = 0;
@@ -567,7 +432,7 @@ void ModuleImporter::ExportMeshToKR(const char * file, Mesh* mesh) {
 	delete data;
 }
 
-void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
+void ModuleImporter::ImportTextureToDDS(const char* texture_name) {
 	ILuint size;
 	char *data;
 	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
@@ -580,7 +445,7 @@ void ModuleImporter::ExportTextureToDDS(const char* texture_name) {
 	}
 }
 
-Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
+Mesh * ModuleImporter::ExportMeshFromKR(const char * file)
 {
 	uint num_vertices		= 0;
 	uint num_tris			= 0;
@@ -658,6 +523,7 @@ Mesh * ModuleImporter::ImportMeshFromKR(const char * file)
 		memcpy(tex_coords, cursor, bytes);
 	}
 
+	delete buffer;
 	app_log->AddLog("Loaded mesh %s from own file format", file);
 	return new Mesh(vertices,tris,normals,colors,tex_coords, num_vertices, num_tris, centroid);
 }

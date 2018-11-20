@@ -11,21 +11,18 @@
 
 #define LIBRARY_FOLDER "Library\\"
 #define MESHES_FOLDER "Library\\Meshes\\"
-#define MATERIALS_FOLDER "Library\\Materials\\"
-#define ANIMATIONS_FOLDER "Library\\Animations\\"
 #define TEXTURES_FOLDER "Library\\Textures\\"
 #define PREFABS_FOLDER "Library\\Prefabs\\"
 #define SETTINGS_FOLDER "Settings\\"
 #define SCENES_FOLDER "Assets\\Scenes\\"
-#define ASSETS_FOLDER "Assets"
+#define ASSETS_FOLDER "Assets\\"
 
 enum lib_dir {
 	LIBRARY_MESHES,
-	LIBRARY_MATERIALS, // Unused (should be a json pointing to different textures)
-	LIBRARY_ANIMATIONS,// Unused
 	LIBRARY_TEXTURES,
 	LIBRARY_PREFABS,
 	SETTINGS,
+	ASSETS,
 	ASSETS_SCENES,
 	NO_LIB
 };

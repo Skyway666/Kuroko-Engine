@@ -25,8 +25,6 @@ Application::Application()
 	// Create library directory if it does not exist
 	CreateDirectory("Library", NULL);
 	CreateDirectory("Library\\Meshes", NULL);
-	CreateDirectory("Library\\Materials", NULL);
-	CreateDirectory("Library\\Animation", NULL);
 	CreateDirectory("Library\\Textures", NULL);
 	CreateDirectory("Library\\Prefabs", NULL);
 
@@ -67,9 +65,8 @@ Application::Application()
 	list_modules.push_back(debug);
 
 	// Renderer last!
-	//AddModule(renderer2D);
-	list_modules.push_back(gui);
 	list_modules.push_back(resources);
+	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
 
 	// HARDCODED
@@ -165,6 +162,9 @@ update_status Application::Update()
 		ret = (*it)->PostUpdate(dt);
 
 	FinishUpdate();
+	if (close_app) {
+		ret = UPDATE_STOP;
+	}
 	return ret;
 }
 

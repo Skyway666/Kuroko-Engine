@@ -11,7 +11,7 @@ class ComponentCamera : public Component
 {
 public:
 	ComponentCamera(GameObject* parent, Camera* camera);
-	~ComponentCamera() {};
+	~ComponentCamera();
 
 	bool Update(float dt);
 	Camera* getCamera() const { return camera; };

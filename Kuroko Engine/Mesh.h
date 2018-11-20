@@ -7,6 +7,7 @@
 #include "MathGeoLib\Math\float2.h"
 
 class aiMesh;
+class aiScene;
 class Material;
 
 enum PrimitiveTypes
@@ -29,7 +30,7 @@ class Mesh {
 	
 	friend class Skybox;
 public:
-	Mesh(const aiMesh& mesh, const char* file_name = "");
+	Mesh(const aiMesh& mesh, const aiScene& scene, const char* file_name = "");
 	Mesh(PrimitiveTypes primitive);
 	// Maybe a "MeshDef" could be created?
 	Mesh(float3* vertices, Tri* tris, float3* normals, float3* colors, float2* tex_coords, uint num_vertices, uint num_tris, const float3& centroid = float3::zero); //Used to load own file
@@ -60,7 +61,7 @@ private:
 	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	void BuildSphere(float radius = 1.0f, float sectorCount = 12.0f, float stackCount = 24.0f);
 	void BuildCylinder(float radius = 1.0f, float length = 3.0f, int steps = 30);
-	bool LoadFromAssimpMesh(const aiMesh& mesh);
+	bool LoadFromAssimpMesh(const aiMesh& mesh, const aiScene& scene);
 	void ClearData();
 	void calculateCentroidandHalfsize();
 

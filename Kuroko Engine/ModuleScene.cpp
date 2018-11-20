@@ -19,6 +19,7 @@
 #include "Transform.h"
 #include "ComponentMesh.h"
 #include "ModuleUI.h"
+#include "ModuleResourcesManager.h"
 
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "MathGeoLib\Geometry\LineSegment.h"
@@ -45,17 +46,15 @@ bool ModuleScene::Start()
 	want_load_scene_file = false;
 
 	std::array<Texture*, 6> skybox_texs;
-	skybox_texs[LEFT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_left.png", I_TEXTURE);
-	skybox_texs[RIGHT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_right.png", I_TEXTURE);
-	skybox_texs[UP]		= (Texture*)App->importer->Import("Assets/Textures/skybox_default_up.png", I_TEXTURE);
-	skybox_texs[DOWN]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_down.png", I_TEXTURE);
-	skybox_texs[FRONT]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_front.png", I_TEXTURE);
-	skybox_texs[BACK]	= (Texture*)App->importer->Import("Assets/Textures/skybox_default_back.png", I_TEXTURE);
+	skybox_texs[LEFT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_left.png");
+	skybox_texs[RIGHT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_right.png");
+	skybox_texs[UP]		= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_up.png");
+	skybox_texs[DOWN]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_down.png");
+	skybox_texs[FRONT]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_front.png");
+	skybox_texs[BACK]	= (Texture*)App->importer->ImportTexturePointer("Assets/Textures/skybox_default_back.png");
 	skybox->setAllTextures(skybox_texs);
 
-	// TEST FOR QUADTREE
 	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)));
-	// TEST FOR QUADTREE
 	return true;
 }
 
@@ -68,8 +67,8 @@ bool ModuleScene::CleanUp()
 	game_objects.clear();
 	game_objs_to_delete.clear();
 
-	delete skybox;
-	delete quadtree;
+	if(skybox) delete skybox;
+	if(quadtree) delete quadtree;
 
 	if (local_scene_save) {
 		json_value_free(local_scene_save);
@@ -85,10 +84,6 @@ update_status ModuleScene::PostUpdate(float dt)
 	if(draw_quadtree)
 		quadtree->DebugDraw();
 
-	if (quadtree_add) {
-		quadtree->Insert(quadtree_add);
-		quadtree_add = nullptr;
-	}
 	if (quadtree_reload) {
 		quadtree->Empty();
 		for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -103,18 +98,25 @@ update_status ModuleScene::PostUpdate(float dt)
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
 	{
 		//If something is deleted, ask quadtree to reload
+		GameObject* current = (*it);
 		quadtree_reload = true;
-		if (*it == selected_obj) selected_obj = nullptr;
-		game_objects.remove(*it);
+		if (current == selected_obj) selected_obj = nullptr;
+		game_objects.remove(current);
 
-		if (GameObject* parent = (*it)->getParent())
-			parent->removeChild(*it);
+		// Remove child from parent
+		if (GameObject* parent = (current)->getParent())
+			parent->removeChild(current);
+
+		// Set parent of the children nullptr, they are all going to die
+		std::list<GameObject*> children;
+		current->getChildren(children);
+		for (auto it = children.begin(); it != children.end(); it++)
+			(*it)->setParent(nullptr);
 
 		delete *it;
 	}
 
 	game_objs_to_delete.clear();
-
 	ManageSceneSaveLoad();
 
 	return UPDATE_CONTINUE;
@@ -123,13 +125,12 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
-	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver() && App->camera->selected_camera == App->camera->editor_camera)
+	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver() && App->camera->selected_camera == App->camera->background_camera)
 	{
 		float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
 		float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
 
-		if (GameObject* new_selected = MousePicking(x, y))
-			selected_obj = new_selected;
+		selected_obj = MousePicking(x, y);
 	}
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -151,17 +152,25 @@ void ModuleScene::DrawScene(float3 camera_pos)
 	std::list<GameObject*> drawable_gameobjects;
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
-		if (!(*it)->isStatic()) 
+		if (!(*it)->isStatic())
 			drawable_gameobjects.push_back(*it);
 	}
 
-	if(App->camera->override_editor_cam_culling)
-		quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
-	else
-		quadtree->Intersect(drawable_gameobjects, *App->camera->current_camera->getFrustum());
+	if(App->camera->override_editor_cam_culling){
+		quadtree_checks = quadtree->Intersect(drawable_gameobjects, *App->camera->override_editor_cam_culling->getFrustum());
+	}
+	else{
+		quadtree_checks = 0;
+		for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+			if ((*it)->isStatic())
+				drawable_gameobjects.push_back(*it);
+		}
+	}
 	
 	for (auto it = drawable_gameobjects.begin(); it != drawable_gameobjects.end(); it++)
 		(*it)->Draw();
+
+	quadtree_ignored_obj = game_objects.size() - drawable_gameobjects.size();
 }
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
@@ -222,6 +231,32 @@ GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 		ray_hits.sort(sortCloserRayhit);
 		return ray_hits.front().obj;
 	}
+}
+
+GameObject* ModuleScene::duplicateGameObject(GameObject * gobj) {
+
+	if (!gobj)
+		return nullptr;
+	// Duplicate go
+	JSON_Value* go_deff = json_value_init_object();
+	gobj->Save(json_object(go_deff));
+	GameObject* duplicated_go = new GameObject(json_object(go_deff));
+	App->scene->addGameObject(duplicated_go);
+	json_value_free(go_deff);
+
+	// Duplicate children
+	std::list<GameObject*> children;
+	gobj->getChildren(children);
+	
+	for (auto it = children.begin(); it != children.end(); it++) {
+		// Duplicate child
+		GameObject* curr_child = *it;
+		GameObject* duplicated_child = duplicateGameObject(curr_child);
+		duplicated_child->setParent(duplicated_go);
+		duplicated_go->addChild(duplicated_child);
+	}
+
+	return duplicated_go;
 }
 
 GameObject* ModuleScene::getGameObject(uint id) const

@@ -20,7 +20,7 @@ enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, C
 				// LAST is an utility value to store the max num of tabs.
 
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
-					GUIZMO_SELECT, LAST_UI_TEX};
+					GUIZMO_SELECT, FOLDER_ICON, OBJECT_ICON, SCENE_ICON, RETURN_ICON, LAST_UI_TEX};
 
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, LAST_UI_FONT};
 
@@ -41,7 +41,7 @@ public:
 	void DrawHierarchyTab();
 	void DrawHierarchyNode(const GameObject& game_object, int& id) const;
 	void DrawObjectInspectorTab();
-	bool DrawComponent(Component& component);
+	bool DrawComponent(Component& component, int id);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab();
 	void DrawAboutLeaf();
@@ -55,6 +55,7 @@ public:
 	void DrawCameraMenuWindow();
 	void DrawViewportsWindow();
 	void DrawAssetsWindow();
+	void DrawAssetInspector();
 	void DrawResourcesWindow(); // A list where you can see all the resources
 
 
@@ -67,9 +68,10 @@ public:
 	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(const JSON_Object* config);
 
+	bool disable_keyboard_control = false;
+
 private:
 	
-	bool close_app = false;
 	bool docking_background = true;
 	bool draw_guizmo = true;
 
@@ -82,6 +84,7 @@ private:
 	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
 
 	std::string asset_window_path = ASSETS_FOLDER;
+	std::string selected_asset;
 };
 #endif
 

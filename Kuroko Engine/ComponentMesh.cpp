@@ -53,76 +53,76 @@ ComponentMesh::~ComponentMesh() {
 }
 void ComponentMesh::Draw() const
 {
-	OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
-
-	if (App->camera->current_camera->frustumCull(*obb))
+	if (Mesh* mesh_from_resource = getMeshFromResource())
 	{
-		ComponentTransform* transform = nullptr;
-		float4x4 view_mat = float4x4::identity;
+		OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
 
-
-		if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+		if (App->camera->current_camera->frustumCull(*obb))
 		{
-			GLfloat matrix[16];
-			glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-			view_mat.Set((float*)matrix);
+			ComponentTransform* transform = nullptr;
+			float4x4 view_mat = float4x4::identity;
 
-			glMatrixMode(GL_MODELVIEW_MATRIX);
-			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+
+			if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+			{
+				GLfloat matrix[16];
+				glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+				view_mat.Set((float*)matrix);
+
+				glMatrixMode(GL_MODELVIEW_MATRIX);
+				glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+			}
+
+
+			if (draw_normals || App->scene->global_normals)
+				mesh_from_resource->DrawNormals();
+
+			if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+			mesh_from_resource->Draw(mat);
+
+
+			if (transform)
+				glLoadMatrixf((GLfloat*)view_mat.v);
 		}
-
-		Mesh* mesh_from_resource = getMeshFromResource();
-		
-		if (!mesh_from_resource)
-			return;
-
-		if (draw_normals || App->scene->global_normals)
-			mesh_from_resource->DrawNormals();
-
-		if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		mesh_from_resource->Draw(mat);
-
-		if (transform)
-			glLoadMatrixf((GLfloat*)view_mat.v);
 	}
 }
 
 void ComponentMesh::DrawSelected() const
 {
-
-	OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
-
-	if (App->camera->current_camera->frustumCull(*obb))
+	if (Mesh* mesh_from_resource = getMeshFromResource())
 	{
-		ComponentTransform* transform = nullptr;
-		float4x4 view_mat = float4x4::identity;
+		OBB* obb = ((ComponentAABB*)getParent()->getComponent(C_AABB))->getOBB();
 
-		if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+		if (App->camera->current_camera->frustumCull(*obb))
 		{
-			GLfloat matrix[16];
-			glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-			view_mat.Set((float*)matrix);
+			ComponentTransform* transform = nullptr;
+			float4x4 view_mat = float4x4::identity;
 
-			glMatrixMode(GL_MODELVIEW_MATRIX);
-			glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+			if (transform = (ComponentTransform*)getParent()->getComponent(TRANSFORM))
+			{
+				GLfloat matrix[16];
+				glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+				view_mat.Set((float*)matrix);
+
+				glMatrixMode(GL_MODELVIEW_MATRIX);
+				glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
+			}
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+			Mesh* mesh_from_resource = getMeshFromResource();
+
+
+			mesh_from_resource->Draw(nullptr, true);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+			if (transform)
+				glLoadMatrixf((GLfloat*)view_mat.v);
 		}
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		
-
-		Mesh* mesh_from_resource = getMeshFromResource();
-
-		if (!mesh_from_resource)
-			return;
-
-		mesh_from_resource->Draw(nullptr, true);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		if (transform)
-			glLoadMatrixf((GLfloat*)view_mat.v);
 	}
 }
 
@@ -140,6 +140,12 @@ Mesh* ComponentMesh::getMesh() const {
 		ret = mesh_resource->mesh;
 	}
 	return ret;
+}
+void ComponentMesh::setMeshResourceId(uint _mesh_resource_uuid) {
+
+	mesh_resource_uuid = _mesh_resource_uuid;
+	((ComponentAABB*)getParent()->getComponent(C_AABB))->Reload();
+
 }
 PrimitiveTypes ComponentMesh::primitiveString2PrimitiveType(std::string primitive_type_string) {
 

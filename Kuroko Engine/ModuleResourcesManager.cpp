@@ -35,16 +35,20 @@ bool ModuleResourcesManager::Start()
 {
 	GeneratePrimitiveResources();
 	GenerateLibraryAndMeta();
+	LoadFileToScene("Assets/Meshes/Street environment_V01.FBX");
 	update_timer.Start();
 	return true;
 }
 
 update_status ModuleResourcesManager::Update(float dt)
 {
+	ManageUITextures();
 	if(update_timer.Read() > update_ratio){
 		ManageAssetModification();
 		update_timer.Start();
 	}
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -56,7 +60,7 @@ update_status ModuleResourcesManager::PostUpdate(float dt)
 		CleanMeta();
 		CleanLibrary();
 		cleanResources = false;
-		ret = UPDATE_STOP;
+		App->CLOSE_APP();
 	}
 
 	return ret;
@@ -78,6 +82,20 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 		resources[deff.uuid] = ret;
 
 	return ret;
+}
+
+void ModuleResourcesManager::ManageUITextures() {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_TEXTURE) {
+			ResourceTexture* res_tex = (ResourceTexture*)(*it).second;
+			if (res_tex->IsLoaded() && res_tex->components_used_by == 0) {
+				if (res_tex->drawn_in_UI)	res_tex->drawn_in_UI = false;
+				else						res_tex->UnloadFromMemory();
+			}
+
+			res_tex->drawn_in_UI = 0;
+		}
+	}
 }
 
 void ModuleResourcesManager::GeneratePrimitiveResources() {
@@ -216,10 +234,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		deff.requested_update = R_UPDATE;
 		if (json_object_get_number(json_object(meta), "timeCreated") == file_last_mod) { // Check if the last time that was edited is the .meta timestamp
 			// EXISTING RESOURCE WITH NO MODIFICATION
-			deff.type = enum_type;
-			deff.binary = binary_path;
-			deff.asset = full_asset_path;
-			deff.uuid = uuid_number;
+			deff.set(uuid_number, enum_type, binary_path, full_asset_path);
 			deff.requested_update = R_NOTHING;
 			json_value_free(meta);
 			return deff;																		// Existing meta, and timestamp is the same, generate a resource to store it in the code
@@ -247,7 +262,6 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 	json_serialize_to_file(meta, full_meta_path.c_str());
 	json_value_free(meta);
 
-	// TODO: Import file
 	switch (enum_type) {
 		case R_TEXTURE:
 			App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
@@ -258,10 +272,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 	}
 	// Meta generated and file imported, create resource in code
 
-	deff.type = enum_type;
-	deff.asset = full_asset_path;
-	deff.binary = binary_path;
-	deff.uuid = uuid_number;
+	deff.set(uuid_number, enum_type, binary_path, full_asset_path);
 
 	// Resource generated, MISSION ACOMPLISHED, return
 	return deff;
@@ -284,49 +295,6 @@ void ModuleResourcesManager::ManageAssetModification()
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
 		
-		//std::string path, name, extension;
-		//path = name = extension = it.path().generic_string();	// Separate path, name and extension	
-		//App->fs.getExtension(extension);
-		//App->fs.getPath(path);
-		//App->fs.getFileNameFromPath(name);
-
-		//JSON_Value* meta;
-		//int file_last_mod = 0;
-		//// Needed for collisioning .meta against asset
-		//std::string full_meta_path = path + name + extension + META_EXTENSION; // TODO: Add original extension to .meta
-		//std::string full_asset_path = path + name + extension;
-
-		//if (App->fs.ExistisFile(full_meta_path.c_str())) {		// Check if .meta file exists
-		//	meta = json_parse_file(full_meta_path.c_str());
-		//	file_last_mod = App->fs.getFileLastTimeMod(full_asset_path.c_str());
-		//	if (json_object_get_number(json_object(meta), "timeCreated") != file_last_mod) { // Check if the last time that was edited is the .meta timestamp
-		//		// Update .meta with time created
-		//		json_object_set_number(json_object(meta), "timeCreated", file_last_mod);
-		//		json_serialize_to_file(meta, full_meta_path.c_str());
-		//		// Set variable to update resource
-		//		uint uuid_number = json_object_get_number(json_object(meta), "resource_uuid");		
-		//		// Set variable to reimport
-		//		std::string uuid_str = uuid2string(uuid_number);
-		//		ResourceType enum_type = type2enumType(json_object_get_string(json_object(meta), "type"));
-
-		//		switch (enum_type) {
-		//		case R_TEXTURE:
-		//			App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
-		//			break;
-		//		case R_SCENE:
-		//			App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
-		//			break;
-		//		}
-
-		//		Resource* texture_resource =  resources[uuid_number];
-		//		// Reload to memory using new binary
-		//		texture_resource->UnloadFromMemory();
-		//		texture_resource->LoadToMemory();
-		//	}
-		//	json_value_free(meta);
-
-		//}
-
 		resource_deff deff;
 		if (ManageFile(it.path().generic_string(), deff)) {
 			switch (deff.requested_update) {
@@ -424,7 +392,7 @@ void ModuleResourcesManager::LoadFileToScene(const char * file) {
 uint ModuleResourcesManager::getResourceUuid(const char * file) {
 	std::string full_meta_path = file;
 	full_meta_path += META_EXTENSION;
-	uint ret = -1;
+	uint ret = 0;
 	if (App->fs.ExistisFile(full_meta_path.c_str())) {
 		JSON_Value* meta = json_parse_file(full_meta_path.c_str());
 		ret = json_object_get_number(json_object(meta), "resource_uuid");
@@ -462,6 +430,16 @@ void ModuleResourcesManager::CleanLibrary()
 		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
 			continue;
 		App->fs.DestroyFile(it.path().generic_string().c_str());
+	}
+}
+
+void ModuleResourcesManager::getMeshResourceList(std::list<resource_deff>& meshes) {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_MESH) {
+			Resource* curr = (*it).second;
+			resource_deff deff(curr->uuid, curr->type, curr->binary, curr->asset);
+			meshes.push_back(deff);
+		}
 	}
 }
 

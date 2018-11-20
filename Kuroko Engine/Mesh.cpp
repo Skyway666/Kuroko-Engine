@@ -11,10 +11,10 @@
 
 #include "Assimp\include\scene.h"
 
-Mesh::Mesh(const aiMesh& imported_mesh, const char* file_name) : id(App->scene->last_mesh_id++)
+Mesh::Mesh(const aiMesh& imported_mesh, const aiScene& scene,const char* file_name) : id(App->scene->last_mesh_id++)
 {
-	if (LoadFromAssimpMesh(imported_mesh))	LoadDataToVRAM();
-	else									app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
+	if (LoadFromAssimpMesh(imported_mesh, scene))	LoadDataToVRAM();
+	else											app_log->AddLog("error loading mesh for the component %s", imported_mesh.mName.C_Str());
 
 	mesh_name = file_name;
 	
@@ -435,7 +435,7 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 
 
 
-bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh)
+bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh, const aiScene& scene)
 {
 	//vertices
 	if (imported_mesh.mNumVertices)
@@ -478,18 +478,30 @@ bool Mesh::LoadFromAssimpMesh(const aiMesh& imported_mesh)
 
 	// colors
 	colors = new float3[num_vertices];
-	if (imported_mesh.HasVertexColors(0))
+	aiColor3D color(-1.0f, 0.0f, 0.0f);
+	scene.mMaterials[imported_mesh.mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+
+	if (color.r != -1.0f)
 	{
 		imported_colors = true;
-		memcpy(colors, imported_mesh.mColors[0], sizeof(float3) * num_vertices);
+		for (int i = 0; i < num_vertices; i++)
+			colors[i] = { color.r, color.g, color.b };
 	}
 	else
 	{
-		Color random_color;
-		random_color.setRandom();
+		if (imported_mesh.HasVertexColors(0))
+		{
+			imported_colors = true;
+			memcpy(colors, imported_mesh.mColors[0], sizeof(float3) * num_vertices);
+		}
+		else
+		{
+			Color random_color;
+			random_color.setRandom();
 
-		for (int i = 0; i < num_vertices; i++)
-			colors[i] = { random_color.r, random_color.g, random_color.b };
+			for (int i = 0; i < num_vertices; i++)
+				colors[i] = { random_color.r, random_color.g, random_color.b };
+		}
 	}
 
 	// texture coordinates

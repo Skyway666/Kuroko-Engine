@@ -54,7 +54,7 @@ public:
 	void DeleteConfig() { want_to_delete_config = true; }
 	void LoadDefaultConfig() { want_to_load_default_config = true; }
 
-
+	void CLOSE_APP() { close_app = true;};
 	void requestBrowser(std::string link);
 	std::vector<float> fps_log;
 	std::vector<float> ms_log;
@@ -72,6 +72,8 @@ private:
 	bool want_to_save_config = false;
 	bool want_to_delete_config = false;
 	bool want_to_load_default_config = false;
+
+	bool close_app = false;
 };
 
 extern Application* App;

@@ -34,6 +34,7 @@ public:
 	void DrawScene(float3 camera_pos);
 
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
+	GameObject* duplicateGameObject(GameObject* gobj);
 
 	GameObject* getGameObject(uint id) const;;
 	Quadtree* getQuadtree() { return quadtree; }
@@ -102,7 +103,8 @@ public:
 	// Dirty bools related to quadtee
 	bool draw_quadtree			= true;
 	bool quadtree_reload		= false;
-	GameObject* quadtree_add	= nullptr;
+	int quadtree_ignored_obj	= 0;
+	int quadtree_checks			= 0;
 
 };
 #endif

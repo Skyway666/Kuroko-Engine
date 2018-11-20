@@ -5,6 +5,7 @@
 #include "ModuleImporter.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleResourcesManager.h"
+#include "FileSystem.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_sdl.h"
@@ -126,7 +127,13 @@ update_status ModuleInput::PreUpdate(float dt)
 			break;
 
 			case SDL_DROPFILE:
-				App->resources->LoadFileToScene(e.drop.file);
+			{
+				std::string extension = e.drop.file;
+				App->fs.getExtension(extension);
+				App->fs.copyFileTo(e.drop.file, ASSETS, extension.c_str());
+				app_log->AddLog("%s copied to Assets folder", e.drop.file);
+			}
+	
 				break;
 
 			default: break;

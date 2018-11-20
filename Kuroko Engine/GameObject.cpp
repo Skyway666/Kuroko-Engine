@@ -63,8 +63,6 @@ GameObject::~GameObject()
 	for (auto it = components.begin(); it != components.end(); it++)
 		delete *it;
 
-	for (auto it = children.begin(); it != children.end(); it++)
-		(*it)->parent = parent;
 }
 
 

@@ -15,6 +15,7 @@
 #include "ImGui/imgui_impl_sdl.h"
 #include "ImGui/imgui_impl_opengl2.h"
 #include "ImGui/imgui_internal.h"
+#include "ImGui/imgui.h"
 
 
 #include "GameObject.h"
@@ -26,6 +27,7 @@
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
+#include "ResourceScene.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -78,19 +80,24 @@ bool ModuleUI::Start()
 {
 	io = &ImGui::GetIO();
 
-	ui_textures[PLAY]		= (Texture*)App->importer->Import("Assets/Textures/Play.png", I_TEXTURE);
-	ui_textures[PAUSE]		= (Texture*)App->importer->Import("Assets/Textures/Pause.png", I_TEXTURE);
-	ui_textures[STOP]		= (Texture*)App->importer->Import("Assets/Textures/Stop.png", I_TEXTURE);
-	ui_textures[ADVANCE]	= (Texture*)App->importer->Import("Assets/Textures/Advance.png", I_TEXTURE);
+	ui_textures[PLAY]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Play.png");
+	ui_textures[PAUSE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Pause.png");
+	ui_textures[STOP]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Stop.png");
+	ui_textures[ADVANCE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/Advance.png");
 
-	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->Import("Assets/Textures/translate.png", I_TEXTURE);
-	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->Import("Assets/Textures/rotate.png", I_TEXTURE);
-	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->Import("Assets/Textures/scale.png", I_TEXTURE);
-	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->Import("Assets/Textures/Guizmo_local.png", I_TEXTURE);
-	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->Import("Assets/Textures/Guizmo_global.png", I_TEXTURE);
-	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->Import("Assets/Textures/Guizmo_select.png", I_TEXTURE);
+	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/translate.png");
+	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/rotate.png");
+	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/scale.png");
+	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_local.png");
+	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_global.png");
+	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_select.png");
 
-	ui_textures[NO_TEXTURE] = (Texture*)App->importer->Import("Assets/Textures/no_texture.png", I_TEXTURE);
+	ui_textures[NO_TEXTURE] = (Texture*)App->importer->ImportTexturePointer("Editor textures/no_texture.png");
+
+	ui_textures[FOLDER_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/folder_icon.png");
+	ui_textures[OBJECT_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/object_icon.png");
+	ui_textures[SCENE_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/scene_icon.png");
+	ui_textures[RETURN_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/return_icon.png");
 
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
@@ -102,7 +109,6 @@ bool ModuleUI::Start()
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
-	close_app = false;
 
 	return true;
 }
@@ -115,6 +121,7 @@ update_status ModuleUI::PreUpdate(float dt) {
 	ImGui_ImplSDL2_NewFrame(App->window->main_window->window);
 	ImGui::NewFrame();
 
+	//ImGui::ShowDemoWindow();
 	return UPDATE_CONTINUE;
 }
 
@@ -123,16 +130,8 @@ update_status ModuleUI::Update(float dt) {
 
 	InvisibleDockingBegin();
 	static bool file_save = false;
+	disable_keyboard_control = false;
 
-	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
-		open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
-
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
-		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
-		for (int i = 0; i < 6; i++)
-			App->camera->viewports[i]->active = open_tabs[VIEWPORT_MENU];
-	}
 
 	if (open_tabs[CONFIGURATION]) 
 	{
@@ -208,21 +207,27 @@ update_status ModuleUI::Update(float dt) {
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Quit"))
-				close_app = true;
+				App->CLOSE_APP();
 			if (ImGui::MenuItem("Import file"))
 			{
 				std::string file_path = openFileWID();
-				App->resources->LoadFileToScene(file_path.c_str());
+				std::string extension = file_path;
+				App->fs.getExtension(extension);
+				App->fs.copyFileTo(file_path.c_str(), ASSETS, extension.c_str());
+				app_log->AddLog("%s copied to Assets folder", file_path.c_str());
+				//App->resources->LoadFileToScene(file_path.c_str());
 			}
 			if (ImGui::MenuItem("Save scene")) {
 				if (App->scene->existingScene())
 					App->scene->AskSceneSaveFile((char*)App->scene->getWorkigSceneName().c_str());
-				else
+				else{
 					file_save = true;
+				}
 				
 			}
-			if (ImGui::MenuItem("Save scene as..."))
+			if (ImGui::MenuItem("Save scene as...")){
 				file_save = true;
+			}
 			if (ImGui::MenuItem("Load scene")){
 				std::string file_path = openFileWID();
 				App->scene->AskSceneLoadFile((char*)file_path.c_str());
@@ -315,7 +320,8 @@ update_status ModuleUI::Update(float dt) {
 	ImGui::EndMainMenuBar();
 
 	if (file_save) {
-		ImGui::Begin("Scene Name");
+		disable_keyboard_control = true;
+		ImGui::Begin("Scene Name", &file_save);
 		ImGui::PushFont(ui_fonts[REGULAR]);
 
 		static char rename_buffer[64];
@@ -330,6 +336,16 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::PopFont();
 		ImGui::End();
 	}
+
+
+	//if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
+	//	open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
+
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && !disable_keyboard_control) {
+		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
+		for (int i = 0; i < 6; i++)
+			App->camera->viewports[i]->active = open_tabs[VIEWPORT_MENU];
+	}
 	InvisibleDockingEnd();
 	return UPDATE_CONTINUE;
 
@@ -343,10 +359,8 @@ update_status ModuleUI::PostUpdate(float dt) {
 
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-	if (!close_app)
-		return UPDATE_CONTINUE;
-	else
-		return UPDATE_STOP;
+	return UPDATE_CONTINUE;
+
 }
 
 bool ModuleUI::CleanUp() 
@@ -367,6 +381,20 @@ void ModuleUI::DrawHierarchyTab()
 {
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
+
+	if (ImGui::Button("Empty gameobject")) {
+		GameObject* go = new GameObject("Empty", App->scene->selected_obj);
+		if(App->scene->selected_obj)
+			App->scene->selected_obj->addChild(go);
+	}
+
+
+	if (App->scene->selected_obj)
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Duplicate Selected")) 
+			App->scene->duplicateGameObject(App->scene->selected_obj);
+	}
 
 	int id = 0;
 	std::list<GameObject*> root_objs;
@@ -397,7 +425,7 @@ void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 	if(children.empty())
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
-	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)id, node_flags, game_object.getName().c_str(), id) && !children.empty();
+	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)game_object.getUUID(), node_flags, game_object.getName().c_str()) && !children.empty();
 
 	if(App->scene->selected_obj == (GameObject*)&game_object)
 		selection_mask = (1 << id);
@@ -432,8 +460,9 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::Text("Name: %s", selected_obj->getName().c_str());
 
 		ImGui::SameLine();
-		if (ImGui::Button("Rename"))
+		if (ImGui::Button("Rename")){
 			show_rename = true;
+		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Delete") || App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
@@ -448,7 +477,7 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
-			//if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
+			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); // MAKES SKYBOX DIE
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 		}
 
@@ -456,9 +485,12 @@ void ModuleUI::DrawObjectInspectorTab()
 		selected_obj->getComponents(components);
 
 		std::list<Component*> components_to_erase;
-		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++)
-			if (!DrawComponent(*(*it)))
+		int id = 0;
+		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++){
+			if (!DrawComponent(*(*it), id))
 				components_to_erase.push_back(*it);
+			id++;
+		}
 
 		for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
 			selected_obj->removeComponent(*it);
@@ -471,8 +503,9 @@ void ModuleUI::DrawObjectInspectorTab()
 	
 	if (show_rename)
 	{
+		disable_keyboard_control = true;
 		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
-		ImGui::Begin("Rename object");
+		ImGui::Begin("Rename object", &show_rename);
 		ImGui::PushFont(ui_fonts[REGULAR]);
 
 		static char rename_buffer[64];
@@ -488,15 +521,19 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::PopFont();
 		ImGui::End();
 	}
+
+
 }
 
-bool ModuleUI::DrawComponent(Component& component)
+bool ModuleUI::DrawComponent(Component& component, int id)
 {
 	ComponentCamera* camera = nullptr; // aux pointer
+	std::string tag;
 	switch (component.getType())
 	{
 	case MESH:
-		if (ImGui::CollapsingHeader("Mesh"))
+		tag = "Mesh##" + std::to_string(id);
+		if (ImGui::CollapsingHeader(tag.c_str()))
 		{
 			ComponentMesh* c_mesh = (ComponentMesh*)&component;
 			static bool wireframe_enabled;
@@ -519,6 +556,32 @@ bool ModuleUI::DrawComponent(Component& component)
 				if (ImGui::Checkbox("Draw normals", &draw_normals))
 					c_mesh->setDrawNormals(draw_normals);
 				
+				if (!c_mesh->getMesh()) {
+					static bool add_mesh_menu = false;
+					if (ImGui::Button("Add mesh")) {
+						add_mesh_menu = true;
+					}
+
+					if (add_mesh_menu) {
+
+						std::list<resource_deff> mesh_res;
+						App->resources->getMeshResourceList(mesh_res);
+
+						ImGui::Begin("Mesh selector", &add_mesh_menu);
+						for (auto it = mesh_res.begin(); it != mesh_res.end(); it++) {
+							resource_deff mesh_deff = (*it);
+							if (ImGui::MenuItem(mesh_deff.asset.c_str())) {
+								App->resources->deasignResource(c_mesh->getMeshResource());
+								App->resources->assignResource(mesh_deff.uuid);
+								c_mesh->setMeshResourceId(mesh_deff.uuid);
+								add_mesh_menu = false;
+								break;
+							}
+						}
+
+						ImGui::End();
+					}
+				}
 				
 				if (Material* material = c_mesh->getMaterial())
 				{
@@ -529,6 +592,7 @@ bool ModuleUI::DrawComponent(Component& component)
 						ImGui::SameLine();
 						if (ImGui::Button("remove material"))
 						{
+							delete c_mesh->getMaterial();
 							c_mesh->setMaterial(nullptr);
 							ImGui::TreePop();
 							return true;
@@ -546,24 +610,33 @@ bool ModuleUI::DrawComponent(Component& component)
 
 						if(ImGui::TreeNode("diffuse"))
 						{
-							//ImGui::Image(material->getTexture(DIFFUSE) ? (void*)material->getTexture(DIFFUSE)->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
-							//ImGui::SameLine();
+							Texture* texture = nullptr;
+							if(ResourceTexture* tex_res = (ResourceTexture*)App->resources->getResource(material->getTextureResource(DIFFUSE)))
+								texture = tex_res->texture;
 
-							//int w = 0; int h = 0;
-							//if(material->getTexture(DIFFUSE))
-							//	material->getTexture(DIFFUSE)->getSize(w, h);
 
-							//ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
+							ImGui::Image(texture ? (void*)texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(preview_size, preview_size));
+							ImGui::SameLine();
+
+							int w = 0; int h = 0;
+							if(texture)
+								texture->getSize(w, h);
+
+							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
 							//if (ImGui::Button("Load checkered##Dif: Load checkered"))
 							//	material->setCheckeredTexture(DIFFUSE);
-							//ImGui::SameLine();
-							//if (ImGui::Button("Load##Dif: Load"))
-							//{
-							//	std::string texture_path = openFileWID();
-							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
-							//		c_mesh->getMaterial()->setTexture(DIFFUSE, tex);
-							//}
+							//ImGui::SameLine()
+							if (ImGui::Button("Load(from asset folder)##Dif: Load"))
+							{
+								std::string texture_path = openFileWID();
+								uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+								if(new_resource != 0){
+									App->resources->assignResource(new_resource);
+									App->resources->deasignResource(material->getTextureResource(DIFFUSE));
+									material->setTextureResource(DIFFUSE, new_resource);
+								}
+							}
 							ImGui::TreePop();
 						}
 
@@ -628,11 +701,14 @@ bool ModuleUI::DrawComponent(Component& component)
 
 				if (Mesh* mesh = c_mesh->getMesh())
 				{
-					if (ImGui::TreeNode("Mesh Data"))
+					if (ImGui::TreeNode("Mesh Options"))
 					{
 						uint vert_num, poly_count;
 						bool has_normals, has_colors, has_texcoords;
-
+						if (ImGui::Button("Remove mesh")) {
+							App->resources->deasignResource(c_mesh->getMeshResource());
+							c_mesh->setMeshResourceId(0);
+						}
 						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
 						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
 						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
@@ -640,11 +716,13 @@ bool ModuleUI::DrawComponent(Component& component)
 						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
 
 						ImGui::TreePop();
+
+						
 					}
 				}
 			}
 
-			if (ImGui::Button("Remove##Remove mesh"))
+			if (ImGui::Button("Remove Component##Remove mesh"))
 				return false;
 		}
 		break;
@@ -839,6 +917,14 @@ bool ModuleUI::DrawComponent(Component& component)
 
 			ImGui::Checkbox("Draw depth", &camera->getCamera()->draw_depth);
 
+			static bool overriding;
+			overriding = (camera->getCamera() == App->camera->override_editor_cam_culling);
+			if (ImGui::Checkbox("Override Frustum Culling", &overriding))
+			{
+				if (!overriding)	App->camera->override_editor_cam_culling = nullptr;
+				else				App->camera->override_editor_cam_culling = camera->getCamera();
+			}
+
 			if (camera_active)
 			{
 				static float3 offset;
@@ -880,22 +966,21 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 		else
 			window_name = camera.getViewportDirString();
 
-		ImGui::Begin(window_name.c_str(), &camera.draw_in_UI, ImGuiWindowFlags_NoResize);
+		ImGui::Begin(window_name.c_str(), &camera.draw_in_UI, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
 
 		if(ImGui::IsWindowFocused())
 			App->camera->selected_camera = &camera;
 		
-		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 50, frame_buffer->size_y / 3 + 70));
+		ImGui::SetWindowSize(ImVec2(frame_buffer->size_x / 3 + 30 , frame_buffer->size_y / 3 + 40));
 
-		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), ImVec2(0, 1), ImVec2(1, 0)))
+		if (ImGui::ImageButton((void*) (camera.draw_depth ? frame_buffer->depth_tex->gl_id : frame_buffer->tex->gl_id), ImVec2(frame_buffer->size_x / 3, frame_buffer->size_y / 3), nullptr, ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			float x = App->input->GetMouseX(); float y = App->input->GetMouseY();
-			ImVec2 window_pos = ImGui::GetWindowPos();
-			x = (((x - window_pos.x) / ImGui::GetWindowSize().x) * 2) - 1;
-			y = (((y - window_pos.y) / ImGui::GetWindowSize().y) * 2) - 1;
+			ImVec2 window_pos = ImGui::GetItemRectMin();
+			x = (((x - window_pos.x) / ImGui::GetItemRectSize().x) * 2)  - 1;
+			y = (((y - window_pos.y) / ImGui::GetItemRectSize().y) * -2) + 1;
 
-			if (GameObject* new_selected = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr))
-				App->scene->selected_obj = new_selected;
+			App->scene->selected_obj = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr);
 		}
 		ImGui::End();
 	}
@@ -923,7 +1008,7 @@ void ModuleUI::DrawViewportsWindow()
 		ImGui::TextWrapped(App->camera->viewports[i]->getViewportDirString().c_str());
 		ImGui::SameLine();
 
-		if (ImGui::ImageButton((void*)(App->camera->viewports[i]->draw_depth ? fb->depth_tex->gl_id : fb->tex->gl_id), ImVec2(fb->size_x / 4, fb->size_y / 4), ImVec2(0, 1), ImVec2(1, 0)))
+		if (ImGui::ImageButton((void*)(App->camera->viewports[i]->draw_depth ? fb->depth_tex->gl_id : fb->tex->gl_id), ImVec2(fb->size_x / 4, fb->size_y / 4), nullptr, ImVec2(0, 1), ImVec2(1, 0)))
 		{
 			for (int i = 0; i < 6; i++)
 				App->camera->viewports[i]->active = false;
@@ -1011,13 +1096,13 @@ void ModuleUI::DrawCameraMenuWindow()
 					ImGui::Text("Horizontal FOV:");
 					ImGui::SameLine();
 					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					if (ImGui::DragFloat("##Horizontal FOV", &hor_fov, 1.0f, 1.0f, 179.0f, "%.02f"))
+					if (ImGui::DragFloat("##Horizontal FOV", &hor_fov, 1.0f, MIN_H_FOV, MAX_H_FOV, "%.02f"))
 						(*it)->getFrustum()->horizontalFov = DEGTORAD * hor_fov;
 
 					ImGui::Text("Vertical FOV:");
 					ImGui::SameLine();
 					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					if (ImGui::DragFloat("##Vertical FOV", &ver_fov, 1.0f, 1.0f, 179.0f, "%.02f"))
+					if (ImGui::DragFloat("##Vertical FOV", &ver_fov, 1.0f, MIN_V_FOV, MAX_V_FOV, "%.02f"))
 						(*it)->getFrustum()->verticalFov = DEGTORAD * ver_fov;
 
 				}
@@ -1068,21 +1153,23 @@ void ModuleUI::DrawAssetsWindow()
 {
 	ImGui::Begin("Assets Window", &open_tabs[ASSET_WINDOW]);
 	int element_size = 64;
+	std::string path, name, extension;
 	
-	int column_num = (int)trunc(ImGui::GetWindowSize().x / element_size);
+	int column_num = (int)trunc(ImGui::GetWindowSize().x / (element_size + 20));
 
 	if (column_num != 0)
 	{
 		int count = 0;
 		int iteration = 0;
 
-		std::string path, name, extension;
-
-		if (ImGui::Button("Return"))
+		if (ImGui::ImageButton((void*)ui_textures[RETURN_ICON]->getGLid(), ImVec2(24, 17)))
 		{
 			if (!App->fs.getPath(asset_window_path))
 				asset_window_path = ASSETS_FOLDER;
 		}
+
+		ImGui::SameLine();
+		ImGui::Text(asset_window_path.c_str());
 
 		using std::experimental::filesystem::directory_iterator;
 		for (auto& it : directory_iterator(asset_window_path))
@@ -1093,7 +1180,14 @@ void ModuleUI::DrawAssetsWindow()
 				count++;
 		}
 
-		if (count < column_num) column_num = count;
+		if (count == 0)
+		{
+			ImGui::End();
+			DrawAssetInspector();
+			return;
+		}
+
+		else if (count < column_num) column_num = count;
 		count = 0;
 
 		ImGui::Columns(column_num, (std::to_string(iteration) + " asset columns").c_str(), false);
@@ -1110,20 +1204,29 @@ void ModuleUI::DrawAssetsWindow()
 
 			if (count == column_num)
 			{
-				ImGui::EndColumns();
 				ImGui::NewLine();
 				iteration++;
+				count = 0;
 				ImGui::Columns(column_num, (std::to_string(iteration) + " asset columns").c_str(), false);
 			}
 			count++;
 
-			ImGui::SetColumnWidth(ImGui::GetColumnIndex(), element_size + 20);
-
+			if(column_num > 1)
+				ImGui::SetColumnWidth(ImGui::GetColumnIndex(), element_size + 20);
 
 			if (it.status().type() == std::experimental::filesystem::v1::file_type::directory)
 			{
-				if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(element_size, element_size)))
-					asset_window_path = it.path().generic_string();
+
+				if (ImGui::IsMouseDoubleClicked(0))
+				{
+					ImGui::ImageButton((void*)ui_textures[FOLDER_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+					if(ImGui::IsItemHovered())
+						asset_window_path = it.path().generic_string();
+				}
+				else {
+					if (ImGui::ImageButton((void*)ui_textures[FOLDER_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+						selected_asset = it.path().generic_string();
+				}
 			}
 			else
 			{
@@ -1131,24 +1234,41 @@ void ModuleUI::DrawAssetsWindow()
 
 				if (type == "scene")
 				{
-					if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(element_size, element_size)))
-					{
 
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered())
+							App->resources->LoadFileToScene(it.path().generic_string().c_str());
+					}
+					else{
+						if (ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
 					}
 				}
 				if (type == "texture")
 				{
 					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
-					if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size)))
-					{
-
+					if(res_tex){
+						res_tex->drawn_in_UI = true;
+						if (!res_tex->IsLoaded())
+							res_tex->LoadToMemory();
+						if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
 					}
+
+
 				}
 				if (type == "json")
 				{
-					if (ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(element_size, element_size)))
-					{
-
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered()) {
+							App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
+						}
+					}
+					else {
+						if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
 					}
 				}
 			}
@@ -1156,9 +1276,69 @@ void ModuleUI::DrawAssetsWindow()
 			ImGui::TextWrapped(name.c_str());
 			ImGui::NextColumn();
 		}
-		ImGui::EndColumns();
 		ImGui::Columns(1);
 	}
+	ImGui::End();
+
+	DrawAssetInspector();
+}
+
+void ModuleUI::DrawAssetInspector()
+{
+	ImGui::Begin("Asset inspector", nullptr);
+
+	if (!selected_asset.empty())
+	{
+		std::string name, extension;
+		extension = name = selected_asset;
+		App->fs.getExtension(extension);
+		App->fs.getFileNameFromPath(name);
+
+		ImGui::Text(name.c_str());
+		
+		if (extension.empty())  // is directory
+		{
+			ImGui::Text("type: directory");
+			ImGui::End();
+			return;
+		}
+		else if (extension == ".json")
+		{
+			ImGui::Text("type: scene");
+			ImGui::End();
+			return;
+		}
+
+		const char* type = App->resources->assetExtension2type(extension.c_str());
+		if(type == "scene")
+			ImGui::Text("type: 3D object");
+		else
+			ImGui::Text("type: %s", type);
+
+		Resource* res = App->resources->getResource(App->resources->getResourceUuid(selected_asset.c_str()));
+		if(res){
+			ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
+			if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
+			else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
+		}
+
+		if (type == "texture")
+		{
+			ResourceTexture* res_tex = (ResourceTexture*)res;
+			if(res_tex){
+				res_tex->drawn_in_UI = true;
+				if (!res_tex->IsLoaded())
+					res_tex->LoadToMemory();
+
+				int size_x, size_y;
+				res_tex->texture->getSize(size_x, size_y);
+				ImGui::Image((void*)res_tex->texture->getGLid(), ImVec2((float)size_x, (float)size_y));
+
+				ImGui::Scrollbar(ImGuiLayoutType_::ImGuiLayoutType_Horizontal);
+			}
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -1379,8 +1559,8 @@ void ModuleUI::DrawWindowConfigLeaf() const
 		App->window->setBrightness(window->brightness);
 
 	bool width_mod, height_mod = false;
-	width_mod = ImGui::SliderInt("Width", &window->width, 640, 1920);
-	height_mod = ImGui::SliderInt("Height", &window->height, 480, 1080);
+	width_mod = ImGui::SliderInt("Width", &window->width, MIN_WINDOW_WIDTH, MAX_WINDOW_WIDTH);
+	height_mod = ImGui::SliderInt("Height", &window->height, MIN_WINDOW_HEIGHT, MAX_WINDOW_HEIGHT);
 	
 	if(width_mod || height_mod)
 		App->window->setSize(window->width, window->height);
@@ -1489,17 +1669,17 @@ void ModuleUI::DrawTimeControlWindow()
 
 	int w, h;
 	ui_textures[PLAY]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PLAYING ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[PLAY]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0,0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PLAYING ? 1.0f : 0.0f)))
 		App->time->Play();
 
 	ImGui::SameLine();
 	ui_textures[PAUSE]->getSize(w, h);
-	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PAUSED ? 1.0f : 0.0f)))
+	if(ImGui::ImageButton((void*)ui_textures[PAUSE]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == PAUSED ? 1.0f : 0.0f)))
 		App->time->Pause();
 
 	ImGui::SameLine();
 	ui_textures[STOP]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == STOPPED ? 1.0f : 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[STOP]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, App->time->getGameState() == STOPPED ? 1.0f : 0.0f)))
 		App->time->Stop();
 	
 
@@ -1508,7 +1688,7 @@ void ModuleUI::DrawTimeControlWindow()
 
 	ImGui::SameLine();
 	ui_textures[ADVANCE]->getSize(w, h);
-	if (ImGui::ImageButton((void*)ui_textures[ADVANCE]->getGLid(), ImVec2(w, h), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, 0.0f)))
+	if (ImGui::ImageButton((void*)ui_textures[ADVANCE]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, 0.0f)))
 		App->time->Advance(advance_frames);
 
 
@@ -1533,39 +1713,50 @@ void ModuleUI::DrawTimeControlWindow()
 
 void ModuleUI::DrawGizmoMenuTab() {
 
-	ImGui::Begin("##Gizmo menu", nullptr);
+	ImGui::Begin("Toolbar##Gizmo toolbar", nullptr);
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
-		draw_guizmo = !draw_guizmo;
-	
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+	if (App->camera->background_camera->getFrustum()->type == math::FrustumType::OrthographicFrustum)
+		ImGui::TextColored(ImVec4(1.5f, 1.0f, 0.0f, 1.0), "WARNING: ImGuizmo is not compatible with orthographic camera");
+	else
 	{
-		gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
-		draw_guizmo = true;
-	}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_operation = ImGuizmo::OPERATION::ROTATE;
-		draw_guizmo = true;
-	}
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
+			draw_guizmo = !draw_guizmo;
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_operation = ImGuizmo::OPERATION::SCALE;
-		draw_guizmo = true;
-	}
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
+			draw_guizmo = true;
+		}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_mode = ImGuizmo::MODE::LOCAL;
-		draw_guizmo = true;
-	}
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_operation = ImGuizmo::OPERATION::ROTATE;
+			draw_guizmo = true;
+		}
 
-	if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
-	{
-		gizmo_mode = ImGuizmo::MODE::WORLD;
-		draw_guizmo = true;
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_operation = ImGuizmo::OPERATION::SCALE;
+			draw_guizmo = true;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_LOCAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::LOCAL && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_mode = ImGuizmo::MODE::LOCAL;
+			draw_guizmo = true;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_GLOBAL]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_mode == ImGuizmo::MODE::WORLD && draw_guizmo ? 1.0f : 0.0f)))
+		{
+			gizmo_mode = ImGuizmo::MODE::WORLD;
+			draw_guizmo = true;
+		}
 	}
 
 	ImGui::End();
@@ -1574,26 +1765,40 @@ void ModuleUI::DrawGizmoMenuTab() {
 
 void ModuleUI::DrawQuadtreeConfigWindow() {
 
-	//AABB coll_test;
-
-	//coll_test.SetFromCenterAndSize(float3(20, 0, 20), float3(10, 10, 10));
-	//App->renderer3D->DrawDirectAABB(coll_test);
-
-	//std::list<GameObject*> collected;
-
-	//quadtree->Intersect(collected, coll_test);
-
-	//if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
-	//	for (auto it = collected.begin(); it != collected.end(); it++)
-	//		app_log->AddLog("Found %s in quadtree \n", (*it)->getName().c_str());
-	//}
 	ImGui::Begin("Quadtree", &open_tabs[QUADTREE_CONFIG]);
 	ImGui::Checkbox("Draw", &App->scene->draw_quadtree);
 	ImGui::SameLine();
 	if (ImGui::Button("Reload")) {
 		App->scene->quadtree_reload = true;
 	}
+	static float3 size = float3(0,0,0);
+	static float3 centre = float3(0, 0, 0);
+	static int bucket_size = 1;
+	static int max_depth = 8;
+	static float size_arr[3] = { 0 };
+	static float centre_arr[3] = { 0 };
 
+	ImGui::InputFloat3("Centre", centre_arr);
+	centre.x = centre_arr[0];
+	centre.y = centre_arr[1];
+	centre.z = centre_arr[2];
+
+	ImGui::InputFloat3("Size", size_arr);
+	size.x = size_arr[0];
+	size.y = size_arr[1];
+	size.z = size_arr[2];
+
+	ImGui::InputInt("Bucket size", &bucket_size);
+	ImGui::InputInt("Max depth", &max_depth);
+
+	if (ImGui::Button("Create")) {
+		AABB aabb;
+		aabb.SetFromCenterAndSize(centre, size);
+		App->scene->getQuadtree()->Create(aabb, bucket_size, max_depth);
+		App->scene->quadtree_reload = true;
+	}
+	ImGui::Text("Quadtree ignored objects: %i",App->scene->quadtree_ignored_obj);
+	ImGui::Text("Frustum checks against quadtree: %i", App->scene->quadtree_checks);
 	// TODO: Be able to change bucket size, max depth and size.
 	ImGui::End();
 }
@@ -1601,9 +1806,10 @@ void ModuleUI::DrawQuadtreeConfigWindow() {
 
 void ModuleUI::DrawGuizmo()
 {
+
 	App->gui->DrawGizmoMenuTab();
 
-	if (draw_guizmo)
+	if (draw_guizmo && App->camera->background_camera->getFrustum()->type != math::FrustumType::OrthographicFrustum)
 	{
 		ImGuizmo::BeginFrame();
 		float4x4 projection4x4;
@@ -1616,24 +1822,21 @@ void ModuleUI::DrawGuizmo()
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
 		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
-		if (transform->getMode() == LOCAL)
-			transform->LocalToGlobal();
-		else
-			transform->global->CalculateMatrix();
+		Transform* trans = transform->global;
 
 		Transform aux_transform;
 		switch (gizmo_operation)
 		{
 		case ImGuizmo::OPERATION::TRANSLATE:
-			aux_transform.setRotation(transform->global->getRotation());
-			aux_transform.setPosition(transform->global->getPosition()); break;
+			aux_transform.setRotation(trans->getRotation());
+			aux_transform.setPosition(trans->getPosition()); break;
 		case ImGuizmo::OPERATION::ROTATE:
-			aux_transform.setPosition(transform->global->getPosition());
-			aux_transform.setRotation(transform->global->getRotation()); break;
+			aux_transform.setPosition(trans->getPosition());
+			aux_transform.setRotation(trans->getRotation()); break;
 		case ImGuizmo::OPERATION::SCALE:
-			aux_transform.setPosition(transform->global->getPosition());
-			aux_transform.setRotation(transform->global->getRotation());
-			aux_transform.setScale(transform->global->getScale()); break;
+			aux_transform.setPosition(trans->getPosition());
+			aux_transform.setRotation(trans->getRotation());
+			aux_transform.setScale(trans->getScale()); break;
 		default:
 			break;
 		}
@@ -1651,27 +1854,27 @@ void ModuleUI::DrawGuizmo()
 			switch (gizmo_operation)
 			{
 			case ImGuizmo::OPERATION::TRANSLATE:
-				new_pos.x = transform->constraints[0][0] ? transform->global->getPosition().x : mat.TranslatePart().x;
-				new_pos.y = transform->constraints[0][1] ? transform->global->getPosition().y : mat.TranslatePart().y;
-				new_pos.z = transform->constraints[0][2] ? transform->global->getPosition().z : mat.TranslatePart().z;
-				transform->global->setPosition(new_pos);
+				new_pos.x = transform->constraints[0][0] ? trans->getPosition().x : (mat.TranslatePart().x);
+				new_pos.y = transform->constraints[0][1] ? trans->getPosition().y : (mat.TranslatePart().y);
+				new_pos.z = transform->constraints[0][2] ? trans->getPosition().z : (mat.TranslatePart().z);
+				trans->setPosition(new_pos);
 				break;
 			case ImGuizmo::OPERATION::ROTATE:
-				new_rot.x = transform->constraints[1][0] ? transform->global->getRotationEuler().x : mat.RotatePart().ToEulerXYZ().x;
-				new_rot.y = transform->constraints[1][1] ? transform->global->getRotationEuler().y : mat.RotatePart().ToEulerXYZ().y;
-				new_rot.z = transform->constraints[1][2] ? transform->global->getRotationEuler().z : mat.RotatePart().ToEulerXYZ().z;
-				transform->global->setRotation(Quat::FromEulerXYZ(new_rot.x, new_rot.y, new_rot.z)); 
+				new_rot.x = transform->constraints[1][0] ? trans->getRotationEuler().x : mat.RotatePart().ToEulerXYZ().x;
+				new_rot.y = transform->constraints[1][1] ? trans->getRotationEuler().y : mat.RotatePart().ToEulerXYZ().y;
+				new_rot.z = transform->constraints[1][2] ? trans->getRotationEuler().z : mat.RotatePart().ToEulerXYZ().z;
+				trans->setRotation(Quat::FromEulerXYZ(new_rot.x, new_rot.y, new_rot.z));
 				break;
 			case ImGuizmo::OPERATION::SCALE:
-				new_scale.x = transform->constraints[2][0] ? transform->global->getScale().x : mat.GetScale().x;
-				new_scale.y = transform->constraints[2][1] ? transform->global->getScale().y : mat.GetScale().y;
-				new_scale.z = transform->constraints[2][2] ? transform->global->getScale().z : mat.GetScale().z;
-				transform->global->setScale(new_scale);
+				new_scale.x = transform->constraints[2][0] ? trans->getScale().x : mat.GetScale().x;
+				new_scale.y = transform->constraints[2][1] ? trans->getScale().y : mat.GetScale().y;
+				new_scale.z = transform->constraints[2][2] ? trans->getScale().z : mat.GetScale().z;
+				trans->setScale(new_scale);
 				break;
 			default:
 				break;
 			}
-			transform->global->CalculateMatrix();
+			trans->CalculateMatrix();
 			transform->GlobalToLocal();
 		}
 	}

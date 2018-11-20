@@ -10,6 +10,11 @@
 
 class Camera;
 
+#define MIN_H_FOV 45.0f
+#define MAX_H_FOV 154.0f
+#define MIN_V_FOV 50.0f
+#define MAX_V_FOV 103.0f
+
 class ModuleCamera3D : public Module
 {
 public:
@@ -20,6 +25,8 @@ public:
 	bool Start();
 	update_status Update(float dt);
 	bool CleanUp();
+
+	void updateFOVfromWindow();
 
 public:
 	Camera* editor_camera				= nullptr;

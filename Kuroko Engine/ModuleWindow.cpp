@@ -72,6 +72,17 @@ bool ModuleWindow::Init(const JSON_Object* config)
 	return ret;
 }
 
+update_status ModuleWindow::Update(float dt) {
+	
+	int window_x, window_y;
+	window_x = window_y = 0;
+	SDL_GetWindowSize(main_window->window, &window_x, &window_y);
+
+	main_window->height = window_y;
+	main_window->width = window_x;
+	return UPDATE_CONTINUE;
+}
+
 // Called before quitting
 bool ModuleWindow::CleanUp()
 {

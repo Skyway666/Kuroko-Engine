@@ -11,5 +11,6 @@ public:
 	void UnloadFromMemory();
 public:
 	Texture* texture;
+	bool drawn_in_UI = false;
 };
 

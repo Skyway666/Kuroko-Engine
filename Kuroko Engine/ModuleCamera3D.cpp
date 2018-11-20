@@ -11,11 +11,13 @@
 #include "Transform.h"
 #include "ModuleWindow.h"
 #include "Material.h"
+#include "ModuleUI.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 
 #define CAM_SPEED_CONST 2.5f
 #define CAM_ROT_SPEED_CONST 0.25f
+
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -32,12 +34,12 @@ bool ModuleCamera3D::Init(const JSON_Object* config)
 	background_camera = selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
 	editor_camera->active = true;
 
-	viewports[VP_RIGHT] = new Camera(float3(10.0, 0.0f, 0.0f ), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_LEFT]	= new Camera(float3(-10.0, 0.0f, 0.0f), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_UP]	= new Camera(float3(0.0, 10.0f, 0.0f ), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_DOWN]	= new Camera(float3(0.0, -10.0f, 0.0f), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_FRONT] = new Camera(float3(0.0, 0.0f, 10.0f ), float3::zero, math::FrustumType::OrthographicFrustum);
-	viewports[VP_BACK]	= new Camera(float3(0.0, 0.0f, -10.0f), float3::zero, math::FrustumType::OrthographicFrustum);
+	viewports[VP_RIGHT] = new Camera(float3(10.0, 0.0f, 0.0f ), float3::zero);
+	viewports[VP_LEFT]	= new Camera(float3(-10.0, 0.0f, 0.0f), float3::zero);
+	viewports[VP_UP]	= new Camera(float3(0.0, 10.0f, 0.0f ), float3::zero);
+	viewports[VP_DOWN]	= new Camera(float3(0.0, -10.0f, 0.0f), float3::zero);
+	viewports[VP_FRONT] = new Camera(float3(0.0, 0.0f, 10.0f ), float3::zero);
+	viewports[VP_BACK]	= new Camera(float3(0.0, 0.0f, -10.0f), float3::zero);
 
 	return true;
 }
@@ -46,6 +48,10 @@ bool ModuleCamera3D::Start()
 {
 	for (int i = 0; i < 6; i++)
 		viewports[i]->initFrameBuffer();
+
+	editor_camera->frustum->pos = float3(1, 13, 100);
+	editor_camera->LookAt(float3(0, 0, 0));
+
 
 	return true;
 }
@@ -61,11 +67,19 @@ bool ModuleCamera3D::CleanUp()
 	return true;
 }
 
+void ModuleCamera3D::updateFOVfromWindow()
+{
+	float aspect_ratio = (float)App->window->main_window->width / (float)App->window->main_window->height;
+	background_camera->getFrustum()->horizontalFov = 2* math::Atan(math::Tan(background_camera->getFrustum()->verticalFov/2) * aspect_ratio);
+}
+
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
+	updateFOVfromWindow();
+
 	// Not allow camera to be modified if UI is being operated
-	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera->draw_in_UI)))
+	if (selected_camera && (!ImGui::IsMouseHoveringAnyWindow() || (ImGui::IsMouseHoveringAnyWindow() && selected_camera->draw_in_UI)) && !App->gui->disable_keyboard_control)
 	{
 		// Movement
 		float3 displacement = float3::zero;
@@ -77,7 +91,7 @@ update_status ModuleCamera3D::Update(float dt)
 			transform = (ComponentTransform*)selected_camera->getParent()->getParent()->getComponent(TRANSFORM);
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-			speed = 2.0f * speed;
+			speed = 5.0f * speed;
 
 		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_REPEAT) { displacement.y += speed; };
 		if (App->input->GetKey(SDL_SCANCODE_G) == KEY_REPEAT) { displacement.y -= speed; };
@@ -100,9 +114,14 @@ update_status ModuleCamera3D::Update(float dt)
 
 		if (transform)
 		{
-			if (transform->constraints[0][0]) displacement.x = 0;
-			if (transform->constraints[0][1]) displacement.y = 0;
-			if (transform->constraints[0][2]) displacement.z = 0;
+			if (transform->getParent()->is_static)
+				displacement.x = displacement.y = displacement.z = 0;
+			else
+			{
+				if (transform->constraints[0][0]) displacement.x = 0;
+				if (transform->constraints[0][1]) displacement.y = 0;
+				if (transform->constraints[0][2]) displacement.z = 0;
+			}
 		}
 
 		selected_camera->Move(displacement);
@@ -115,8 +134,11 @@ update_status ModuleCamera3D::Update(float dt)
 
 			if (transform)
 			{
-				dx = transform->constraints[1][1] ? 0 : -App->input->GetMouseXMotion();
-				dy = transform->constraints[1][0] ? 0 : App->input->GetMouseYMotion();
+				if (!transform->getParent()->is_static)
+				{
+					dx = transform->constraints[1][1] ? 0 : -App->input->GetMouseXMotion();
+					dy = transform->constraints[1][0] ? 0 : App->input->GetMouseYMotion();
+				}
 			}
 			else
 			{
