@@ -612,7 +612,7 @@ bool ModuleUI::DrawComponent(Component& component)
 							//	if (Texture* tex = (Texture*)App->importer->Import(texture_path.c_str(), I_TEXTURE))
 							//		c_mesh->getMaterial()->setTexture(LIGHTMAP, tex);
 							//}
-							//ImGui::TreePop();
+							ImGui::TreePop();
 						}
 						ImGui::TreePop();
 					}
