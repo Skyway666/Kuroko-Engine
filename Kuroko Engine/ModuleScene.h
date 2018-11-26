@@ -70,7 +70,6 @@ private:
 
 	std::list<GameObject*>	game_objs_to_delete;
 
-	Skybox* skybox			= nullptr;
 	Quadtree * quadtree		= nullptr;
 
 	bool want_save_scene_file = false;
@@ -92,6 +91,7 @@ private:
 public:
 
 	GameObject* selected_obj	= nullptr;
+	Skybox* skybox				= nullptr;
 
 	uint last_mat_id			= 0;
 	uint last_gobj_id			= 0;

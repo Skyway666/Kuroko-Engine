@@ -14,9 +14,10 @@ class Component;
 class Texture;
 class Material;
 class Camera;
+struct Color;
 
 enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION,
-				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, ASSET_WINDOW, RESOURCES_TAB, LAST_UI_TAB };  
+				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, ASSET_WINDOW, RESOURCES_TAB, SKYBOX_MENU, LAST_UI_TAB };  
 				// LAST is an utility value to store the max num of tabs.
 
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
@@ -57,7 +58,8 @@ public:
 	void DrawAssetsWindow();
 	void DrawAssetInspector();
 	void DrawResourcesWindow(); // A list where you can see all the resources
-
+	void DrawSkyboxWindow();
+	void DrawColorPickerWindow(const char* label, Color* color, bool* closing_bool, Color* ref_color = nullptr);
 
 	void DrawGuizmo();
 

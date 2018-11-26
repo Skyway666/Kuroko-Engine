@@ -46,10 +46,7 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 	else
 	{
 		colors = new float3[num_vertices];
-		Color random_color;
-		random_color.setRandom();
-
-		for (int i = 0; i < num_vertices; i++)	colors[i] = { random_color.r, random_color.g, random_color.b };
+		for (int i = 0; i < num_vertices; i++)	colors[i] = { 1.0f, 1.0f, 1.0f };
 	}
 
 	if (_tex_coords)
@@ -140,8 +137,8 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 		}
 	}
 
-	if (diffuse_tex)			glEnable(GL_TEXTURE_2D);
-	else if(!draw_as_selected)	glEnableClientState(GL_COLOR_ARRAY);
+	if (diffuse_tex)								glEnable(GL_TEXTURE_2D);
+	else if(!draw_as_selected && imported_colors)	glEnableClientState(GL_COLOR_ARRAY);
 
 	// bind VBOs before drawing
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -157,6 +154,8 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 		glColor3f(0.0f, 1.0f, 0.0f);
 		glLineWidth(2.5f);
 	}
+	else
+		glColor3f(tint_color.r, tint_color.b, tint_color.g);
 
 	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
@@ -173,10 +172,9 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 	else					glDisableClientState(GL_COLOR_ARRAY);
 
 	if (draw_as_selected)
-	{
-		glColor3f(1.0f, 1.0f, 1.0f);
 		glLineWidth(1.0f);
-	}
+
+	glColor3f(1.0f, 1.0f, 1.0f);
 	 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -239,13 +237,9 @@ void Mesh::BuildCube(float3& size)
 	for (int i = 0; i < num_vertices; i++)
 		normals[i] = vertices[i].Normalized();
 
-
 	colors = new float3[num_vertices];
-	Color random_color;
-	random_color.setRandom();
-
 	for (int i = 0; i < num_vertices; i++)
-		colors[i] = { random_color.r, random_color.g, random_color.b };
+		colors[i] = { 1.0f, 1.0f, 1.0f };
 
 	tex_coords = new float2[36];
 
@@ -254,6 +248,7 @@ void Mesh::BuildCube(float3& size)
 	tex_coords[4] = { 0.0f, 0.0f }; tex_coords[5] = { 1.0f, 0.0f };
 	tex_coords[6] = { 0.0f, 1.0f }; tex_coords[7] = { 1.0f, 1.0f };
 
+	tint_color.setRandom();
 }
 
 void Mesh::BuildPlane(float sx, float sy)
@@ -280,17 +275,17 @@ void Mesh::BuildPlane(float sx, float sy)
 		normals[i] = vertices[i].Normalized();
 
 	colors = new float3[num_vertices];
-	Color random_color;
-	random_color.setRandom();
-
 	for (int i = 0; i < num_vertices; i++)
-		colors[i] = { random_color.r, random_color.g, random_color.b };
+		colors[i] = { 1.0f, 1.0f, 1.0f };
 
 	tex_coords = new float2[num_vertices];
 	tex_coords[0] = { 0.0f, 0.0f };   tex_coords[1] = { 1.0f, 0.0f };
 	tex_coords[2] = { 0.0f, 1.0f };   tex_coords[3] = { 1.0f, 1.0f };
 	tex_coords[4] = { 0.0f, 0.0f }; tex_coords[5] = { 1.0f, 0.0f };
 	tex_coords[6] = { 0.0f, 1.0f }; tex_coords[7] = { 1.0f, 1.0f };
+
+
+	tint_color.setRandom();
 }
 
 void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
@@ -368,13 +363,11 @@ void Mesh::BuildSphere(float radius, float sectorCount, float stackCount) {
 	}
 
 	colors = new float3[num_vertices];
-	Color random_color;
-	random_color.setRandom();
-
 	for (int i = 0; i < num_vertices; i++)
-		colors[i] = { random_color.r, random_color.g, random_color.b };
+		colors[i] = { 1.0f, 1.0f, 1.0f };
 
 
+	tint_color.setRandom();
 }
 
 void Mesh::BuildCylinder(float radius, float length, int numSteps) {
@@ -389,10 +382,9 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 	tex_coords = new float2[num_vertices];
 	colors = new float3[num_vertices];
 
-	Color random_color;
-	random_color.setRandom();
+	colors = new float3[num_vertices];
 	for (int i = 0; i < num_vertices; i++)
-		colors[i] = { random_color.r, random_color.g, random_color.b };
+		colors[i] = { 1.0f, 1.0f, 1.0f };
 
 	float hl = length * 0.5f;
 	float a = 0.0f;
@@ -431,6 +423,8 @@ void Mesh::BuildCylinder(float radius, float length, int numSteps) {
 
 	for (int i = 0; i < num_vertices; i++)
 		normals[i] = vertices[i].Normalized();
+
+	tint_color.setRandom();
 }
 
 

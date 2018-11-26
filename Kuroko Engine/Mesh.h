@@ -1,6 +1,7 @@
 #ifndef _MESH
 #define _MESH
 #include "Globals.h"
+#include "Color.h"
 #include <string>
 
 #include "MathGeoLib\Math\float3.h"
@@ -70,7 +71,7 @@ private:
 	const uint id = 0;
 	uint iboId = 0;
 	uint vboId = 0;
-	std::string mesh_name; //"CUBE", "PLANE", "SHPERE" and "CYLIDER" are primitives, don't use models with this name
+	std::string mesh_name; //"CUBE", "PLANE", "SHPERE" and "CYLINDER" are primitives, don't use models with this name
 
 	uint num_vertices = 0;
 	uint num_tris = 0;
@@ -86,5 +87,8 @@ private:
 
 	float3 half_size = float3::zero;
 	float3 centroid = float3::zero;
+
+public:
+	Color tint_color = White;
 };
 #endif

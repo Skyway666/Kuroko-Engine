@@ -3,6 +3,7 @@
 #include "Mesh.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
+#include "MathGeoLib\Math\TransformOps.h"
 
 #define SKYBOX_OVERLAP_VALUE 0.1f  // negative offset of planes to avoid edges being visible for the user
 
@@ -17,7 +18,7 @@ Skybox::Skybox(float distance) : distance(distance)
 		float3* colors = new float3[num_vertices];		float2* tex_coords = new float2[num_vertices];
 		Tri* indices = new Tri[num_tris];
 
-		for (int i = 0; i < num_vertices; i++)	colors[i] = { 0.8f, 0.8f, 0.8f };
+		for (int i = 0; i < num_vertices; i++)	colors[i] = { color.r, color.g, color.b };
 
 		if (i % 2)  { indices[0] = { 2,1,0 }; indices[1] = { 1,2,3 }; }
 		else		{ indices[0] = { 0,1,2 }; indices[1] = { 3,2,1 }; }
@@ -84,6 +85,7 @@ Skybox::Skybox(float distance) : distance(distance)
 		normals[2] = vertices[2].Neg().Normalized();	normals[3] = vertices[3].Neg().Normalized();
 
 		planes[i] = new Mesh(vertices, indices, normals, colors, tex_coords, num_vertices, num_tris);
+		textures[i] = nullptr;   // initialize to nullptr because start values are undefined
 	}
 }
 
@@ -96,65 +98,109 @@ Skybox::~Skybox()
 	}
 }
 
+void Skybox::setAllTextures(std::array<Texture*, 6>& texs)
+{ 
+	for (int i = 0; i < 6; i++)
+	{
+		if (textures[i]) 
+			delete textures[i];
+
+		textures[i] = texs[i];
+	}
+}
+
+
+void Skybox::setTexture(Texture* tex, Direction index)
+{ 
+	if (index >= 0 && index < 6)
+	{
+		if (textures[index])
+			delete textures[index];
+
+		textures[index] = tex;
+	}
+}
+
+void Skybox::removeTexture(Direction index)
+{
+	if (index >= 0 && index < 6)
+	{
+		delete textures[index];
+		textures[index] = nullptr;
+	}
+}
+
+void Skybox::setDistance(float dist)
+{
+	transform_mat = transform_mat * transform_mat.Scale(float3(distance / dist, distance / dist, distance / dist));
+	distance = dist;
+}
+
+
 void Skybox::Draw() const
 {
-	if (planes.size() == 6 && textures.size() == 6)
+	if (active)
 	{
-		float4x4 view_mat = float4x4::identity;
-
-		GLfloat matrix[16];
-		glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-		view_mat.Set((float*)matrix);
-
-		glMatrixMode(GL_MODELVIEW_MATRIX);
-		glLoadMatrixf((GLfloat*)(transform_mat.Transposed() * view_mat).v);
-
-		for (int i = 0; i < 6; i++)
+		if (planes.size() == 6 && (textures.size() == 6 || color_mode))
 		{
-			Texture* diffuse_tex = textures[i];
+			float4x4 view_mat = float4x4::identity;
 
-			if (diffuse_tex)		glEnable(GL_TEXTURE_2D);
-			else					glEnableClientState(GL_COLOR_ARRAY);
+			GLfloat matrix[16];
+			glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+			view_mat.Set((float*)matrix);
 
-			// bind VBOs before drawing
-			glBindBuffer(GL_ARRAY_BUFFER, planes[i]->vboId);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planes[i]->iboId);
+			glMatrixMode(GL_MODELVIEW_MATRIX);
+			glLoadMatrixf((GLfloat*)(transform_mat.Transposed() * view_mat).v);
 
-			bool depth_test = glIsEnabled(GL_DEPTH_TEST);
-			glDisable(GL_DEPTH_TEST);
+			for (int i = 0; i < 6; i++)
+			{
+				Texture* diffuse_tex = textures[i];
 
-			// enable vertex arrays
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_NORMAL_ARRAY);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				if (diffuse_tex && !color_mode)		glEnable(GL_TEXTURE_2D);
+				else								glColor3f(color.r, color.g, color.b);
 
-			if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
+				// bind VBOs before drawing
+				glBindBuffer(GL_ARRAY_BUFFER, planes[i]->vboId);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planes[i]->iboId);
 
-			size_t Offset = sizeof(float3) * planes[i]->num_vertices;
+				bool depth_test = glIsEnabled(GL_DEPTH_TEST);
+				glDisable(GL_DEPTH_TEST);
 
-			// specify vertex arrays with their offsets
-			glVertexPointer(3, GL_FLOAT, 0, (void*)0);
-			glNormalPointer(GL_FLOAT, 0, (void*)Offset);
-			glColorPointer(3, GL_FLOAT, 0, (void*)(Offset * 2));
-			glTexCoordPointer(2, GL_FLOAT, 0, (void*)(Offset * 3));
-			glDrawElements(GL_TRIANGLES, planes[i]->num_tris * 3, GL_UNSIGNED_INT, NULL);
+				// enable vertex arrays
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glEnableClientState(GL_NORMAL_ARRAY);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-			if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, 0);
-			else					glDisableClientState(GL_COLOR_ARRAY);
+				if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 
-			glDisableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_NORMAL_ARRAY);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				size_t Offset = sizeof(float3) * planes[i]->num_vertices;
 
-			if(depth_test)
-				glEnable(GL_DEPTH_TEST);
+				// specify vertex arrays with their offsets
+				glVertexPointer(3, GL_FLOAT, 0, (void*)0);
+				glNormalPointer(GL_FLOAT, 0, (void*)Offset);
+				glColorPointer(3, GL_FLOAT, 0, (void*)(Offset * 2));
+				glTexCoordPointer(2, GL_FLOAT, 0, (void*)(Offset * 3));
+				glDrawElements(GL_TRIANGLES, planes[i]->num_tris * 3, GL_UNSIGNED_INT, NULL);
 
-			// unbind VBOs
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+				if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, 0);
+				else					glDisableClientState(GL_COLOR_ARRAY);
 
-			if (diffuse_tex)		glDisable(GL_TEXTURE_2D);
+				glDisableClientState(GL_VERTEX_ARRAY);
+				glDisableClientState(GL_NORMAL_ARRAY);
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+				if (depth_test)
+					glEnable(GL_DEPTH_TEST);
+
+				glColor3f(1.0f, 1.0f, 1.0f);
+
+				// unbind VBOs
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+				if (diffuse_tex)		glDisable(GL_TEXTURE_2D);
+			}
+			glLoadMatrixf((GLfloat*)view_mat.v);
 		}
-		glLoadMatrixf((GLfloat*)view_mat.v);
 	}
 }

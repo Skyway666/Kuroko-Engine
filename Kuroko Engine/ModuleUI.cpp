@@ -17,7 +17,6 @@
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui.h"
 
-
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
@@ -28,6 +27,7 @@
 #include "Quadtree.h"
 #include "ResourceTexture.h"
 #include "ResourceScene.h"
+#include "Skybox.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -80,24 +80,24 @@ bool ModuleUI::Start()
 {
 	io = &ImGui::GetIO();
 
-	ui_textures[PLAY]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Play.png");
-	ui_textures[PAUSE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Pause.png");
-	ui_textures[STOP]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Stop.png");
-	ui_textures[ADVANCE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/Advance.png");
+	ui_textures[PLAY]				= (Texture*)App->importer->ImportTexturePointer("Editor textures/Play.png");
+	ui_textures[PAUSE]				= (Texture*)App->importer->ImportTexturePointer("Editor textures/Pause.png");
+	ui_textures[STOP]				= (Texture*)App->importer->ImportTexturePointer("Editor textures/Stop.png");
+	ui_textures[ADVANCE]			= (Texture*)App->importer->ImportTexturePointer("Editor textures/Advance.png");
 
 	ui_textures[GUIZMO_TRANSLATE]	= (Texture*)App->importer->ImportTexturePointer("Editor textures/translate.png");
 	ui_textures[GUIZMO_ROTATE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/rotate.png");
 	ui_textures[GUIZMO_SCALE]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/scale.png");
 	ui_textures[GUIZMO_LOCAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_local.png");
 	ui_textures[GUIZMO_GLOBAL]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_global.png");
-	ui_textures[GUIZMO_SELECT] = (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_select.png");
+	ui_textures[GUIZMO_SELECT]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/Guizmo_select.png");
 
-	ui_textures[NO_TEXTURE] = (Texture*)App->importer->ImportTexturePointer("Editor textures/no_texture.png");
+	ui_textures[NO_TEXTURE]			= (Texture*)App->importer->ImportTexturePointer("Editor textures/no_texture.png");
 
-	ui_textures[FOLDER_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/folder_icon.png");
-	ui_textures[OBJECT_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/object_icon.png");
-	ui_textures[SCENE_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/scene_icon.png");
-	ui_textures[RETURN_ICON] = (Texture*)App->importer->ImportTexturePointer("Editor textures/return_icon.png");
+	ui_textures[FOLDER_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/folder_icon.png");
+	ui_textures[OBJECT_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/object_icon.png");
+	ui_textures[SCENE_ICON]			= (Texture*)App->importer->ImportTexturePointer("Editor textures/scene_icon.png");
+	ui_textures[RETURN_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/return_icon.png");
 
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
@@ -188,9 +188,11 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[ASSET_WINDOW])
 		DrawAssetsWindow();
 
-	if (open_tabs[RESOURCES_TAB]) {
+	if (open_tabs[RESOURCES_TAB]) 
 		DrawResourcesWindow();
-	}
+	
+	if (open_tabs[SKYBOX_MENU])
+		DrawSkyboxWindow();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -256,8 +258,9 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
 			ImGui::MenuItem("Quadtree", NULL, &open_tabs[QUADTREE_CONFIG]);
 			ImGui::MenuItem("Camera Menu", NULL, &open_tabs[CAMERA_MENU]);
-			ImGui::MenuItem("Asset Window", NULL, &open_tabs[ASSET_WINDOW]);
-			ImGui::MenuItem("Resources Window", NULL, &open_tabs[RESOURCES_TAB]);
+			ImGui::MenuItem("Assets", NULL, &open_tabs[ASSET_WINDOW]);
+			ImGui::MenuItem("Resources", NULL, &open_tabs[RESOURCES_TAB]);
+			ImGui::MenuItem("Skybox", NULL, &open_tabs[SKYBOX_MENU]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -582,10 +585,31 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 						ImGui::End();
 					}
 				}
-				
-				if (Material* material = c_mesh->getMaterial())
+
+				if (Mesh* mesh = c_mesh->getMesh())
 				{
-					if (ImGui::TreeNode("Material"))
+					if (ImGui::TreeNode("Mesh Options"))
+					{
+						uint vert_num, poly_count;
+						bool has_normals, has_colors, has_texcoords;
+						if (ImGui::Button("Remove mesh")) {
+							App->resources->deasignResource(c_mesh->getMeshResource());
+							c_mesh->setMeshResourceId(0);
+						}
+						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
+						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
+						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
+						ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
+						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
+
+						ImGui::TreePop();
+					}
+				}
+				
+				
+				if (ImGui::TreeNode("Material"))
+				{
+					if (Material* material = c_mesh->getMaterial())
 					{
 						static int preview_size = 128;
 						ImGui::Text("Id: %d", material->getId());
@@ -606,12 +630,10 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 						ImGui::SameLine();
 						if (ImGui::Button("256")) preview_size = 256;
 
-						
-
-						if(ImGui::TreeNode("diffuse"))
+						if (ImGui::TreeNode("diffuse"))
 						{
 							Texture* texture = nullptr;
-							if(ResourceTexture* tex_res = (ResourceTexture*)App->resources->getResource(material->getTextureResource(DIFFUSE)))
+							if (ResourceTexture* tex_res = (ResourceTexture*)App->resources->getResource(material->getTextureResource(DIFFUSE)))
 								texture = tex_res->texture;
 
 
@@ -619,7 +641,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							ImGui::SameLine();
 
 							int w = 0; int h = 0;
-							if(texture)
+							if (texture)
 								texture->getSize(w, h);
 
 							ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
@@ -631,7 +653,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							{
 								std::string texture_path = openFileWID();
 								uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
-								if(new_resource != 0){
+								if (new_resource != 0) {
 									App->resources->assignResource(new_resource);
 									App->resources->deasignResource(material->getTextureResource(DIFFUSE));
 									material->setTextureResource(DIFFUSE, new_resource);
@@ -687,39 +709,40 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							//}
 							ImGui::TreePop();
 						}
-						ImGui::TreePop();
 					}
-				}
-				else
-				{
-					if (ImGui::Button("Add material"))
+					else
 					{
-						Material* mat = new Material();
-						c_mesh->setMaterial(mat);
-					}
-				}
+						ImGui::TextWrapped("No material assigned!");
 
-				if (Mesh* mesh = c_mesh->getMesh())
-				{
-					if (ImGui::TreeNode("Mesh Options"))
-					{
-						uint vert_num, poly_count;
-						bool has_normals, has_colors, has_texcoords;
-						if (ImGui::Button("Remove mesh")) {
-							App->resources->deasignResource(c_mesh->getMeshResource());
-							c_mesh->setMeshResourceId(0);
+						static bool draw_colorpicker = false;
+						static Color reference_color = c_mesh->getMesh()->tint_color;
+						static GameObject* last_selected = c_mesh->getParent();
+
+						std::string label = c_mesh->getParent()->getName() + " color picker";
+
+						if(last_selected != c_mesh->getParent())
+							reference_color = c_mesh->getMesh()->tint_color;
+
+						ImGui::SameLine();
+						if (ImGui::ColorButton((label + "button").c_str(), ImVec4(c_mesh->getMesh()->tint_color.r, c_mesh->getMesh()->tint_color.g, c_mesh->getMesh()->tint_color.b, c_mesh->getMesh()->tint_color.a)))
+							draw_colorpicker = !draw_colorpicker;
+
+						if (draw_colorpicker)
+							DrawColorPickerWindow(label.c_str(), (Color*)&c_mesh->getMesh()->tint_color, &draw_colorpicker, (Color*)&reference_color);
+						else
+							reference_color = c_mesh->getMesh()->tint_color;
+
+						last_selected = c_mesh->getParent();
+
+						if (ImGui::Button("Add material"))
+						{
+							Material* mat = new Material();
+							c_mesh->setMaterial(mat);
 						}
-						mesh->getData(vert_num, poly_count, has_normals, has_colors, has_texcoords);
-						ImGui::Text("vertices: %d, poly count: %d, ", vert_num, poly_count);
-						ImGui::Text(has_normals ? "normals: Yes," : "normals: No,");
-						ImGui::Text(has_colors ? "colors: Yes," : "colors: No,");
-						ImGui::Text(has_texcoords ? "tex coords: Yes" : "tex coords: No");
-
-						ImGui::TreePop();
-
-						
 					}
+					ImGui::TreePop();
 				}
+			
 			}
 
 			if (ImGui::Button("Remove Component##Remove mesh"))
@@ -1090,25 +1113,13 @@ void ModuleUI::DrawCameraMenuWindow()
 						(*it)->getFrustum()->orthographicHeight = (*it)->getFrustum()->orthographicWidth = INIT_ORT_SIZE;
 					}
 
-					static float hor_fov = RADTODEG * (*it)->getFrustum()->horizontalFov;
 					static float ver_fov = RADTODEG * (*it)->getFrustum()->verticalFov;
 
-					ImGui::Text("Horizontal FOV:");
-					ImGui::SameLine();
-					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					if (ImGui::DragFloat("##Horizontal FOV", &hor_fov, 1.0f, MIN_H_FOV, MAX_H_FOV, "%.02f"))
-						(*it)->getFrustum()->horizontalFov = DEGTORAD * hor_fov;
-
-					ImGui::Text("Vertical FOV:");
-					ImGui::SameLine();
-					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					if (ImGui::DragFloat("##Vertical FOV", &ver_fov, 1.0f, MIN_V_FOV, MAX_V_FOV, "%.02f"))
+					if (ImGui::SliderFloat("##Vertical FOV", &ver_fov, MIN_V_FOV, MAX_V_FOV, "Ver. FOV: %.0f"))
 						(*it)->getFrustum()->verticalFov = DEGTORAD * ver_fov;
-
 				}
 				else
 				{
-
 					ImGui::Text("Current mode: Ortographic");
 					ImGui::SameLine();
 
@@ -1118,27 +1129,13 @@ void ModuleUI::DrawCameraMenuWindow()
 						(*it)->getFrustum()->horizontalFov = DEGTORAD * INIT_HOR_FOV; (*it)->getFrustum()->verticalFov = DEGTORAD * INIT_VER_FOV;
 					}
 
-					ImGui::Text("Ortographic Width:");
-					ImGui::SameLine();
-					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					ImGui::DragFloat("##Ortographic Width", &(*it)->getFrustum()->orthographicWidth, 1.0f, 1.0f, 500.0f, "%.02f");
-
-					ImGui::Text("Ortographic Height:");
-					ImGui::SameLine();
-					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-					ImGui::DragFloat("##Ortographic Height", &(*it)->getFrustum()->orthographicHeight, 1.0f, 1.0f, 500.0f, "%.02f");
+					ImGui::SliderFloat("##Ortographic Width", &(*it)->getFrustum()->orthographicWidth, 1.0f, 500.0f, "Ort. width: %.0f");
+					ImGui::SliderFloat("##Ortographic Height", &(*it)->getFrustum()->orthographicHeight, 1.0f, 500.0f, "Ort. height: %.0f");
 
 				}
 
-				ImGui::Text("Near Plane:");
-				ImGui::SameLine();
-				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-				ImGui::DragFloat("##Near Plane:", &(*it)->getFrustum()->nearPlaneDistance, 0.1f, 0.0f, 500.0f, "%.02f");
-
-				ImGui::Text("Far Plane:");
-				ImGui::SameLine();
-				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-				ImGui::DragFloat("##Far Plane:", &(*it)->getFrustum()->farPlaneDistance, 0.1f, 1.0f, 1500.0f, "%.02f");
+				ImGui::SliderFloat("##Near Plane:", &(*it)->getFrustum()->nearPlaneDistance, 0.1f, (*it)->getFrustum()->farPlaneDistance, "Near plane: %.1f");
+				ImGui::SliderFloat("##Far Plane:", &(*it)->getFrustum()->farPlaneDistance, (*it)->getFrustum()->nearPlaneDistance, 2500.0f, "Far plane: %.1f");
 
 			}
 
@@ -1410,6 +1407,97 @@ void ModuleUI::DrawPrimitivesTab()
 	ImGui::End();
 }
 
+void ModuleUI::DrawSkyboxWindow()
+{
+	ImGui::Begin("Skybox", &open_tabs[SKYBOX_MENU]);
+
+	if (Skybox* skybox = App->scene->skybox)
+	{
+		ImGui::Checkbox("active##skybox active", &skybox->active);
+
+		static float new_distance = skybox->distance;
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() - 10);
+		if (ImGui::SliderFloat("##skybox distance", &new_distance, 1.0f, 5000.0f, "Distance: %.0f"))
+			skybox->setDistance(new_distance);
+
+		ImGui::Checkbox("color mode##skybox color mode", &skybox->color_mode);
+
+		if (skybox->color_mode)
+		{
+			static bool draw_colorpicker = false;
+			static Color reference_color = skybox->color;
+
+				ImGui::SameLine();
+			if (ImGui::ColorButton("##skybox_color", ImVec4(skybox->color.r, skybox->color.g, skybox->color.b, skybox->color.a)))
+				draw_colorpicker = !draw_colorpicker;
+
+			if (draw_colorpicker)
+				DrawColorPickerWindow("Skybox color picker", (Color*)&skybox->color, &draw_colorpicker, (Color*)&reference_color);
+			else
+				reference_color = skybox->color;
+		}
+		else
+		{
+			if (ImGui::Button("Clear all textures##clear all skybox textures"))
+			{
+				for(int i = 0; i < 6; i++)
+					skybox->removeTexture((Direction)i);
+			}
+
+			for(int i = 0; i < 6; i++)
+			{ 
+				char* label = "";
+				Texture* texture = nullptr;
+
+				switch (i)
+				{
+				case LEFT:	label = "left_texture";		texture = skybox->getTexture(LEFT);		break;
+				case RIGHT: label = "right_texture";	texture = skybox->getTexture(RIGHT);	break;
+				case UP:	label = "up_texture";		texture = skybox->getTexture(UP);		break;
+				case DOWN:	label = "down_texture";		texture = skybox->getTexture(DOWN);		break;
+				case FRONT: label = "front_texture";	texture = skybox->getTexture(FRONT);	break;
+				case BACK:	label = "back_texture";		texture = skybox->getTexture(BACK);		break;
+				}
+
+				if (ImGui::TreeNode(label))
+				{
+					ImGui::Image(texture ? (void*)texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(64, 64));
+					ImGui::SameLine();
+
+					int w = 0; int h = 0;
+					if (texture)
+						texture->getSize(w, h);
+
+					ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
+
+					if (ImGui::Button("Clear texture##clear skybox texture"))
+						skybox->removeTexture((Direction)i);
+
+					//if (ImGui::Button("Load checkered##Dif: Load checkered"))
+					//	material->setCheckeredTexture(DIFFUSE);
+					////ImGui::SameLine()
+					if (ImGui::Button("Load(from asset folder)##Dif: Load"))
+					{
+						std::string texture_path = openFileWID();
+						skybox->setTexture((Texture*)App->importer->ImportTexturePointer(texture_path.c_str()), (Direction)i);
+					}
+					ImGui::TreePop();
+				}
+			}
+		}
+	}
+
+	ImGui::End();
+	
+}
+
+void ModuleUI::DrawColorPickerWindow(const char* label, Color* color, bool* closing_bool, Color* reference_col)
+{
+	ImGui::Begin(label, closing_bool);
+	ImGui::Text("Use right click to change color picker mode");
+	ImGui::ColorPicker4(label, &color->r, 0, &reference_col->r);
+	ImGui::End();
+}
 
 void ModuleUI::DrawAboutLeaf()
 {
@@ -1528,7 +1616,7 @@ void ModuleUI::DrawGraphicsLeaf() const {
 			}
 		}
 
-		if (ImGui::SliderFloat("Fog density", &fog_distance, 0.0f, 1.0f))
+		if (ImGui::SliderFloat("##Fog density", &fog_distance, 0.0f, 1.0f, "Fog density: %.2f"))
 			glFogf(GL_FOG_DENSITY, fog_distance);
 		ImGui::TreePop();
 	}
@@ -1555,12 +1643,12 @@ void ModuleUI::DrawWindowConfigLeaf() const
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	Window* window = App->window->main_window;
-	if(ImGui::SliderFloat("Brightness", &window->brightness, 0, 1.0f))
+	if(ImGui::SliderFloat("##Brightness", &window->brightness, 0, 1.0f, "Brightness: %.2f"))
 		App->window->setBrightness(window->brightness);
 
 	bool width_mod, height_mod = false;
-	width_mod = ImGui::SliderInt("Width", &window->width, MIN_WINDOW_WIDTH, MAX_WINDOW_WIDTH);
-	height_mod = ImGui::SliderInt("Height", &window->height, MIN_WINDOW_HEIGHT, MAX_WINDOW_HEIGHT);
+	width_mod = ImGui::SliderInt("##Window width", &window->width, MIN_WINDOW_WIDTH, MAX_WINDOW_WIDTH, "Width: %d");
+	height_mod = ImGui::SliderInt("###Window height", &window->height, MIN_WINDOW_HEIGHT, MAX_WINDOW_HEIGHT, "Height: %d");
 	
 	if(width_mod || height_mod)
 		App->window->setSize(window->width, window->height);
@@ -1692,10 +1780,10 @@ void ModuleUI::DrawTimeControlWindow()
 		App->time->Advance(advance_frames);
 
 
-	ImGui::DragInt("Advance frames", &advance_frames, 0.05, 1, 1000);
+	ImGui::SliderInt("##Advance frames", &advance_frames, 1, 1000, "Advance frames: %d");
 
 
-	if (ImGui::DragFloat("Time scale", &time_scale, 0.01, 0, 100))
+	if (ImGui::SliderFloat("##Time scale", &time_scale, 0, 100, "Time scale: %.2f"))
 		App->time->setTimeScale(time_scale);
 
 
@@ -1911,6 +1999,7 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[RESOURCES_TAB]	= json_object_get_boolean(config, "resources_window");
 
 	open_tabs[VIEWPORT_MENU]	= false;	// must always start closed
+	open_tabs[SKYBOX_MENU]		= false;
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 

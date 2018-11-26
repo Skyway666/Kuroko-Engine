@@ -5,28 +5,40 @@
 #include <string>
 
 #include "MathGeoLib\Math\float4x4.h"
+#include "Color.h"
 
-class Texture;
+struct Texture;
 class Mesh;
+
+#define SKYBOX_BASE_DISTANCE 100.0f
 
 enum Direction { LEFT, RIGHT, UP, DOWN, BACK, FRONT};
 
 class Skybox
 {
 public:
-	Skybox(float distance = 100.0f);
+	Skybox(float distance = SKYBOX_BASE_DISTANCE);
 	~Skybox();
 
 	void updatePosition(const float3& new_pos) { transform_mat.SetTranslatePart(new_pos); };
-	void setAllTextures(std::array<Texture*, 6>& texs)	{ for(int i = 0; i < 6; i++)	textures[i] = texs[i]; };
-	void setTexture(Texture* tex, Direction index)		{ if (index >= 0 && index < 6)	textures[index] = tex; };
+	void setAllTextures(std::array<Texture*, 6>& texs);
+	void setTexture(Texture* tex, Direction index);
+	void removeTexture(Direction index);
+	Texture* getTexture(Direction index) { if (index >= 0 && index < 6) return textures[index]; };
 	void Draw() const;
+	void setDistance(float dist);
 
 private:
 	std::array<Texture*, 6> textures;
 	std::array<Mesh*, 6> planes;   
-	float distance = 0.0f;
 	float4x4 transform_mat = float4x4::identity;
+
+public:
+
+	bool active = true;
+	bool color_mode = false;
+	Color color = White;
+	float distance = 0.0f;
 };
 
 

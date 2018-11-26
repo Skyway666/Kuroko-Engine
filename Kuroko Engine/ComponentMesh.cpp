@@ -40,17 +40,13 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	mat->setTextureResource(DIFFUSE, diffuse_resource);
 }
 
-ComponentMesh::ComponentMesh(GameObject* gameobject, PrimitiveTypes type) : Component(gameobject, MESH) {
-	primitive_type = type;
-	mat = new Material();
-
-}
 ComponentMesh::~ComponentMesh() {
 	// Deassign all the components that the element had if it is deleted
 	if(primitive_type == Primitive_None)
 		App->resources->deasignResource(mesh_resource_uuid);
 	delete mat;
 }
+
 void ComponentMesh::Draw() const
 {
 	if (Mesh* mesh_from_resource = getMeshFromResource())

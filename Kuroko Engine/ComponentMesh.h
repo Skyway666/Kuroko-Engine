@@ -11,8 +11,8 @@ public:
 
 	ComponentMesh(GameObject* gameobject) : Component(gameobject, MESH) {};   // empty constructor
 	ComponentMesh(JSON_Object* deff, GameObject* parent);
+	ComponentMesh(GameObject* gameobject, PrimitiveTypes type) : Component(gameobject, MESH), primitive_type(type) {};
 	//ComponentMesh(GameObject* gameobject, Mesh* mesh) : Component(gameobject, MESH), primitive_mesh(mesh) {};
-	ComponentMesh(GameObject* gameobject, PrimitiveTypes type);
 
 	~ComponentMesh();
 	void Draw() const;
