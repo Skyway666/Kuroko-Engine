@@ -67,6 +67,9 @@
     <Filter Include="Sources\Resources">
       <UniqueIdentifier>{dd60d601-ee0a-4a54-b013-c19ee2fce428}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\TextEditor">
+      <UniqueIdentifier>{c5f499bb-6485-404c-a0c0-e8965e68a018}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -411,6 +414,9 @@
     <ClInclude Include="MD5.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\TextEditor.h">
+      <Filter>Sources\TextEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -640,6 +646,9 @@
     </ClCompile>
     <ClCompile Include="MD5.cpp">
       <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\TextEditor.cpp">
+      <Filter>Sources\TextEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
