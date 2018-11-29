@@ -39,6 +39,7 @@ Rodrigo De Pedro Lombao
 - Transform with Global and Local modes and constraints.
 - Camera menu with information about all game cameras and tweakable options.
 - Asset viewer window with previews and info about the files in Asset folder.
+- Color picker
 
 Lucas García Mateu
 - Using "map" container to store resources.
