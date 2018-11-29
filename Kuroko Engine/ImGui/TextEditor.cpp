@@ -444,6 +444,7 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 
 		if (!IsReadOnly())
 		{
+			// Letters
 			for (size_t i = 0; i < sizeof(io.InputCharacters) / sizeof(io.InputCharacters[0]); i++)
 			{
 				auto c = (unsigned char)io.InputCharacters[i];
@@ -451,13 +452,13 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 				{
 					if (isprint(c) || isspace(c))
 					{
-						if (c == '\r')
-							c = '\n';
 						EnterCharacter((char)c);
 					}
 				}
 			}
-
+			if (ImGui::IsKeyPressedMap(ImGuiKey_Enter)) {
+				EnterCharacter('\n');
+			}
 			
 		}
 	}
