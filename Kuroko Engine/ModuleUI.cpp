@@ -74,6 +74,8 @@ bool ModuleUI::Init(const JSON_Object* config) {
 	//ImGui::StyleColorsClassic();
 	LoadConfig(config);
 
+	InitializeScriptEditor();
+
 
 	return true;
 }
@@ -104,6 +106,7 @@ bool ModuleUI::Start()
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
 	ui_fonts[REGULAR]				= io->Fonts->AddFontFromFileTTF("Fonts/regular.ttf", 18.0f);
+	ui_fonts[IMGUI_DEFAULT]			= io->Fonts->AddFontDefault();
 	//ui_fonts[REGULAR_BOLD]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold.ttf", 18.0f);
 	//ui_fonts[REGULAR_ITALIC]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_italic.ttf", 18.0f);
 	//ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
@@ -388,6 +391,7 @@ void ModuleUI::InitializeScriptEditor()
 
 	script_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::CPlusPlus());
 
+	
 	TextEditor::ErrorMarkers markers;
 	markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
 	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
@@ -1531,6 +1535,7 @@ void ModuleUI::DrawColorPickerWindow(const char* label, Color* color, bool* clos
 void ModuleUI::DrawScriptEditor()
 {
 	disable_keyboard_control = true; // Will disable keybord control forever
+	ImGui::PushFont(ui_fonts[REGULAR]);
 	auto cpos = script_editor.GetCursorPosition();
 	ImGui::Begin("Text Editor Demo", &open_tabs[SCRIPT_EDITOR], ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
@@ -1591,12 +1596,13 @@ void ModuleUI::DrawScriptEditor()
 		ImGui::EndMenuBar();
 	}
 
-	//ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, script_editor.GetTotalLines(),
-	//	script_editor.IsOverwrite() ? "Ovr" : "Ins",
-	//	script_editor.CanUndo() ? "*" : " ",
-	//	script_editor.GetLanguageDefinition().mName.c_str(), modified_script_path);
+	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, script_editor.GetTotalLines(),
+		script_editor.IsOverwrite() ? "Ovr" : "Ins",
+		script_editor.CanUndo() ? "*" : " ",
+		script_editor.GetLanguageDefinition().mName.c_str(), modified_script_path);
 
 	script_editor.Render("TextEditor");
+	ImGui::PopFont();
 	ImGui::End();
 }
 
