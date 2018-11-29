@@ -29,6 +29,7 @@
 #include "ResourceScene.h"
 #include "Skybox.h"
 
+
 #include "Random.h"
 #include "VRAM.h"
 #include "WinItemDialog.h" 
@@ -41,6 +42,7 @@
 #include <gl/GLU.h>
 
 #include <experimental/filesystem>
+#include <fstream>
 
 #pragma comment( lib, "glew-2.1.0/lib/glew32.lib")
 #pragma comment( lib, "glew-2.1.0/lib/glew32s.lib")
@@ -193,6 +195,9 @@ update_status ModuleUI::Update(float dt) {
 	
 	if (open_tabs[SKYBOX_MENU])
 		DrawSkyboxWindow();
+
+	if (open_tabs[SCRIPT_EDITOR])
+		DrawScriptEditor();
 /*
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
@@ -261,6 +266,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Assets", NULL, &open_tabs[ASSET_WINDOW]);
 			ImGui::MenuItem("Resources", NULL, &open_tabs[RESOURCES_TAB]);
 			ImGui::MenuItem("Skybox", NULL, &open_tabs[SKYBOX_MENU]);
+			ImGui::MenuItem("Script Editor", NULL, &open_tabs[SCRIPT_EDITOR]);
 			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
@@ -375,6 +381,29 @@ bool ModuleUI::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 	return true;
+}
+
+void ModuleUI::InitializeScriptEditor()
+{
+
+	script_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::CPlusPlus());
+
+	TextEditor::ErrorMarkers markers;
+	markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
+	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
+	script_editor.SetErrorMarkers(markers);
+
+	modified_script_path = "test.txt";
+	//	static const char* fileToEdit = "test.cpp";
+
+	{
+		std::ifstream t(modified_script_path);
+		if (t.good())
+		{
+			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+			script_editor.SetText(str);
+		}
+	}
 }
 
 
@@ -1499,6 +1528,78 @@ void ModuleUI::DrawColorPickerWindow(const char* label, Color* color, bool* clos
 	ImGui::End();
 }
 
+void ModuleUI::DrawScriptEditor()
+{
+	disable_keyboard_control = true; // Will disable keybord control forever
+	auto cpos = script_editor.GetCursorPosition();
+	ImGui::Begin("Text Editor Demo", &open_tabs[SCRIPT_EDITOR], ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Save"))
+			{
+				auto textToSave = script_editor.GetText();
+				// Save text to script being modified
+			}
+			if (ImGui::MenuItem("Quit", "Alt-F4")) {
+				// Exit or something
+			}
+	
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			bool ro = script_editor.IsReadOnly();
+			if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+				script_editor.SetReadOnly(ro);
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, !ro && script_editor.CanUndo()))
+				script_editor.Undo();
+			if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && script_editor.CanRedo()))
+				script_editor.Redo();
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, script_editor.HasSelection()))
+				script_editor.Copy();
+			if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && script_editor.HasSelection()))
+				script_editor.Cut();
+			if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && script_editor.HasSelection()))
+				script_editor.Delete();
+			if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+				script_editor.Paste();
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem("Select all", nullptr, nullptr))
+				script_editor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(script_editor.GetTotalLines(), 0));
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("Dark palette"))
+				script_editor.SetPalette(TextEditor::GetDarkPalette());
+			if (ImGui::MenuItem("Light palette"))
+				script_editor.SetPalette(TextEditor::GetLightPalette());
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
+	//ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, script_editor.GetTotalLines(),
+	//	script_editor.IsOverwrite() ? "Ovr" : "Ins",
+	//	script_editor.CanUndo() ? "*" : " ",
+	//	script_editor.GetLanguageDefinition().mName.c_str(), modified_script_path);
+
+	script_editor.Render("TextEditor");
+	ImGui::End();
+}
+
 void ModuleUI::DrawAboutLeaf()
 {
 	ImGui::Begin("About", &open_tabs[ABOUT]); 
@@ -1998,8 +2099,10 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[ASSET_WINDOW]		= json_object_get_boolean(config, "asset_window");
 	open_tabs[RESOURCES_TAB]	= json_object_get_boolean(config, "resources_window");
 
+
 	open_tabs[VIEWPORT_MENU]	= false;	// must always start closed
 	open_tabs[SKYBOX_MENU]		= false;
+	open_tabs[SCRIPT_EDITOR] = false;
 	//open_tabs[AUDIO]			= json_object_get_boolean(config, "audio");
 }
 
