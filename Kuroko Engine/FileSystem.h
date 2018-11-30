@@ -36,19 +36,25 @@ public:
 	void ExportBuffer(char* data,int size, const char* file_name, lib_dir lib = NO_LIB, const char* extension = ""); // get buffer from a file
 	char* ImportFile(const char* file_name); // recieve buffer from a file
 
+	std::string GetFileString(const char* file_name);
+
 	void CreateEmptyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	void DestroyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	bool ExistisFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
-	void getFileNameFromPath(std::string& str);
-	bool getPath(std::string & str);
-	void getExtension(std::string& str);
-	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
 	bool copyFileTo(const char* full_path_src, lib_dir dest_lib = NO_LIB, const char* extension = "", std::string file_new_name = "");
 	int getFileLastTimeMod(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	bool FindInDirectory(const char* directory, const char* file_name, std::string& final_path); // File name with extension
 	std::string getPathFromLibDir(lib_dir r_type);
+
+
+	void getFileNameFromPath(std::string& str);
+	bool getPath(std::string & str);
+	void getExtension(std::string& str);
+	void FormFullPath(std::string& path, const char* file_name, lib_dir lib, const char* extension);
 	bool removeExtension(std::string& str);
 	bool removePath(std::string& str);
+
+
 
 
 

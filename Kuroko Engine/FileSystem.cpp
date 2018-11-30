@@ -34,6 +34,21 @@ char * FileSystem::ImportFile(const char * file_name) {
 	return ret;
 }
 
+std::string  FileSystem::GetFileString(const char * file_name) {
+	std::ifstream file;
+	std::string line;
+	std::string ret;
+
+	file.open(file_name);
+
+	while (std::getline(file, line)) {
+		ret += (line + '\n');
+	}
+	file.close();
+
+	return ret;
+}
+
 
 void FileSystem::CreateEmptyFile(const char* file_name, lib_dir lib, const char* extension) {
 
