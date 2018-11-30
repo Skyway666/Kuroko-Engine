@@ -63,8 +63,7 @@ bool ModuleUI::Init(const JSON_Object* config) {
 	// Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+
 
 	ImGui_ImplSDL2_InitForOpenGL(App->window->main_window->window, App->renderer3D->getContext());
 	ImGui_ImplOpenGL2_Init();
@@ -112,6 +111,7 @@ bool ModuleUI::Start()
 	//ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
 	
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 
@@ -1535,7 +1535,7 @@ void ModuleUI::DrawColorPickerWindow(const char* label, Color* color, bool* clos
 void ModuleUI::DrawScriptEditor()
 {
 	disable_keyboard_control = true; // Will disable keybord control forever
-	ImGui::PushFont(ui_fonts[REGULAR]);
+	ImGui::PushFont(ui_fonts[IMGUI_DEFAULT]);
 	auto cpos = script_editor.GetCursorPosition();
 	ImGui::Begin("Text Editor Demo", &open_tabs[SCRIPT_EDITOR], ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
@@ -1601,7 +1601,7 @@ void ModuleUI::DrawScriptEditor()
 		script_editor.CanUndo() ? "*" : " ",
 		script_editor.GetLanguageDefinition().mName.c_str(), modified_script_path);
 
-	script_editor.Render("TextEditor");
+	script_editor.Render("TextEditor", ui_fonts[IMGUI_DEFAULT]);
 	ImGui::PopFont();
 	ImGui::End();
 }
