@@ -46,6 +46,9 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0) {
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
 			}
+			if (!isStatic && strcmp(signature, "consoleOutput(_)") == 0) {
+				return ConsoleLog;
+			}
 			// Other foreign methods on Math...
 		}
 		// Other classes in main...

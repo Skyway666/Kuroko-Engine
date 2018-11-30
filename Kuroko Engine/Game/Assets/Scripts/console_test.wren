@@ -11,3 +11,17 @@ var adjectives = Fiber.new {
 }
 
 while (!adjectives.isDone) System.print(adjectives.call())
+
+
+class EngineComunicator{
+	construct new(){}
+	foreign static consoleOutput(message)
+	foreign consoleOutput(message)
+}
+
+EngineComunicator.consoleOutput("Hello world from C (static)")
+
+var engine_comunicator_instance = EngineComunicator.new()
+engine_comunicator_instance.consoleOutput("Hello world from C (instance)")
+
+
