@@ -13,6 +13,7 @@
 #include "Random.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
+#include "ModuleScripting.h"
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -31,6 +32,7 @@ Application::Application()
 
 	CreateDirectory("Assets", NULL);
 	CreateDirectory("Assets\\Scenes", NULL);
+	CreateDirectory("Assets\\Scripts", NULL);
 
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
@@ -44,6 +46,7 @@ Application::Application()
 	gui = new ModuleUI(this);
 	time = new ModuleTimeManager(this);
 	resources = new ModuleResourcesManager(this);
+	scripting = new ModuleScripting(this);
 
 
 	// The order of calls is very important!
@@ -66,6 +69,7 @@ Application::Application()
 
 	// Renderer last!
 	list_modules.push_back(resources);
+	list_modules.push_back(scripting);
 	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
 
