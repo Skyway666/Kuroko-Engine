@@ -58,8 +58,9 @@ Libraries used:
 - Parson	(https://github.com/kgabis/parson)
 - PCG Random	(http://www.pcg-random.org)
 - ImGuizmo      (https://github.com/CedricGuillemet/ImGuizmo)
+- ImGuiColoredTextEditor (https://github.com/BalazsJako/ImGuiColorTextEdit)
 - ImGui		(https://github.com/ocornut/imgui)
-
+- Wren 		(http://wren.io/)
 Extra information:
 
 - Press "Space" to see all the viewports at the same time

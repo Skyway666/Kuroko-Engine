@@ -189,6 +189,18 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VRAM.h" />
     <ClInclude Include="WinItemDialog.h" />
+    <ClInclude Include="Wren\wren.h" />
+    <ClInclude Include="Wren\wren_common.h" />
+    <ClInclude Include="Wren\wren_compiler.h" />
+    <ClInclude Include="Wren\wren_core.h" />
+    <ClInclude Include="Wren\wren_debug.h" />
+    <ClInclude Include="Wren\wren_opcodes.h" />
+    <ClInclude Include="Wren\wren_opt_meta.h" />
+    <ClInclude Include="Wren\wren_opt_random.h" />
+    <ClInclude Include="Wren\wren_primitive.h" />
+    <ClInclude Include="Wren\wren_utils.h" />
+    <ClInclude Include="Wren\wren_value.h" />
+    <ClInclude Include="Wren\wren_vm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -268,6 +280,15 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VRAM.cpp" />
+    <ClCompile Include="Wren\wren_compiler.c" />
+    <ClCompile Include="Wren\wren_core.c" />
+    <ClCompile Include="Wren\wren_debug.c" />
+    <ClCompile Include="Wren\wren_opt_meta.c" />
+    <ClCompile Include="Wren\wren_opt_random.c" />
+    <ClCompile Include="Wren\wren_primitive.c" />
+    <ClCompile Include="Wren\wren_utils.c" />
+    <ClCompile Include="Wren\wren_value.c" />
+    <ClCompile Include="Wren\wren_vm.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Geometry\KDTree.inl" />
@@ -276,6 +297,12 @@
     <None Include="MathGeoLib\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
     <None Include="MathGeoLib\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\Math\Matrix.inl" />
+    <None Include="Wren\wren_core.wren" />
+    <None Include="Wren\wren_core.wren.inc" />
+    <None Include="Wren\wren_opt_meta.wren" />
+    <None Include="Wren\wren_opt_meta.wren.inc" />
+    <None Include="Wren\wren_opt_random.wren" />
+    <None Include="Wren\wren_opt_random.wren.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -70,6 +70,9 @@
     <Filter Include="Sources\TextEditor">
       <UniqueIdentifier>{c5f499bb-6485-404c-a0c0-e8965e68a018}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Wren">
+      <UniqueIdentifier>{c8910b2e-3ed2-4c21-9d95-9612a86c5349}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -417,6 +420,42 @@
     <ClInclude Include="ImGui\TextEditor.h">
       <Filter>Sources\TextEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Wren\wren.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_common.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_compiler.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_core.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_debug.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_opcodes.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_primitive.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_utils.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_value.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_vm.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_opt_meta.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="Wren\wren_opt_random.h">
+      <Filter>Sources\Wren</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -650,6 +689,33 @@
     <ClCompile Include="ImGui\TextEditor.cpp">
       <Filter>Sources\TextEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Wren\wren_compiler.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_core.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_debug.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_primitive.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_utils.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_value.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_vm.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_opt_meta.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
+    <ClCompile Include="Wren\wren_opt_random.c">
+      <Filter>Sources\Wren</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Math\Matrix.inl">
@@ -669,6 +735,24 @@
     </None>
     <None Include="MathGeoLib\Geometry\TriangleMesh_IntersectRay_SSE.inl">
       <Filter>Sources\Helpers\MathGeoLib\Geometry</Filter>
+    </None>
+    <None Include="Wren\wren_core.wren">
+      <Filter>Sources\Wren</Filter>
+    </None>
+    <None Include="Wren\wren_core.wren.inc">
+      <Filter>Sources\Wren</Filter>
+    </None>
+    <None Include="Wren\wren_opt_meta.wren">
+      <Filter>Sources\Wren</Filter>
+    </None>
+    <None Include="Wren\wren_opt_meta.wren.inc">
+      <Filter>Sources\Wren</Filter>
+    </None>
+    <None Include="Wren\wren_opt_random.wren">
+      <Filter>Sources\Wren</Filter>
+    </None>
+    <None Include="Wren\wren_opt_random.wren.inc">
+      <Filter>Sources\Wren</Filter>
     </None>
   </ItemGroup>
 </Project>

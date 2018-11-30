@@ -1658,6 +1658,14 @@ void ModuleUI::DrawAboutLeaf()
 	ImGui::SameLine();
 	if(ImGui::Button("Learn more##imguizmo"))
 		App->requestBrowser("https://github.com/CedricGuillemet/ImGuizmo");
+	ImGui::Text("ImGuiColorTextEdit");
+	ImGui::SameLine();
+	if (ImGui::Button("Learn more##texteditor"))
+		App->requestBrowser("https://github.com/BalazsJako/ImGuiColorTextEdit");
+	ImGui::Text("Wren");
+	ImGui::SameLine();
+	if (ImGui::Button("Learn more##wren"))
+		App->requestBrowser("http://wren.io/");
 	ImGui::PopFont();
 	ImGui::End();
 }
