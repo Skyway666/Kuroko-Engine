@@ -1659,6 +1659,54 @@ TextEditor::LanguageDefinition TextEditor::LanguageDefinition::CPlusPlus()
 	return langDef;
 }
 
+
+TextEditor::LanguageDefinition TextEditor::LanguageDefinition::Wren()
+{
+	static bool inited = false;
+	static LanguageDefinition langDef;
+	if (!inited)
+	{
+		static const char* const keywords[] = {
+			"break", "class", "construct", "else", "false", "for", "foreign",  "if",  "import", 
+			"in", "is", "null", "return", "static", "super" ,"this", "true", "var", "while",
+		};
+		for (auto& k : keywords)
+			langDef.mKeywords.insert(k);
+
+		static const char* const identifiers[] = {
+			"Bool", "Num", "String", "Null", "..", "...", "Random", "Fiber", "Fn", "System"
+		};
+		for (auto& k : identifiers)
+		{
+			Identifier id;
+			if(k == ".." || k == "...")	id.mDeclaration = "built-in class Range";
+			else						id.mDeclaration = "built-in class " + std::string(k);
+			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
+		}
+
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("//.*", PaletteIndex::Comment));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("L?\\\"(\\\\.|[^\\\"])*\\\"", PaletteIndex::String));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("\\'\\\\?[^\\']\\'", PaletteIndex::CharLiteral));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("0[xX][0-9a-fA-F]+[uU]?[lL]?[lL]?", PaletteIndex::Number));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?([0-9]+([0-9]*)?|[0-9]+)([+-]?[0-9]+)?", PaletteIndex::Number));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("0[0-7]+[Uu]?[lL]?[lL]?", PaletteIndex::Number));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?[0-9]+[Uu]?[lL]?[lL]?", PaletteIndex::Number));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[a-zA-Z_][a-zA-Z0-9_]*", PaletteIndex::Identifier));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[\\[\\]\\{\\}\\!\\%\\^\\&\\*\\(\\)\\-\\+\\=\\~\\|\\<\\>\\?\\/\\;\\,\\.]", PaletteIndex::Punctuation));
+
+		langDef.mCommentStart = "/*";
+		langDef.mCommentEnd = "*/";
+
+		langDef.mCaseSensitive = true;
+
+		langDef.mName = "Wren";
+
+		inited = true;
+	}
+	return langDef;
+}
+
+
 TextEditor::LanguageDefinition TextEditor::LanguageDefinition::HLSL()
 {
 	static bool inited = false;

@@ -389,7 +389,7 @@ bool ModuleUI::CleanUp()
 void ModuleUI::InitializeScriptEditor()
 {
 
-	script_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::CPlusPlus());
+	script_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Wren());
 
 	
 	TextEditor::ErrorMarkers markers;
