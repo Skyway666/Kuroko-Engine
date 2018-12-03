@@ -6,6 +6,7 @@
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
 #include "ResourceScene.h"
+#include "ResourceScript.h"
 #include "Applog.h"
 #include "Mesh.h"
 
@@ -76,6 +77,7 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 	case R_TEXTURE: ret = (Resource*) new ResourceTexture(deff); break;
 	case R_MESH: ret = (Resource*) new ResourceMesh(deff); break;     
 	case R_SCENE: ret = (Resource*) new ResourceScene(deff); break; 
+	case R_SCRIPT: ret = (Resource*) new ResourceScript(deff); break;
 	} 
 
 	if (ret)
@@ -269,12 +271,12 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		case R_SCENE:
 			App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
 			break;
+		case R_SCRIPT:
+			App->importer->ImportScript(full_asset_path.c_str(), uuid_str);
 	}
 	// Meta generated and file imported, create resource in code
-
 	deff.set(uuid_number, enum_type, binary_path, full_asset_path);
 
-	// Resource generated, MISSION ACOMPLISHED, return
 	return deff;
 }
 
@@ -454,15 +456,18 @@ const char * ModuleResourcesManager::assetExtension2type(const char * _extension
 	std::string extension = _extension;
 
 	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
-		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x") 
+		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
 		ret = "scene";
 	else if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
-		|| extension == ".raw" || extension == ".tga" || extension == ".tiff") 
+		|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
 		ret = "texture";
+	else if (extension == ".wren")
+		ret = "script";
 	else if (extension == ".json")
 		ret = "json";
 	else if (extension == ".meta")
 		ret = "meta";
+
 
 	return ret;
 }
@@ -475,6 +480,8 @@ ResourceType ModuleResourcesManager::type2enumType(const char * type) {
 		ret = R_SCENE;
 	if (str_type == "texture")
 		ret = R_TEXTURE;
+	if (str_type == "script")
+		ret = R_SCRIPT;
 
 	return ret;
 }
@@ -489,6 +496,7 @@ const char * ModuleResourcesManager::enumType2binaryExtension(ResourceType type)
 			ret = ".kr";
 			break;
 		case R_SCENE:
+		case R_SCRIPT:
 			ret = ".json";
 			break;
 	}
@@ -507,6 +515,9 @@ lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
 		break;
 	case R_SCENE:
 		ret = LIBRARY_PREFABS;
+		break;
+	case R_SCRIPT:
+		ret = LIBRARY_SCRIPTS;
 		break;
 	}
 	return ret;

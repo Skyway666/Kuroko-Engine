@@ -28,6 +28,7 @@ Application::Application()
 	CreateDirectory("Library\\Meshes", NULL);
 	CreateDirectory("Library\\Textures", NULL);
 	CreateDirectory("Library\\Prefabs", NULL);
+	CreateDirectory("Library\\Scripts", NULL);
 
 
 	CreateDirectory("Assets", NULL);

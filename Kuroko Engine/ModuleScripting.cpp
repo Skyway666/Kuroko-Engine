@@ -1,11 +1,16 @@
 #include "ModuleScripting.h"
 #include "Wren/wren.hpp"
 #include "Applog.h"
+#include "ModuleInput.h"
 
 // C++ functions to be called from wren
 void ConsoleLog(WrenVM* vm) {
 	const char* message = wrenGetSlotString(vm, 1);
+
+	static int call_times = 1;
+	app_log->AddLog("This is a C function called from wren, from a wren function called from C\nIt has been called %i times now\nIt contained this message:", call_times);
 	app_log->AddLog(message);
+	call_times++;
 }
 
 void write(WrenVM* vm, const char* text) {
@@ -77,24 +82,52 @@ bool ModuleScripting::Init(const JSON_Object* config) {
 
 	vm = wrenNewVM(&wconfig);
 	std::string wren_content = App->fs.GetFileString("Assets/Scripts/console_test.wren");
-	WrenInterpretResult result = wrenInterpret(vm, "console_test", wren_content.c_str());
+
+	CompileIntoVM("console_test", wren_content.c_str()); // Compile the code
+
+
+	update_signature = wrenMakeCallHandle(vm, "Update()"); // Create "Update()" signature handle to call it in every existing class
+
+
+	test_script_class = GetHandlerToClass("console_test", "TestScript");
 
 	return true;
 }
 
 update_status ModuleScripting::Update(float dt) {
 
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+		wrenSetSlotHandle(vm, 0, test_script_class);
+		wrenCall(vm, update_signature);
+	}
 	return UPDATE_CONTINUE;
 }
 
 bool ModuleScripting::CleanUp() {
 
+	wrenReleaseHandle(vm, update_signature);
+	wrenReleaseHandle(vm, test_script_class);
 	wrenFreeVM(vm);
 	return true;
 }
 
+bool ModuleScripting::CompileIntoVM(const char* module, const char* code) {
+	WrenInterpretResult result = wrenInterpret(vm, module, code);
 
+	bool ret = false;
 
+	if (result == WREN_RESULT_SUCCESS)
+		ret = true;
+
+	return ret;
+}
+
+WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* class_name) {
+	wrenEnsureSlots(vm, 1);
+	wrenGetVariable(vm, module, class_name, 0);
+
+	return wrenGetSlotHandle(vm, 0);
+}
 
 
 

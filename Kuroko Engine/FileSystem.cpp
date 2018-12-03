@@ -87,6 +87,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case LIBRARY_PREFABS:
 		path = PREFABS_FOLDER;
 		break;
+	case LIBRARY_SCRIPTS:
+		path = SCRIPTS_FOLDER;
+		break;
 	case SETTINGS:
 		path = SETTINGS_FOLDER;
 		break;
