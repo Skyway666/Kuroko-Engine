@@ -346,7 +346,26 @@ bool ModuleImporter::ImportTexture(const char * file_original_name, std::string 
 	return true;
 }
 
+bool ModuleImporter::ImportScript(const char* file_original_name, std::string file_binary_name) {
+	JSON_Value* script_json = json_value_init_object();
 
+	std::string file_content = App->fs.GetFileString(file_original_name);
+	std::string class_name = file_original_name;
+	App->fs.getFileNameFromPath(class_name);
+
+
+
+	json_object_set_string(json_object(script_json), "code", file_content.c_str());
+	json_object_set_string(json_object(script_json), "class_name", class_name.c_str());
+
+	std::string path;
+	App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_SCRIPTS, JSON_EXTENSION);
+
+	json_serialize_to_file(script_json, path.c_str());
+	json_value_free(script_json);
+
+	return true;
+}
 
 void ModuleImporter::ImportMeshToKR(const char * file, Mesh* mesh) {
 

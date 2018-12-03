@@ -456,9 +456,14 @@
     <ClInclude Include="Wren\wren_opt_random.h">
       <Filter>Sources\Wren</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleScripting.h" />
     <ClInclude Include="Wren\wren.hpp">
       <Filter>Sources\Wren</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleScripting.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceScript.h">
+      <Filter>Sources\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -720,7 +725,12 @@
     <ClCompile Include="Wren\wren_opt_random.c">
       <Filter>Sources\Wren</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleScripting.cpp" />
+    <ClCompile Include="ModuleScripting.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceScript.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Math\Matrix.inl">
