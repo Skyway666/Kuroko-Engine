@@ -140,6 +140,7 @@ public:
 		std::string mName;
 		Keywords mKeywords;
 		Identifiers mIdentifiers;
+		Identifiers mUserIdentifiers;
 		Identifiers mPreprocIdentifiers;
 		std::string mCommentStart, mCommentEnd;
 

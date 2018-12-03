@@ -2,6 +2,7 @@
 #include <chrono>
 #include <string>
 #include <regex>
+#include <cctype>
 
 #include "TextEditor.h"
 
@@ -604,7 +605,7 @@ void TextEditor::Render(const char* aTitle,ImFont* font, const ImVec2& aSize, bo
 
 			for (auto& glyph : line)
 			{
-				auto color = glyph.mMultiLineComment ? PaletteIndex::MultiLineComment : glyph.mColorIndex;
+				auto color = glyph.mMultiLineComment ? PaletteIndex::Comment : glyph.mColorIndex;
 
 				if (color != prevColor && !buffer.empty())
 				{
@@ -1382,8 +1383,28 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 						if (!preproc)
 						{
 							if (mLanguageDefinition.mKeywords.find(id) != mLanguageDefinition.mKeywords.end())
-								color = PaletteIndex::Keyword;
-							else if (mLanguageDefinition.mIdentifiers.find(id) != mLanguageDefinition.mIdentifiers.end())
+							{
+								color = PaletteIndex::Keyword;/*
+								if (id == "class")
+								{
+									if (results.suffix().length() > 1)
+									{
+										std::string class_name;
+										for (std::string::const_iterator it = (results.suffix().first + 1); it != results.suffix().second; it++)
+											class_name.push_back(*it);
+
+										if (!std::isalpha(*class_name.rbegin()))
+										{
+											class_name.erase(class_name.size() - 1);
+											Identifier new_id;
+											new_id.mDeclaration = std::string("class ") + class_name.c_str();
+											mLanguageDefinition.mUserIdentifiers.insert(std::make_pair(class_name, new_id));
+										}
+									}
+								}*/
+							}
+							else if (mLanguageDefinition.mIdentifiers.find(id) != mLanguageDefinition.mIdentifiers.end() 
+								|| mLanguageDefinition.mUserIdentifiers.find(id) != mLanguageDefinition.mUserIdentifiers.end())
 								color = PaletteIndex::KnownIdentifier;
 							else if (mLanguageDefinition.mPreprocIdentifiers.find(id) != mLanguageDefinition.mPreprocIdentifiers.end())
 								color = PaletteIndex::PreprocIdentifier;
@@ -1685,17 +1706,18 @@ TextEditor::LanguageDefinition TextEditor::LanguageDefinition::Wren()
 		}
 
 		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("//.*", PaletteIndex::Comment));
-		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("L?\\\"(\\\\.|[^\\\"])*\\\"", PaletteIndex::String));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("L?\\\"(\\\\.|[^\\\"])*\\\"", PaletteIndex::CharLiteral));
 		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("\\'\\\\?[^\\']\\'", PaletteIndex::CharLiteral));
 		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("0[xX][0-9a-fA-F]+[uU]?[lL]?[lL]?", PaletteIndex::Number));
-		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?([0-9]+([0-9]*)?|[0-9]+)([+-]?[0-9]+)?", PaletteIndex::Number));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?([0-9]+([.][^..][0-9]*)?|[0-9]+)([+-]?[0-9]+)?", PaletteIndex::Number));
 		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("0[0-7]+[Uu]?[lL]?[lL]?", PaletteIndex::Number));
 		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[+-]?[0-9]+[Uu]?[lL]?[lL]?", PaletteIndex::Number));
 		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[a-zA-Z_][a-zA-Z0-9_]*", PaletteIndex::Identifier));
-		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[\\[\\]\\{\\}\\!\\%\\^\\&\\*\\(\\)\\-\\+\\=\\~\\|\\<\\>\\?\\/\\;\\,\\.]", PaletteIndex::Punctuation));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[\\.]{2,3}", PaletteIndex::Identifier));
+		langDef.mTokenRegexStrings.push_back(std::make_pair<std::string, PaletteIndex>("[\\[\\]\\{\\}\\!\\%\\^\\&\\*\\(\\)\\-\\+\\=\\~\\|\\<\\>\\?\\/\\;\\,}]", PaletteIndex::Punctuation));
 
 		langDef.mCommentStart = "/*";
-		langDef.mCommentEnd = "*/";
+		langDef.mCommentEnd = "*/"; 
 
 		langDef.mCaseSensitive = true;
 
