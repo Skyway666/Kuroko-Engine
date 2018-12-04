@@ -7,7 +7,7 @@ class EngineComunicator{
 
 class TestScript{
 	static  Update(){
-		EngineComunicator.consoleOutput("Hello world from a wren function")
+		EngineComunicator.consoleOutput("Hello world from a wren function, hi Ric BTW")
 	}
 }
 
@@ -16,4 +16,4 @@ EngineComunicator.consoleOutput("Hello world from C (static)")
 var engine_comunicator_instance = EngineComunicator.new()
 engine_comunicator_instance.consoleOutput("Hello world from C (instance)")
 
-
+// File modification

@@ -39,6 +39,7 @@ public:
 	char* ImportFile(const char* file_name); // recieve buffer from a file
 
 	std::string GetFileString(const char* file_name);
+	void SetFileString(const char* file_name, const char* file_content);
 
 	void CreateEmptyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");
 	void DestroyFile(const char* file_name, lib_dir lib = NO_LIB, const char* extension = "");

@@ -393,11 +393,11 @@ void ModuleUI::InitializeScriptEditor()
 
 	
 	TextEditor::ErrorMarkers markers;
-	markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
+	markers.insert(std::make_pair<int, std::string>(20, "Example error here:\nInclude file not found: \"TextEditor.h\""));
 	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
 	script_editor.SetErrorMarkers(markers);
 
-	modified_script_path = "test.txt";
+	modified_script_path = "Assets/Scripts/console_test.wren";
 	//	static const char* fileToEdit = "test.cpp";
 
 	{
@@ -1537,7 +1537,7 @@ void ModuleUI::DrawScriptEditor()
 	disable_keyboard_control = true; // Will disable keybord control forever
 	ImGui::PushFont(ui_fonts[IMGUI_DEFAULT]);
 	auto cpos = script_editor.GetCursorPosition();
-	ImGui::Begin("Text Editor Demo", &open_tabs[SCRIPT_EDITOR], ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Script Editor", &open_tabs[SCRIPT_EDITOR], ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	ImGui::SetWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
 	if (ImGui::BeginMenuBar())
 	{
@@ -1546,7 +1546,7 @@ void ModuleUI::DrawScriptEditor()
 			if (ImGui::MenuItem("Save"))
 			{
 				auto textToSave = script_editor.GetText();
-				// Save text to script being modified
+				App->fs.SetFileString(modified_script_path, textToSave.c_str());
 			}
 			if (ImGui::MenuItem("Quit", "Alt-F4")) {
 				// Exit or something

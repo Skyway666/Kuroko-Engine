@@ -40,6 +40,8 @@ std::string  FileSystem::GetFileString(const char * file_name) {
 	std::string ret;
 
 	file.open(file_name);
+	if (!file.is_open())
+		return "";
 
 	while (std::getline(file, line)) {
 		ret += (line + '\n');
@@ -47,6 +49,18 @@ std::string  FileSystem::GetFileString(const char * file_name) {
 	file.close();
 
 	return ret;
+}
+
+void FileSystem::SetFileString(const char * file_path, const char * file_content)
+{
+	std::ofstream file(file_path);
+
+	if (!file.is_open())
+		return;
+
+	file << file_content;
+
+	file.close();
 }
 
 
