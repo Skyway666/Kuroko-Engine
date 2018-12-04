@@ -7,7 +7,7 @@ class EngineComunicator{
 
 class TestScript{
 	static  Update(){
-		EngineComunicator.consoleOutput("Hello world from a wren function, hi Ric BTW")
+		EngineComunicator.consoleOutput("Hello world from a wren function")
 	}
 }
 

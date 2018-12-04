@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __TEXTURE_RESOURCE
+#define __TEXTURE_RESOURCE
 #include "Resource.h"
 
 struct Texture;
@@ -10,7 +11,8 @@ public:
 	void LoadToMemory();
 	void UnloadFromMemory();
 public:
-	Texture* texture;
+	Texture* texture = nullptr;
 	bool drawn_in_UI = false;
 };
 
+#endif

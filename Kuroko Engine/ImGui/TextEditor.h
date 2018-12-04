@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __TEXT_EDITOR__
+#define __TEXT_EDITOR__
 
 #include <string>
 #include <vector>
@@ -313,3 +314,4 @@ private:
 	Coordinates mInteractiveStart, mInteractiveEnd;
 };
 
+#endif

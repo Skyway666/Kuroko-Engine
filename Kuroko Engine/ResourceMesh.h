@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __MESH_RESOURCE
+#define __MESH_RESOURCE
+
 #include "Resource.h"
 class Mesh;
 class ResourceMesh :
@@ -9,6 +11,7 @@ public:
 	void LoadToMemory();
 	void UnloadFromMemory();
 public:
-	Mesh* mesh;
+	Mesh* mesh = nullptr;
 };
 
+#endif

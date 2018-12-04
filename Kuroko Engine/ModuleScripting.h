@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MODULE_SCRIPTING__
+#define __MODULE_SCRIPTING__
 #include "Module.h"
 #include "Application.h"
 
@@ -17,11 +18,12 @@ public:
 
 	bool CompileIntoVM(const char* module, const char* code);
 	WrenHandle* GetHandlerToClass(const char* module, const char* class_name);
-	WrenVM* vm;
+	WrenVM* vm = nullptr;
 private:
 	// Just for testing
-	WrenHandle* update_signature;
-	WrenHandle* test_script_class;
+	WrenHandle* update_signature = nullptr;
+	WrenHandle* test_script_class = nullptr;
 
 };
 
+#endif

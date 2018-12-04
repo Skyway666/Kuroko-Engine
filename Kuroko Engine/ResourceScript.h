@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __SCRIPT_RESOURCE
+#define __SCRIPT_RESOURCE
 #include "Resource.h"
 
 struct WrenHandle;
@@ -9,6 +10,7 @@ public:
 	~ResourceScript();
 
 private: 
-	WrenHandle* classHandle; // Will be called by the scripting module update when game is playing 
+	WrenHandle* classHandle = nullptr; // Will be called by the scripting module update when game is playing 
 };
 
+#endif
