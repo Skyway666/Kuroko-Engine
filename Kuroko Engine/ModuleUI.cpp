@@ -10,6 +10,7 @@
 #include "ModuleAudio.h"
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
+#include "ModuleScripting.h"
 #include "Applog.h"
 
 #include "ImGui/imgui_impl_sdl.h"
@@ -101,6 +102,7 @@ bool ModuleUI::Start()
 	ui_textures[OBJECT_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/object_icon.png");
 	ui_textures[SCENE_ICON]			= (Texture*)App->importer->ImportTexturePointer("Editor textures/scene_icon.png");
 	ui_textures[RETURN_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/return_icon.png");
+	ui_textures[SCRIPT_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/script_icon.png");
 
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
@@ -391,23 +393,22 @@ void ModuleUI::InitializeScriptEditor()
 
 	script_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Wren());
 
-	
+
 	TextEditor::ErrorMarkers markers;
 	markers.insert(std::make_pair<int, std::string>(20, "Example error here:\nInclude file not found: \"TextEditor.h\""));
 	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
 	script_editor.SetErrorMarkers(markers);
 
-	modified_script_path = "Assets/Scripts/console_test.wren";
+	open_script_path = "Assets/Scripts/console_test.wren";
 	//	static const char* fileToEdit = "test.cpp";
 
+	std::ifstream t(open_script_path.c_str());
+	if (t.good())
 	{
-		std::ifstream t(modified_script_path);
-		if (t.good())
-		{
-			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-			script_editor.SetText(str);
-		}
+		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+		script_editor.SetText(str);
 	}
+
 }
 
 
@@ -1275,7 +1276,7 @@ void ModuleUI::DrawAssetsWindow()
 							selected_asset = it.path().generic_string();
 					}
 				}
-				if (type == "texture")
+				else if (type == "texture")
 				{
 					ResourceTexture* res_tex = (ResourceTexture*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
 					if(res_tex){
@@ -1288,16 +1289,42 @@ void ModuleUI::DrawAssetsWindow()
 
 
 				}
-				if (type == "json")
+				else if (type == "json")
 				{
 					if (ImGui::IsMouseDoubleClicked(0)) {
 						ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
-						if (ImGui::IsItemHovered()) {
+						if (ImGui::IsItemHovered()) 
 							App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
-						}
 					}
 					else {
 						if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+					}
+				}
+				else if (type == "script")
+				{
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[SCRIPT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered())
+						{
+							open_tabs[SCRIPT_EDITOR] = true;
+							open_script_path = it.path().generic_string();
+
+							if (App->scripting->open_scripts.find(open_script_path) != App->scripting->open_scripts.end())
+								script_editor.SetText(App->scripting->open_scripts.at(open_script_path));
+							else
+							{
+								std::ifstream t(open_script_path.c_str());
+								if (t.good())
+								{
+									std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+									script_editor.SetText(str);
+								}
+							}
+						}
+					}
+					else {
+						if (ImGui::ImageButton((void*)ui_textures[SCRIPT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 							selected_asset = it.path().generic_string();
 					}
 				}
@@ -1534,6 +1561,11 @@ void ModuleUI::DrawColorPickerWindow(const char* label, Color* color, bool* clos
 
 void ModuleUI::DrawScriptEditor()
 {
+	if (App->scripting->open_scripts.find(open_script_path) != App->scripting->open_scripts.end())
+		App->scripting->open_scripts.at(open_script_path) = script_editor.GetText();
+	else
+		App->scripting->open_scripts.insert(std::make_pair(open_script_path, script_editor.GetText()));
+	
 	disable_keyboard_control = true; // Will disable keybord control forever
 	ImGui::PushFont(ui_fonts[IMGUI_DEFAULT]);
 	auto cpos = script_editor.GetCursorPosition();
@@ -1546,7 +1578,7 @@ void ModuleUI::DrawScriptEditor()
 			if (ImGui::MenuItem("Save"))
 			{
 				auto textToSave = script_editor.GetText();
-				App->fs.SetFileString(modified_script_path, textToSave.c_str());
+				App->fs.SetFileString(open_script_path.c_str(), textToSave.c_str());
 			}
 			if (ImGui::MenuItem("Quit", "Alt-F4")) {
 				// Exit or something
@@ -1599,7 +1631,7 @@ void ModuleUI::DrawScriptEditor()
 	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, script_editor.GetTotalLines(),
 		script_editor.IsOverwrite() ? "Ovr" : "Ins",
 		script_editor.CanUndo() ? "*" : " ",
-		script_editor.GetLanguageDefinition().mName.c_str(), modified_script_path);
+		script_editor.GetLanguageDefinition().mName.c_str(), open_script_path.c_str());
 
 	script_editor.Render("TextEditor", ui_fonts[IMGUI_DEFAULT]);
 	ImGui::PopFont();

@@ -23,7 +23,7 @@ enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, C
 				// LAST is an utility value to store the max num of tabs.
 
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
-					GUIZMO_SELECT, FOLDER_ICON, OBJECT_ICON, SCENE_ICON, RETURN_ICON, LAST_UI_TEX};
+					GUIZMO_SELECT, FOLDER_ICON, OBJECT_ICON, SCENE_ICON, SCRIPT_ICON, RETURN_ICON, LAST_UI_TEX};
 
 enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, IMGUI_DEFAULT, LAST_UI_FONT};
 
@@ -86,7 +86,7 @@ private:
 	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
 
 	TextEditor script_editor;
-	char* modified_script_path;
+	std::string open_script_path;
 
 	bool open_tabs[LAST_UI_TAB];  // _serializable_var
 	std::array<Texture*, LAST_UI_TEX> ui_textures;

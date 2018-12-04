@@ -2,7 +2,7 @@
 #define __MODULE_SCRIPTING__
 #include "Module.h"
 #include "Application.h"
-
+#include <map>
 
 struct WrenVM;
 struct WrenHandle;
@@ -15,10 +15,13 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-
 	bool CompileIntoVM(const char* module, const char* code);
 	WrenHandle* GetHandlerToClass(const char* module, const char* class_name);
+
+public:
+
 	WrenVM* vm = nullptr;
+	std::map<std::string, std::string> open_scripts;
 private:
 	// Just for testing
 	WrenHandle* update_signature = nullptr;
