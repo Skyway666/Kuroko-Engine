@@ -4,6 +4,7 @@
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
+#include "ComponentScript.h"
 #include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
@@ -185,6 +186,9 @@ Component* GameObject::addComponent(Component_type type)
 			components.push_back(new_component);
 		}
 		break;
+	case SCRIPT:
+		new_component = new ComponentScript(this);
+		break;
 	default:
 		break;
 	}
@@ -196,6 +200,7 @@ void GameObject::addComponent(Component* component)
 {
 	if (!component)
 		return;
+
 	switch (component->getType())
 	{
 	case MESH:	
@@ -213,6 +218,9 @@ void GameObject::addComponent(Component* component)
 	case CAMERA:
 		if (!getComponent(CAMERA))
 			components.push_back(component);
+		break;
+	case SCRIPT:
+		components.push_back(component);
 		break;
 	default:
 		break;

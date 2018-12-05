@@ -9,6 +9,8 @@ public:
 	ResourceScript(resource_deff deff);
 	~ResourceScript();
 
+	WrenHandle* getHandle() { return classHandle; }
+
 private: 
 	WrenHandle* classHandle = nullptr; // Will be called by the scripting module update when game is playing 
 };
