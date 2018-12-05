@@ -20,7 +20,7 @@ void* ImportedVariable::GetValue()
 	return nullptr;
 }
 
-ComponentScript::ComponentScript(GameObject* g_obj, ResourceScript* script) : Component(g_obj, SCRIPT), res_script(script)
+ComponentScript::ComponentScript(GameObject* g_obj, uint script_resource_uuid) : Component(g_obj, SCRIPT), script_resource_uuid(script_resource_uuid)
 {
 
 }

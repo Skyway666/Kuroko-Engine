@@ -49,14 +49,14 @@ public:
 class ComponentScript : public Component 
 {
 public:
-	ComponentScript(GameObject* g_obj, ResourceScript* script = nullptr);
+	ComponentScript(GameObject* g_obj, uint script_resource_uuid = 0);
 	~ComponentScript();
 
 	bool Update(float dt);
 
 public:
 
-	ResourceScript* res_script = nullptr;
+	uint script_resource_uuid = 0;
 	std::vector<ImportedVariable> imported_vars;
 	std::vector<ImportedMethod*> imported_methods;
 };
