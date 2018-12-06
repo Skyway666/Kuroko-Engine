@@ -1926,11 +1926,11 @@ void ModuleUI::DrawTimeControlWindow()
 	if (ImGui::ImageButton((void*)ui_textures[ADVANCE]->getGLid(), ImVec2(w, h), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, 0.0f)))
 		App->time->Advance(advance_frames);
 
+	ImGui::Text("Advance frames:");
+	ImGui::InputInt("##Advance frames", &advance_frames, 1, 1000);
 
-	ImGui::SliderInt("##Advance frames", &advance_frames, 1, 1000, "Advance frames: %d");
-
-
-	if (ImGui::SliderFloat("##Time scale", &time_scale, 0, 100, "Time scale: %.2f"))
+	ImGui::Text("Time scale:");
+	if (ImGui::InputFloat("##Time scale", &time_scale, 0, 100))
 		App->time->setTimeScale(time_scale);
 
 
