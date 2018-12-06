@@ -96,10 +96,10 @@ bool ModuleScripting::Init(const JSON_Object* config) {
 
 update_status ModuleScripting::Update(float dt) {
 
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
-		wrenSetSlotHandle(vm, 0, test_script_class);
-		wrenCall(vm, update_signature);
-	}
+	//if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+	//	wrenSetSlotHandle(vm, 0, test_script_class);
+	//	wrenCall(vm, update_signature);
+	//}
 	return UPDATE_CONTINUE;
 }
 

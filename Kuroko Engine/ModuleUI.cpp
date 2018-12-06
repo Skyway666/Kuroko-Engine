@@ -1463,6 +1463,38 @@ void ModuleUI::DrawPrimitivesTab()
 		cylinder->addComponent(new ComponentMesh(cylinder, Primitive_Cylinder));
 	}
 
+	static bool name_script = false;
+	if (ImGui::Button("Add script")) {
+		name_script = true;
+	}
+
+
+	if (name_script) {
+		disable_keyboard_control = true;
+		ImGui::Begin("Script Name", &name_script);
+		ImGui::PushFont(ui_fonts[REGULAR]);
+
+		static char rename_buffer[64];
+		ImGui::InputText("Create as...", rename_buffer, 64);
+		ImGui::SameLine();
+		if (ImGui::Button("Create")) {
+			std::string script_name = rename_buffer;
+			std::string full_path = "Assets/" + script_name + ".wren";
+			App->fs.CreateEmptyFile(full_path.c_str());
+			open_script_path = full_path;
+			std::string file_initial_text;
+			file_initial_text = "\n\nclass " + script_name + "{\n\n}";
+			script_editor.SetText(file_initial_text);
+			App->fs.SetFileString(open_script_path.c_str(), file_initial_text.c_str());
+			open_tabs[SCRIPT_EDITOR] = true;
+			for (int i = 0; i < 64; i++)
+				rename_buffer[i] = '\0';
+			name_script = false;
+		}
+		ImGui::PopFont();
+		ImGui::End();
+	}
+
 	ImGui::PopFont();
 	ImGui::End();
 }
@@ -1927,10 +1959,10 @@ void ModuleUI::DrawTimeControlWindow()
 		App->time->Advance(advance_frames);
 
 	ImGui::Text("Advance frames:");
-	ImGui::InputInt("##Advance frames", &advance_frames, 1, 1000);
+	ImGui::InputInt("##Advance frames", &advance_frames);
 
 	ImGui::Text("Time scale:");
-	if (ImGui::InputFloat("##Time scale", &time_scale, 0, 100))
+	if (ImGui::InputFloat("##Time scale", &time_scale))
 		App->time->setTimeScale(time_scale);
 
 
