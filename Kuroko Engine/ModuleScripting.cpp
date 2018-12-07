@@ -138,19 +138,17 @@ std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle 
 		app_log->AddLog("Trying to get methods from a non class handler");
 		return std::vector<std::string>();
 	}
-
 	std::vector<std::string> ret;
 	ObjClass* cls = AS_CLASS(wrenClass->value);
 	app_log->AddLog("%.*s\n", cls->name->length, cls->name->value);
 	for (int i = 0; i < cls->methods.count; ++i) {
 		Method& method = cls->methods.data[i];
-		if (method.type != METHOD_PRIMITIVE && method.type != METHOD_NONE) {
+		if (method.type != METHOD_PRIMITIVE && method.type != METHOD_FOREIGN && method.type != METHOD_NONE ) {
 			ret.push_back(method.as.closure->fn->debug->name);
 		}
 	}
 
 	return ret;
-
 }
 
 
