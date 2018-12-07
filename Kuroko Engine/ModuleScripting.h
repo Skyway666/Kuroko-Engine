@@ -3,7 +3,7 @@
 #include "Module.h"
 #include "Application.h"
 #include <map>
-
+#include <vector>
 struct WrenVM;
 struct WrenHandle;
 class ModuleScripting : public Module {
@@ -17,6 +17,8 @@ public:
 
 	bool CompileIntoVM(const char* module, const char* code);
 	WrenHandle* GetHandlerToClass(const char* module, const char* class_name);
+
+	std::vector<std::string> GetMethodsFromClassHandler(WrenHandle* wrenClass);
 
 public:
 

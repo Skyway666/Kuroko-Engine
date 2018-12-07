@@ -91,15 +91,18 @@ bool ModuleScripting::Init(const JSON_Object* config) {
 
 	test_script_class = GetHandlerToClass("console_test", "TestScript");
 
+	GetMethodsFromClassHandler(test_script_class);
+
+
 	return true;
 }
 
 update_status ModuleScripting::Update(float dt) {
 
-	//if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
-	//	wrenSetSlotHandle(vm, 0, test_script_class);
-	//	wrenCall(vm, update_signature);
-	//}
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+		wrenSetSlotHandle(vm, 0, test_script_class);
+		wrenCall(vm, update_signature);
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -128,6 +131,28 @@ WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* c
 
 	return wrenGetSlotHandle(vm, 0);
 }
+
+std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle * wrenClass) {
+
+	if (!IS_CLASS(wrenClass->value)) {
+		app_log->AddLog("Trying to get methods from a non class handler");
+		return std::vector<std::string>();
+	}
+
+	std::vector<std::string> ret;
+	ObjClass* cls = AS_CLASS(wrenClass->value);
+	app_log->AddLog("%.*s\n", cls->name->length, cls->name->value);
+	for (int i = 0; i < cls->methods.count; ++i) {
+		Method& method = cls->methods.data[i];
+		if (method.type != METHOD_PRIMITIVE && method.type != METHOD_NONE) {
+			ret.push_back(method.as.closure->fn->debug->name);
+		}
+	}
+
+	return ret;
+
+}
+
 
 
 
