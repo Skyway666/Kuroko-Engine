@@ -1310,8 +1310,8 @@ void ModuleUI::DrawAssetsWindow()
 							open_tabs[SCRIPT_EDITOR] = true;
 							open_script_path = it.path().generic_string();
 
-							if (App->scripting->open_scripts.find(open_script_path) != App->scripting->open_scripts.end())
-								script_editor.SetText(App->scripting->open_scripts.at(open_script_path));
+							if (App->scripting->edited_scripts.find(open_script_path) != App->scripting->edited_scripts.end())
+								script_editor.SetText(App->scripting->edited_scripts.at(open_script_path));
 							else
 							{
 								std::ifstream t(open_script_path.c_str());
@@ -1593,10 +1593,10 @@ void ModuleUI::DrawColorPickerWindow(const char* label, Color* color, bool* clos
 
 void ModuleUI::DrawScriptEditor()
 {
-	if (App->scripting->open_scripts.find(open_script_path) != App->scripting->open_scripts.end())
-		App->scripting->open_scripts.at(open_script_path) = script_editor.GetText();
+	if (App->scripting->edited_scripts.find(open_script_path) != App->scripting->edited_scripts.end())
+		App->scripting->edited_scripts.at(open_script_path) = script_editor.GetText();
 	else
-		App->scripting->open_scripts.insert(std::make_pair(open_script_path, script_editor.GetText()));
+		App->scripting->edited_scripts.insert(std::make_pair(open_script_path, script_editor.GetText()));
 	
 	disable_keyboard_control = true; // Will disable keybord control forever
 	ImGui::PushFont(ui_fonts[IMGUI_DEFAULT]);
