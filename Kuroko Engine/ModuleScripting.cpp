@@ -37,7 +37,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 
 update_status ModuleScripting::Update(float dt) 
 {
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
 		for (int i = 0; i < loaded_scripts.size(); i++)
 		{

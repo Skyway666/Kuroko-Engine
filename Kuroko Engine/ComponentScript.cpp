@@ -60,7 +60,6 @@ void ComponentScript::assignEditorValues(ResourceScript* script_res) {
 		wrenSetSlotHandle(App->scripting->vm, 0, script_res->getData()->class_handle); // Set class
 		wrenSetSlotDouble(App->scripting->vm, 1, i/*editor_variables[i].GetValue()*/); // Set Value
 		wrenCall(App->scripting->vm, setter_handlers[i]); // Call the setter
-
 	}
 }
 
@@ -70,7 +69,7 @@ bool ComponentScript::Update(float dt)
 	ResourceScript* script_res = (ResourceScript*)App->resources->getResource(script_resource_uuid);
 
 
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) {
 			// Initialize variables
 			assignEditorValues(script_res);
 
