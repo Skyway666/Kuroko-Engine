@@ -25,6 +25,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		// Create base signature handles to call in every existing class
 		base_signatures.insert(std::make_pair(std::string("Start()"), wrenMakeCallHandle(vm, "Start()")));
 		base_signatures.insert(std::make_pair(std::string("Update()"), wrenMakeCallHandle(vm, "Update()")));
+		base_signatures.insert(std::make_pair(std::string("new()"), wrenMakeCallHandle(vm, "new()")));
 		// [...]
 
 		return true;
@@ -121,25 +122,35 @@ bool ModuleScripting::CompileIntoVM(const char* module, const char* code)
 
 WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* class_name) 
 {
+	// Get static class
 	wrenEnsureSlots(vm, 1);
 	wrenGetVariable(vm, module, class_name, 0);
+	WrenHandle* static_class = wrenGetSlotHandle(vm, 0);
 
-	return wrenGetSlotHandle(vm, 0);
+	// Call constructor to get instance
+	wrenEnsureSlots(vm, 1);
+	wrenSetSlotHandle(vm, 0, static_class);
+	wrenCall(vm, base_signatures.at("new()"));
+	// Get the prize
+	WrenHandle* ret = wrenGetSlotHandle(vm, 0);
+	// Release old handle
+	wrenReleaseHandle(vm, static_class);
+	return ret;
 }
 
 std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle * wrenClass) {
 
-	if (!IS_CLASS(wrenClass->value)) {
-		app_log->AddLog("Trying to get methods from a non class handler");
+	if (!IS_OBJ(wrenClass->value)) {
+		app_log->AddLog("Trying to get methods from a non object handler");
 		return std::vector<std::string>();
 	}
 
 	std::vector<std::string> ret;
-	ObjClass* cls = AS_CLASS(wrenClass->value);
+	Obj* cls = AS_OBJ(wrenClass->value);
 
-	for (int i = 0; i < cls->methods.count; ++i) 
+	for (int i = 0; i < cls->classObj->methods.count; ++i) 
 	{
-		Method& method = cls->methods.data[i];
+		Method& method = cls->classObj->methods.data[i];
 
 		if (method.type != METHOD_PRIMITIVE && method.type != METHOD_FOREIGN && method.type != METHOD_NONE ) 
 			ret.push_back(method.as.closure->fn->debug->name);
