@@ -21,6 +21,7 @@
 #include "GameObject.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ComponentScript.h"
 #include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
@@ -490,6 +491,7 @@ void ModuleUI::DrawObjectInspectorTab()
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	static bool show_rename = false;
+	static bool select_script = false;
 	GameObject* selected_obj = App->scene->selected_obj;
 
 	if (selected_obj)
@@ -514,8 +516,9 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
-			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); // MAKES SKYBOX DIE
+			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); 
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
+			if (ImGui::Button("Add Script")) select_script = true;
 		}
 
 		std::list<Component*> components;
@@ -531,9 +534,26 @@ void ModuleUI::DrawObjectInspectorTab()
 
 		for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
 			selected_obj->removeComponent(*it);
+
+		if (select_script) {
+			std::list<resource_deff> script_res;
+			App->resources->getScriptResourceList(script_res);
+
+			ImGui::Begin("Script selector", &select_script);
+			for (auto it = script_res.begin(); it != script_res.end(); it++) {
+				resource_deff script_deff = (*it);
+				if (ImGui::MenuItem(script_deff.asset.c_str())) {
+					ComponentScript* c_script =  (ComponentScript*)selected_obj->addComponent(SCRIPT);
+					c_script->assignScriptResource(script_deff.uuid);
+					select_script = false;
+					break;
+				}
+			}
+
+			ImGui::End();
+		}
 	}
-	else if (show_rename)
-		show_rename = false;
+
 
 	ImGui::PopFont();
 	ImGui::End();
@@ -560,11 +580,14 @@ void ModuleUI::DrawObjectInspectorTab()
 	}
 
 
+
+
 }
 
 bool ModuleUI::DrawComponent(Component& component, int id)
 {
 	ComponentCamera* camera = nullptr; // aux pointer
+
 	std::string tag;
 	switch (component.getType())
 	{
@@ -1005,6 +1028,17 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			if (ImGui::Button("Remove##Remove camera"))
 				return false;
 		}
+	case SCRIPT:
+	{
+		ComponentScript* c_script = (ComponentScript*)&component;
+		std::string component_title = c_script->script_name + "(Script)";
+		if (ImGui::CollapsingHeader(component_title.c_str())) {
+			// Iterate through variables in the component and set them
+
+		}
+	
+	}
+	break;
 	default:
 		break;
 	}

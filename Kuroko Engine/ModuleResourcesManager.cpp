@@ -444,6 +444,16 @@ void ModuleResourcesManager::getMeshResourceList(std::list<resource_deff>& meshe
 	}
 }
 
+void ModuleResourcesManager::getScriptResourceList(std::list<resource_deff>& scripts) {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_SCRIPT) {
+			Resource* curr = (*it).second;
+			resource_deff deff(curr->uuid, curr->type, curr->binary, curr->asset);
+			scripts.push_back(deff);
+		}
+	}
+}
+
 std::string ModuleResourcesManager::uuid2string(uint uuid) {
 	return std::to_string(uuid);
 }

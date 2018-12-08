@@ -41,6 +41,7 @@ update_status ModuleScripting::Update(float dt)
 	{
 		for (int i = 0; i < loaded_scripts.size(); i++)
 		{
+			wrenEnsureSlots(vm, 1);
 			wrenSetSlotHandle(vm, 0, loaded_scripts[i]->class_handle);
 			wrenCall(vm, base_signatures.at("Update()"));
 		}

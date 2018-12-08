@@ -20,9 +20,10 @@ public:
 	bool Update(float dt);
 
 	// The handler for the editor variable setter is in the same index in the setter_handlers array
+	std::string script_name;
 	std::vector<ImportedVariable> editor_variables;
 	std::vector<WrenHandle*> setter_handlers;
-public:
+private:
 
 	uint script_resource_uuid = 0;
 	void assignEditorValues(ResourceScript* script_res);

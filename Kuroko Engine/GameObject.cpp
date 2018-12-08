@@ -188,6 +188,7 @@ Component* GameObject::addComponent(Component_type type)
 		break;
 	case SCRIPT:
 		new_component = new ComponentScript(this);
+		components.push_back(new_component);
 		break;
 	default:
 		break;

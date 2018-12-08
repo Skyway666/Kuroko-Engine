@@ -17,6 +17,9 @@ ComponentScript::~ComponentScript()
 
 void ComponentScript::assignScriptResource(uint new_script_uuid) {
 
+	// Empty resource has been created
+	if (new_script_uuid == 0)
+		return;
 	// Clean previous handlers if any
 	CleanSetterHandlers();
 
@@ -24,7 +27,9 @@ void ComponentScript::assignScriptResource(uint new_script_uuid) {
 	script_resource_uuid = new_script_uuid;
 	App->resources->assignResource(script_resource_uuid);
 
-	// Copy script variables
+
+	// Set script name and copy vars
+	script_name = ((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData()->class_name;
 	editor_variables = ((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData()->vars;
 
 	// Generate handlers for the variable setters
@@ -40,10 +45,10 @@ void ComponentScript::CleanSetterHandlers() {
 
 void ComponentScript::GenerateSetterHandlers() {
 
-	for (int i = 0; i < setter_handlers.size(); i++) {
+	for (int i = 0; i < editor_variables.size(); i++) {
 		std::string setter_signature = editor_variables[i].getName();
 		setter_signature += "=(_)";
-		setter_handlers[i] = wrenMakeCallHandle(App->scripting->vm, setter_signature.c_str());
+		setter_handlers.push_back(wrenMakeCallHandle(App->scripting->vm, setter_signature.c_str()));
 	}
 }
 
@@ -51,6 +56,7 @@ void ComponentScript::assignEditorValues(ResourceScript* script_res) {
 
 	// Get all the variables that need to be set before update
 	for (int i = 0; i < editor_variables.size(); i++) {
+		wrenEnsureSlots(App->scripting->vm, 2);
 		wrenSetSlotHandle(App->scripting->vm, 0, script_res->getData()->class_handle); // Set class
 		wrenSetSlotDouble(App->scripting->vm, 1, i/*editor_variables[i].GetValue()*/); // Set Value
 		wrenCall(App->scripting->vm, setter_handlers[i]); // Call the setter
@@ -63,8 +69,13 @@ bool ComponentScript::Update(float dt)
 
 	ResourceScript* script_res = (ResourceScript*)App->resources->getResource(script_resource_uuid);
 
-	assignEditorValues(script_res);
+
 	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+			// Initialize variables
+			assignEditorValues(script_res);
+
+			// Call update
+			wrenEnsureSlots(App->scripting->vm, 1);
 			wrenSetSlotHandle(App->scripting->vm, 0, script_res->getData()->class_handle);
 			wrenCall(App->scripting->vm, App->scripting->base_signatures.at("Update()"));
 	}

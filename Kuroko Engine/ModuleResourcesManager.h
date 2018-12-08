@@ -71,6 +71,7 @@ public:
 	void setRefreshRatio(int refresh_ratio) { update_ratio = refresh_ratio; }
 	// Get
 	void getMeshResourceList(std::list<resource_deff>& meshes);
+	void getScriptResourceList(std::list<resource_deff>& scripts);
 	// get texture list
 	// get scene list
 	// To put in UI remember
