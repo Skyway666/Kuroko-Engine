@@ -58,7 +58,7 @@ void ComponentScript::assignEditorValues(ResourceScript* script_res) {
 	for (int i = 0; i < editor_variables.size(); i++) {
 		wrenEnsureSlots(App->scripting->vm, 2);
 		wrenSetSlotHandle(App->scripting->vm, 0, script_res->getData()->class_handle); // Set class
-		wrenSetSlotDouble(App->scripting->vm, 1, i/*editor_variables[i].GetValue()*/); // Set Value
+		wrenSetSlotDouble(App->scripting->vm, 1, 3/*editor_variables[i].GetValue()*/); // Set Value
 		wrenCall(App->scripting->vm, setter_handlers[i]); // Call the setter
 	}
 }

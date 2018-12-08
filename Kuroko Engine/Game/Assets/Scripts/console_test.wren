@@ -7,14 +7,18 @@ class EngineComunicator{
 }
 
 class console_test{
-	speed{ _speed }
-	speed=(v) {_speed = v }
-	static Update(){
-		EngineComunicator.consoleOutput("Hello world from a wren function")
-	}
+
+	static speed { __speed }
+	static speed=(v) { __speed = v }
+
+	speed { __speed }
+	speed=(v) { __speed = v }
 
 	addition(a, b){
 		return a + b
+	}
+	static Update(){
+		EngineComunicator.consoleOutput("My speed is %(speed)")
 	}
 }
 

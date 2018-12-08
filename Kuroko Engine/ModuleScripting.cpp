@@ -27,8 +27,6 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		base_signatures.insert(std::make_pair(std::string("Update()"), wrenMakeCallHandle(vm, "Update()")));
 		// [...]
 
-		//GenerateScript("Assets/Scripts/console_test.wren");
-
 		return true;
 	}
 	else
@@ -138,7 +136,6 @@ std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle 
 
 	std::vector<std::string> ret;
 	ObjClass* cls = AS_CLASS(wrenClass->value);
-	app_log->AddLog("%.*s\n", cls->name->length, cls->name->value);
 
 	for (int i = 0; i < cls->methods.count; ++i) 
 	{
