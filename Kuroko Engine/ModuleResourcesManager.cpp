@@ -36,7 +36,6 @@ bool ModuleResourcesManager::Start()
 {
 	GeneratePrimitiveResources();
 	GenerateLibraryAndMeta();
-	LoadFileToScene("Assets/Meshes/Street environment_V01.FBX");
 	update_timer.Start();
 	return true;
 }

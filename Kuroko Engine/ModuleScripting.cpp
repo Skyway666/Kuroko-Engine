@@ -27,7 +27,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		base_signatures.insert(std::make_pair(std::string("Update()"), wrenMakeCallHandle(vm, "Update()")));
 		// [...]
 
-		GenerateScript("Assets/Scripts/console_test.wren");
+		//GenerateScript("Assets/Scripts/console_test.wren");
 
 		return true;
 	}
@@ -41,7 +41,7 @@ update_status ModuleScripting::Update(float dt)
 	{
 		for (int i = 0; i < loaded_scripts.size(); i++)
 		{
-			wrenSetSlotHandle(vm, 0, loaded_scripts[i]->wren_handle);
+			wrenSetSlotHandle(vm, 0, loaded_scripts[i]->class_handle);
 			wrenCall(vm, base_signatures.at("Update()"));
 		}
 	}
@@ -62,20 +62,18 @@ bool ModuleScripting::CleanUp()
 }
 
 
-ScriptData* ModuleScripting::GenerateScript(const char* file_path)
+ScriptData* ModuleScripting::GenerateScript(const char* file_string_c, const char* file_name_c)
 {
-	std::string file_string = App->fs.GetFileString(file_path);
-	std::string file_name = file_path;
-	App->fs.getFileNameFromPath(file_name);
+	std::string file_string = file_string_c;
+	std::string file_name = file_name_c;
 
 	if (CompileIntoVM(file_name.c_str(), file_string.c_str())) 
 	{
 		ScriptData* script = new ScriptData();
-		script->full_path = file_path;
-		script->filename = file_name;
-		script->wren_handle = GetHandlerToClass(file_name.c_str(), file_name.c_str());
+		script->class_name = file_name;
+		script->class_handle = GetHandlerToClass(file_name.c_str(), file_name.c_str());
 		
-		std::vector<std::string> methods = GetMethodsFromClassHandler(script->wren_handle);
+		std::vector<std::string> methods = GetMethodsFromClassHandler(script->class_handle);
 		for (int i = 0; i < methods.size(); i++)
 		{
 			std::string method_name = methods[i];

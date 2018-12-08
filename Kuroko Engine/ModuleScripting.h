@@ -23,15 +23,16 @@ public:
 	WrenHandle* GetHandlerToClass(const char* module, const char* class_name);
 
 	std::vector<std::string> GetMethodsFromClassHandler(WrenHandle* wrenClass);
-	ScriptData* GenerateScript(const char* file_path);
+	ScriptData* GenerateScript(const char* file_string, const char* file_name);
 
 public:
 
 	WrenVM* vm							= nullptr;
 	std::map<std::string, std::string> edited_scripts;
+	std::map<std::string, WrenHandle*> base_signatures;
+
 private:
 
-	std::map<std::string, WrenHandle*> base_signatures;
 	std::vector<ScriptData*> loaded_scripts;
 
 };
@@ -83,10 +84,9 @@ public:
 
 struct ScriptData
 {
-	std::string full_path;
-	std::string filename;
+	std::string class_name;
 
-	WrenHandle* wren_handle = nullptr;
+	WrenHandle* class_handle = nullptr;
 
 	std::vector<ImportedVariable> vars;
 	std::vector<ImportedMethod>  methods;

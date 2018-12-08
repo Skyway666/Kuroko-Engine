@@ -1,6 +1,7 @@
 #ifndef __SCRIPT_RESOURCE
 #define __SCRIPT_RESOURCE
 #include "Resource.h"
+#include "ModuleScripting.h"
 
 struct WrenHandle;
 class ResourceScript :
@@ -8,11 +9,10 @@ class ResourceScript :
 public:
 	ResourceScript(resource_deff deff);
 	~ResourceScript();
-
-	WrenHandle* getHandle() { return classHandle; }
-
+	ScriptData* getData() { return data; }
 private: 
-	WrenHandle* classHandle = nullptr; // Will be called by the scripting module update when game is playing 
+
+	ScriptData* data = nullptr;
 };
 
 #endif
