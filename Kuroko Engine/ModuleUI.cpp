@@ -1034,6 +1034,31 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		std::string component_title = c_script->script_name + "(Script)";
 		if (ImGui::CollapsingHeader(component_title.c_str())) {
 			// Iterate through variables in the component and set them
+			for (auto it = c_script->editor_variables.begin(); it != c_script->editor_variables.end(); it++) {
+				ImportedVariable* curr = &(*it);
+				ImGui::Text(curr->getName().c_str());
+				ImGui::SameLine();
+
+				std::string unique_tag = "##" + curr->getName();
+
+				Var variable = curr->GetValue();
+				switch (curr->getType()) {
+				case ImportedVariable::WREN_NUMBER:
+					if(ImGui::InputFloat(unique_tag.c_str(), &variable.value_number))
+						curr->SetValue(variable);
+					break;
+				case ImportedVariable::WREN_STRING:
+					if(ImGui::InputText(unique_tag.c_str(), (char*)variable.value_string, 100)) // Will probably not work
+						curr->SetValue(variable);
+					break;
+				case ImportedVariable::WREN_BOOL:
+					if(ImGui::Checkbox(unique_tag.c_str(), &variable.value_bool))
+						curr->SetValue(variable);
+					break;
+				}
+
+				// TODO: User should be able to change the variable type
+			}
 
 		}
 	

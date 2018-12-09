@@ -230,7 +230,7 @@ void ConsoleLog(WrenVM* vm)
 
 // Helper class functions =================================================================
 
-ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* value)
+ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* _value)
 {
 	var_name = name;
 	data_type = type;
@@ -241,15 +241,15 @@ ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* va
 	switch (type)
 	{
 	case WREN_BOOL: 
-		var_bool = (bool*)value;
-		value_bool = *var_bool;
+		var_bool = (bool*)_value;
+		value.value_bool = *var_bool;
 		break;
 	case WREN_NUMBER:
-		var_float = (float*)value;
-		value_number = *var_float;
+		var_float = (float*)_value;
+		value.value_number = *var_float;
 		break;
 	case WREN_STRING:
-		value_string = (char*)value;
+		value.value_string = (char*)_value;
 		break;
 	}
 }
@@ -261,16 +261,6 @@ ImportedMethod::ImportedMethod(std::string name, ImportedVariable::WrenDataType 
 	arg_list = args;
 }
 
-void* ImportedVariable::GetValue()
-{
-	switch (data_type)
-	{
-	case WREN_BOOL:		return &value_bool; break;
-	case WREN_NUMBER:	return &value_number; break;
-	case WREN_STRING:	return &value_string; break;
-	}
-	return nullptr;
-}
 
 
 

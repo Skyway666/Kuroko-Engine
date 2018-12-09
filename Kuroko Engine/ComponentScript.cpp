@@ -31,6 +31,7 @@ void ComponentScript::assignScriptResource(uint new_script_uuid) {
 	// Set script name and copy vars
 	script_name = ((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData()->class_name;
 	editor_variables = ((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData()->vars;
+	
 
 	// Generate handlers for the variable setters
 	GenerateSetterHandlers();
@@ -58,7 +59,8 @@ void ComponentScript::assignEditorValues(ResourceScript* script_res) {
 	for (int i = 0; i < editor_variables.size(); i++) {
 		wrenEnsureSlots(App->scripting->vm, 2);
 		wrenSetSlotHandle(App->scripting->vm, 0, script_res->getData()->class_handle); // Set class
-		wrenSetSlotDouble(App->scripting->vm, 1, 3/*editor_variables[i].GetValue()*/); // Set Value
+		// TODO: Make a switch to read the value from the right type
+		wrenSetSlotDouble(App->scripting->vm, 1, editor_variables[i].GetValue().value_number); // Set Value
 		wrenCall(App->scripting->vm, setter_handlers[i]); // Call the setter
 	}
 }

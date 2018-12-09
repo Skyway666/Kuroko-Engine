@@ -40,6 +40,11 @@ private:
 
 
 
+union Var {
+	bool value_bool = false;
+	float value_number;
+	const char* value_string;
+};
 
 struct ImportedVariable
 {
@@ -47,19 +52,15 @@ struct ImportedVariable
 
 	ImportedVariable(const char* name, WrenDataType type, void* value);
 private:
-	union
-	{
-		bool value_bool = false;
-		float value_number;
-		const char* value_string;
-	};
-
+	Var value;
 	std::string var_name;
 	WrenDataType data_type = WREN_UNKNOWN;
 
 public:
-	void* GetValue();
+	Var GetValue() { return value; }
+	void SetValue(Var value) { this->value = value; }
 	WrenDataType getType() { return data_type; }
+	void setType(WrenDataType type) { this->data_type = data_type; }
 	std::string getName() { return var_name; };
 
 };
