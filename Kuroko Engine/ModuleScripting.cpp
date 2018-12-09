@@ -28,6 +28,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		base_signatures.insert(std::make_pair(std::string("new()"), wrenMakeCallHandle(vm, "new()")));
 		// [...]
 
+		
 		return true;
 	}
 	else

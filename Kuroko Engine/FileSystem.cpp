@@ -193,6 +193,9 @@ std::string FileSystem::getPathFromLibDir(lib_dir lib_dir) {
 	case LIBRARY_PREFABS:
 		ret = PREFABS_FOLDER;
 		break;
+	case LIBRARY_SCRIPTS:
+		ret = SCRIPTS_FOLDER;
+		break;
 	case SETTINGS:
 		ret = SETTINGS_FOLDER;
 		break;

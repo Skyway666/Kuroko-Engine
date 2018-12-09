@@ -7,9 +7,7 @@
 ResourceScript::ResourceScript(resource_deff deff): Resource(deff)  {
 
 	// Get the binary
-	std::string full_binary_path;
-	App->fs.FormFullPath(full_binary_path, deff.binary.c_str(), LIBRARY_SCRIPTS, "");
-	JSON_Value* script_binary = json_parse_file(full_binary_path.c_str());
+	JSON_Value* script_binary = json_parse_file(deff.binary.c_str());
 
 	// Read code and class name
 	std::string code = json_object_get_string(json_object(script_binary), "code");
