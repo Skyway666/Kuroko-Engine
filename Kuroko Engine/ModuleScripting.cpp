@@ -28,6 +28,29 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		base_signatures.insert(std::make_pair(std::string("new()"), wrenMakeCallHandle(vm, "new()")));
 		// [...]
 
+		// TEST STUFF
+		//std::string dummy_code = App->fs.GetFileString("Assets/dummy.wren");
+		//std::string console_test_code = App->fs.GetFileString("Assets/Scripts/console_test.wren");
+
+		//wrenInterpret(vm, "dummy", dummy_code.c_str());
+		//wrenInterpret(vm, "console_test", console_test_code.c_str());
+
+		//wrenEnsureSlots(vm, 1);
+		//wrenGetVariable(vm, "dummy", "dummy", 0);
+		//wrenCall(vm, base_signatures.at("new()"));
+		//wrenGetSlotHandle(vm, 0);
+
+
+
+		//wrenEnsureSlots(vm, 1);
+		//wrenGetVariable(vm, "console_test", "console_test", 0);
+		//wrenCall(vm, base_signatures.at("new()"));
+		//WrenHandle* handle = wrenGetSlotHandle(vm, 0);
+
+		//wrenEnsureSlots(vm, 1);
+		//wrenSetSlotHandle(vm, 0, handle);
+		//wrenCall(vm, base_signatures.at("Update()"));
+		// TEST STUFF
 		
 		return true;
 	}
@@ -132,7 +155,7 @@ WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* c
 	wrenCall(vm, base_signatures.at("new()")); // instance of the class is now at slot 0
 	
 	// Get the prize
-	return wrenGetSlotHandle(vm, 0);;
+	return wrenGetSlotHandle(vm, 0);
 }
 
 std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle * wrenClass) {
