@@ -400,8 +400,7 @@ void ModuleUI::InitializeScriptEditor()
 	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
 	script_editor.SetErrorMarkers(markers);
 
-	open_script_path = "Assets/Scripts/console_test.wren";
-	//	static const char* fileToEdit = "test.cpp";
+	open_script_path = "";
 
 	std::ifstream t(open_script_path.c_str());
 	if (t.good())
@@ -1542,7 +1541,7 @@ void ModuleUI::DrawPrimitivesTab()
 			App->fs.CreateEmptyFile(full_path.c_str());
 			open_script_path = full_path;
 			std::string file_initial_text;
-			file_initial_text = "\n\nclass " + script_name + "{\n\n}";
+			file_initial_text = "\n\nclass " + script_name + "{\nconstruct new(){}\n}";
 			script_editor.SetText(file_initial_text);
 			App->fs.SetFileString(open_script_path.c_str(), file_initial_text.c_str());
 			open_tabs[SCRIPT_EDITOR] = true;

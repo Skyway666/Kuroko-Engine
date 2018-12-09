@@ -124,18 +124,14 @@ WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* c
 {
 	// Get static class
 	wrenEnsureSlots(vm, 1);
-	wrenGetVariable(vm, module, class_name, 0);
-	WrenHandle* static_class = wrenGetSlotHandle(vm, 0);
+	wrenGetVariable(vm, module, class_name, 0); // Class is now on slot 0
+	
 
 	// Call constructor to get instance
-	wrenEnsureSlots(vm, 1);
-	wrenSetSlotHandle(vm, 0, static_class);
-	wrenCall(vm, base_signatures.at("new()"));
+	wrenCall(vm, base_signatures.at("new()")); // instance of the class is now at slot 0
+	
 	// Get the prize
-	WrenHandle* ret = wrenGetSlotHandle(vm, 0);
-	// Release old handle
-	wrenReleaseHandle(vm, static_class);
-	return ret;
+	return wrenGetSlotHandle(vm, 0);;
 }
 
 std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle * wrenClass) {
