@@ -36,6 +36,7 @@ bool ModuleResourcesManager::Start()
 {
 	GeneratePrimitiveResources();
 	GenerateLibraryAndMeta();
+	CompileAndGenerateScripts();
 	update_timer.Start();
 	return true;
 }
@@ -319,6 +320,25 @@ void ModuleResourcesManager::ManageAssetModification()
 				}
 			}
 		}
+	}
+
+}
+
+void ModuleResourcesManager::CompileAndGenerateScripts()
+{
+	std::vector<ResourceScript*> scripts;
+
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_SCRIPT) {
+			scripts.push_back((ResourceScript*)(*it).second);
+		}
+	}
+
+	for (auto it = scripts.begin(); it != scripts.end(); it++) {
+		(*it)->Compile();
+	}
+	for (auto it = scripts.begin(); it != scripts.end(); it++) {
+		(*it)->GenerateScript();
 	}
 
 }

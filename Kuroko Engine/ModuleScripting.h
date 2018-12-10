@@ -23,7 +23,7 @@ public:
 	WrenHandle* GetHandlerToClass(const char* module, const char* class_name);
 
 	std::vector<std::string> GetMethodsFromClassHandler(WrenHandle* wrenClass);
-	ScriptData* GenerateScript(const char* file_string, const char* file_name);
+	ScriptData* GenerateScript(const char* file_name);
 
 public:
 

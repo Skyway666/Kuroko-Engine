@@ -86,57 +86,51 @@ bool ModuleScripting::CleanUp()
 }
 
 
-ScriptData* ModuleScripting::GenerateScript(const char* file_string_c, const char* file_name_c)
+ScriptData* ModuleScripting::GenerateScript(const char* file_name_c)
 {
-	std::string file_string = file_string_c;
 	std::string file_name = file_name_c;
 
-	if (CompileIntoVM(file_name.c_str(), file_string.c_str())) 
-	{
-		ScriptData* script = new ScriptData();
-		script->class_name = file_name;
-		script->class_handle = GetHandlerToClass(file_name.c_str(), file_name.c_str());
+	ScriptData* script = new ScriptData();
+	script->class_name = file_name;
+	script->class_handle = GetHandlerToClass(file_name.c_str(), file_name.c_str());
 		
-		std::vector<std::string> methods = GetMethodsFromClassHandler(script->class_handle);
-		for (int i = 0; i < methods.size(); i++)
+	std::vector<std::string> methods = GetMethodsFromClassHandler(script->class_handle);
+	for (int i = 0; i < methods.size(); i++)
+	{
+		std::string method_name = methods[i];
+		if (method_name.find("(") != std::string::npos)			// setter or method
 		{
-			std::string method_name = methods[i];
-			if (method_name.find("(") != std::string::npos)			// setter or method
+			if (method_name.find("=") == std::string::npos)		// method
 			{
-				if (method_name.find("=") == std::string::npos)		// method
+				std::string name;
+				ImportedVariable::WrenDataType return_type_test = ImportedVariable::WrenDataType::WREN_NUMBER;
+				std::string var_name_test = "test";
+				std::vector<ImportedVariable> args;
+				float var_value_test = 0.0f;
+
+				size_t offset = method_name.find_first_of("(");
+				for (auto it = method_name.find_first_of("_", offset + 1); it != std::string::npos; it = method_name.find_first_of("_", offset + 1))
 				{
-					std::string name;
-					ImportedVariable::WrenDataType return_type_test = ImportedVariable::WrenDataType::WREN_NUMBER;
-					std::string var_name_test = "test";
-					std::vector<ImportedVariable> args;
-					float var_value_test = 0.0f;
+					offset = it;
+					args.push_back(ImportedVariable(var_name_test.c_str(), return_type_test, (void*)&var_value_test));
+				}
 
-					size_t offset = method_name.find_first_of("(");
-					for (auto it = method_name.find_first_of("_", offset + 1); it != std::string::npos; it = method_name.find_first_of("_", offset + 1))
-					{
-						offset = it;
-						args.push_back(ImportedVariable(var_name_test.c_str(), return_type_test, (void*)&var_value_test));
-					}
+				for (int i = 0; i < method_name.find_first_of("("); i++)
+					name.push_back(method_name.c_str()[i]);
 
-					for (int i = 0; i < method_name.find_first_of("("); i++)
-						name.push_back(method_name.c_str()[i]);
-
-					script->methods.push_back(ImportedMethod(name, return_type_test, args));
-				}													// setters are ignored
-			}						
-			else													// var
-			{
-				float value_test = 0.0f;
-				ImportedVariable var(method_name.c_str(), ImportedVariable::WrenDataType::WREN_NUMBER, &value_test);
-				script->vars.push_back(var);
-			}
+				script->methods.push_back(ImportedMethod(name, return_type_test, args));
+			}													// setters are ignored
+		}						
+		else													// var
+		{
+			float value_test = 0.0f;
+			ImportedVariable var(method_name.c_str(), ImportedVariable::WrenDataType::WREN_NUMBER, &value_test);
+			script->vars.push_back(var);
 		}
-
-		loaded_scripts.push_back(script);
-		return script;
 	}
-	else
-		return nullptr;
+
+	loaded_scripts.push_back(script);
+	return script;
 }
 
 bool ModuleScripting::CompileIntoVM(const char* module, const char* code) 

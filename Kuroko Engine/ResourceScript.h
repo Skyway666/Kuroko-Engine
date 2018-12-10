@@ -10,8 +10,12 @@ public:
 	ResourceScript(resource_deff deff);
 	~ResourceScript();
 	ScriptData* getData() { return data; }
-private: 
 
+	void Compile();
+	void GenerateScript();
+private: 
+	std::string code;
+	std::string class_name;
 	ScriptData* data = nullptr;
 };
 

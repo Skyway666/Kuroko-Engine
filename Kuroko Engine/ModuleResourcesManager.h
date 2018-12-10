@@ -46,6 +46,8 @@ public:
 	// Regenerate resources if the file is modified (for the moment)
 	void ManageAssetModification();
 
+	void CompileAndGenerateScripts();
+
 	Resource* getResource(uint uuid); // Returns the resource with the corresponding UUID, if not found returns nullptr
 	Resource* getPrimitiveMeshResource(PrimitiveTypes primitive);
 	int assignResource(uint uuid); // It adds 1 to the "components used by" of a certain resource

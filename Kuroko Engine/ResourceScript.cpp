@@ -10,14 +10,17 @@ ResourceScript::ResourceScript(resource_deff deff): Resource(deff)  {
 	JSON_Value* script_binary = json_parse_file(deff.binary.c_str());
 
 	// Read code and class name
-	std::string code = json_object_get_string(json_object(script_binary), "code");
-	std::string class_name = json_object_get_string(json_object(script_binary), "class_name");
-
-
-
-	// Compile it into VM and store everything needed
-	data = App->scripting->GenerateScript(code.c_str(), class_name.c_str());
+	code = json_object_get_string(json_object(script_binary), "code");
+	class_name = json_object_get_string(json_object(script_binary), "class_name");
 	json_value_free(script_binary);
+}
+
+void ResourceScript::Compile() {
+	App->scripting->CompileIntoVM(class_name.c_str(), code.c_str()); // If return false invalidate resource
+}
+
+void ResourceScript::GenerateScript() {
+	data = App->scripting->GenerateScript(class_name.c_str());
 }
 
 ResourceScript::~ResourceScript() {
