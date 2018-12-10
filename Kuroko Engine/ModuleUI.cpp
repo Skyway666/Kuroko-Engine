@@ -115,7 +115,7 @@ bool ModuleUI::Start()
 	//ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
 	
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	//io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 
