@@ -12,6 +12,7 @@
 #include "ModuleResourcesManager.h"
 #include "ModuleScripting.h"
 #include "Applog.h"
+#include "ScriptData.h"
 
 #include "ImGui/imgui_impl_sdl.h"
 #include "ImGui/imgui_impl_opengl2.h"
@@ -1027,28 +1028,38 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			if (ImGui::Button("Remove##Remove camera"))
 				return false;
 		}
+		break;
 	case SCRIPT:
 	{
 		ComponentScript* c_script = (ComponentScript*)&component;
-		std::string component_title = c_script->script_name + "(Script)";
+		std::string component_title = c_script->instance_data->class_name + "(Script)";
 		if (ImGui::CollapsingHeader(component_title.c_str())) {
-			// Iterate through variables in the component and set them
-			for (auto it = c_script->editor_variables.begin(); it != c_script->editor_variables.end(); it++) {
+
+			for (auto it = c_script->instance_data->vars.begin(); it != c_script->instance_data->vars.end(); it++) {
 				ImportedVariable* curr = &(*it);
+
+				static int type = curr->getType() - 1;
+				if (ImGui::Combo("data type", &type, "Bool\0String\0Numeral\0"))
+					curr->setType((ImportedVariable::WrenDataType)(type + 1));
+				
 				ImGui::Text(curr->getName().c_str());
 				ImGui::SameLine();
 
 				std::string unique_tag = "##" + curr->getName();
-
+				static char buf[200] = "";
 				Var variable = curr->GetValue();
+
 				switch (curr->getType()) {
 				case ImportedVariable::WREN_NUMBER:
 					if(ImGui::InputFloat(unique_tag.c_str(), &variable.value_number))
 						curr->SetValue(variable);
 					break;
 				case ImportedVariable::WREN_STRING:
-					if(ImGui::InputText(unique_tag.c_str(), (char*)variable.value_string, 100)) // Will probably not work
+					if (ImGui::InputText(unique_tag.c_str(), buf, sizeof(buf))) 
+					{
+						variable.value_string = buf;
 						curr->SetValue(variable);
+					}
 					break;
 				case ImportedVariable::WREN_BOOL:
 					if(ImGui::Checkbox(unique_tag.c_str(), &variable.value_bool))
@@ -1056,7 +1067,6 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 					break;
 				}
 
-				// TODO: User should be able to change the variable type
 			}
 
 		}

@@ -2,31 +2,22 @@
 #define _COMPONENT_SCRIPT
 #include "Component.h"
 #include "ResourceScript.h"
+#include "ScriptData.h"
 #include <vector>
-
 
 class ComponentScript : public Component 
 {
 public:
-	ComponentScript(GameObject* g_obj, uint script_resource_uuid = 0);
+	ComponentScript(GameObject* g_obj, uint resource_uuid = 0);
 	~ComponentScript();
 
-	// Assign resource and update editor variables
-	void assignScriptResource(uint new_script_uuid);
-	
-	void CleanSetterHandlers();
-	void GenerateSetterHandlers();
+	uint getResourceUUID() { return script_resource_uuid; }; 
+	void assignScriptResource(uint resource_uuid);
 
-	bool Update(float dt);
-
-	// The handler for the editor variable setter is in the same index in the setter_handlers array
-	std::string script_name;
-	std::vector<ImportedVariable> editor_variables;
-	std::vector<WrenHandle*> setter_handlers;
+	ScriptData* instance_data = nullptr;
 private:
 
 	uint script_resource_uuid = 0;
-	void assignEditorValues(ResourceScript* script_res);
 };
 
 

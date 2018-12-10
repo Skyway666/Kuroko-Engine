@@ -2,6 +2,7 @@
 #include "Wren/wren.hpp"
 #include "Application.h"
 #include "ModuleScripting.h"
+#include "ScriptData.h"
 
 
 ResourceScript::ResourceScript(resource_deff deff): Resource(deff)  {

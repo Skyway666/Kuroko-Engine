@@ -468,6 +468,9 @@
     <ClInclude Include="ComponentScript.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptData.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -736,6 +739,9 @@
     </ClCompile>
     <ClCompile Include="ComponentScript.cpp">
       <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptData.cpp">
+      <Filter>Sources\Containers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

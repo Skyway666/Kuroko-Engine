@@ -2,6 +2,7 @@
 #include "Wren/wren.hpp"
 #include "Applog.h"
 #include "ModuleInput.h"
+#include "ScriptData.h"
 
 void ConsoleLog(WrenVM* vm); 
 WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char* className, bool isStatic, const char* signature); // Wren foraign methods
@@ -62,11 +63,43 @@ update_status ModuleScripting::Update(float dt)
 {
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
-		for (int i = 0; i < loaded_scripts.size(); i++)
+		for (auto instance = loaded_instances.begin(); instance != loaded_instances.end(); instance++)
 		{
-			wrenEnsureSlots(vm, 1);
-			wrenSetSlotHandle(vm, 0, loaded_scripts[i]->class_handle);
-			wrenCall(vm, base_signatures.at("Update()"));
+			for (auto var = (*instance)->vars.begin(); var != (*instance)->vars.end(); var++)
+			{
+				wrenEnsureSlots(vm, 2);
+				wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
+
+				switch ((*var).getType())
+				{
+				case ImportedVariable::WREN_BOOL:
+					wrenSetSlotBool(vm, 1, (*var).GetValue().value_bool);
+					break;
+				case ImportedVariable::WREN_NUMBER:
+					wrenSetSlotDouble(vm, 1, (*var).GetValue().value_number);
+					break;
+				case ImportedVariable::WREN_STRING:
+					wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
+					break;
+				}
+
+				for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
+				{
+					if ((*setter).getName() == (*var).getName() + "=(_)")
+						wrenCall(vm, (*setter).getWrenHandle());
+				}
+			}
+
+			for (auto it = (*instance)->methods.begin(); it != (*instance)->methods.end(); it++)
+			{
+				if ((*it).getName() == "Update()")
+				{
+					wrenEnsureSlots(vm, 1);
+					wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
+					wrenCall(vm, (*it).getWrenHandle());
+					break;
+				}
+			}
 		}
 	}
 	return UPDATE_CONTINUE;
@@ -81,6 +114,8 @@ bool ModuleScripting::CleanUp()
 		delete loaded_scripts[i];
 
 	wrenFreeVM(vm);
+	loaded_scripts.clear();
+	loaded_instances.clear();
 
 	return true;
 }
@@ -98,12 +133,11 @@ ScriptData* ModuleScripting::GenerateScript(const char* file_name_c)
 	for (int i = 0; i < methods.size(); i++)
 	{
 		std::string method_name = methods[i];
-		if (method_name.find("(") != std::string::npos)			// setter or method
+		if (method_name.find("(") != std::string::npos)					
 		{
-			if (method_name.find("=") == std::string::npos)		// method
+			if (method_name.find("=") == std::string::npos)				// method
 			{
-				std::string name;
-				ImportedVariable::WrenDataType return_type_test = ImportedVariable::WrenDataType::WREN_NUMBER;
+				ImportedVariable::WrenDataType return_type_test = ImportedVariable::WREN_NUMBER;
 				std::string var_name_test = "test";
 				std::vector<ImportedVariable> args;
 				float var_value_test = 0.0f;
@@ -115,13 +149,12 @@ ScriptData* ModuleScripting::GenerateScript(const char* file_name_c)
 					args.push_back(ImportedVariable(var_name_test.c_str(), return_type_test, (void*)&var_value_test));
 				}
 
-				for (int i = 0; i < method_name.find_first_of("("); i++)
-					name.push_back(method_name.c_str()[i]);
-
-				script->methods.push_back(ImportedMethod(name, return_type_test, args));
-			}													// setters are ignored
+				script->methods.push_back(ImportedMethod(method_name, return_type_test, args, wrenMakeCallHandle(vm, method_name.c_str())));
+			}													 
+			else														// setter
+				script->methods.push_back(ImportedMethod(method_name, wrenMakeCallHandle(vm, method_name.c_str())));
 		}						
-		else													// var
+		else															// var
 		{
 			float value_test = 0.0f;
 			ImportedVariable var(method_name.c_str(), ImportedVariable::WrenDataType::WREN_NUMBER, &value_test);
@@ -150,6 +183,16 @@ WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* c
 	
 	// Get the prize
 	return wrenGetSlotHandle(vm, 0);
+}
+
+void ModuleScripting::ReleaseHandlerToClass(WrenHandle* handle)
+{
+	wrenReleaseHandle(vm, handle);
+}
+
+WrenHandle* ModuleScripting::getHandlerToMethod(const char* method_name)
+{
+	return wrenMakeCallHandle(vm, method_name);
 }
 
 std::vector<std::string> ModuleScripting::GetMethodsFromClassHandler(WrenHandle * wrenClass) {
@@ -240,41 +283,5 @@ void ConsoleLog(WrenVM* vm)
 	app_log->AddLog("This is a C function called from wren, from a wren function called from C\nIt has been called %i times now\nIt contained this message: %s", call_times, message);
 	call_times++;
 }
-
-
-// Helper class functions =================================================================
-
-ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* _value)
-{
-	var_name = name;
-	data_type = type;
-
-	bool* var_bool = nullptr;
-	float* var_float = nullptr;
-
-	switch (type)
-	{
-	case WREN_BOOL: 
-		var_bool = (bool*)_value;
-		value.value_bool = *var_bool;
-		break;
-	case WREN_NUMBER:
-		var_float = (float*)_value;
-		value.value_number = *var_float;
-		break;
-	case WREN_STRING:
-		value.value_string = (char*)_value;
-		break;
-	}
-}
-
-ImportedMethod::ImportedMethod(std::string name, ImportedVariable::WrenDataType ret_type, std::vector<ImportedVariable> args)
-{
-	method_name = name;
-	return_type = ret_type;
-	arg_list = args;
-}
-
-
 
 
