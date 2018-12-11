@@ -1,0 +1,5 @@
+
+
+class crqash{
+construct new(){}
+}

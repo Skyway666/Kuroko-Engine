@@ -24,9 +24,13 @@ void ResourceScript::GenerateScript() {
 	data = App->scripting->GenerateScript(class_name.c_str());
 }
 
-ResourceScript::~ResourceScript() {
-	wrenReleaseHandle(App->scripting->vm, data->class_handle);
+void ResourceScript::CleanUp()
+{
 	delete data;
+}
+
+ResourceScript::~ResourceScript() {
+	CleanUp();
 }
 
 

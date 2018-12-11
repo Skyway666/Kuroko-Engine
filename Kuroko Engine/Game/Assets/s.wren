@@ -1,0 +1,5 @@
+
+
+class s{
+construct new(){}
+}

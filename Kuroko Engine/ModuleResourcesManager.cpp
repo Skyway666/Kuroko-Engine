@@ -467,10 +467,25 @@ void ModuleResourcesManager::CleanLibrary()
 
 void ModuleResourcesManager::ReloadVM()
 {
+	ReleaseScriptHandles();
 	App->scripting->CleanUp();
 	App->scripting->Init(nullptr);
 	CompileAndGenerateScripts();
 	App->scene->reLoadScriptComponents();
+}
+
+void ModuleResourcesManager::ReleaseScriptHandles()
+{
+	std::vector<ResourceScript*> scripts;
+
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_SCRIPT) {
+			scripts.push_back((ResourceScript*)(*it).second);
+		}
+	}
+	for (auto it = scripts.begin(); it != scripts.end(); it++) {
+		(*it)->CleanUp();
+	}
 }
 
 void ModuleResourcesManager::getMeshResourceList(std::list<resource_deff>& meshes) {

@@ -96,6 +96,7 @@ private:
 	void CleanMeta();
 	void CleanLibrary();
 	void ReloadVM();
+	void ReleaseScriptHandles();
 	bool reloadResources = false;
 	bool cleanResources = false;
 	bool reloadVM = false;

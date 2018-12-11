@@ -13,6 +13,7 @@ public:
 
 	void Compile();
 	void GenerateScript();
+	void CleanUp();
 private: 
 	std::string code;
 	std::string class_name;
