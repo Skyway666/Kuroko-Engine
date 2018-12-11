@@ -13,6 +13,7 @@ public:
 
 	uint getResourceUUID() { return script_resource_uuid; }; 
 	void assignScriptResource(uint resource_uuid);
+	void reLoad();
 
 	ScriptData* instance_data = nullptr;
 private:

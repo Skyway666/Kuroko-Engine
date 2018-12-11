@@ -88,14 +88,17 @@ private:
 	std::map<uint, Resource*> resources;	
 	std::map<PrimitiveTypes, Resource*> primitive_resources;
 
+
+
 	int update_ratio; // Library will update every second, not every frame
 	Timer update_timer;
 
 	void CleanMeta();
 	void CleanLibrary();
+	void ReloadVM();
 	bool reloadResources = false;
 	bool cleanResources = false;
-
+	bool reloadVM = false;
 };
 
 #endif

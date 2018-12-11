@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Random.h"
 #include "ModuleImporter.h"
+#include "ModuleScene.h"
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
 #include "ResourceScene.h"
@@ -46,6 +47,10 @@ update_status ModuleResourcesManager::Update(float dt)
 	ManageUITextures();
 	if(update_timer.Read() > update_ratio){
 		ManageAssetModification();
+
+		if (reloadVM) {
+			//ReloadVM();
+		}
 		update_timer.Start();
 	}
 
@@ -308,6 +313,12 @@ void ModuleResourcesManager::ManageAssetModification()
 					resources[deff.uuid]->LoadToMemory();
 					break;
 			}
+			if (deff.requested_update == R_CREATE || deff.requested_update == R_UPDATE) {
+				if (deff.type == R_SCRIPT)
+					reloadVM = true;
+			}
+
+
 		}
 		else {
 			if(deff.requested_update == R_DELETE){
@@ -452,6 +463,14 @@ void ModuleResourcesManager::CleanLibrary()
 			continue;
 		App->fs.DestroyFile(it.path().generic_string().c_str());
 	}
+}
+
+void ModuleResourcesManager::ReloadVM()
+{
+	App->scripting->CleanUp();
+	App->scripting->Init(nullptr);
+	CompileAndGenerateScripts();
+	App->scene->reLoadScriptComponents();
 }
 
 void ModuleResourcesManager::getMeshResourceList(std::list<resource_deff>& meshes) {
