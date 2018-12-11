@@ -1037,32 +1037,32 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 
 			for (auto it = c_script->instance_data->vars.begin(); it != c_script->instance_data->vars.end(); it++) {
 				ImportedVariable* curr = &(*it);
+				std::string unique_tag = "##" + curr->getName();
 
 				static int type = curr->getType() - 1;
-				if (ImGui::Combo("data type", &type, "Bool\0String\0Numeral\0"))
+				if (ImGui::Combo(unique_tag.c_str(), &type, "Bool\0String\0Numeral\0"))
 					curr->setType((ImportedVariable::WrenDataType)(type + 1));
 				
 				ImGui::Text(curr->getName().c_str());
 				ImGui::SameLine();
 
-				std::string unique_tag = "##" + curr->getName();
 				static char buf[200] = "";
 				Var variable = curr->GetValue();
 
 				switch (curr->getType()) {
 				case ImportedVariable::WREN_NUMBER:
-					if(ImGui::InputFloat(unique_tag.c_str(), &variable.value_number))
+					if(ImGui::InputFloat((unique_tag + " float").c_str(), &variable.value_number))
 						curr->SetValue(variable);
 					break;
 				case ImportedVariable::WREN_STRING:
-					if (ImGui::InputText(unique_tag.c_str(), buf, sizeof(buf))) 
+					if (ImGui::InputText((unique_tag + " string").c_str(), buf, sizeof(buf)))
 					{
 						variable.value_string = buf;
 						curr->SetValue(variable);
 					}
 					break;
 				case ImportedVariable::WREN_BOOL:
-					if(ImGui::Checkbox(unique_tag.c_str(), &variable.value_bool))
+					if(ImGui::Checkbox((unique_tag + " bool").c_str(), &variable.value_bool))
 						curr->SetValue(variable);
 					break;
 				}
