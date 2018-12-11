@@ -87,6 +87,8 @@ bool ModuleScripting::CleanUp()
 	for(auto it = base_signatures.begin(); it != base_signatures.end(); it++)
 		wrenReleaseHandle(vm, (*it).second);
 
+	base_signatures.clear();
+
 	// Resources already hold pointers to the original handlers
 	//for (int i = 0; i < loaded_scripts.size(); i++)
 	//	delete loaded_scripts[i];

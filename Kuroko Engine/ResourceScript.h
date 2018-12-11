@@ -14,6 +14,8 @@ public:
 	void Compile();
 	void GenerateScript();
 	void CleanUp();
+
+	void UpdateCode(); 
 private: 
 	std::string code;
 	std::string class_name;

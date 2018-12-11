@@ -15,29 +15,17 @@ void ComponentScript::assignScriptResource(uint resource_uuid)
 {
 	if (instance_data)
 	{
-		App->scripting->loaded_instances.remove(instance_data);
-		delete instance_data;
+		CleanUp();
 	}
 
 	script_resource_uuid = resource_uuid;
 	App->resources->assignResource(script_resource_uuid);
 
-	ScriptData* base_script_data = (((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData());
-
-	instance_data = new ScriptData();
-
-	instance_data->class_name = base_script_data->class_name;
-	instance_data->vars = base_script_data->vars;
-	instance_data->methods = base_script_data->methods;
-	instance_data->class_handle = App->scripting->GetHandlerToClass(instance_data->class_name.c_str(), instance_data->class_name.c_str());
-
-
-	App->scripting->loaded_instances.push_back(instance_data);
+	LoadResource();
 }
 
-void ComponentScript::reLoad() {
+void ComponentScript::LoadResource() {
 
-	delete instance_data;
 	ScriptData* base_script_data = (((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData());
 
 	instance_data = new ScriptData();
@@ -47,14 +35,17 @@ void ComponentScript::reLoad() {
 	instance_data->methods = base_script_data->methods;
 	instance_data->class_handle = App->scripting->GetHandlerToClass(instance_data->class_name.c_str(), instance_data->class_name.c_str());
 
-
 	App->scripting->loaded_instances.push_back(instance_data);
 
+}
+
+void ComponentScript::CleanUp() {
+	App->scripting->loaded_instances.remove(instance_data);
+	delete instance_data;
 }
 
 ComponentScript::~ComponentScript()
 {
-	App->scripting->loaded_instances.remove(instance_data);
-	delete instance_data;
+	CleanUp();
 }
 

@@ -46,7 +46,10 @@ public:
 	void ClearScene();
 
 	void getRootObjs(std::list<GameObject*>& list_to_fill);
-	void reLoadScriptComponents();
+
+	// Script hot reloading
+	void CleanScriptComponents();
+	void LoadScriptComponents();
 
 
 	void AskPrefabLoadFile(const char* path);

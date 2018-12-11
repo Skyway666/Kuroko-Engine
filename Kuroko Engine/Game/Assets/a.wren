@@ -1,5 +1,0 @@
-
-
-class a{
-construct new(){}
-}

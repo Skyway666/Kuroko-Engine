@@ -7,8 +7,12 @@
 
 ResourceScript::ResourceScript(resource_deff deff): Resource(deff)  {
 
+	UpdateCode();
+}
+
+void ResourceScript::UpdateCode() {
 	// Get the binary
-	JSON_Value* script_binary = json_parse_file(deff.binary.c_str());
+	JSON_Value* script_binary = json_parse_file(binary.c_str());
 
 	// Read code and class name
 	code = json_object_get_string(json_object(script_binary), "code");
@@ -17,6 +21,7 @@ ResourceScript::ResourceScript(resource_deff deff): Resource(deff)  {
 }
 
 void ResourceScript::Compile() {
+	UpdateCode();
 	App->scripting->CompileIntoVM(class_name.c_str(), code.c_str()); // If return false invalidate resource
 }
 
@@ -28,6 +33,9 @@ void ResourceScript::CleanUp()
 {
 	delete data;
 }
+
+
+
 
 ResourceScript::~ResourceScript() {
 	CleanUp();

@@ -296,7 +296,7 @@ void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 				list_to_fill.remove(*it);
 }
 
-void ModuleScene::reLoadScriptComponents()
+void ModuleScene::CleanScriptComponents()
 {
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
 		std::list<Component*> components;
@@ -304,11 +304,26 @@ void ModuleScene::reLoadScriptComponents()
 
 		for (auto it = components.begin(); it != components.end(); it++) {
 			if ((*it)->getType() == SCRIPT) {
-				((ComponentScript*)(*it))->reLoad();
+				((ComponentScript*)(*it))->CleanUp();
 			}
 		}
 	}
 }
+
+void ModuleScene::LoadScriptComponents() {
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+		std::list<Component*> components;
+		(*it)->getComponents(components);
+
+		for (auto it = components.begin(); it != components.end(); it++) {
+			if ((*it)->getType() == SCRIPT) {
+				((ComponentScript*)(*it))->LoadResource();
+			}
+		}
+	}
+}
+
+
 
 void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
 {

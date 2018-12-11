@@ -49,7 +49,8 @@ update_status ModuleResourcesManager::Update(float dt)
 		ManageAssetModification();
 
 		if (reloadVM) {
-			//ReloadVM();
+			ReloadVM();
+			reloadVM = false;
 		}
 		update_timer.Start();
 	}
@@ -467,14 +468,15 @@ void ModuleResourcesManager::CleanLibrary()
 
 void ModuleResourcesManager::ReloadVM()
 {
-	ReleaseScriptHandles();
-	App->scripting->CleanUp();
-	App->scripting->Init(nullptr);
-	CompileAndGenerateScripts();
-	App->scene->reLoadScriptComponents();
+	ReleaseResourcesScriptHandles(); // Release handles and data from resources
+	App->scene->CleanScriptComponents(); // Release handle and data from components
+	App->scripting->CleanUp();			// Delete VM
+	App->scripting->Init(nullptr);		// Create new VM
+	CompileAndGenerateScripts();		// Create handles and data for resources
+	App->scene->LoadScriptComponents(); // Create handles and data for scripts
 }
 
-void ModuleResourcesManager::ReleaseScriptHandles()
+void ModuleResourcesManager::ReleaseResourcesScriptHandles()
 {
 	std::vector<ResourceScript*> scripts;
 
