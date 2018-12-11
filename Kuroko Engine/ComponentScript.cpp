@@ -35,6 +35,23 @@ void ComponentScript::assignScriptResource(uint resource_uuid)
 	App->scripting->loaded_instances.push_back(instance_data);
 }
 
+void ComponentScript::reLoad() {
+
+	delete instance_data;
+	ScriptData* base_script_data = (((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData());
+
+	instance_data = new ScriptData();
+
+	instance_data->class_name = base_script_data->class_name;
+	instance_data->vars = base_script_data->vars;
+	instance_data->methods = base_script_data->methods;
+	instance_data->class_handle = App->scripting->GetHandlerToClass(instance_data->class_name.c_str(), instance_data->class_name.c_str());
+
+
+	App->scripting->loaded_instances.push_back(instance_data);
+
+}
+
 ComponentScript::~ComponentScript()
 {
 	App->scripting->loaded_instances.remove(instance_data);

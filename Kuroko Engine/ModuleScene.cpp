@@ -18,6 +18,7 @@
 #include "ComponentTransform.h"
 #include "Transform.h"
 #include "ComponentMesh.h"
+#include "ComponentScript.h"
 #include "ModuleUI.h"
 #include "ModuleResourcesManager.h"
 
@@ -293,6 +294,20 @@ void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 		for (auto it2 = list_to_fill.begin(); it2 != list_to_fill.end(); it2++)
 			if (*it == *it2)
 				list_to_fill.remove(*it);
+}
+
+void ModuleScene::reLoadScriptComponents()
+{
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+		std::list<Component*> components;
+		(*it)->getComponents(components);
+
+		for (auto it = components.begin(); it != components.end(); it++) {
+			if ((*it)->getType() == SCRIPT) {
+				((ComponentScript*)(*it))->reLoad();
+			}
+		}
+	}
 }
 
 void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
