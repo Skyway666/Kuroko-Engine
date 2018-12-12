@@ -36,7 +36,7 @@ public:
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
 	GameObject* duplicateGameObject(GameObject* gobj);
 
-	GameObject* getGameObject(uint id) const;;
+	GameObject* getGameObject(uint uuid) const;;
 	Quadtree* getQuadtree() { return quadtree; }
 	bool existingScene() { return working_on_existing_scene;}
 	std::string getWorkigSceneName() { return current_working_scene; }

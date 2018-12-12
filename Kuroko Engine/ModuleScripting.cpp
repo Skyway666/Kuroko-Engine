@@ -3,23 +3,40 @@
 #include "Applog.h"
 #include "ModuleInput.h"
 #include "ScriptData.h"
+#include "ModuleScene.h"
+
+// May be better to manage in scene
+#include "GameObject.h"
+#include "ComponentTransform.h"
+#include "Transform.h"
 
 void ConsoleLog(WrenVM* vm); 
+void SetGameObjectTransform(WrenVM* vm);
 WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char* className, bool isStatic, const char* signature); // Wren foraign methods
 WrenForeignClassMethods bindForeignClass(WrenVM* vm, const char* module, const char* className);
 char* loadModule(WrenVM* vm, const char* name);
+void* reallocate(void* memory, size_t newSize);
 void error(WrenVM* vm, WrenErrorType type, const char* module, int line, const char* message);
 void write(WrenVM* vm, const char* text);
 
+ModuleScripting::ModuleScripting(Application* app, bool start_enabled) : Module(app, start_enabled) 
+{ 
+	name = "scripting";
+}
+
+
 bool ModuleScripting::Init(const JSON_Object* config) 
 {
+
 	WrenConfiguration wconfig;
 	wrenInitConfiguration(&wconfig);
 
 	wconfig.bindForeignClassFn = bindForeignClass;
 	wconfig.bindForeignMethodFn = bindForeignMethod;
+	wconfig.loadModuleFn = loadModule;
 	wconfig.writeFn = write;
 	wconfig.errorFn = error;
+	//wconfig.reallocateFn = reallocate;
 
 	if (vm = wrenNewVM(&wconfig))
 	{
@@ -27,9 +44,9 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		base_signatures.insert(std::make_pair(std::string("Start()"), wrenMakeCallHandle(vm, "Start()")));
 		base_signatures.insert(std::make_pair(std::string("Update()"), wrenMakeCallHandle(vm, "Update()")));
 		base_signatures.insert(std::make_pair(std::string("new()"), wrenMakeCallHandle(vm, "new()")));
-		// [...]
 
 		
+		object_linker_code = App->fs.GetFileString(OBJECT_LINKER);
 		return true;
 	}
 	else
@@ -214,7 +231,27 @@ void error(WrenVM* vm, WrenErrorType type, const char* module, int line, const c
 
 char* loadModule(WrenVM* vm, const char* name)
 {
-	return nullptr;	// #import in wren, not used for now...
+	char* ret = nullptr;
+	if (strcmp(name, "ObjectLinker") == 0) {
+		ret = (char*)App->scripting->object_linker_code.c_str(); // Should be passed properly
+	}
+	return ret;	// #import in wren, not used for now...
+}
+
+
+void* reallocate(void* memory, size_t newSize) {
+
+	if (!memory) {
+		return malloc(newSize);
+	}
+	else{
+		if (newSize != 0)
+			return realloc(memory, newSize);
+		else
+			free(memory);
+	}
+
+	return nullptr;
 }
 
 WrenForeignClassMethods bindForeignClass(WrenVM* vm, const char* module, const char* className)
@@ -242,15 +279,20 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 		{
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
-
-			if (!isStatic && strcmp(signature, "consoleOutput(_)") == 0)
-				return ConsoleLog;
-
 			// Other foreign methods on Math...
 		}
 		// Other classes in main...
 	}
 	// Other modules...
+
+
+
+	// OBJECT COMUNICATOR
+	if (strcmp(signature, "C_setTransform(_,_,_,_)") == 0) {
+		return SetGameObjectTransform; // C function for C_setTransform
+	}
+
+
 }
 
 // C++ functions to be called from wren  ==================================================
@@ -264,4 +306,15 @@ void ConsoleLog(WrenVM* vm)
 	call_times++;
 }
 
+void SetGameObjectTransform(WrenVM* vm) {
 
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+
+	float x = wrenGetSlotDouble(vm, 2);
+	float y = wrenGetSlotDouble(vm, 3);
+	float z = wrenGetSlotDouble(vm, 4);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
+	c_trans->global->setPosition(float3(x, y, z));
+}

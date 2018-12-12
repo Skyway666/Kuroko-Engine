@@ -260,14 +260,14 @@ GameObject* ModuleScene::duplicateGameObject(GameObject * gobj) {
 	return duplicated_go;
 }
 
-GameObject* ModuleScene::getGameObject(uint id) const
+GameObject* ModuleScene::getGameObject(uint uuid) const
 {
 	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
-		if (id == (*it)->getId())
+		if (uuid == (*it)->getUUID())
 			return *it;
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
-		if (id == (*it)->getId())
+		if (uuid == (*it)->getUUID())
 			return *it;
 
 	return nullptr;

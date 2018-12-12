@@ -4,15 +4,17 @@
 #include "Application.h"
 #include <map>
 #include <vector>
+#include <string>
 
 struct WrenVM;
 struct WrenHandle;
 struct ScriptData;
 
+#define OBJECT_LINKER "ScriptingAPI/ObjectLinker.wren"
 
 class ModuleScripting : public Module {
 public:
-	ModuleScripting(Application* app, bool start_enabled = true) : Module(app, start_enabled) { name = "scripting"; };
+	ModuleScripting(Application* app, bool start_enabled = true);
 	~ModuleScripting() {};
 
 	bool Init(const JSON_Object* config);
@@ -34,10 +36,11 @@ public:
 	std::map<std::string, WrenHandle*> base_signatures;
 	std::list<ScriptData*> loaded_instances;
 
+	std::string object_linker_code;
+
 private:
 
 	std::vector<ScriptData*> loaded_scripts;
-
 };
 
 #endif
