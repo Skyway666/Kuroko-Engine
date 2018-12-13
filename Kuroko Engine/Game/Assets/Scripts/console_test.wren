@@ -20,7 +20,8 @@ class console_test is ObjectLinker{
 	construct new(){}
 
 	Update(){
-		EngineComunicator.consoleOutput("My speed is %(speed)")
+		EngineComunicator.consoleOutput("My attached GO is %(gameObject)")
+		setTransform(3,0,1)
 	}
 }
 

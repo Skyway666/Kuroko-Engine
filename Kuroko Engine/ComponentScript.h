@@ -20,6 +20,7 @@ public:
 private:
 
 	uint script_resource_uuid = 0;
+	void LinkScriptToObject();
 };
 
 

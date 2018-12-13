@@ -44,6 +44,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		base_signatures.insert(std::make_pair(std::string("Start()"), wrenMakeCallHandle(vm, "Start()")));
 		base_signatures.insert(std::make_pair(std::string("Update()"), wrenMakeCallHandle(vm, "Update()")));
 		base_signatures.insert(std::make_pair(std::string("new()"), wrenMakeCallHandle(vm, "new()")));
+		base_signatures.insert(std::make_pair(std::string("gameObject=(_)"), wrenMakeCallHandle(vm, "gameObject=(_)")));
 
 		
 		object_linker_code = App->fs.GetFileString(OBJECT_LINKER);
@@ -319,6 +320,9 @@ void SetGameObjectTransform(WrenVM* vm) {
 	float z = wrenGetSlotDouble(vm, 4);
 
 	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+	if (!go)
+		return;
+
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 	c_trans->global->setPosition(float3(x, y, z));
 }
