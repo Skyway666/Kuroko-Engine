@@ -1,4 +1,3 @@
-import "ObjectLinker" for ObjectLinker
 
 
 class EngineComunicator{
@@ -6,7 +5,7 @@ class EngineComunicator{
 	foreign static consoleOutput(message)
 }
 
-class console_test is ObjectLinker{
+class console_test{
 
 	speed { __speed }
 	speed=(v) { __speed = v }

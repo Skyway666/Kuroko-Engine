@@ -233,9 +233,13 @@ char* loadModule(WrenVM* vm, const char* name)
 {
 	char* ret = nullptr;
 	if (strcmp(name, "ObjectLinker") == 0) {
-		ret = (char*)App->scripting->object_linker_code.c_str(); // Should be passed properly
+
+		int string_size = strlen(App->scripting->object_linker_code.c_str()) + 1; // 1 for the /0
+		ret = new char[string_size];
+		strcpy(ret, App->scripting->object_linker_code.c_str());
+		ret[string_size - 1] = '\0';
 	}
-	return ret;	// #import in wren, not used for now...
+	return ret;	
 }
 
 
