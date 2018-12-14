@@ -1051,19 +1051,26 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 
 				switch (curr->getType()) {
 				case ImportedVariable::WREN_NUMBER:
-					if(ImGui::InputFloat((unique_tag + " float").c_str(), &variable.value_number))
+					if (ImGui::InputFloat((unique_tag + " float").c_str(), &variable.value_number))
+					{
 						curr->SetValue(variable);
+						curr->setEdited(true);
+					}
 					break;
 				case ImportedVariable::WREN_STRING:
 					if (ImGui::InputText((unique_tag + " string").c_str(), buf, sizeof(buf)))
 					{
 						variable.value_string = buf;
 						curr->SetValue(variable);
+						curr->setEdited(true);
 					}
 					break;
 				case ImportedVariable::WREN_BOOL:
-					if(ImGui::Checkbox((unique_tag + " bool").c_str(), &variable.value_bool))
+					if (ImGui::Checkbox((unique_tag + " bool").c_str(), &variable.value_bool))
+					{
 						curr->SetValue(variable);
+						curr->setEdited(true);
+					}
 					break;
 				}
 

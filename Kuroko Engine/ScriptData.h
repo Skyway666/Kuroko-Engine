@@ -20,14 +20,17 @@ private:
 	std::string var_name;
 	WrenDataType data_type = WREN_UNKNOWN;
 	bool is_public = true;
+	bool edited = false;
 
 public:
 	Var GetValue() { return value; }
 	void SetValue(Var value) { this->value = value; }
 	WrenDataType getType() { return data_type; }
 	void setType(WrenDataType type) { data_type = type; }
-	std::string getName() { return var_name; };
-	bool isPublic() { return is_public; };
+	std::string getName() { return var_name; }
+	bool isPublic() { return is_public; }
+	void setEdited(bool value) { edited = value; }
+	bool isEdited() { return edited; }
 
 };
 

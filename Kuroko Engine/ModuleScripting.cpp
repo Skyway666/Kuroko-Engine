@@ -62,26 +62,29 @@ update_status ModuleScripting::Update(float dt)
 		{
 			for (auto var = (*instance)->vars.begin(); var != (*instance)->vars.end(); var++)
 			{
-				wrenEnsureSlots(vm, 2);
-				wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
-
-				switch ((*var).getType())
+				if (var->isEdited())
 				{
-				case ImportedVariable::WREN_BOOL:
-					wrenSetSlotBool(vm, 1, (*var).GetValue().value_bool);
-					break;
-				case ImportedVariable::WREN_NUMBER:
-					wrenSetSlotDouble(vm, 1, (*var).GetValue().value_number);
-					break;
-				case ImportedVariable::WREN_STRING:
-					wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
-					break;
-				}
+					wrenEnsureSlots(vm, 2);
+					wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
 
-				for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
-				{
-					if ((*setter).getName() == (*var).getName() + "=(_)")
-						wrenCall(vm, (*setter).getWrenHandle());
+					switch ((*var).getType())
+					{
+					case ImportedVariable::WREN_BOOL:
+						wrenSetSlotBool(vm, 1, (*var).GetValue().value_bool);
+						break;
+					case ImportedVariable::WREN_NUMBER:
+						wrenSetSlotDouble(vm, 1, (*var).GetValue().value_number);
+						break;
+					case ImportedVariable::WREN_STRING:
+						wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
+						break;
+					}
+
+					for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
+					{
+						if ((*setter).getName() == (*var).getName() + "=(_)")
+							wrenCall(vm, (*setter).getWrenHandle());
+					}
 				}
 			}
 
