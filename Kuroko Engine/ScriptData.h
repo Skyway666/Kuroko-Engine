@@ -21,6 +21,7 @@ private:
 	WrenDataType data_type = WREN_UNKNOWN;
 	bool is_public = true;
 	bool edited = false;
+	bool forced_type = false;
 
 public:
 	std::string getName()	{ return var_name; }
@@ -28,11 +29,14 @@ public:
 	WrenDataType getType()	{ return data_type; }
 	bool isPublic()			{ return is_public; }
 	bool isEdited()			{ return edited; }
+	bool isTypeForced()		{ return forced_type; }
 
-	void SetValue(Var value)		{ this->value = value; }
+	void SetValue(Var value, WrenDataType value_type = WREN_UNKNOWN);   // value type used to check value dataype when forced type is enabled.
+
 	void setType(WrenDataType type) { data_type = type; }
 	void setPublic(bool value)		{ is_public = value; }
 	void setEdited(bool value)		{ edited = value; }
+	void setForcedType(bool value)	{ forced_type = value; }
 
 };
 

@@ -26,6 +26,12 @@ ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* _v
 	}
 }
 
+void ImportedVariable::SetValue(Var value, WrenDataType value_type)
+{
+	if (!isTypeForced() || value_type == getType())
+		this->value = value;
+}
+
 ImportedMethod::ImportedMethod(std::string name, ImportedVariable::WrenDataType ret_type, std::vector<ImportedVariable> args, WrenHandle* handle)
 {
 	method_name = name;
