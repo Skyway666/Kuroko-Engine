@@ -1036,6 +1036,10 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		if (ImGui::CollapsingHeader(component_title.c_str())) {
 
 			for (auto it = c_script->instance_data->vars.begin(); it != c_script->instance_data->vars.end(); it++) {
+				
+				if (!(*it).isPublic())
+					continue;
+
 				ImportedVariable* curr = &(*it);
 				std::string unique_tag = "##" + curr->getName();
 

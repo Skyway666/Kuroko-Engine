@@ -152,13 +152,19 @@ ScriptData* ModuleScripting::GenerateScript(const char* file_name_c)
 
 				script->methods.push_back(ImportedMethod(method_name, return_type_test, args, wrenMakeCallHandle(vm, method_name.c_str())));
 			}													 
-			else														// setter
+			else	
+				// setter
 				script->methods.push_back(ImportedMethod(method_name, wrenMakeCallHandle(vm, method_name.c_str())));
 		}						
 		else															// var
 		{
+
 			float value_test = 0.0f;
 			ImportedVariable var(method_name.c_str(), ImportedVariable::WrenDataType::WREN_NUMBER, &value_test);
+
+			if (method_name == "gameObject")
+				var.setPublic(false);
+
 			script->vars.push_back(var);
 		}
 	}

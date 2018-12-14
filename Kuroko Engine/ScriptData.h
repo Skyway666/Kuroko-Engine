@@ -23,14 +23,16 @@ private:
 	bool edited = false;
 
 public:
-	Var GetValue() { return value; }
-	void SetValue(Var value) { this->value = value; }
-	WrenDataType getType() { return data_type; }
+	std::string getName()	{ return var_name; }
+	Var GetValue()			{ return value; }
+	WrenDataType getType()	{ return data_type; }
+	bool isPublic()			{ return is_public; }
+	bool isEdited()			{ return edited; }
+
+	void SetValue(Var value)		{ this->value = value; }
 	void setType(WrenDataType type) { data_type = type; }
-	std::string getName() { return var_name; }
-	bool isPublic() { return is_public; }
-	void setEdited(bool value) { edited = value; }
-	bool isEdited() { return edited; }
+	void setPublic(bool value)		{ is_public = value; }
+	void setEdited(bool value)		{ edited = value; }
 
 };
 
