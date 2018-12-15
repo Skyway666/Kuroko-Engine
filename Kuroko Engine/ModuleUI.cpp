@@ -1489,61 +1489,65 @@ void ModuleUI::DrawAssetInspector()
 
 			bool updated = false;
 
-			for (auto it = script_data->vars.begin(); it != script_data->vars.end(); it++) {
+			if (!script_data) {
+				ImGui::Text("Script can't be compiled!");
+			}
+			else {
+				for (auto it = script_data->vars.begin(); it != script_data->vars.end(); it++) {
 
-				ImportedVariable* curr = &(*it);
-				std::string unique_tag = "##" + curr->getName();
+					ImportedVariable* curr = &(*it);
+					std::string unique_tag = "##" + curr->getName();
 
-				ImGui::Text(curr->getName().c_str());
-				static int type = 0;
-				type = curr->getType();
-				if (ImGui::Combo((unique_tag + "type").c_str(), &type, "None\0Bool\0String\0Numeral\0"))
-				{
-					if(type != 0)
-						curr->setType((ImportedVariable::WrenDataType)(type));
-
-					updated = true;
-				}
-
-				ImGui::SameLine();
-
-				static bool forced_type = false;
-				forced_type = curr->isTypeForced();
-				if (ImGui::Checkbox(("Forced" + unique_tag + "forced").c_str(), &forced_type))
-				{
-					if (type != 0)
+					ImGui::Text(curr->getName().c_str());
+					static int type = 0;
+					type = curr->getType();
+					if (ImGui::Combo((unique_tag + "type").c_str(), &type, "None\0Bool\0String\0Numeral\0"))
 					{
-						curr->setForcedType(forced_type);
+						if(type != 0)
+							curr->setType((ImportedVariable::WrenDataType)(type));
+
+						updated = true;
+					}
+
+					ImGui::SameLine();
+
+					static bool forced_type = false;
+					forced_type = curr->isTypeForced();
+					if (ImGui::Checkbox(("Forced" + unique_tag + "forced").c_str(), &forced_type))
+					{
+						if (type != 0)
+						{
+							curr->setForcedType(forced_type);
+							updated = true;
+						}
+					}
+
+					static bool _public = true;
+					_public = curr->isPublic();
+					if (ImGui::Checkbox(("Public" + unique_tag + "public").c_str(), &_public))
+					{
+						curr->setPublic(_public);
 						updated = true;
 					}
 				}
 
-				static bool _public = true;
-				_public = curr->isPublic();
-				if (ImGui::Checkbox(("Public" + unique_tag + "public").c_str(), &_public))
+				if (updated)
 				{
-					curr->setPublic(_public);
-					updated = true;
-				}
-			}
-
-			if (updated)
-			{
-				for (auto instance = App->scripting->loaded_instances.begin(); instance != App->scripting->loaded_instances.end(); instance++)
-				{
-					if ((*instance)->class_name == script_data->class_name)
+					for (auto instance = App->scripting->loaded_instances.begin(); instance != App->scripting->loaded_instances.end(); instance++)
 					{
-						if ((*instance)->vars.size() == script_data->vars.size());   // should always be true, but to be safe
-						for (int i = 0; i < (*instance)->vars.size(); i++)
+						if ((*instance)->class_name == script_data->class_name)
 						{
-							(*instance)->vars[i].setType(script_data->vars[i].getType());
-							(*instance)->vars[i].setPublic(script_data->vars[i].isPublic());
-							(*instance)->vars[i].setForcedType(script_data->vars[i].isTypeForced());
+							if ((*instance)->vars.size() == script_data->vars.size());   // should always be true, but to be safe
+							for (int i = 0; i < (*instance)->vars.size(); i++)
+							{
+								(*instance)->vars[i].setType(script_data->vars[i].getType());
+								(*instance)->vars[i].setPublic(script_data->vars[i].isPublic());
+								(*instance)->vars[i].setForcedType(script_data->vars[i].isTypeForced());
+							}
 						}
 					}
 				}
 			}
-
 		}
 	}
 

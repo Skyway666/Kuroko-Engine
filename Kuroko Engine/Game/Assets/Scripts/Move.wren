@@ -8,7 +8,7 @@ class Move is ObjectLinker{
 
 	Update(){
 		if(InputComunicator.getKey(InputComunicator.UP)){
-			modPos(0,0,-speed)dd
+			modPos(0,0,-speed)
 		}
 		
 		if(InputComunicator.getKey(InputComunicator.DOWN)){
