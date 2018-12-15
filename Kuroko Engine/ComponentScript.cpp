@@ -37,10 +37,10 @@ void ComponentScript::LoadResource() {
 		return;
 	}
 	ScriptData* base_script_data = script_r->getData();
+	script_name = script_r->class_name.c_str();
 
 	if (!base_script_data) {
 		app_log->AddLog("Couldn't load script, resource is invalid");
-		script_name = script_r->class_name.c_str();
 		instance_data = nullptr;
 		return;
 	}
