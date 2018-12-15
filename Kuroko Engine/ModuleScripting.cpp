@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "ScriptData.h"
 #include "ModuleScene.h"
+#include "ModuleInput.h"
 
 // May be better to manage in scene
 #include "GameObject.h"
@@ -11,7 +12,10 @@
 #include "Transform.h"
 
 void ConsoleLog(WrenVM* vm); 
-void SetGameObjectTransform(WrenVM* vm);
+void SetGameObjectPos(WrenVM* vm);
+void ModGameObjectPos(WrenVM* vm);
+void GetKey(WrenVM* vm);
+
 WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char* className, bool isStatic, const char* signature); // Wren foraign methods
 WrenForeignClassMethods bindForeignClass(WrenVM* vm, const char* module, const char* className);
 char* loadModule(WrenVM* vm, const char* name);
@@ -56,8 +60,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 
 update_status ModuleScripting::Update(float dt) 
 {
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
-	{
+
 		for (auto instance = loaded_instances.begin(); instance != loaded_instances.end(); instance++)
 		{
 			for (auto var = (*instance)->vars.begin(); var != (*instance)->vars.end(); var++)
@@ -99,7 +102,6 @@ update_status ModuleScripting::Update(float dt)
 				}
 			}
 		}
-	}
 	return UPDATE_CONTINUE;
 }
 
@@ -287,23 +289,25 @@ WrenForeignClassMethods bindForeignClass(WrenVM* vm, const char* module, const c
 
 WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char* className, bool isStatic, const char* signature) // Wren foraign methods
 {
-	if (strcmp(module, "console_test") == 0)
-	{
-		if (strcmp(className, "EngineComunicator") == 0)
-		{
-			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
-				return ConsoleLog; // C function for EngineComunicator.consoleOutput
-			// Other foreign methods on Math...
-		}
-		// Other classes in main...
-	}
-	// Other modules...
-
-
 
 	// OBJECT COMUNICATOR
-	if (strcmp(signature, "C_setTransform(_,_,_,_)") == 0) {
-		return SetGameObjectTransform; // C function for C_setTransform
+	if(strcmp(module, "ObjectLinker") == 0){
+		if(strcmp(className, "ObjectComunicator") == 0){
+			if (strcmp(signature, "C_setPos(_,_,_,_)") == 0) {
+				return SetGameObjectPos; //  C function for ObjectComunicator.C_setPos
+			}
+			if (strcmp(signature, "C_modPos(_,_,_,_)") == 0) {
+				return ModGameObjectPos; // C function for ObjectComunicator.C_modPos
+			}
+		}
+		if (strcmp(className, "EngineComunicator") == 0) {
+			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
+				return ConsoleLog; // C function for EngineComunicator.consoleOutput
+		}
+		if (strcmp(className, "InputComunicator") == 0) {
+			if (isStatic && strcmp(signature, "getKey(_)") == 0)
+				return GetKey; // C function for InputComunicator.getKey
+		}
 	}
 
 
@@ -320,7 +324,7 @@ void ConsoleLog(WrenVM* vm)
 	call_times++;
 }
 
-void SetGameObjectTransform(WrenVM* vm) {
+void SetGameObjectPos(WrenVM* vm) {
 
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
 
@@ -329,9 +333,39 @@ void SetGameObjectTransform(WrenVM* vm) {
 	float z = wrenGetSlotDouble(vm, 4);
 
 	GameObject* go = App->scene->getGameObject(gameObjectUUID);
-	if (!go)
+	if (!go) {
+		app_log->AddLog("Script asking for none existing resource");
 		return;
+	}
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
-	c_trans->global->setPosition(float3(x, y, z));
+	c_trans->local->setPosition(float3(x, y, z));
+}
+
+void ModGameObjectPos(WrenVM* vm) {
+
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+
+	float x = wrenGetSlotDouble(vm, 2);
+	float y = wrenGetSlotDouble(vm, 3);
+	float z = wrenGetSlotDouble(vm, 4);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+	if (!go){
+		app_log->AddLog("Script asking for none existing resource");
+		return;
+	}
+
+	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
+
+	float3 mod_trans_pos = c_trans->local->getPosition() + float3(x,y,z);
+	c_trans->local->setPosition(mod_trans_pos);
+}
+
+void GetKey(WrenVM* vm) {
+	int pressed_key = wrenGetSlotDouble(vm, 1);
+
+	bool key_pressed = App->input->GetKey(pressed_key) == KEY_REPEAT; // TODO: Function should support keyrelease and whatever...
+
+	wrenSetSlotBool(vm, 0,  key_pressed);
 }

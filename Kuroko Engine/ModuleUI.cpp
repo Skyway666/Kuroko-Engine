@@ -396,10 +396,10 @@ void ModuleUI::InitializeScriptEditor()
 	script_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Wren());
 
 
-	TextEditor::ErrorMarkers markers;
-	markers.insert(std::make_pair<int, std::string>(20, "Example error here:\nInclude file not found: \"TextEditor.h\""));
-	markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
-	script_editor.SetErrorMarkers(markers);
+	//TextEditor::ErrorMarkers markers;
+	//markers.insert(std::make_pair<int, std::string>(20, "Example error here:\nInclude file not found: \"TextEditor.h\""));
+	//markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
+	//script_editor.SetErrorMarkers(markers);
 
 	open_script_path = "";
 
