@@ -14,15 +14,53 @@ ComponentScript::ComponentScript(GameObject* g_obj, uint resource_uuid) : Compon
 }
 
 ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Component(parent, SCRIPT) {
+	script_resource_uuid = json_object_get_number(deff, "script_resource_uuid");
 
+	assignScriptResource(script_resource_uuid);
+	
+	JSON_Array* variables = json_object_get_array(deff, "variables");
+
+	if (!instance_data)
+		return;
+
+	for (int i = 0; i < json_array_get_count(variables); i++) {
+		JSON_Object* variable = json_array_get_object(variables, i);
+
+		std::string variable_name = json_object_get_string(variable, "name");
+		
+		// Look for the variable in the instance data
+		for (auto it = instance_data->vars.begin(); it != instance_data->vars.end(); it++) {
+			if ((*it).getName() == variable_name) { // If the variable is found fill it with information
+				std::string type_string = json_object_get_string(variable, "type");
+
+				(*it).setPublic(json_object_get_boolean(variable, "public"));
+				(*it).setEdited(json_object_get_boolean(variable, "edited"));
+				(*it).setForcedType(json_object_get_boolean(variable, "type_forced"));
+
+				if (type_string == "number") {
+					Var value;
+					value.value_number = json_object_get_number(variable, "value");
+					(*it).SetValue(value, ImportedVariable::WREN_NUMBER);
+				}
+				if (type_string == "bool") {
+					Var value;
+					value.value_bool = json_object_get_boolean(variable, "value");
+					(*it).SetValue(value, ImportedVariable::WREN_BOOL);
+				}
+				if (type_string == "string") {
+					Var value;
+					value.value_string = json_object_get_string(variable, "value");
+					(*it).SetValue(value, ImportedVariable::WREN_STRING);
+				}
+			}
+		}
+	}
 }
 
 void ComponentScript::assignScriptResource(uint resource_uuid)
 {
 	if (instance_data)
-	{
 		CleanUp();
-	}
 
 	script_resource_uuid = resource_uuid;
 	App->resources->assignResource(script_resource_uuid);
@@ -115,7 +153,7 @@ void ComponentScript::Save(JSON_Object * config) {
 
 		json_object_set_boolean(json_object(var), "public", (*it).isPublic());
 		json_object_set_boolean(json_object(var), "edited", (*it).isEdited());
-		json_object_set_boolean(json_object(var), "tupe_forced", (*it).isTypeForced());
+		json_object_set_boolean(json_object(var), "type_forced", (*it).isTypeForced());
 
 		json_array_append_value(json_array(vars_array), var);
 	}
