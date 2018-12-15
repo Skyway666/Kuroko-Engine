@@ -16,9 +16,9 @@ public:
 	void CleanUp();
 
 	void UpdateCode(); 
+	std::string class_name;
 private: 
 	std::string code;
-	std::string class_name;
 	ScriptData* data = nullptr;
 };
 

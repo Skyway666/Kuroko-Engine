@@ -4,6 +4,7 @@
 #include "ModuleResourcesManager.h"
 #include "ModuleInput.h"
 #include "GameObject.h"
+#include "Applog.h"
 
 
 ComponentScript::ComponentScript(GameObject* g_obj, uint resource_uuid) : Component(g_obj, SCRIPT)
@@ -27,7 +28,22 @@ void ComponentScript::assignScriptResource(uint resource_uuid)
 
 void ComponentScript::LoadResource() {
 
-	ScriptData* base_script_data = (((ResourceScript*)App->resources->getResource(script_resource_uuid))->getData());
+	ResourceScript* script_r = (ResourceScript*)App->resources->getResource(script_resource_uuid);
+
+	if (!script_r) {
+		app_log->AddLog("Couldn't load script, resource not found");
+		script_name = "Unknown";
+		instance_data = nullptr;
+		return;
+	}
+	ScriptData* base_script_data = script_r->getData();
+
+	if (!base_script_data) {
+		app_log->AddLog("Couldn't load script, resource is invalid");
+		script_name = script_r->class_name.c_str();
+		instance_data = nullptr;
+		return;
+	}
 
 	instance_data = new ScriptData();
 
@@ -37,7 +53,6 @@ void ComponentScript::LoadResource() {
 	instance_data->class_handle = App->scripting->GetHandlerToClass(instance_data->class_name.c_str(), instance_data->class_name.c_str());
 
 	LinkScriptToObject();
-
 
 	App->scripting->loaded_instances.push_back(instance_data);
 

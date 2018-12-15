@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "ModuleScripting.h"
 #include "ScriptData.h"
+#include "Applog.h"
 
 
 ResourceScript::ResourceScript(resource_deff deff): Resource(deff)  {
@@ -22,16 +23,20 @@ void ResourceScript::UpdateCode() {
 
 void ResourceScript::Compile() {
 	UpdateCode();
-	App->scripting->CompileIntoVM(class_name.c_str(), code.c_str()); // If return false invalidate resource
+	invalid_resource = !App->scripting->CompileIntoVM(class_name.c_str(), code.c_str()); // If return false invalidate resource
 }
 
 void ResourceScript::GenerateScript() {
-	data = App->scripting->GenerateScript(class_name.c_str());
+	if (!invalid_resource)
+		data = App->scripting->GenerateScript(class_name.c_str());
+	else
+		data = nullptr;
 }
 
 void ResourceScript::CleanUp()
 {
-	delete data;
+	if(data)
+		delete data;
 }
 
 

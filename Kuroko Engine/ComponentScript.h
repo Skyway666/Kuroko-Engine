@@ -17,6 +17,7 @@ public:
 	void CleanUp();
 
 	ScriptData* instance_data = nullptr;
+	std::string script_name;
 private:
 
 	uint script_resource_uuid = 0;

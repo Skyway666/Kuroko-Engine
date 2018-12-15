@@ -1032,57 +1032,62 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case SCRIPT:
 	{
 		ComponentScript* c_script = (ComponentScript*)&component;
-		std::string component_title = c_script->instance_data->class_name + "(Script)";
+		std::string component_title = c_script->script_name + "(Script)";
 		if (ImGui::CollapsingHeader(component_title.c_str())) {
 
-			for (auto it = c_script->instance_data->vars.begin(); it != c_script->instance_data->vars.end(); it++) {
+			if (!c_script->instance_data) {
+				ImGui::Text("Couldn't compile script!");
+			}
+			else{
+				for (auto it = c_script->instance_data->vars.begin(); it != c_script->instance_data->vars.end(); it++) {
 				
-				if (!(*it).isPublic())
-					continue;
+					if (!(*it).isPublic())
+						continue;
 
-				ImportedVariable* curr = &(*it);
-				std::string unique_tag = "##" + curr->getName();
+					ImportedVariable* curr = &(*it);
+					std::string unique_tag = "##" + curr->getName();
 
-				static int type = 0;
+					static int type = 0;
 
-				if (!curr->isTypeForced())
-				{
-					type = curr->getType() - 1;
-					if (ImGui::Combo(unique_tag.c_str(), &type, "Bool\0String\0Numeral\0"))
-						curr->setType((ImportedVariable::WrenDataType)(type + 1));
+					if (!curr->isTypeForced())
+					{
+						type = curr->getType() - 1;
+						if (ImGui::Combo(unique_tag.c_str(), &type, "Bool\0String\0Numeral\0"))
+							curr->setType((ImportedVariable::WrenDataType)(type + 1));
+					}
+
+					ImGui::Text(curr->getName().c_str());
+					ImGui::SameLine();
+
+					static char buf[200] = "";
+					Var variable = curr->GetValue();
+
+					switch (curr->getType()) {
+					case ImportedVariable::WREN_NUMBER:
+						if (ImGui::InputFloat((unique_tag + " float").c_str(), &variable.value_number))
+						{
+							curr->SetValue(variable);
+							curr->setEdited(true);
+						}
+						break;
+					case ImportedVariable::WREN_STRING:
+						if (ImGui::InputText((unique_tag + " string").c_str(), buf, sizeof(buf)))
+						{
+							variable.value_string = buf;
+							curr->SetValue(variable);
+							curr->setEdited(true);
+						}
+						break;
+					case ImportedVariable::WREN_BOOL:
+						if (ImGui::Checkbox((unique_tag + " bool").c_str(), &variable.value_bool))
+						{
+							curr->SetValue(variable);
+							curr->setEdited(true);
+						}
+						break;
+					}
+
 				}
-
-				ImGui::Text(curr->getName().c_str());
-				ImGui::SameLine();
-
-				static char buf[200] = "";
-				Var variable = curr->GetValue();
-
-				switch (curr->getType()) {
-				case ImportedVariable::WREN_NUMBER:
-					if (ImGui::InputFloat((unique_tag + " float").c_str(), &variable.value_number))
-					{
-						curr->SetValue(variable);
-						curr->setEdited(true);
-					}
-					break;
-				case ImportedVariable::WREN_STRING:
-					if (ImGui::InputText((unique_tag + " string").c_str(), buf, sizeof(buf)))
-					{
-						variable.value_string = buf;
-						curr->SetValue(variable);
-						curr->setEdited(true);
-					}
-					break;
-				case ImportedVariable::WREN_BOOL:
-					if (ImGui::Checkbox((unique_tag + " bool").c_str(), &variable.value_bool))
-					{
-						curr->SetValue(variable);
-						curr->setEdited(true);
-					}
-					break;
-				}
-
 			}
 
 		}
