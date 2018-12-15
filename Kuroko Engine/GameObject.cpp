@@ -47,6 +47,9 @@ GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 		else if (type == "mesh") {
 			component = new ComponentMesh(component_deff, this);
 		}
+		else if (type == "script") {
+			component = new ComponentScript(component_deff, this);
+		}
 
 		// Set component's parent-child
 		if (!component){

@@ -13,6 +13,10 @@ ComponentScript::ComponentScript(GameObject* g_obj, uint resource_uuid) : Compon
 		assignScriptResource(resource_uuid);
 }
 
+ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Component(parent, SCRIPT) {
+
+}
+
 void ComponentScript::assignScriptResource(uint resource_uuid)
 {
 	if (instance_data)
@@ -72,11 +76,52 @@ void ComponentScript::LinkScriptToObject() {
 
 }
 
+
+
 void ComponentScript::CleanUp() {
 	App->scripting->loaded_instances.remove(instance_data);
 	delete instance_data;
 }
 
+void ComponentScript::Save(JSON_Object * config) {
+
+	json_object_set_string(config, "type", "script");
+	json_object_set_number(config, "script_resource_uuid", script_resource_uuid); // Gives us all we need but the variables
+
+	// Store the variables
+	if (!instance_data) {
+		return;
+	}
+	// Create and fill array
+	JSON_Value* vars_array = json_value_init_array();
+	for (auto it = instance_data->vars.begin(); it != instance_data->vars.end(); it++) {
+		JSON_Value* var = json_value_init_object();
+
+		json_object_set_string(json_object(var), "name", (*it).getName().c_str());
+		switch ((*it).getType()) {
+		case ImportedVariable::WREN_NUMBER:
+			json_object_set_string(json_object(var), "type", "number");
+			json_object_set_number(json_object(var), "value", (*it).GetValue().value_number);
+			break;
+		case ImportedVariable::WREN_BOOL:
+			json_object_set_string(json_object(var), "type", "bool");
+			json_object_set_boolean(json_object(var), "value", (*it).GetValue().value_bool);
+			break;
+		case ImportedVariable::WREN_STRING:
+			json_object_set_string(json_object(var), "type", "string");
+			json_object_set_string(json_object(var), "value", (*it).GetValue().value_string);
+			break;
+		}
+
+		json_object_set_boolean(json_object(var), "public", (*it).isPublic());
+		json_object_set_boolean(json_object(var), "edited", (*it).isEdited());
+		json_object_set_boolean(json_object(var), "tupe_forced", (*it).isTypeForced());
+
+		json_array_append_value(json_array(vars_array), var);
+	}
+
+	json_object_set_value(config, "variables", vars_array);
+}
 
 
 ComponentScript::~ComponentScript()
