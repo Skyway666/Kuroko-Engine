@@ -404,6 +404,24 @@ void ModuleScene::SaveScene(std::string name) {
 	json_value_free(scene);
 }
 
+
+void ModuleScene::SavePrefab(GameObject* root, const char* name)
+{
+	if (App->fs.ExistisFile(name, ASSETS_PREFABS, JSON_EXTENSION))
+		app_log->AddLog("%s scene already created, overwritting...", name);
+
+	App->fs.CreateEmptyFile(name, ASSETS_PREFABS, JSON_EXTENSION);
+
+	JSON_Value* prefab = serializePrefab(root);
+
+	std::string path;
+	App->fs.FormFullPath(path, name, ASSETS_PREFABS, JSON_EXTENSION);
+	json_serialize_to_file(prefab, path.c_str());
+
+	// Free everything
+	json_value_free(prefab);
+}
+
 void ModuleScene::LoadScene(const char* path) {
 	JSON_Value* scene = json_parse_file(path);
 	if (!scene) {
@@ -450,6 +468,29 @@ JSON_Value * ModuleScene::serializeScene() {
 	// TODO store editor camera(?)
 
 	return scene;
+}
+
+JSON_Value* ModuleScene::serializePrefab(GameObject* root_obj)
+{
+	JSON_Value* prefab = json_value_init_object();	// Full file object
+	JSON_Value* objects_array = json_value_init_array();	// Array of childs of the obj
+
+	json_object_set_value(json_object(prefab), "Game Objects", objects_array); // Add array to file
+
+	std::list<GameObject*> objects_to_save;
+	root_obj->getAllDescendants(objects_to_save);
+
+	objects_to_save.push_front(root_obj);
+
+	for (auto it = objects_to_save.begin(); it != objects_to_save.end(); it++) {
+		JSON_Value* object = json_value_init_object();	// Object in the array
+		(*it)->Save(json_object(object));				// Fill content
+		json_array_append_value(json_array(objects_array), object); // Add object to array
+	}
+
+	// TODO store editor camera(?)
+
+	return prefab;
 }
 
 void ModuleScene::loadSerializedScene(JSON_Value * scene) {

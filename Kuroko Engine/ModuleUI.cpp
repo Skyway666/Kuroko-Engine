@@ -105,6 +105,7 @@ bool ModuleUI::Start()
 	ui_textures[SCENE_ICON]			= (Texture*)App->importer->ImportTexturePointer("Editor textures/scene_icon.png");
 	ui_textures[RETURN_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/return_icon.png");
 	ui_textures[SCRIPT_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/script_icon.png");
+	ui_textures[PREFAB_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/prefab_icon.png");
 
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
@@ -420,38 +421,40 @@ void ModuleUI::DrawHierarchyTab()
 	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
-	if (ImGui::Button("Empty gameobject")) {
-		GameObject* go = new GameObject("Empty", App->scene->selected_obj);
-		if(App->scene->selected_obj)
-			App->scene->selected_obj->addChild(go);
-	}
-
-
-	if (App->scene->selected_obj)
-	{
-		ImGui::SameLine();
-		if (ImGui::Button("Duplicate Selected")) 
-			App->scene->duplicateGameObject(App->scene->selected_obj);
-	}
-
 	int id = 0;
 	std::list<GameObject*> root_objs;
 	App->scene->getRootObjs(root_objs);
 
+	bool item_hovered = false;
+
 	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
-		DrawHierarchyNode(*(*it), id);
+		if (DrawHierarchyNode(*(*it), id))
+			item_hovered = true;
 
 	if (ImGui::IsWindowHovered())
 	{
 		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 			App->scene->selected_obj = nullptr;
+		else if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN && !item_hovered)
+			ImGui::OpenPopup("##hierarchy context menu");
+	}
+
+	if (ImGui::BeginPopup("##hierarchy context menu"))
+	{
+		if (ImGui::Button("Empty gameobject"))
+		{
+			GameObject* go = new GameObject("Empty", App->scene->selected_obj);
+			if (App->scene->selected_obj)
+				App->scene->selected_obj->addChild(go);
+		}
+		ImGui::EndPopup();
 	}
 
 	ImGui::PopFont();
 	ImGui::End();
 }
 
-void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
+bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id) 
 {
 	id++;
 	static int selection_mask = (1 << 2);
@@ -465,13 +468,34 @@ void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 
 	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)game_object.getUUID(), node_flags, game_object.getName().c_str()) && !children.empty();
 
-	if(App->scene->selected_obj == (GameObject*)&game_object)
+	if(App->scene->selected_obj == &game_object)
 		selection_mask = (1 << id);
 	else if (App->scene->selected_obj == nullptr)
 		selection_mask = (1 >> id);
 
+	static int show_rename = -1;
+
 	if (ImGui::IsItemClicked())
-		App->scene->selected_obj = (GameObject*)&game_object;
+		App->scene->selected_obj = &game_object;
+	else if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
+		ImGui::OpenPopup(("##" + game_object.getName() + std::to_string(id) + "Object context menu").c_str());
+	
+	if (ImGui::BeginPopup(("##" + game_object.getName() + std::to_string(id) + "Object context menu").c_str()))
+	{
+		if (ImGui::Button(("Duplicate##" + game_object.getName() + std::to_string(id) + "Duplicate gobj button").c_str()))
+			App->scene->duplicateGameObject(&game_object);
+
+		if (ImGui::Button(("Rename##" + game_object.getName() + std::to_string(id) + "Rename gobj button").c_str()))
+			show_rename = id;
+
+		if (ImGui::Button(("Delete##" + game_object.getName() + std::to_string(id) + "Delete gobj button").c_str()))
+			App->scene->deleteGameObjectRecursive(&game_object);
+
+		if (ImGui::Button(("Save to prefab##" + game_object.getName() + std::to_string(id) + "prefab save gobj button").c_str()))
+			App->scene->SavePrefab(&game_object, (game_object.getName() + "_prefab").c_str());
+
+		ImGui::EndPopup();
+	}
 
 	if (node_open)
 	{
@@ -483,6 +507,36 @@ void ModuleUI::DrawHierarchyNode(const GameObject& game_object, int& id) const
 		ImGui::PopStyleVar();
 		ImGui::TreePop();
 	}
+
+
+	if (show_rename == id)
+	{
+		static bool rename_open = true;
+		disable_keyboard_control = true;
+		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver);
+		ImGui::Begin("Rename object", &rename_open);
+		ImGui::PushFont(ui_fonts[REGULAR]);
+
+		static char rename_buffer[64];
+		ImGui::PushItemWidth(ImGui::GetWindowSize().x - 60);
+		ImGui::InputText("##Rename to", rename_buffer, 64);
+
+		ImGui::SameLine();
+		if (ImGui::Button("OK##Change name"))
+		{
+			game_object.Rename(rename_buffer);
+			show_rename = -1;
+		}
+
+		ImGui::PopFont();
+		ImGui::End();
+
+		if(!rename_open)
+			show_rename = -1;
+	}
+
+	return ImGui::IsItemHovered();
+
 }
 
 void ModuleUI::DrawObjectInspectorTab()
@@ -490,23 +544,12 @@ void ModuleUI::DrawObjectInspectorTab()
 	ImGui::Begin("Object inspector", &open_tabs[OBJ_INSPECTOR]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
-	static bool show_rename = false;
 	static bool select_script = false;
 	GameObject* selected_obj = App->scene->selected_obj;
 
 	if (selected_obj)
 	{
 		ImGui::Text("Name: %s", selected_obj->getName().c_str());
-
-		ImGui::SameLine();
-		if (ImGui::Button("Rename")){
-			show_rename = true;
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("Delete") || App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
-			App->scene->deleteGameObjectRecursive(selected_obj);
-
 
 		ImGui::Checkbox("Active", &selected_obj->is_active);
 		ImGui::SameLine();
@@ -557,30 +600,6 @@ void ModuleUI::DrawObjectInspectorTab()
 
 	ImGui::PopFont();
 	ImGui::End();
-	
-	if (show_rename)
-	{
-		disable_keyboard_control = true;
-		ImGui::SetNextWindowPos(ImVec2(700, 320), ImGuiCond_FirstUseEver); 
-		ImGui::Begin("Rename object", &show_rename);
-		ImGui::PushFont(ui_fonts[REGULAR]);
-
-		static char rename_buffer[64];
-		ImGui::InputText("##Rename to", rename_buffer, 64);
-
-		ImGui::SameLine();
-		if (ImGui::Button("OK##Change name"))
-		{
-			selected_obj->Rename(rename_buffer);
-			show_rename = false;
-		}
-
-		ImGui::PopFont();
-		ImGui::End();
-	}
-
-
-
 
 }
 
@@ -1380,14 +1399,29 @@ void ModuleUI::DrawAssetsWindow()
 				}
 				else if (type == "json")
 				{
-					if (ImGui::IsMouseDoubleClicked(0)) {
-						ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
-						if (ImGui::IsItemHovered()) 
-							App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
+					if (name.find("_prefab") != std::string::npos)
+					{
+						if (ImGui::IsMouseDoubleClicked(0)) {
+							ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+							if (ImGui::IsItemHovered())
+								App->scene->AskPrefabLoadFile((char*)it.path().generic_string().c_str());
+						}
+						else {
+							if (ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+								selected_asset = it.path().generic_string();
+						}
 					}
-					else {
-						if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-							selected_asset = it.path().generic_string();
+					else
+					{
+						if (ImGui::IsMouseDoubleClicked(0)) {
+							ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+							if (ImGui::IsItemHovered())
+								App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
+						}
+						else {
+							if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+								selected_asset = it.path().generic_string();
+						}
 					}
 				}
 				else if (type == "script")

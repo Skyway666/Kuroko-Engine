@@ -98,9 +98,6 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case LIBRARY_TEXTURES:
 		path = TEXTURES_FOLDER;
 		break;
-	case LIBRARY_PREFABS:
-		path = PREFABS_FOLDER;
-		break;
 	case LIBRARY_SCRIPTS:
 		path = SCRIPTS_FOLDER;
 		break;
@@ -112,6 +109,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 		break;
 	case ASSETS_SCENES:
 		path = SCENES_FOLDER;
+		break;
+	case ASSETS_PREFABS:
+		path = PREFABS_FOLDER;
 		break;
 	case NO_LIB:
 		path = "";

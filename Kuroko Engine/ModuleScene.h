@@ -53,6 +53,7 @@ public:
 
 
 	void AskPrefabLoadFile(const char* path);
+	void SavePrefab(GameObject* root_obj, const char* name);
 	void AskSceneSaveFile(char* scene_name); 
 	void AskSceneLoadFile(char* path);
 	void AskLocalSaveScene() { want_local_save = true; }
@@ -67,6 +68,8 @@ private:
 	void LoadScene(const char* path);
 	void LoadPrefab(const char* path);
 	JSON_Value* serializeScene();
+	JSON_Value* serializePrefab(GameObject* root_obj);
+
 	void loadSerializedScene(JSON_Value* scene);
 private:
 
