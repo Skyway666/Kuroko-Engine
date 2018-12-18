@@ -52,6 +52,16 @@ public:
 			, mEnabled(false)
 		{}
 	};
+
+	struct CommandKeys
+	{
+		bool ctrl = false;
+		bool _C = false;
+		bool _X = false;
+		bool _V = false;
+		bool _Z = false;
+		bool _Y = false;
+	};
 	
 	struct Coordinates
 	{
@@ -171,7 +181,7 @@ public:
 	void SetErrorMarkers(const ErrorMarkers& aMarkers) { mErrorMarkers = aMarkers; }
 	void SetBreakpoints(const Breakpoints& aMarkers) { mBreakpoints = aMarkers; }
 
-	void Render(const char* aTitle,ImFont* font, const ImVec2& aSize = ImVec2(), bool aBorder = false);
+	void Render(const char* aTitle,ImFont* font, CommandKeys& command_keys, const ImVec2& aSize = ImVec2(), bool aBorder = false);
 	void SetText(const std::string& aText);
 	std::string GetText() const;
 	std::string GetSelectedText() const;
