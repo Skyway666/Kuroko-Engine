@@ -1,11 +1,11 @@
-#include "ResourceScene.h"
+#include "Resource3dObject.h"
 #include "Parson\parson.h"
 #include "Application.h"
 #include "ModuleScene.h"
 #include "ModuleResourcesManager.h"
 
 
-ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
+Resource3dObject::Resource3dObject(resource_deff deff): Resource(deff){
 	// Create resources for every mesh contained by the scene
 
 	JSON_Value* scene = json_parse_file(binary.c_str());
@@ -42,16 +42,16 @@ ResourceScene::ResourceScene(resource_deff deff): Resource(deff){
 }
 
 
-ResourceScene::~ResourceScene() {
+Resource3dObject::~Resource3dObject() {
 
 }
 
-void ResourceScene::LoadToMemory() {
+void Resource3dObject::LoadToMemory() {
 	App->scene->AskPrefabLoadFile(binary.c_str());
 	loaded_in_memory = true;
 }
 
-void ResourceScene::UnloadFromMemory() {
+void Resource3dObject::UnloadFromMemory() {
 	// Unload all the meshes and textures(?) Guess not, if gameobjects are deleted resurces will be unloaded
 	loaded_in_memory = false;
 }

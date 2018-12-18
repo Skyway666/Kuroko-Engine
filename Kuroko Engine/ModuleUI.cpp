@@ -29,7 +29,7 @@
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
-#include "ResourceScene.h"
+#include "Resource3dObject.h"
 #include "Skybox.h"
 
 

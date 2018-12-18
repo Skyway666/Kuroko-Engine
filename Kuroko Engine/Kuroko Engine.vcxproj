@@ -184,7 +184,7 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceMesh.h" />
-    <ClInclude Include="ResourceScene.h" />
+    <ClInclude Include="Resource3dObject.h" />
     <ClInclude Include="ResourceScript.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="ScriptData.h" />
@@ -281,7 +281,7 @@
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
-    <ClCompile Include="ResourceScene.cpp" />
+    <ClCompile Include="Resource3dObject.cpp" />
     <ClCompile Include="ResourceScript.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="ScriptData.cpp" />
