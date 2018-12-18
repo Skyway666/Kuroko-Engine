@@ -371,7 +371,7 @@ std::string TextEditor::GetWordAt(const Coordinates & aCoords) const
 	return r;
 }
 
-void TextEditor::Render(const char* aTitle,ImFont* font, const ImVec2& aSize, bool aBorder)
+void TextEditor::Render(const char* aTitle,ImFont* font, CommandKeys& command_keys,  const ImVec2& aSize, bool aBorder)
 {
 	mWithinRender = true;
 
@@ -386,7 +386,7 @@ void TextEditor::Render(const char* aTitle,ImFont* font, const ImVec2& aSize, bo
 	ImGui::PushAllowKeyboardFocus(true);
 
 	auto shift = io.KeyShift;
-	auto ctrl = io.KeyCtrl;
+	auto ctrl = command_keys.ctrl;
 	auto alt = io.KeyAlt;
 
 	if (ImGui::IsWindowFocused())
@@ -395,13 +395,13 @@ void TextEditor::Render(const char* aTitle,ImFont* font, const ImVec2& aSize, bo
 			ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
 		//ImGui::CaptureKeyboardFromApp(true);
 
-		if (!IsReadOnly() && ImGui::IsKeyPressed('Z'))
+		if (!IsReadOnly() && command_keys._Z)
 			if (ctrl && !shift && !alt)
 				Undo();
 		if (!IsReadOnly() && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Backspace)))
 			if (!ctrl && !shift && alt)
 				Undo();
-		if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed('Y'))
+		if (!IsReadOnly() && ctrl && !shift && !alt && command_keys._Y)
 			Redo();
 
 		if (!ctrl && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_UpArrow)))
@@ -428,17 +428,13 @@ void TextEditor::Render(const char* aTitle,ImFont* font, const ImVec2& aSize, bo
 			Delete();
 		else if (!IsReadOnly() && !ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Backspace)))
 			BackSpace();
-		else if (!ctrl && !shift && !alt && ImGui::IsKeyPressed(45))
-			mOverwrite ^= true;
-		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(45))
-			Copy();
-		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed('C'))
+		else if (ctrl && !shift && !alt && command_keys._C)
 			Copy();
 		else if (!IsReadOnly() && !ctrl && shift && !alt && ImGui::IsKeyPressed(45))
 			Paste();
-		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed('V'))
+		else if (!IsReadOnly() && ctrl && !shift && !alt && command_keys._V)
 			Paste();
-		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed('X'))
+		else if (ctrl && !shift && !alt && command_keys._X)
 			Cut();
 		else if (!ctrl && shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
 			Cut();

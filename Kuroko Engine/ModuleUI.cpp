@@ -1486,10 +1486,6 @@ void ModuleUI::DrawAssetsWindow()
 	{
 		if (ImGui::Button("Add script")) 
 			name_script = true;
-		
-
-
-		
 
 		ImGui::EndPopup();
 	}
@@ -1897,7 +1893,15 @@ void ModuleUI::DrawScriptEditor()
 		script_editor.CanUndo() ? "*" : " ",
 		script_editor.GetLanguageDefinition().mName.c_str(), open_script_path.c_str());
 
-	script_editor.Render("TextEditor", ui_fonts[IMGUI_DEFAULT]);
+	TextEditor::CommandKeys c_keys;
+	c_keys.ctrl = (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT);
+	c_keys._X = App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN;
+	c_keys._Y = App->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN;
+	c_keys._Z = App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN;
+	c_keys._C = App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN;
+	c_keys._V = App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN;
+
+	script_editor.Render("TextEditor", ui_fonts[IMGUI_DEFAULT], c_keys);
 	ImGui::PopFont();
 	ImGui::End();
 }
