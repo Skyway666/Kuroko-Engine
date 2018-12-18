@@ -408,9 +408,6 @@
     <ClInclude Include="ResourceMesh.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceScene.h">
-      <Filter>Sources\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="FileSystem.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
@@ -470,6 +467,9 @@
     </ClInclude>
     <ClInclude Include="ScriptData.h">
       <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource3dObject.h">
+      <Filter>Sources\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -692,9 +692,6 @@
     <ClCompile Include="ResourceMesh.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceScene.cpp">
-      <Filter>Sources\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="FileSystem.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
@@ -742,6 +739,9 @@
     </ClCompile>
     <ClCompile Include="ScriptData.cpp">
       <Filter>Sources\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource3dObject.cpp">
+      <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

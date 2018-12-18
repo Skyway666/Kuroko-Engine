@@ -6,7 +6,7 @@
 #include "ModuleScene.h"
 #include "ResourceTexture.h"
 #include "ResourceMesh.h"
-#include "ResourceScene.h"
+#include "Resource3dObject.h"
 #include "ResourceScript.h"
 #include "Applog.h"
 #include "Mesh.h"
@@ -82,7 +82,7 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 	switch (deff.type) {
 	case R_TEXTURE: ret = (Resource*) new ResourceTexture(deff); break;
 	case R_MESH: ret = (Resource*) new ResourceMesh(deff); break;     
-	case R_SCENE: ret = (Resource*) new ResourceScene(deff); break; 
+	case R_3DOBJECT: ret = (Resource*) new Resource3dObject(deff); break; 
 	case R_SCRIPT: ret = (Resource*) new ResourceScript(deff); break;
 	} 
 
@@ -178,7 +178,7 @@ resource_deff ModuleResourcesManager::ManageMeta(std::string path, std::string n
 		ResourceType r_type = type2enumType(json_object_get_string(json_object(meta), "type"));
 		ret.uuid = json_object_get_number(json_object(meta), "resource_uuid");
 		ret.requested_update = R_DELETE;
-		if (r_type == R_SCENE) {									// Handle meshes delete when a scene is deleted
+		if (r_type == R_3DOBJECT) {									// Handle meshes delete when a scene is deleted
 			CleanMeshesFromLibrary(full_binary_path.c_str());
 		}
 		App->fs.DestroyFile(full_binary_path.c_str());	// Destroy binary			
@@ -274,7 +274,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		case R_TEXTURE:
 			App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
 			break;
-		case R_SCENE:
+		case R_3DOBJECT:
 			App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
 			break;
 		case R_SCRIPT:
@@ -522,7 +522,7 @@ const char * ModuleResourcesManager::assetExtension2type(const char * _extension
 
 	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
 		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
-		ret = "scene";
+		ret = "3dobject";
 	else if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"
 		|| extension == ".raw" || extension == ".tga" || extension == ".tiff")
 		ret = "texture";
@@ -541,8 +541,8 @@ ResourceType ModuleResourcesManager::type2enumType(const char * type) {
 	ResourceType ret = R_UNKNOWN;
 	std::string str_type = type;
 
-	if (str_type == "scene")
-		ret = R_SCENE;
+	if (str_type == "3dobject")
+		ret = R_3DOBJECT;
 	if (str_type == "texture")
 		ret = R_TEXTURE;
 	if (str_type == "script")
@@ -560,7 +560,7 @@ const char * ModuleResourcesManager::enumType2binaryExtension(ResourceType type)
 		case R_MESH:
 			ret = ".kr";
 			break;
-		case R_SCENE:
+		case R_3DOBJECT:
 		case R_SCRIPT:
 			ret = ".json";
 			break;
@@ -578,8 +578,8 @@ lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
 	case R_MESH:
 		ret = LIBRARY_MESHES;
 		break;
-	case R_SCENE:
-		ret = LIBRARY_PREFABS;
+	case R_3DOBJECT:
+		ret = LIBRARY_3DOBJECTS;
 		break;
 	case R_SCRIPT:
 		ret = LIBRARY_SCRIPTS;
