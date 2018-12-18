@@ -5,7 +5,5 @@ class ResourcePrefab :
 public:
 	ResourcePrefab(resource_deff deff);
 	~ResourcePrefab();
-	void LoadToMemory();
-	void UnloadFromMemory();
 };
 

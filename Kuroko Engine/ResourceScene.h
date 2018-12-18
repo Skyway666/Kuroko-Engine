@@ -5,7 +5,6 @@ class ResourceScene :
 public:
 	ResourceScene(resource_deff deff);
 	~ResourceScene();
-	void LoadToMemory();
-	void UnloadFromMemory();
+
 };
 
