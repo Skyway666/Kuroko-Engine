@@ -471,6 +471,12 @@
     <ClInclude Include="Resource3dObject.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ResourcePrefab.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceScene.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -741,6 +747,12 @@
       <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="Resource3dObject.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourcePrefab.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceScene.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>

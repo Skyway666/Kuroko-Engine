@@ -8,6 +8,8 @@
 #include "ResourceMesh.h"
 #include "Resource3dObject.h"
 #include "ResourceScript.h"
+#include "ResourceScene.h"
+#include "ResourcePrefab.h"
 #include "Applog.h"
 #include "Mesh.h"
 
@@ -84,6 +86,8 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 	case R_MESH: ret = (Resource*) new ResourceMesh(deff); break;     
 	case R_3DOBJECT: ret = (Resource*) new Resource3dObject(deff); break; 
 	case R_SCRIPT: ret = (Resource*) new ResourceScript(deff); break;
+	case R_SCENE: ret = (Resource*) new ResourceScene(deff); break;
+	case R_PREFAB: ret = (Resource*) new ResourcePrefab(deff); break;
 	} 
 
 	if (ret)
@@ -139,6 +143,45 @@ void ModuleResourcesManager::GenerateLibraryAndMeta()
 	}
 }
 
+void ModuleResourcesManager::ManageAssetModification() {
+	using std::experimental::filesystem::recursive_directory_iterator;
+	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
+		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
+			continue;
+
+		resource_deff deff;
+		if (ManageFile(it.path().generic_string(), deff)) {
+			switch (deff.requested_update) {
+			case R_CREATE:
+				newResource(deff);
+				break;
+			case R_UPDATE:
+				resources[deff.uuid]->UnloadFromMemory();
+				resources[deff.uuid]->LoadToMemory();
+				break;
+			}
+			if (deff.requested_update == R_CREATE || deff.requested_update == R_UPDATE) {
+				if (deff.type == R_SCRIPT)
+					reloadVM = true;
+			}
+
+
+		}
+		else {
+			if (deff.requested_update == R_DELETE) {
+				auto it = resources.find(deff.uuid);
+				if (it != resources.end()) {
+					Resource* delete_res = resources[deff.uuid];
+					delete_res->UnloadFromMemory();
+					delete delete_res;
+					resources.erase(it);
+				}
+			}
+		}
+	}
+
+}
+
 bool ModuleResourcesManager::ManageFile(std::string file_path, resource_deff& deff)
 {
 	std::string path, name, extension;
@@ -147,10 +190,6 @@ bool ModuleResourcesManager::ManageFile(std::string file_path, resource_deff& de
 	App->fs.getPath(path);
 	App->fs.getFileNameFromPath(name);
 
-	if (extension == JSON_EXTENSION) { // Scenes of our own engine are NOT to be exported to binary, they directly hold pointers to it.
-		deff.requested_update = R_NOTHING;
-		return false;
-	}
 	// Manage meta
 	if (extension == META_EXTENSION) { // If it is a meta file
 		deff = ManageMeta(path, name, extension);  // If has a corresponding asset, continue, else delete file from library and delete .meta
@@ -187,35 +226,6 @@ resource_deff ModuleResourcesManager::ManageMeta(std::string path, std::string n
 	}
 
 	return ret;
-}
-
-void ModuleResourcesManager::CleanMeshesFromLibrary(std::string prefab_binary)
-{
-	JSON_Value* scene = json_parse_file(prefab_binary.c_str());
-	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
-
-	// Delete meshes from library
-	for (int i = 0; i < json_array_get_count(objects); i++) {
-		JSON_Object* obj_deff = json_array_get_object(objects, i);
-		JSON_Array* components = json_object_get_array(obj_deff, "Components");
-		std::string mesh_binary;
-		// Iterate components and look for the mesh
-		bool mesh_found = false;
-		for (int a = 0; a < json_array_get_count(components); a++) {
-			JSON_Object* mesh_resource = json_array_get_object(components, a);
-			std::string type = json_object_get_string(mesh_resource, "type");
-			if (type == "mesh") {
-				mesh_binary = json_object_get_string(mesh_resource, "mesh_binary_path");
-				mesh_found = true;
-				break;
-			}
-		}
-
-		if (mesh_found) {					  // If a mesh was found destroy its binary
-			App->fs.DestroyFile(mesh_binary.c_str());
-		}
-	}
-	
 }
 
 resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string name, std::string extension) {
@@ -271,14 +281,21 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 	json_value_free(meta);
 
 	switch (enum_type) {
-		case R_TEXTURE:
-			App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
-			break;
-		case R_3DOBJECT:
-			App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
-			break;
-		case R_SCRIPT:
-			App->importer->ImportScript(full_asset_path.c_str(), uuid_str);
+	case R_TEXTURE:
+		App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
+		break;
+	case R_3DOBJECT:
+		App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
+		break;
+	case R_SCRIPT:
+		App->importer->ImportScript(full_asset_path.c_str(), uuid_str);
+		break;
+	case R_PREFAB:
+		App->fs.copyFileTo(full_asset_path.c_str(), LIBRARY_PREFABS, PREFAB_EXTENSION, uuid_str.c_str()); // Copy the file to the library
+		break;
+	case R_SCENE:
+		App->fs.copyFileTo(full_asset_path.c_str(), LIBRARY_SCENES, SCENE_EXTENSION, uuid_str.c_str()); // Copy the file to the library
+		break;
 	}
 	// Meta generated and file imported, create resource in code
 	deff.set(uuid_number, enum_type, binary_path, full_asset_path);
@@ -296,45 +313,37 @@ void ModuleResourcesManager::LoadResource(uint uuid) {
 		app_log->AddLog("WARNING: Trying to load non existing resource");
 }
 
-void ModuleResourcesManager::ManageAssetModification()
+void ModuleResourcesManager::CleanMeshesFromLibrary(std::string prefab_binary)
 {
-	using std::experimental::filesystem::recursive_directory_iterator;
-	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {
-		if (it.status().type() == std::experimental::filesystem::v1::file_type::directory) // If the path is a directory, ignore it
-			continue;
-		
-		resource_deff deff;
-		if (ManageFile(it.path().generic_string(), deff)) {
-			switch (deff.requested_update) {
-				case R_CREATE:
-					newResource(deff);
-					break;
-				case R_UPDATE:
-					resources[deff.uuid]->UnloadFromMemory();
-					resources[deff.uuid]->LoadToMemory();
-					break;
-			}
-			if (deff.requested_update == R_CREATE || deff.requested_update == R_UPDATE) {
-				if (deff.type == R_SCRIPT)
-					reloadVM = true;
-			}
+	JSON_Value* scene = json_parse_file(prefab_binary.c_str());
+	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
-
+	// Delete meshes from library
+	for (int i = 0; i < json_array_get_count(objects); i++) {
+		JSON_Object* obj_deff = json_array_get_object(objects, i);
+		JSON_Array* components = json_object_get_array(obj_deff, "Components");
+		std::string mesh_binary;
+		// Iterate components and look for the mesh
+		bool mesh_found = false;
+		for (int a = 0; a < json_array_get_count(components); a++) {
+			JSON_Object* mesh_resource = json_array_get_object(components, a);
+			std::string type = json_object_get_string(mesh_resource, "type");
+			if (type == "mesh") {
+				mesh_binary = json_object_get_string(mesh_resource, "mesh_binary_path");
+				mesh_found = true;
+				break;
+			}
 		}
-		else {
-			if(deff.requested_update == R_DELETE){
-				auto it = resources.find(deff.uuid);
-				if (it != resources.end()) {
-					Resource* delete_res = resources[deff.uuid];
-					delete_res->UnloadFromMemory();
-					delete delete_res;
-					resources.erase(it);
-				}
-			}
+
+		if (mesh_found) {					  // If a mesh was found destroy its binary
+			App->fs.DestroyFile(mesh_binary.c_str());
 		}
 	}
-
+	
 }
+
+
+
 
 void ModuleResourcesManager::CompileAndGenerateScripts()
 {
@@ -345,7 +354,6 @@ void ModuleResourcesManager::CompileAndGenerateScripts()
 			scripts.push_back((ResourceScript*)(*it).second);
 		}
 	}
-
 	for (auto it = scripts.begin(); it != scripts.end(); it++) {
 		(*it)->Compile();
 	}
@@ -401,7 +409,7 @@ int ModuleResourcesManager::deasignResource(uint uuid) {
 	return 0;
 }
 
-void ModuleResourcesManager::LoadFileToScene(const char * file) {
+void ModuleResourcesManager::Load3dObjectToScene(const char * file) {
 	std::string full_meta_path = file;
 	full_meta_path += META_EXTENSION;
 	uint resource_uuid = -1;
@@ -551,6 +559,10 @@ ResourceType ModuleResourcesManager::type2enumType(const char * type) {
 		ret = R_TEXTURE;
 	if (str_type == "script")
 		ret = R_SCRIPT;
+	if (str_type == "prefab")
+		ret = R_PREFAB;
+	if (str_type == "scene")
+		ret = R_SCENE;
 
 	return ret;
 }
@@ -564,10 +576,17 @@ const char * ModuleResourcesManager::enumType2binaryExtension(ResourceType type)
 		case R_MESH:
 			ret = ".kr";
 			break;
+		case R_SCENE:
+			ret = ".scene";
+			break;
+		case R_PREFAB:
+			ret = ".prefab";
+			break;
 		case R_3DOBJECT:
 		case R_SCRIPT:
 			ret = ".json";
 			break;
+
 	}
 
 	return ret;
@@ -587,6 +606,12 @@ lib_dir ModuleResourcesManager::enumType2libDir(ResourceType type) {
 		break;
 	case R_SCRIPT:
 		ret = LIBRARY_SCRIPTS;
+		break;
+	case R_PREFAB:
+		ret = LIBRARY_PREFABS;
+		break;
+	case R_SCENE:
+		ret = LIBRARY_SCENES;
 		break;
 	}
 	return ret;

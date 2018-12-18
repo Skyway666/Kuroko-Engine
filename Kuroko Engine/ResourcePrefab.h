@@ -1,0 +1,11 @@
+#pragma once
+#include "Resource.h"
+class ResourcePrefab :
+	public Resource {
+public:
+	ResourcePrefab(resource_deff deff);
+	~ResourcePrefab();
+	void LoadToMemory();
+	void UnloadFromMemory();
+};
+

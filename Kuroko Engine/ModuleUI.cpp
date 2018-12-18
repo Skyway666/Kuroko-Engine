@@ -230,7 +230,6 @@ update_status ModuleUI::Update(float dt) {
 				App->fs.getExtension(extension);
 				App->fs.copyFileTo(file_path.c_str(), ASSETS, extension.c_str());
 				app_log->AddLog("%s copied to Assets folder", file_path.c_str());
-				//App->resources->LoadFileToScene(file_path.c_str());
 			}
 			if (ImGui::MenuItem("Save scene")) {
 				if (App->scene->existingScene())
@@ -1380,7 +1379,7 @@ void ModuleUI::DrawAssetsWindow()
 					if (ImGui::IsMouseDoubleClicked(0)) {
 						ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
 						if (ImGui::IsItemHovered())
-							App->resources->LoadFileToScene(it.path().generic_string().c_str());
+							App->resources->Load3dObjectToScene(it.path().generic_string().c_str());
 					}
 					else{
 						if (ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
