@@ -1295,6 +1295,7 @@ void ModuleUI::DrawAssetsWindow()
 	std::string path, name, extension;
 	
 	int column_num = (int)trunc(ImGui::GetWindowSize().x / (element_size + 20));
+	static bool item_hovered = false;
 
 	if (column_num != 0)
 	{
@@ -1359,12 +1360,14 @@ void ModuleUI::DrawAssetsWindow()
 				if (ImGui::IsMouseDoubleClicked(0))
 				{
 					ImGui::ImageButton((void*)ui_textures[FOLDER_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
-					if(ImGui::IsItemHovered())
+					if (ImGui::IsItemHovered())
 						asset_window_path = it.path().generic_string();
 				}
 				else {
 					if (ImGui::ImageButton((void*)ui_textures[FOLDER_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 						selected_asset = it.path().generic_string();
+					else if (ImGui::IsItemHovered())
+						item_hovered = true;
 				}
 			}
 			else
@@ -1382,6 +1385,8 @@ void ModuleUI::DrawAssetsWindow()
 					else{
 						if (ImGui::ImageButton((void*)ui_textures[OBJECT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 							selected_asset = it.path().generic_string();
+						else if (ImGui::IsItemHovered())
+							item_hovered = true;
 					}
 				}
 				else if (type == "texture")
@@ -1393,6 +1398,8 @@ void ModuleUI::DrawAssetsWindow()
 							res_tex->LoadToMemory();
 						if (ImGui::ImageButton((void*)res_tex->texture->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 							selected_asset = it.path().generic_string();
+						else if (ImGui::IsItemHovered())
+							item_hovered = true;
 					}
 
 
@@ -1409,6 +1416,8 @@ void ModuleUI::DrawAssetsWindow()
 						else {
 							if (ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 								selected_asset = it.path().generic_string();
+							else if (ImGui::IsItemHovered())
+								item_hovered = true;
 						}
 					}
 					else
@@ -1421,6 +1430,8 @@ void ModuleUI::DrawAssetsWindow()
 						else {
 							if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 								selected_asset = it.path().generic_string();
+							else if (ImGui::IsItemHovered())
+								item_hovered = true;
 						}
 					}
 				}
@@ -1449,6 +1460,8 @@ void ModuleUI::DrawAssetsWindow()
 					else {
 						if (ImGui::ImageButton((void*)ui_textures[SCRIPT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
 							selected_asset = it.path().generic_string();
+						else if (ImGui::IsItemHovered())
+							item_hovered = true;
 					}
 				}
 			}
@@ -1458,7 +1471,69 @@ void ModuleUI::DrawAssetsWindow()
 		}
 		ImGui::Columns(1);
 	}
+
+	if (ImGui::IsWindowHovered())
+	{
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+			selected_asset = "";
+		else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN && !item_hovered)
+			ImGui::OpenPopup("##asset window context menu");
+	}
+	item_hovered = false;
+
+	static bool name_script = false;
+	if (ImGui::BeginPopup("##asset window context menu"))
+	{
+		if (ImGui::Button("Add script")) 
+			name_script = true;
+		
+
+
+		
+
+		ImGui::EndPopup();
+	}
+
 	ImGui::End();
+
+	if (name_script) {
+		disable_keyboard_control = true;
+		ImGui::Begin("Script Name", &name_script);
+		ImGui::PushFont(ui_fonts[REGULAR]);
+
+		static char rename_buffer[64];
+		ImGui::InputText("Create as...", rename_buffer, 64);
+		ImGui::SameLine();
+		if (ImGui::Button("Create")) {
+			std::string script_name = rename_buffer;
+			std::string full_path = asset_window_path + "/" + script_name + ".wren";
+			App->fs.CreateEmptyFile(full_path.c_str());
+			open_script_path = full_path;
+			std::string file_initial_text;
+			file_initial_text = 
+				"\nimport \"ObjectLinker\" for ObjectLinker, EngineComunicator, InputComunicator\n"
+				"\n//For each var you declare, remember to create" 
+				"\n//		setters [varname=(v) { __varname = v }]" 
+				"\n//		and getters [varname { __varname }]" 
+				"\n//The construct method is mandatory, do not erase!"
+				"\n//The import statement at the top og the cript is mandatory, do not erase!"
+				"\n//Be careful not to overwrite the methods declared in Game/ScriptingAPI/ObjectLinker.wren"
+				"\n//[gameObject] is a reserved identifier for the engine, don't use it for your own variables"
+				"\n\nclass " + script_name + " is ObjectLinker{"
+				"\n\nconstruct new(){}"
+				"\n\n Start() {}"
+				"\n\n Update() {}"
+				"\n}";
+			script_editor.SetText(file_initial_text);
+			App->fs.SetFileString(open_script_path.c_str(), file_initial_text.c_str());
+			open_tabs[SCRIPT_EDITOR] = true;
+			for (int i = 0; i < 64; i++)
+				rename_buffer[i] = '\0';
+			name_script = false;
+		}
+		ImGui::PopFont();
+		ImGui::End();
+	}
 
 	DrawAssetInspector();
 }
@@ -1650,38 +1725,6 @@ void ModuleUI::DrawPrimitivesTab()
 		GameObject* cylinder = new GameObject("Cylinder");
 		cylinder->addComponent(C_AABB);
 		cylinder->addComponent(new ComponentMesh(cylinder, Primitive_Cylinder));
-	}
-
-	static bool name_script = false;
-	if (ImGui::Button("Add script")) {
-		name_script = true;
-	}
-
-
-	if (name_script) {
-		disable_keyboard_control = true;
-		ImGui::Begin("Script Name", &name_script);
-		ImGui::PushFont(ui_fonts[REGULAR]);
-
-		static char rename_buffer[64];
-		ImGui::InputText("Create as...", rename_buffer, 64);
-		ImGui::SameLine();
-		if (ImGui::Button("Create")) {
-			std::string script_name = rename_buffer;
-			std::string full_path = "Assets/" + script_name + ".wren";
-			App->fs.CreateEmptyFile(full_path.c_str());
-			open_script_path = full_path;
-			std::string file_initial_text;
-			file_initial_text = "\n\nclass " + script_name + "{\nconstruct new(){}\n}";
-			script_editor.SetText(file_initial_text);
-			App->fs.SetFileString(open_script_path.c_str(), file_initial_text.c_str());
-			open_tabs[SCRIPT_EDITOR] = true;
-			for (int i = 0; i < 64; i++)
-				rename_buffer[i] = '\0';
-			name_script = false;
-		}
-		ImGui::PopFont();
-		ImGui::End();
 	}
 
 	ImGui::PopFont();
