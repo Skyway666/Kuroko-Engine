@@ -12,9 +12,10 @@
 #define LIBRARY_FOLDER "Library\\"
 #define MESHES_FOLDER "Library\\Meshes\\"
 #define TEXTURES_FOLDER "Library\\Textures\\"
-#define PREFABS_FOLDER "Assets\\Prefabs\\"
+#define PREFABS_FOLDER "Library\\Prefabs\\"
 #define SCRIPTS_FOLDER "Library\\Scripts\\"
 #define SETTINGS_FOLDER "Settings\\"
+#define USER_PREFABS_FOLDER "Assets\\Prefabs\\"
 #define SCENES_FOLDER "Assets\\Scenes\\"
 #define ASSETS_FOLDER "Assets\\"
 

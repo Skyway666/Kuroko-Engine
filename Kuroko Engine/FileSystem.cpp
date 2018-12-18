@@ -101,6 +101,9 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 	case LIBRARY_SCRIPTS:
 		path = SCRIPTS_FOLDER;
 		break;
+	case LIBRARY_PREFABS:
+		path = PREFABS_FOLDER;
+		break;
 	case SETTINGS:
 		path = SETTINGS_FOLDER;
 		break;
@@ -111,7 +114,7 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 		path = SCENES_FOLDER;
 		break;
 	case ASSETS_PREFABS:
-		path = PREFABS_FOLDER;
+		path = USER_PREFABS_FOLDER;
 		break;
 	case NO_LIB:
 		path = "";
@@ -201,6 +204,9 @@ std::string FileSystem::getPathFromLibDir(lib_dir lib_dir) {
 		break;
 	case ASSETS_SCENES:
 		ret = SCENES_FOLDER;
+		break;
+	case ASSETS_PREFABS:
+		ret = USER_PREFABS_FOLDER;
 		break;
 	case NO_LIB:
 		ret = "";
