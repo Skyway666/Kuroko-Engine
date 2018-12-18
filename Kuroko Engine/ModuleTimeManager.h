@@ -44,9 +44,10 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	void Play() { game_state = PLAYING; };
-	void Pause() { game_state = PAUSED; };
-	void Stop() { game_state = STOPPED; };
+	void Play();
+	void Pause();
+	void Stop();
+
 	void Advance(int frames);
 	GameState getGameState() { return game_state; }
 	float getRealTime() { return real_time.Read();}
