@@ -52,6 +52,5 @@ void Resource3dObject::LoadToMemory() {
 }
 
 void Resource3dObject::UnloadFromMemory() {
-	// Unload all the meshes and textures(?) Guess not, if gameobjects are deleted resurces will be unloaded
 	loaded_in_memory = false;
 }

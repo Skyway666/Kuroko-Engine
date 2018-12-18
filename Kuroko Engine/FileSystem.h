@@ -17,11 +17,13 @@
 #define OBJECTS_FOLDER "Library\\3dObjects\\"
 #define SCRIPTS_FOLDER "Library\\Scripts\\"
 
+
 #define PREFABS_FOLDER "Library\\Prefabs\\"
+#define SCENES_FOLDER "Library\\Scenes"
 
 #define SETTINGS_FOLDER "Settings\\"
 #define USER_PREFABS_FOLDER "Assets\\Prefabs\\"
-#define SCENES_FOLDER "Assets\\Scenes\\"
+#define USER_SCENES_FOLDER "Assets\\Scenes\\"
 #define ASSETS_FOLDER "Assets\\"
 
 enum lib_dir {
@@ -29,6 +31,7 @@ enum lib_dir {
 	LIBRARY_TEXTURES,
 	LIBRARY_3DOBJECTS,
 	LIBRARY_PREFABS,
+	LIBRARY_SCENES,
 	LIBRARY_SCRIPTS,
 	SETTINGS,
 	ASSETS,
