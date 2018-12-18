@@ -518,6 +518,19 @@ void ModuleResourcesManager::getScriptResourceList(std::list<resource_deff>& scr
 	}
 }
 
+std::string ModuleResourcesManager::getPrefabPath(const char * prefab_name) {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_PREFAB) {
+			ResourcePrefab* curr = (ResourcePrefab*)(*it).second;
+			if(curr->prefab_name == prefab_name)
+				return curr->binary;
+		}
+	}
+
+	app_log->AddLog("%s prefab could not be found", prefab_name);
+	return std::string();
+}
+
 std::string ModuleResourcesManager::uuid2string(uint uuid) {
 	return std::to_string(uuid);
 }

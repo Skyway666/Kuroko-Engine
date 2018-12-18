@@ -6,6 +6,7 @@ class ObjectComunicator{
 
 class EngineComunicator{
 	foreign static consoleOutput(message)
+	foreign static Instanciate(prefab_name)
 }
 
 class InputComunicator{
@@ -14,6 +15,7 @@ class InputComunicator{
 	static DOWN {81}
 	static LEFT {80}
 	static RIGHT {79}
+	static SPACE {44}
 	foreign static getKey(key)
 }
 

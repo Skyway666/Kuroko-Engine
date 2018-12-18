@@ -357,7 +357,7 @@ update_status ModuleUI::Update(float dt) {
 	//if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
 	//	open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && !disable_keyboard_control) {
+	if (App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN && !disable_keyboard_control) {
 		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
 		for (int i = 0; i < 6; i++)
 			App->camera->viewports[i]->active = open_tabs[VIEWPORT_MENU];

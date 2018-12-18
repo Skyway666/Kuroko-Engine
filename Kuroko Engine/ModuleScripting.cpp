@@ -5,6 +5,7 @@
 #include "ScriptData.h"
 #include "ModuleScene.h"
 #include "ModuleInput.h"
+#include "ModuleResourcesManager.h"
 
 // May be better to manage in scene
 #include "GameObject.h"
@@ -15,6 +16,7 @@ void ConsoleLog(WrenVM* vm);
 void SetGameObjectPos(WrenVM* vm);
 void ModGameObjectPos(WrenVM* vm);
 void GetKey(WrenVM* vm);
+void InstanciatePrefab(WrenVM* vm);
 
 WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char* className, bool isStatic, const char* signature); // Wren foraign methods
 WrenForeignClassMethods bindForeignClass(WrenVM* vm, const char* module, const char* className);
@@ -303,6 +305,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
+			if (isStatic && strcmp(signature, "Instanciate(_)") == 0)
+				return InstanciatePrefab; // C function for EngineComunicator.consoleOutput
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_)") == 0)
@@ -368,4 +372,14 @@ void GetKey(WrenVM* vm) {
 	bool key_pressed = App->input->GetKey(pressed_key) == KEY_REPEAT; // TODO: Function should support keyrelease and whatever...
 
 	wrenSetSlotBool(vm, 0,  key_pressed);
+}
+
+
+void InstanciatePrefab(WrenVM* vm) {  // TODO: Instanciate should accept a transform as well (at least)
+
+	std::string prefab_name = wrenGetSlotString(vm, 1);
+
+	std::string prefab_path = App->resources->getPrefabPath(prefab_name.c_str());
+
+	App->scene->AskPrefabLoadFile(prefab_path.c_str());
 }

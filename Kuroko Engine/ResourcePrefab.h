@@ -5,5 +5,7 @@ class ResourcePrefab :
 public:
 	ResourcePrefab(resource_deff deff);
 	~ResourcePrefab();
+
+	std::string prefab_name;
 };
 
