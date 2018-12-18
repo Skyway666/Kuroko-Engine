@@ -386,10 +386,10 @@ void ModuleScene::ManageSceneSaveLoad() {
 
 void ModuleScene::SaveScene(std::string name) {
 
-	if (App->fs.ExistisFile(name.c_str(), ASSETS_SCENES, JSON_EXTENSION))
+	if (App->fs.ExistisFile(name.c_str(), ASSETS_SCENES, SCENE_EXTENSION))
 		app_log->AddLog("%s scene already created, overwritting...", name.c_str());
 
-	App->fs.CreateEmptyFile(name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
+	App->fs.CreateEmptyFile(name.c_str(), ASSETS_SCENES, SCENE_EXTENSION);
 
 	current_working_scene = name;
 	working_on_existing_scene = true;
@@ -397,7 +397,7 @@ void ModuleScene::SaveScene(std::string name) {
 	JSON_Value* scene = serializeScene();
 
 	std::string path;
-	App->fs.FormFullPath(path, name.c_str(), ASSETS_SCENES, JSON_EXTENSION);
+	App->fs.FormFullPath(path, name.c_str(), ASSETS_SCENES, SCENE_EXTENSION);
 	json_serialize_to_file(scene, path.c_str());
 
 	// Free everything
@@ -407,15 +407,15 @@ void ModuleScene::SaveScene(std::string name) {
 
 void ModuleScene::SavePrefab(GameObject* root, const char* name)
 {
-	if (App->fs.ExistisFile(name, ASSETS_PREFABS, JSON_EXTENSION))
+	if (App->fs.ExistisFile(name, ASSETS_PREFABS, PREFAB_EXTENSION))
 		app_log->AddLog("%s scene already created, overwritting...", name);
 
-	App->fs.CreateEmptyFile(name, ASSETS_PREFABS, JSON_EXTENSION);
+	App->fs.CreateEmptyFile(name, ASSETS_PREFABS, PREFAB_EXTENSION);
 
 	JSON_Value* prefab = serializePrefab(root);
 
 	std::string path;
-	App->fs.FormFullPath(path, name, ASSETS_PREFABS, JSON_EXTENSION);
+	App->fs.FormFullPath(path, name, ASSETS_PREFABS, PREFAB_EXTENSION);
 	json_serialize_to_file(prefab, path.c_str());
 
 	// Free everything

@@ -291,7 +291,7 @@ bool ModuleImporter::ImportScene(const char * file_original_name, std::string fi
 		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array, out_mat_deff);
 
 		std::string path;
-		App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_PREFABS, JSON_EXTENSION);
+		App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_3DOBJECTS, JSON_EXTENSION);
 		json_serialize_to_file(scene, path.c_str());
 		json_value_free(scene);
 		aiReleaseImport(imported_scene);
