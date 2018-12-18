@@ -29,6 +29,10 @@ public:
 	std::vector<std::string> GetMethodsFromClassHandler(WrenHandle* wrenClass);
 	ScriptData* GenerateScript(const char* file_name);
 
+	void StartInstances();
+	void PauseInstances();
+	void StopInstances();
+
 public:
 
 	WrenVM* vm							= nullptr;

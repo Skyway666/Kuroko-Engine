@@ -58,39 +58,54 @@ bool ModuleScripting::Init(const JSON_Object* config)
 		return false;
 }
 
-update_status ModuleScripting::Update(float dt) 
+update_status ModuleScripting::Update(float dt)
 {
-
-		for (auto instance = loaded_instances.begin(); instance != loaded_instances.end(); instance++)
+	for (auto instance = loaded_instances.begin(); instance != loaded_instances.end(); instance++)
+	{
+		for (auto var = (*instance)->vars.begin(); var != (*instance)->vars.end(); var++)
 		{
-			for (auto var = (*instance)->vars.begin(); var != (*instance)->vars.end(); var++)
+			if (var->isEdited())
 			{
-				if (var->isEdited())
+				wrenEnsureSlots(vm, 2);
+				wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
+
+				switch ((*var).getType())
 				{
-					wrenEnsureSlots(vm, 2);
-					wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
+				case ImportedVariable::WREN_BOOL:
+					wrenSetSlotBool(vm, 1, (*var).GetValue().value_bool);
+					break;
+				case ImportedVariable::WREN_NUMBER:
+					wrenSetSlotDouble(vm, 1, (*var).GetValue().value_number);
+					break;
+				case ImportedVariable::WREN_STRING:
+					wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
+					break;
+				}
 
-					switch ((*var).getType())
-					{
-					case ImportedVariable::WREN_BOOL:
-						wrenSetSlotBool(vm, 1, (*var).GetValue().value_bool);
-						break;
-					case ImportedVariable::WREN_NUMBER:
-						wrenSetSlotDouble(vm, 1, (*var).GetValue().value_number);
-						break;
-					case ImportedVariable::WREN_STRING:
-						wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
-						break;
-					}
-
-					for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
-					{
-						if ((*setter).getName() == (*var).getName() + "=(_)")
-							wrenCall(vm, (*setter).getWrenHandle());
-					}
+				for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
+				{
+					if ((*setter).getName() == (*var).getName() + "=(_)")
+						wrenCall(vm, (*setter).getWrenHandle());
 				}
 			}
+		}
 
+		if ((*instance)->getState() == SCRIPT_STARTING)
+		{
+			for (auto it = (*instance)->methods.begin(); it != (*instance)->methods.end(); it++)
+			{
+				if ((*it).getName() == "Start()")
+				{
+					wrenEnsureSlots(vm, 1);
+					wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
+					wrenCall(vm, (*it).getWrenHandle());
+					break;
+				}
+			}
+			(*instance)->setState(SCRIPT_UPDATING);
+		}
+		else if ((*instance)->getState() == SCRIPT_UPDATING)
+		{
 			for (auto it = (*instance)->methods.begin(); it != (*instance)->methods.end(); it++)
 			{
 				if ((*it).getName() == "Update()")
@@ -102,8 +117,14 @@ update_status ModuleScripting::Update(float dt)
 				}
 			}
 		}
+	}
 	return UPDATE_CONTINUE;
 }
+
+
+void ModuleScripting::StartInstances() { for (auto it : loaded_instances) (*it).setState(SCRIPT_STARTING); };
+void ModuleScripting::PauseInstances() { for (auto it : loaded_instances) (*it).setState(SCRIPT_PAUSED); };
+void ModuleScripting::StopInstances() { for (auto it : loaded_instances)  (*it).setState(SCRIPT_STOPPED); };
 
 bool ModuleScripting::CleanUp() 
 {

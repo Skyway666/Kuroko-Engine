@@ -60,10 +60,13 @@ public:
 	std::vector<ImportedVariable> getArgList() { return arg_list; };
 };
 
+enum ScriptState { SCRIPT_STARTING, SCRIPT_UPDATING, SCRIPT_CLOSING, SCRIPT_PAUSED, SCRIPT_STOPPED};
 
 struct ScriptData
 {
 	~ScriptData();
+	ScriptState getState() { return state; }
+	void setState(ScriptState st) { state = st; }
 
 	std::string class_name;
 
@@ -71,4 +74,7 @@ struct ScriptData
 
 	std::vector<ImportedVariable> vars;
 	std::vector<ImportedMethod>  methods;
+
+private:
+	ScriptState state = SCRIPT_STOPPED;
 };

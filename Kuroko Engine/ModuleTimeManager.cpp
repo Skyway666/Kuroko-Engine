@@ -2,7 +2,7 @@
 #include "Applog.h"
 #include "ModuleScene.h"
 #include "Application.h"
-
+#include "ModuleScripting.h"
 
 
 ModuleTimeManager::ModuleTimeManager(Application * app, bool start_enabled): Module(app, start_enabled)
@@ -126,8 +126,9 @@ void ModuleTimeManager::ManageAdvance() {
 	}
 }
 
-
-
+void ModuleTimeManager::Play()  { game_state = GameState::PLAYING; App->scripting->StartInstances(); };
+void ModuleTimeManager::Pause() { game_state = GameState::PAUSED; App->scripting->StopInstances(); };
+void ModuleTimeManager::Stop()  { game_state = GameState::STOPPED; App->scripting->PauseInstances(); };
 
 update_status ModuleTimeManager::Update(float dt)
 {
