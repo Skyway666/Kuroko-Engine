@@ -492,7 +492,7 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 			App->scene->deleteGameObjectRecursive(&game_object);
 
 		if (ImGui::Button(("Save to prefab##" + game_object.getName() + std::to_string(id) + "prefab save gobj button").c_str()))
-			App->scene->SavePrefab(&game_object, (game_object.getName() + "_prefab").c_str());
+			App->scene->SavePrefab(&game_object, (game_object.getName()).c_str());
 
 		ImGui::EndPopup();
 	}
@@ -1374,7 +1374,7 @@ void ModuleUI::DrawAssetsWindow()
 			{
 				const char* type = App->resources->assetExtension2type(extension.c_str());
 
-				if (type == "scene")
+				if (type == "3dobject")
 				{
 
 					if (ImGui::IsMouseDoubleClicked(0)) {
@@ -1404,37 +1404,36 @@ void ModuleUI::DrawAssetsWindow()
 
 
 				}
-				else if (type == "json")
-				{
-					if (name.find("_prefab") != std::string::npos)
-					{
-						if (ImGui::IsMouseDoubleClicked(0)) {
-							ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
-							if (ImGui::IsItemHovered())
-								App->scene->AskPrefabLoadFile((char*)it.path().generic_string().c_str());
-						}
-						else {
-							if (ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-								selected_asset = it.path().generic_string();
-							else if (ImGui::IsItemHovered())
-								item_hovered = true;
-						}
+				else if (type == "prefab") {
+
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered())
+							App->scene->AskPrefabLoadFile((char*)it.path().generic_string().c_str());
 					}
-					else
-					{
-						if (ImGui::IsMouseDoubleClicked(0)) {
-							ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
-							if (ImGui::IsItemHovered())
-								App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
-						}
-						else {
-							if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
-								selected_asset = it.path().generic_string();
-							else if (ImGui::IsItemHovered())
-								item_hovered = true;
-						}
+					else {
+						if (ImGui::ImageButton((void*)ui_textures[PREFAB_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+						else if (ImGui::IsItemHovered())
+							item_hovered = true;
 					}
 				}
+
+				else if(type == "scene")
+				{
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
+						if (ImGui::IsItemHovered())
+							App->scene->AskSceneLoadFile((char*)it.path().generic_string().c_str());
+					}
+					else {
+						if (ImGui::ImageButton((void*)ui_textures[SCENE_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f)))
+							selected_asset = it.path().generic_string();
+						else if (ImGui::IsItemHovered())
+							item_hovered = true;
+					}
+				}
+
 				else if (type == "script")
 				{
 					if (ImGui::IsMouseDoubleClicked(0)) {
@@ -1486,10 +1485,6 @@ void ModuleUI::DrawAssetsWindow()
 	{
 		if (ImGui::Button("Add script")) 
 			name_script = true;
-		
-
-
-		
 
 		ImGui::EndPopup();
 	}
@@ -1557,7 +1552,7 @@ void ModuleUI::DrawAssetInspector()
 			ImGui::End();
 			return;
 		}
-		else if (extension == ".json")
+		else if (extension == ".scene")
 		{
 			ImGui::Text("type: scene");
 			ImGui::End();
@@ -1565,7 +1560,7 @@ void ModuleUI::DrawAssetInspector()
 		}
 
 		const char* type = App->resources->assetExtension2type(extension.c_str());
-		if(type == "scene")
+		if(type == "3dobject")
 			ImGui::Text("type: 3D object");
 		else
 			ImGui::Text("type: %s", type);

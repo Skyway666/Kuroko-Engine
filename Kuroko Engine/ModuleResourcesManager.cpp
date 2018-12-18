@@ -532,6 +532,10 @@ const char * ModuleResourcesManager::assetExtension2type(const char * _extension
 		ret = "json";
 	else if (extension == ".meta")
 		ret = "meta";
+	else if (extension == ".prefab")
+		ret = "prefab";
+	else if (extension == ".scene")
+		ret = "scene";
 
 
 	return ret;

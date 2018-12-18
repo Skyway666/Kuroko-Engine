@@ -8,6 +8,8 @@
 #define JSON_EXTENSION ".json"
 #define DDS_EXTENSION ".dds"
 #define META_EXTENSION ".meta"
+#define SCENE_EXTENSION ".scene"
+#define PREFAB_EXTENSION ".prefab"
 
 #define LIBRARY_FOLDER "Library\\"
 #define MESHES_FOLDER "Library\\Meshes\\"
