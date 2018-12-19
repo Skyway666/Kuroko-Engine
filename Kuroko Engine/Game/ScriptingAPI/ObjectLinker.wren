@@ -2,6 +2,9 @@
 class ObjectComunicator{
 	foreign static C_setPos(gameObject, x, y, z)
 	foreign static C_modPos(gameObject, x, y, z)
+	foreign static C_getPosX(gameObject)
+	foreign static C_getPosY(gameObject)
+	foreign static C_getPosZ(gameObject)
 }
 
 class EngineComunicator{
@@ -32,5 +35,17 @@ class ObjectLinker{
 	}
 	modPos(x,y,z){
 		ObjectComunicator.C_modPos(gameObject, x, y, z)
+	}
+
+	getPosX(){
+		return ObjectComunicator.C_getPosX(gameObject)
+	}
+
+	getPosY(){
+		return ObjectComunicator.C_getPosY(gameObject)
+	}
+
+	getPosZ(){
+		return ObjectComunicator.C_getPosZ(gameObject)
 	}
 }

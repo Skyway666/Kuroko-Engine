@@ -20,7 +20,7 @@ construct new(){}
 
  Update() {
    if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
-      EngineComunicator.Instantiate(bullet, 0, 1, 2)
+      EngineComunicator.Instantiate(bullet, getPosX(), getPosY(), getPosZ())
    }
  }
 }
