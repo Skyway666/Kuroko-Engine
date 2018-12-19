@@ -19,8 +19,8 @@ construct new(){}
  Start() {}
 
  Update() {
-   if(InputComunicator.getKey(InputComunicator.SPACE)){
-      EngineComunicator.Instanciate(bullet)
+   if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
+      EngineComunicator.Instantiate(bullet, 0, 1, 2)
    }
  }
 }

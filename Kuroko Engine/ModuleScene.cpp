@@ -336,8 +336,9 @@ void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
 		deleteGameObjectRecursive(*it);
 }
 
-void ModuleScene::AskPrefabLoadFile(const char * path) {
+void ModuleScene::AskPrefabLoadFile(const char * path, float3 pos) {
 	want_load_prefab_file = true;
+	prefab_load_spawn = pos;
 	path_to_load_prefab = path;
 
 }
@@ -441,14 +442,14 @@ void ModuleScene::LoadScene(const char* path) {
 }
 
 void ModuleScene::LoadPrefab(const char * path) {
-	JSON_Value* scene = json_parse_file(path);
-	if (!scene) {
+	JSON_Value* prefab = json_parse_file(path);
+	if (!prefab) {
 		app_log->AddLog("Couldn't load %s, no value", path);
 		return;
 	}
 
-	loadSerializedScene(scene);
-	json_value_free(scene);
+	loadSerializedPrefab(prefab);
+	json_value_free(prefab);
 
 }
 
@@ -497,9 +498,6 @@ void ModuleScene::loadSerializedScene(JSON_Value * scene) {
 
 	JSON_Array* objects = json_object_get_array(json_object(scene), "Game Objects");
 
-	uint obj_num = json_array_get_count(objects);
-
-
 	std::map<uint, GameObject*> loaded_gameobjects; // Store objects with parenting uuid
 	std::map<uint, uint> child_parent;	// Store parenting info
 
@@ -534,6 +532,54 @@ void ModuleScene::loadSerializedScene(JSON_Value * scene) {
 		game_objects.push_back((*it).second);			
 	}
 }
+
+void ModuleScene::loadSerializedPrefab(JSON_Value * prefab) {
+
+	JSON_Array* objects = json_object_get_array(json_object(prefab), "Game Objects");
+
+	std::map<uint, GameObject*> loaded_gameobjects; // Store objects with parenting uuid
+	std::map<uint, uint> child_parent;	// Store parenting info
+
+	// Load all the objects, put them in the "loaded_gameobjects" array and set their parenting
+	for (int i = 0; i < json_array_get_count(objects); i++) {
+		JSON_Object* obj_deff = json_array_get_object(objects, i);
+		uint parent = json_object_get_number(obj_deff, "Parent");  // Put the UUID of the parent in the same position as the child
+		uint obj_uuid = json_object_get_number(obj_deff, "UUID");
+		GameObject* obj = new GameObject(obj_deff);
+		child_parent[obj_uuid] = parent;
+		loaded_gameobjects[obj_uuid] = obj;
+	}
+
+	GameObject* father_of_all = nullptr; //Store this for setting prefab spawn position
+
+	for (auto it = child_parent.begin(); it != child_parent.end(); it++) {
+		uint obj_uuid = (*it).first;
+		uint parent = (*it).second;
+		if (parent != 0) {			// If the UUID of the parent is 0, it means that it has no parent
+			// Look for the parent and child among gameobjects
+			GameObject* parent_obj = loaded_gameobjects[parent];
+			GameObject* child_obj = loaded_gameobjects[obj_uuid];
+			// Link parent and child
+			if (parent_obj) {
+				child_obj->setParent(parent_obj);
+				parent_obj->addChild(child_obj);
+			}
+		}
+		else { // This is the root object of the prefab
+			father_of_all = loaded_gameobjects[obj_uuid];
+		}
+	}
+
+	// Set the spawn position of the prefab
+	ComponentTransform* c_trans = (ComponentTransform*)father_of_all->getComponent(TRANSFORM);
+	c_trans->local->setPosition(prefab_load_spawn);
+
+	// Push all gameobjects with handled parenting in the scene
+	for (auto it = loaded_gameobjects.begin(); it != loaded_gameobjects.end(); it++) {
+		game_objects.push_back((*it).second);
+	}
+}
+
 
 
 

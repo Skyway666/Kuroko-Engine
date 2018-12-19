@@ -52,7 +52,7 @@ public:
 	void LoadScriptComponents();
 
 
-	void AskPrefabLoadFile(const char* path);
+	void AskPrefabLoadFile(const char* path, float3 pos);
 	void SavePrefab(GameObject* root_obj, const char* name);
 	void AskSceneSaveFile(char* scene_name); 
 	void AskSceneLoadFile(char* path);
@@ -71,6 +71,7 @@ private:
 	JSON_Value* serializePrefab(GameObject* root_obj);
 
 	void loadSerializedScene(JSON_Value* scene);
+	void loadSerializedPrefab(JSON_Value* prefab);
 private:
 
 	std::list<GameObject*>	game_objects; 
@@ -81,7 +82,9 @@ private:
 
 	bool want_save_scene_file = false;
 	bool want_load_scene_file = false;
+
 	bool want_load_prefab_file = false;
+	float3 prefab_load_spawn;
 	bool want_local_save      = false;
 	bool want_local_load	  = false;
 

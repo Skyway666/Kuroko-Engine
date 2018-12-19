@@ -7,19 +7,19 @@ class Move is ObjectLinker{
 	speed=(v) { __speed = v }
 
 	Update(){
-		if(InputComunicator.getKey(InputComunicator.UP)){
+		if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
 			modPos(0,0,-speed)
 		}
 		
-		if(InputComunicator.getKey(InputComunicator.DOWN)){
+		if(InputComunicator.getKey(InputComunicator.DOWN, InputComunicator.KEY_REPEAT)){
 			modPos(0,0,speed)
 		}
 
-		if(InputComunicator.getKey(InputComunicator.LEFT)){
+		if(InputComunicator.getKey(InputComunicator.LEFT, InputComunicator.KEY_REPEAT)){
 			modPos(-speed,0,0)
 		}
 		
-		if(InputComunicator.getKey(InputComunicator.RIGHT)){
+		if(InputComunicator.getKey(InputComunicator.RIGHT, InputComunicator.KEY_REPEAT)){
 			modPos(speed,0,0)
 		}
 	}

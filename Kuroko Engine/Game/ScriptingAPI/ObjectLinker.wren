@@ -6,7 +6,7 @@ class ObjectComunicator{
 
 class EngineComunicator{
 	foreign static consoleOutput(message)
-	foreign static Instanciate(prefab_name)
+	foreign static Instantiate(prefab_name, x, y, z)
 }
 
 class InputComunicator{
@@ -16,7 +16,10 @@ class InputComunicator{
 	static LEFT {80}
 	static RIGHT {79}
 	static SPACE {44}
-	foreign static getKey(key)
+
+	static KEY_DOWN {1}
+	static KEY_REPEAT {2}
+	foreign static getKey(key, mode)
 }
 
 
@@ -27,7 +30,6 @@ class ObjectLinker{
 	setPos(x,y,z){
 		ObjectComunicator.C_setPos(gameObject, x, y, z)
 	}
-
 	modPos(x,y,z){
 		ObjectComunicator.C_modPos(gameObject, x, y, z)
 	}

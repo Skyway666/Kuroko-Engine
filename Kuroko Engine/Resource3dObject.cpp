@@ -47,7 +47,7 @@ Resource3dObject::~Resource3dObject() {
 }
 
 void Resource3dObject::LoadToMemory() {
-	App->scene->AskPrefabLoadFile(binary.c_str());
+	App->scene->AskPrefabLoadFile(binary.c_str(), float3(0, 0, 0));
 	loaded_in_memory = true;
 }
 
