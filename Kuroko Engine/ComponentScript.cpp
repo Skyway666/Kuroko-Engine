@@ -40,16 +40,24 @@ ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Compo
 				if (type_string == "number") {
 					Var value;
 					value.value_number = json_object_get_number(variable, "value");
+					(*it).setType(ImportedVariable::WREN_NUMBER);
 					(*it).SetValue(value, ImportedVariable::WREN_NUMBER);
 				}
 				if (type_string == "bool") {
 					Var value;
 					value.value_bool = json_object_get_boolean(variable, "value");
+					(*it).setType(ImportedVariable::WREN_BOOL);
 					(*it).SetValue(value, ImportedVariable::WREN_BOOL);
 				}
 				if (type_string == "string") {
 					Var value;
-					value.value_string = json_object_get_string(variable, "value");
+					const char* json_string = json_object_get_string(variable, "value");
+					int string_size = strlen(json_string) + 1; // 1 for the /0
+					char* value_string = new char[string_size];
+					strcpy(value_string, json_string);
+					value_string[string_size - 1] = '\0';
+					value.value_string = value_string;
+					(*it).setType(ImportedVariable::WREN_STRING);
 					(*it).SetValue(value, ImportedVariable::WREN_STRING);
 				}
 			}

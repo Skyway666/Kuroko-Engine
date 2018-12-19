@@ -36,8 +36,10 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	mat = new Material();
 	// ASSIGNING RESOURCE
 	uint diffuse_resource = json_object_dotget_number(deff, "material.diffuse_resource_uuid");
-	App->resources->assignResource(diffuse_resource);
-	mat->setTextureResource(DIFFUSE, diffuse_resource);
+	if(diffuse_resource != 0){
+		App->resources->assignResource(diffuse_resource);
+		mat->setTextureResource(DIFFUSE, diffuse_resource);
+	}
 }
 
 ComponentMesh::~ComponentMesh() {
