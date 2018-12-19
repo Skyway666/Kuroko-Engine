@@ -1150,7 +1150,7 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 			x = (((x - window_pos.x) / ImGui::GetItemRectSize().x) * 2)  - 1;
 			y = (((y - window_pos.y) / ImGui::GetItemRectSize().y) * -2) + 1;
 
-			App->scene->selected_obj = App->scene->MousePicking(x, y, camera.getParent() ? camera.getParent()->getParent() : nullptr);
+			App->scene->selected_obj = App->scene->MousePicking(camera.getParent() ? camera.getParent()->getParent() : nullptr);
 		}
 		ImGui::End();
 	}

@@ -131,7 +131,7 @@ update_status ModuleScene::Update(float dt)
 		float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
 		float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
 
-		selected_obj = MousePicking(x, y);
+		selected_obj = MousePicking();
 	}
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -176,8 +176,11 @@ void ModuleScene::DrawScene(float3 camera_pos)
 
 bool sortCloserRayhit(const RayHit& a, const RayHit& b) { return a.distance < b.distance; }
 
-GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
+GameObject* ModuleScene::MousePicking(GameObject* ignore)
 {
+	float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
+	float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
+
 	GameObject* ret = nullptr;
 
 	Frustum* f = App->camera->selected_camera->getFrustum();
@@ -218,10 +221,10 @@ GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 					(global->getRotation() * (global->getScale().Mul(vertices[tris[i].v2])) + global->getPosition()),
 					(global->getRotation() * (global->getScale().Mul(vertices[tris[i].v3])) + global->getPosition()));
 
-				float out_dist = 0.0f;
-				float3 intersection_point = float3::zero;
-				if (ray.Intersects(t, &out_dist, &intersection_point))
-					ray_hits.push_back(RayHit(out_dist, *it));
+				RayHit hit(*it);
+
+				if (ray.Intersects(t, &hit.distance, &hit.intersection_point))
+					ray_hits.push_back(hit);
 			}
 		}
 	}
@@ -231,6 +234,69 @@ GameObject* ModuleScene::MousePicking(float x, float y, GameObject* ignore)
 	else {
 		ray_hits.sort(sortCloserRayhit);
 		return ray_hits.front().obj;
+	}
+}
+
+
+float3 ModuleScene::MousePickingHit(GameObject* ignore)
+{
+
+	float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
+	float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
+
+	GameObject* ret = nullptr;
+
+	Frustum* f = App->camera->selected_camera->getFrustum();
+	Ray ray = f->UnProjectLineSegment(x, y).ToRay();
+
+	std::list<GameObject*> intersected_objs;
+
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+	{
+		if ((*it)->getComponent(MESH))
+		{
+			OBB* obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->getOBB();
+			if (ray.Intersects(*obb) && *it != ignore)
+				intersected_objs.push_back(*it);
+		}
+	}
+
+	if (intersected_objs.empty())
+		return float3::zero;
+
+	std::list<RayHit> ray_hits;
+
+	for (auto it = intersected_objs.begin(); it != intersected_objs.end(); it++)
+	{
+		Transform* global = ((ComponentTransform*)(*it)->getComponent(TRANSFORM))->global;
+		std::list<Component*> meshes;
+		(*it)->getComponents(MESH, meshes);
+		for (auto it2 = meshes.begin(); it2 != meshes.end(); it2++)
+		{
+			Mesh* mesh = ((ComponentMesh*)*it2)->getMesh();
+
+			for (int i = 0; i < mesh->getNumTris(); i++)
+			{
+				const float3* vertices = mesh->getVertices();
+				const Tri* tris = mesh->getTris();
+
+				Triangle t((global->getRotation() * (global->getScale().Mul(vertices[tris[i].v1])) + global->getPosition()),
+					(global->getRotation() * (global->getScale().Mul(vertices[tris[i].v2])) + global->getPosition()),
+					(global->getRotation() * (global->getScale().Mul(vertices[tris[i].v3])) + global->getPosition()));
+
+				RayHit hit(*it);
+
+				if (ray.Intersects(t, &hit.distance, &hit.intersection_point))
+					ray_hits.push_back(hit);
+			}
+		}
+	}
+
+	if (ray_hits.empty())
+		return float3::zero;
+	else {
+		ray_hits.sort(sortCloserRayhit);
+		return ray_hits.front().intersection_point;
 	}
 }
 

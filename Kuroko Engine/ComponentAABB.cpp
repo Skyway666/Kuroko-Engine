@@ -65,7 +65,7 @@ bool ComponentAABB::Update(float dt)
 	if (isActive())
 	{
 		obb->pos = transform->global->getPosition();
-		obb->r =  (getParent()->own_half_size * transform->global->getScale().x, getParent()->own_half_size * transform->global->getScale().y, getParent()->own_half_size * transform->global->getScale().z);
+		obb->r = { getParent()->own_half_size.x * transform->global->getScale().x, getParent()->own_half_size.y * transform->global->getScale().y, getParent()->own_half_size.z * transform->global->getScale().z };
 
 		obb->axis[0] = transform->global->Right();
 		obb->axis[1] = transform->global->Up();

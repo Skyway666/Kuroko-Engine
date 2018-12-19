@@ -2,6 +2,7 @@
 class ObjectComunicator{
 	foreign static C_setPos(gameObject, x, y, z)
 	foreign static C_modPos(gameObject, x, y, z)
+	foreign static C_lookAt(gameObject, x, y, z)
 	foreign static C_getPosX(gameObject)
 	foreign static C_getPosY(gameObject)
 	foreign static C_getPosZ(gameObject)
@@ -23,6 +24,9 @@ class InputComunicator{
 	static KEY_DOWN {1}
 	static KEY_REPEAT {2}
 	foreign static getKey(key, mode)
+	foreign static getMouseRaycastX()
+	foreign static getMouseRaycastY()
+	foreign static getMouseRaycastZ()
 }
 
 
@@ -35,6 +39,10 @@ class ObjectLinker{
 	}
 	modPos(x,y,z){
 		ObjectComunicator.C_modPos(gameObject, x, y, z)
+	}
+
+	lookAt(x,y,z){
+		ObjectComunicator.C_lookAt(gameObject, x, y, z)
 	}
 
 	getPosX(){

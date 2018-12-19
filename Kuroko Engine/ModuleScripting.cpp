@@ -15,9 +15,13 @@
 void ConsoleLog(WrenVM* vm); 
 void SetGameObjectPos(WrenVM* vm);
 void ModGameObjectPos(WrenVM* vm);
+void lookAt(WrenVM* vm);
 void getGameObjectPosX(WrenVM* vm);
 void getGameObjectPosY(WrenVM* vm);
 void getGameObjectPosZ(WrenVM* vm);
+void getMouseRaycastX(WrenVM* vm);
+void getMouseRaycastY(WrenVM* vm);
+void getMouseRaycastZ(WrenVM* vm);
 void GetKey(WrenVM* vm);
 void InstantiatePrefab(WrenVM* vm);
 
@@ -325,6 +329,9 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 			if (strcmp(signature, "C_modPos(_,_,_,_)") == 0) {
 				return ModGameObjectPos; // C function for ObjectComunicator.C_modPos
 			}
+			if (strcmp(signature, "C_lookAt(_,_,_,_)") == 0) {
+				return lookAt; // C function for ObjectComunicator.C_LookAt
+			}
 			if (strcmp(signature, "C_getPosX(_)") == 0) {
 				return getGameObjectPosX; // C function for ObjectComunicator.C_getPosX
 			}
@@ -344,6 +351,12 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_,_)") == 0)
 				return GetKey; // C function for InputComunicator.getKey
+			if (isStatic && strcmp(signature, "getMouseRaycastX()") == 0)
+				return getMouseRaycastX; // C function for InputComunicator.getMouseRaycastX
+			if (isStatic && strcmp(signature, "getMouseRaycastY()") == 0)
+				return getMouseRaycastY; // C function for InputComunicator.getMouseRaycastY
+			if (isStatic && strcmp(signature, "getMouseRaycastZ()") == 0)
+				return getMouseRaycastZ; // C function for InputComunicator.getMouseRaycastZ
 		}
 	}
 
@@ -399,6 +412,22 @@ void ModGameObjectPos(WrenVM* vm) {
 	c_trans->local->setPosition(mod_trans_pos);
 }
 
+void lookAt(WrenVM* vm) {
+
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+
+	float3 target = { (float)wrenGetSlotDouble(vm, 2), (float)wrenGetSlotDouble(vm, 3), (float)wrenGetSlotDouble(vm, 4) };
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+	if (!go) {
+		app_log->AddLog("Script asking for not existing gameObject");
+		return;
+	}
+
+	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
+	c_trans->local->LookAt(target);
+}
+
 void GetKey(WrenVM* vm) {
 	int pressed_key = wrenGetSlotDouble(vm, 1);
 	int mode = wrenGetSlotDouble(vm, 2);
@@ -408,6 +437,23 @@ void GetKey(WrenVM* vm) {
 	wrenSetSlotBool(vm, 0,  key_pressed);
 }
 
+void getMouseRaycastX(WrenVM* vm)
+{
+	float3 hit = App->scene->MousePickingHit();
+	wrenSetSlotDouble(vm, 0, hit.x);
+}
+
+void getMouseRaycastY(WrenVM* vm)
+{
+	float3 hit = App->scene->MousePickingHit();
+	wrenSetSlotDouble(vm, 0, hit.y);
+}
+
+void getMouseRaycastZ(WrenVM* vm)
+{
+	float3 hit = App->scene->MousePickingHit();
+	wrenSetSlotDouble(vm, 0, hit.z);
+}
 
 void InstantiatePrefab(WrenVM* vm) {  // TODO: Instanciate should accept a transform as well (at least)
 

@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "MathGeoLib\MathGeoLib.h"
 #include "MathGeoLib\Geometry\Frustum.h"
+#include "MathGeoLib\Math\float3.h"
 #include "ImGui\ImGuizmo.h"
 #include <list>
 
@@ -15,9 +16,11 @@ class Quadtree;
 
 struct RayHit
 {
-	RayHit(float distance, GameObject*obj) : distance(distance), obj(obj) {};
+	RayHit(GameObject*obj) : obj(obj) {};
+
 	float distance = 0.0f;
 	GameObject* obj = nullptr;
+	float3 intersection_point = float3::zero;
 };
 
 class ModuleScene : public Module
@@ -60,7 +63,8 @@ public:
 	void AskLocalLoadScene() { want_local_load = true; }
 
 
-	GameObject* MousePicking(float x, float y, GameObject* ignore = nullptr);
+	GameObject* MousePicking(GameObject* ignore = nullptr);
+	float3 MousePickingHit(GameObject* ignore = nullptr);
 private:
 	
 	void ManageSceneSaveLoad();
