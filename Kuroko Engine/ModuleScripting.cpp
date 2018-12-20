@@ -12,18 +12,26 @@
 #include "ComponentTransform.h"
 #include "Transform.h"
 
+// Engine comunicator
 void ConsoleLog(WrenVM* vm); 
+void InstantiatePrefab(WrenVM* vm);
+
+// Object comunicator
 void SetGameObjectPos(WrenVM* vm);
 void ModGameObjectPos(WrenVM* vm);
 void lookAt(WrenVM* vm);
 void getGameObjectPosX(WrenVM* vm);
 void getGameObjectPosY(WrenVM* vm);
 void getGameObjectPosZ(WrenVM* vm);
+void Kill(WrenVM* vm);
+
+// Input comunicator
+void GetKey(WrenVM* vm);
 void getMouseRaycastX(WrenVM* vm);
 void getMouseRaycastY(WrenVM* vm);
 void getMouseRaycastZ(WrenVM* vm);
-void GetKey(WrenVM* vm);
-void InstantiatePrefab(WrenVM* vm);
+
+
 
 WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char* className, bool isStatic, const char* signature); // Wren foraign methods
 WrenForeignClassMethods bindForeignClass(WrenVM* vm, const char* module, const char* className);
@@ -341,12 +349,18 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 			if (strcmp(signature, "C_getPosZ(_)") == 0) {
 				return getGameObjectPosZ; // C function for ObjectComunicator.C_getPosZ
 			}
+			if (strcmp(signature, "C_getPosZ(_)") == 0) {
+				return getGameObjectPosZ; // C function for ObjectComunicator.C_getPosZ
+			}
+			if (strcmp(signature, "C_Kill(_)") == 0) {
+				return Kill; // C function for ObjectComunicator.C_getPosZ
+			}
 		}
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
 			if (isStatic && strcmp(signature, "Instantiate(_,_,_,_)") == 0)
-				return InstantiatePrefab; // C function for EngineComunicator.consoleOutput
+				return InstantiatePrefab; // C function for EngineComunicator.Instantiate
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_,_)") == 0)
@@ -505,4 +519,11 @@ void getGameObjectPosZ(WrenVM* vm) {
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
 	wrenSetSlotDouble(vm, 0, c_trans->local->getPosition().z);
+}
+
+void Kill(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+
+	if(GameObject* go = App->scene->getGameObject(gameObjectUUID))
+		App->scene->deleteGameObject(go);
 }

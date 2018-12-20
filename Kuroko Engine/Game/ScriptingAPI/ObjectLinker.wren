@@ -6,6 +6,7 @@ class ObjectComunicator{
 	foreign static C_getPosX(gameObject)
 	foreign static C_getPosY(gameObject)
 	foreign static C_getPosZ(gameObject)
+	foreign static C_Kill(gameObject)
 }
 
 class EngineComunicator{
@@ -43,6 +44,10 @@ class ObjectLinker{
 
 	lookAt(x,y,z){
 		ObjectComunicator.C_lookAt(gameObject, x, y, z)
+	}
+
+	kill(){
+	    ObjectComunicator.C_Kill(gameObject)
 	}
 
 	getPosX(){

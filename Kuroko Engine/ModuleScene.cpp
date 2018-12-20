@@ -356,10 +356,16 @@ void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)
 		if (!(*it)->getParent())
 			list_to_fill.push_back(*it);
 
-	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
-		for (auto it2 = list_to_fill.begin(); it2 != list_to_fill.end(); it2++)
-			if (*it == *it2)
-				list_to_fill.remove(*it);
+	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++) {
+		bool iterator_found = false;
+		for (auto it2 = list_to_fill.begin(); it2 != list_to_fill.end(); it2++) {
+			if (*it == *it2){
+				iterator_found = true;
+				break;
+			}
+		}
+		list_to_fill.remove(*it);
+	}		
 }
 
 void ModuleScene::CleanScriptComponents()
