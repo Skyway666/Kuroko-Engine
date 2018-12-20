@@ -1511,7 +1511,7 @@ void ModuleUI::DrawAssetsWindow()
 			open_script_path = full_path;
 			std::string file_initial_text;
 			file_initial_text = 
-				"\nimport \"ObjectLinker\" for ObjectLinker, EngineComunicator, InputComunicator\n"
+				"\nimport \"ObjectLinker\" for ObjectLinker,\nEngineComunicator,\nInputComunicator\n"
 				"\n//For each var you declare, remember to create" 
 				"\n//		setters [varname=(v) { __varname = v }]" 
 				"\n//		and getters [varname { __varname }]" 

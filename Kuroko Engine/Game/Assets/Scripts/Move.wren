@@ -1,4 +1,6 @@
-import "ObjectLinker" for ObjectLinker, EngineComunicator, InputComunicator
+import "ObjectLinker" for ObjectLinker,
+EngineComunicator,
+InputComunicator
 
 class Move is ObjectLinker{
 	construct new(){}

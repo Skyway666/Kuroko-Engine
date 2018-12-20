@@ -1,5 +1,7 @@
 
-import "ObjectLinker" for ObjectLinker, EngineComunicator, InputComunicator
+import "ObjectLinker" for ObjectLinker,
+EngineComunicator,
+InputComunicator
 
 //For each var you declare, remember to create
 //		setters [varname=(v) { __varname = v }]
