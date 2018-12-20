@@ -11,18 +11,16 @@ InputComunicator
 //Be careful not to overwrite the methods declared in Game/ScriptingAPI/ObjectLinker.wren
 //[gameObject] is a reserved identifier for the engine, don't use it for your own variables
 
-class Shoot is ObjectLinker{
+class MoveForward is ObjectLinker{
 
 construct new(){}
 
- bullet { _bullet}
- bullet=(v) { _bullet = v}
+ speed {_speed}
+ speed=(v) {_speed = v}
 
  Start() {}
 
  Update() {
-   if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
-      EngineComunicator.Instantiate(bullet, getPosX(), getPosY(), getPosZ(),0,0,0)
-   }
+   moveForward(speed)
  }
 }

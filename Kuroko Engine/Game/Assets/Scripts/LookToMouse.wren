@@ -5,7 +5,7 @@ class LookToMouse is ObjectLinker{
 	construct new(){}
 
 	Update(){		
-		lookAt(InputComunicator.getMouseRaycastX() , 0, InputComunicator.getMouseRaycastZ() )
+		lookAt(InputComunicator.getMouseRaycastX() , getPosY(), InputComunicator.getMouseRaycastZ() )
 	}
 }
 

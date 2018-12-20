@@ -2,6 +2,8 @@
 #include "Wren/wren.hpp"
 #include "Application.h"
 #include "ModuleResourcesManager.h"
+#include "ModuleTimeManager.h"
+
 #include "ModuleInput.h"
 #include "GameObject.h"
 #include "Applog.h"
@@ -101,6 +103,10 @@ void ComponentScript::LoadResource() {
 	instance_data->vars = base_script_data->vars;
 	instance_data->methods = base_script_data->methods;
 	instance_data->class_handle = App->scripting->GetHandlerToClass(instance_data->class_name.c_str(), instance_data->class_name.c_str());
+
+	// If the game is playing the script should start executing right away
+	if(App->time->getGameState() == GameState::PLAYING) 
+		instance_data->setState(ScriptState::SCRIPT_STARTING);
 
 	LinkScriptToObject();
 

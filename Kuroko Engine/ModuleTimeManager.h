@@ -48,8 +48,9 @@ public:
 	void Pause();
 	void Stop();
 
-	void Advance(int frames);
 	GameState getGameState() { return game_state; }
+
+	void Advance(int frames);
 	float getRealTime() { return real_time.Read();}
 	float getGameTime() { return game_time.Read();}
 	float getDeltaTime(); // Will only return delta if the game isn't stopped

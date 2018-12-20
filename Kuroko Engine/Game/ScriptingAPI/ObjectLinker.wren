@@ -7,11 +7,12 @@ class ObjectComunicator{
 	foreign static C_getPosY(gameObject)
 	foreign static C_getPosZ(gameObject)
 	foreign static C_Kill(gameObject)
+	foreign static C_MoveForward(gameObject, speed)
 }
 
 class EngineComunicator{
 	foreign static consoleOutput(message)
-	foreign static Instantiate(prefab_name, x, y, z)
+	foreign static Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
 }
 
 class InputComunicator{
@@ -60,5 +61,9 @@ class ObjectLinker{
 
 	getPosZ(){
 		return ObjectComunicator.C_getPosZ(gameObject)
+	}
+
+	moveForward(speed){
+		ObjectComunicator.C_MoveForward(gameObject, speed)
 	}
 }

@@ -23,7 +23,8 @@ void lookAt(WrenVM* vm);
 void getGameObjectPosX(WrenVM* vm);
 void getGameObjectPosY(WrenVM* vm);
 void getGameObjectPosZ(WrenVM* vm);
-void Kill(WrenVM* vm);
+void KillGameObject(WrenVM* vm);
+void MoveGameObjectForward(WrenVM* vm);
 
 // Input comunicator
 void GetKey(WrenVM* vm);
@@ -353,13 +354,16 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return getGameObjectPosZ; // C function for ObjectComunicator.C_getPosZ
 			}
 			if (strcmp(signature, "C_Kill(_)") == 0) {
-				return Kill; // C function for ObjectComunicator.C_getPosZ
+				return KillGameObject; // C function for ObjectComunicator.C_Kill
+			}
+			if (strcmp(signature, "C_MoveForward(_,_)") == 0) {
+				return MoveGameObjectForward; // C function for ObjectComunicator.C_MoveForward
 			}
 		}
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
-			if (isStatic && strcmp(signature, "Instantiate(_,_,_,_)") == 0)
+			if (isStatic && strcmp(signature, "Instantiate(_,_,_,_,_,_,_)") == 0)
 				return InstantiatePrefab; // C function for EngineComunicator.Instantiate
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
@@ -477,6 +481,10 @@ void InstantiatePrefab(WrenVM* vm) {  // TODO: Instanciate should accept a trans
 	float y = wrenGetSlotDouble(vm, 3);
 	float z = wrenGetSlotDouble(vm, 4);
 
+	float pitch = wrenGetSlotDouble(vm, 5);
+	float yaw = wrenGetSlotDouble(vm, 6);
+	float roll = wrenGetSlotDouble(vm, 7);
+
 	std::string prefab_path = App->resources->getPrefabPath(prefab_name.c_str());
 
 	App->scene->AskPrefabLoadFile(prefab_path.c_str(), float3(x,y,z));
@@ -521,9 +529,31 @@ void getGameObjectPosZ(WrenVM* vm) {
 	wrenSetSlotDouble(vm, 0, c_trans->local->getPosition().z);
 }
 
-void Kill(WrenVM* vm) {
+void KillGameObject(WrenVM* vm) {
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
 
-	if(GameObject* go = App->scene->getGameObject(gameObjectUUID))
-		App->scene->deleteGameObject(go);
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+	
+	App->scene->deleteGameObject(go);
+}
+
+void MoveGameObjectForward(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	float speed = wrenGetSlotDouble(vm, 2);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
+
+	float3 mod_trans_pos = c_trans->local->getPosition() + (c_trans->local->Forward() * speed);
+	c_trans->local->setPosition(mod_trans_pos);
+
 }
