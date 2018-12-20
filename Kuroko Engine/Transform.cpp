@@ -88,6 +88,11 @@ void Transform::Save(JSON_Object* config) {
 	json_object_set_number(config, "qw", rotation.w);
 }
 
+float3 Transform::getRotationEuler(){
+	euler_angles = rotation.ToEulerXYZ() * RADTODEG; 
+	return euler_angles; 
+}
+
 void Transform::setPosition(const float3& pos) { position = pos; };
 void Transform::Translate(const float3& dir) { position += dir; };
 void Transform::setScale(const float3& scl) { scale = scl; };

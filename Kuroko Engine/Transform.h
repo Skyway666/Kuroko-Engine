@@ -20,7 +20,7 @@ public:
 	void Translate(const float3& dir);
 	void setScale(const float3& scl);
 	void Scale(const float3& scl);
-	void setRotation(const Quat& rot) { rotation = rot; euler_angles = rot.ToEulerXYZ() * RADTODEG;; };
+	void setRotation(const Quat& rot) { rotation = rot; euler_angles = rot.ToEulerXYZ() * RADTODEG;};
 	void setRotationEuler(const float3& euler);
 	void RotateAroundAxis(const float3& axis, float rot_in_degrees) { rotation.RotateAxisAngle(axis, DEGTORAD * (rot_in_degrees)); euler_angles = rotation.ToEulerXYZ() * RADTODEG; };
 	void LookAt(const float3& target);
@@ -29,10 +29,10 @@ public:
 	void Save(JSON_Object* config);
 
 	float4x4 CalculateMatrix();
+	float3 getRotationEuler();
 
 	float3 getPosition()const { return position; };
 	float3 getScale() const { return scale; };
-	float3 getRotationEuler()const { return float3(euler_angles.x, euler_angles.y, euler_angles.z); };
 	Quat getRotation()const { return rotation; };
 	float4x4 getMatrix() const { return mat; };
 

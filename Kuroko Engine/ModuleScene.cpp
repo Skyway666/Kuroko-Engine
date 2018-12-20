@@ -408,9 +408,10 @@ void ModuleScene::deleteGameObjectRecursive(GameObject* gobj)
 		deleteGameObjectRecursive(*it);
 }
 
-void ModuleScene::AskPrefabLoadFile(const char * path, float3 pos) {
+void ModuleScene::AskPrefabLoadFile(const char * path, float3 pos, float3 eulerang) {
 	want_load_prefab_file = true;
-	prefab_load_spawn = pos;
+	prefab_load_spawn.setPosition(pos);
+	prefab_load_spawn.setRotationEuler(eulerang);
 	path_to_load_prefab = path;
 
 }
@@ -644,7 +645,7 @@ void ModuleScene::loadSerializedPrefab(JSON_Value * prefab) {
 
 	// Set the spawn position of the prefab
 	ComponentTransform* c_trans = (ComponentTransform*)father_of_all->getComponent(TRANSFORM);
-	c_trans->local->setPosition(prefab_load_spawn);
+	*c_trans->local = prefab_load_spawn;
 
 	// Push all gameobjects with handled parenting in the scene
 	for (auto it = loaded_gameobjects.begin(); it != loaded_gameobjects.end(); it++) {

@@ -5,6 +5,7 @@
 #include "MathGeoLib\Geometry\Frustum.h"
 #include "MathGeoLib\Math\float3.h"
 #include "ImGui\ImGuizmo.h"
+#include "Transform.h"
 #include <list>
 
 class GameObject; 
@@ -55,7 +56,7 @@ public:
 	void LoadScriptComponents();
 
 
-	void AskPrefabLoadFile(const char* path, float3 pos);
+	void AskPrefabLoadFile(const char* path, float3 pos, float3 eulerang);
 	void SavePrefab(GameObject* root_obj, const char* name);
 	void AskSceneSaveFile(char* scene_name); 
 	void AskSceneLoadFile(char* path);
@@ -88,7 +89,7 @@ private:
 	bool want_load_scene_file = false;
 
 	bool want_load_prefab_file = false;
-	float3 prefab_load_spawn;
+	Transform prefab_load_spawn;
 	bool want_local_save      = false;
 	bool want_local_load	  = false;
 

@@ -3,9 +3,15 @@ class ObjectComunicator{
 	foreign static C_setPos(gameObject, x, y, z)
 	foreign static C_modPos(gameObject, x, y, z)
 	foreign static C_lookAt(gameObject, x, y, z)
+
 	foreign static C_getPosX(gameObject)
 	foreign static C_getPosY(gameObject)
 	foreign static C_getPosZ(gameObject)
+
+	foreign static C_getPitch(gameObject)
+	foreign static C_getYaw(gameObject)
+	foreign static C_getRoll(gameObject)
+
 	foreign static C_Kill(gameObject)
 	foreign static C_MoveForward(gameObject, speed)
 }
@@ -61,6 +67,18 @@ class ObjectLinker{
 
 	getPosZ(){
 		return ObjectComunicator.C_getPosZ(gameObject)
+	}
+
+	getPitch(){
+		return ObjectComunicator.C_getPitch(gameObject)
+	}
+
+	getYaw(){
+		return ObjectComunicator.C_getYaw(gameObject)
+	}
+
+	getRoll(){
+		return ObjectComunicator.C_getRoll(gameObject)
 	}
 
 	moveForward(speed){
