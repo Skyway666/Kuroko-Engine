@@ -14,6 +14,7 @@
 #include "Applog.h"
 #include "ModuleResourcesManager.h"
 #include "ResourceMesh.h"
+#include "ResourceTexture.h"
 
 ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(parent, MESH) {
 	std::string path;
@@ -28,14 +29,29 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 															 
 	if(primitive_type == Primitive_None){			// TODO: Store the color of the meshes
 		// ASSIGNING RESOURCE
-		mesh_resource_uuid = json_object_get_number(deff, "mesh_resource_uuid");
+		const char* parent3dobject = json_object_get_string(deff, "Parent3dObject");
+		if (parent3dobject) // Means that is being loaded from a scene
+			mesh_resource_uuid = App->resources->getMeshResourceUuid(parent3dobject, json_object_get_string(deff, "mesh_name"));
+		else // Means it is being loaded from a 3dObject binary
+			mesh_resource_uuid = json_object_get_number(deff, "mesh_resource_uuid");
+
 		App->resources->assignResource(mesh_resource_uuid);
 	}
 
 
 	mat = new Material();
 	// ASSIGNING RESOURCE
-	uint diffuse_resource = json_object_dotget_number(deff, "material.diffuse_resource_uuid");
+
+	const char* diffuse_path = json_object_dotget_string(deff, "material.diffuse");
+	uint diffuse_resource = 0;
+	if (diffuse_path) { // Means that is being loaded from a scene
+		if(strcmp(diffuse_path, "missing reference") != 0)
+			diffuse_resource = App->resources->getResourceUuid(diffuse_path);
+	}
+	else // Means it is being loaded from a 3dObject binary
+		diffuse_resource = json_object_dotget_number(deff, "material.diffuse_resource_uuid");
+
+
 	if(diffuse_resource != 0){
 		App->resources->assignResource(diffuse_resource);
 		mat->setTextureResource(DIFFUSE, diffuse_resource);
@@ -185,10 +201,27 @@ void ComponentMesh::Save(JSON_Object* config) {
 	// Determine the type of the mesh
  	// Component has two strings, one for mesh name, and another for diffuse texture name
 	json_object_set_string(config, "type", "mesh");
-	json_object_set_number(config, "mesh_resource_uuid", mesh_resource_uuid);
+
+	if(mesh_resource_uuid != 0){
+		//json_object_set_number(config, "mesh_resource_uuid", mesh_resource_uuid);
+		ResourceMesh* res_mesh = (ResourceMesh*)App->resources->getResource(mesh_resource_uuid);
+		if(res_mesh){
+			json_object_set_string(config, "mesh_name", res_mesh->asset.c_str());
+			json_object_set_string(config, "Parent3dObject", res_mesh->Parent3dObject.c_str());
+		}
+		else {
+			json_object_set_string(config, "mesh_name", "missing reference");
+			json_object_set_string(config, "Parent3dObject", "missing reference");
+		}
+	}
 	json_object_set_string(config, "primitive_type", PrimitiveType2primitiveString(primitive_type).c_str());
-	if(mat)  //If it has a material and a diffuse texture
-		json_object_dotset_number(config, "material.diffuse_resource_uuid", mat->getTextureResource(DIFFUSE));
+	if (mat) {  //If it has a material and a diffuse texture
+		ResourceTexture* res_diff = (ResourceTexture*)App->resources->getResource(mat->getTextureResource(DIFFUSE));
+		if(res_diff)
+			json_object_dotset_string(config, "material.diffuse",res_diff->asset.c_str());
+		else
+			json_object_dotset_string(config, "material.diffuse", "missing_reference");
+	}
 }
 
 Mesh * ComponentMesh::getMeshFromResource() const

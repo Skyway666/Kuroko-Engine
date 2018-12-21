@@ -27,6 +27,7 @@ Resource3dObject::Resource3dObject(resource_deff deff): Resource(deff){
 				deff.binary = json_object_get_string(mesh_resource, "mesh_binary_path");
 				deff.uuid = json_object_get_number(mesh_resource, "mesh_resource_uuid");
 				deff.asset = json_object_get_string(mesh_resource, "mesh_name");
+				deff.Parent3dObject = asset;
 				mesh_found = true;
 			}
 

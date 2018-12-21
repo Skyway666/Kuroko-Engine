@@ -12,6 +12,7 @@ public:
 	void UnloadFromMemory();
 public:
 	Mesh* mesh = nullptr;
+	std::string Parent3dObject;
 };
 
 #endif

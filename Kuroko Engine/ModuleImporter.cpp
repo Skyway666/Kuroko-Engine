@@ -185,6 +185,8 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	json_object_set_string(json_object(aabb_component), "type", "AABB");
 	json_array_append_value(json_array(components), aabb_component);
 
+	std::vector<std::string> mesh_names;
+	int same_name_separator = 1;
 	for (int i = 0; i < node.mNumMeshes; i++) {
 		// Import, store and delete mesh
 		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], scene, node.mName.C_Str());
@@ -195,7 +197,19 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
-		json_object_set_string(json_object(mesh_component), "mesh_name", node.mName.C_Str());				// Mesh name(only for file readability)
+
+
+		std::string mesh_name = node.mName.C_Str();
+		mesh_names.push_back(mesh_name);
+		// Look if a mesh with the same name was loaded previously
+		for (auto it = mesh_names.begin(); it != mesh_names.end(); it++) {
+			if ((*it) == mesh_name) { // If it was, add the separator, two meshes can't have the same name
+				mesh_name = mesh_name + "_" + std::to_string(same_name_separator);
+				same_name_separator++;
+				break;
+			}
+		}
+		json_object_set_string(json_object(mesh_component), "mesh_name", mesh_name.c_str());				// Mesh name(only for file readability)
 		json_object_set_string(json_object(mesh_component), "primitive_type", "NONE");
 
 

@@ -25,7 +25,11 @@ struct resource_deff {
 	ResourceType type = R_UNKNOWN;
 	std::string binary;
 	std::string asset;
+
+	// Only used for RM online functionality
 	ResourceUpdateActions requested_update = R_NOTHING;
+	// Only used to store parent 3dObject of meshes
+	std::string Parent3dObject;
 };
 class Resource {
 

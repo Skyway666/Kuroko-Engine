@@ -446,6 +446,19 @@ uint ModuleResourcesManager::getResourceUuid(const char * file) {
 	return ret;
 }
 
+uint ModuleResourcesManager::getMeshResourceUuid(const char * Parent3dObject, const char * name) {
+
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_MESH){
+			ResourceMesh* res_mesh = (ResourceMesh*)(*it).second;
+			if (res_mesh->Parent3dObject == Parent3dObject && res_mesh->asset == name) {
+				return res_mesh->uuid;
+			}
+		}
+	}
+	return 0;
+}
+
 void ModuleResourcesManager::CleanMeta() {
 	using std::experimental::filesystem::recursive_directory_iterator;
 	for (auto& it : recursive_directory_iterator(ASSETS_FOLDER)) {

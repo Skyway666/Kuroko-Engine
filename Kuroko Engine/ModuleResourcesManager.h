@@ -65,6 +65,7 @@ public:
 	// and showcased in the resources debug UI
 	void Load3dObjectToScene(const char* file);
 	uint getResourceUuid(const char* file); // Will not assign the resource 
+	uint getMeshResourceUuid(const char* Parent3dObject, const char* name);
 
 	void CleanResources() { cleanResources = true; }
 
