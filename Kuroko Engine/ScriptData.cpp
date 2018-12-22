@@ -2,10 +2,11 @@
 #include "ModuleScripting.h"
 #include "Application.h"
 
-ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* _value)
+ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* _value, WrenHandle* _getter)
 {
 	var_name = name;
 	data_type = type;
+	getter = _getter;
 
 	bool* var_bool = nullptr;
 	float* var_float = nullptr;

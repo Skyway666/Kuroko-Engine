@@ -14,7 +14,7 @@ struct ImportedVariable
 {
 	enum WrenDataType { WREN_UNKNOWN, WREN_BOOL, WREN_STRING, WREN_NUMBER };
 
-	ImportedVariable(const char* name, WrenDataType type, void* value);
+	ImportedVariable(const char* name, WrenDataType type, void* value, WrenHandle* _getter);
 private:
 	Var value;
 	std::string var_name;
@@ -22,10 +22,12 @@ private:
 	bool is_public = true;
 	bool edited = false;
 	bool forced_type = false;
+	WrenHandle* getter = nullptr;
 
 public:
 	std::string getName()	{ return var_name; }
 	Var GetValue()			{ return value; }
+	WrenHandle* getGetter()  { return getter; }
 	WrenDataType getType()	{ return data_type; }
 	bool isPublic()			{ return is_public; }
 	bool isEdited()			{ return edited; }

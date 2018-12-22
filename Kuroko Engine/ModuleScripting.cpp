@@ -84,10 +84,12 @@ bool ModuleScripting::Init(const JSON_Object* config)
 
 update_status ModuleScripting::Update(float dt)
 {
+	// Iterate all script instances. Change the variables if edited and update them so they match value in script
 	for (auto instance = loaded_instances.begin(); instance != loaded_instances.end(); instance++)
 	{
 		for (auto var = (*instance)->vars.begin(); var != (*instance)->vars.end(); var++)
 		{
+			// Update variables in script with editor values
 			if (var->isEdited())
 			{
 				wrenEnsureSlots(vm, 2);
@@ -105,13 +107,29 @@ update_status ModuleScripting::Update(float dt)
 					wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
 					break;
 				}
-
 				for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
 				{
 					if ((*setter).getName() == (*var).getName() + "=(_)")
 						wrenCall(vm, (*setter).getWrenHandle());
 				}
 			}
+			// Update editor values with variables in script
+			wrenEnsureSlots(vm, 1);
+			wrenSetSlotHandle(vm, 0, (*instance)->class_handle);
+			wrenCall(vm, (*var).getGetter());
+			Var script_value;
+			switch ((*var).getType()) {
+			case ImportedVariable::WREN_BOOL:
+				script_value.value_bool = wrenGetSlotBool(vm, 0);
+				break;
+			case ImportedVariable::WREN_NUMBER:
+				script_value.value_number = wrenGetSlotDouble(vm, 0);
+				break;
+			case ImportedVariable::WREN_STRING:
+				script_value.value_string = wrenGetSlotString(vm, 0);
+				break;
+			}
+			(*var).SetValue(script_value, (*var).getType());
 		}
 
 		if ((*instance)->getState() == SCRIPT_STARTING)
@@ -194,7 +212,7 @@ ScriptData* ModuleScripting::GenerateScript(const char* file_name_c)
 				for (auto it = method_name.find_first_of("_", offset + 1); it != std::string::npos; it = method_name.find_first_of("_", offset + 1))
 				{
 					offset = it;
-					args.push_back(ImportedVariable(var_name_test.c_str(), return_type_test, (void*)&var_value_test));
+					args.push_back(ImportedVariable(var_name_test.c_str(), return_type_test, (void*)&var_value_test, nullptr)); // Don't call getters on arguments
 				}
 
 				script->methods.push_back(ImportedMethod(method_name, return_type_test, args, wrenMakeCallHandle(vm, method_name.c_str())));
@@ -207,7 +225,7 @@ ScriptData* ModuleScripting::GenerateScript(const char* file_name_c)
 		{
 
 			float value_test = 0.0f;
-			ImportedVariable var(method_name.c_str(), ImportedVariable::WrenDataType::WREN_NUMBER, &value_test);
+			ImportedVariable var(method_name.c_str(), ImportedVariable::WrenDataType::WREN_NUMBER, &value_test, wrenMakeCallHandle(vm, method_name.c_str()));
 
 			if (method_name == "gameObject")
 				var.setPublic(false);
