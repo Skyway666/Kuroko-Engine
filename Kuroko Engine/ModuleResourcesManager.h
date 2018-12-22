@@ -4,6 +4,7 @@
 #include "Module.h"
 #include "Resource.h"
 #include "Timer.h"
+#include "ModuleScene.h"
 #include <map>
 #include <list>
 

@@ -26,6 +26,8 @@ struct RayHit
 
 class ModuleScene : public Module
 {
+
+	friend class ModuleResourcesManager;
 public:
 	ModuleScene(Application* app, bool start_enabled = true);
 	~ModuleScene();
