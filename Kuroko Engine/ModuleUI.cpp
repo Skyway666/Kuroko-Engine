@@ -468,19 +468,20 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
 
 	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)game_object.getUUID(), node_flags, game_object.getName().c_str()) && !children.empty();
+	bool item_hovered = ImGui::IsItemHovered();
 
 	if(App->scene->selected_obj == &game_object)
 		selection_mask = (1 << id);
 	else if (App->scene->selected_obj == nullptr)
 		selection_mask = (1 >> id);
 
-	static int show_rename = -1;
 
 	if (ImGui::IsItemClicked())
 		App->scene->selected_obj = &game_object;
 	else if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
 		ImGui::OpenPopup(("##" + game_object.getName() + std::to_string(id) + "Object context menu").c_str());
-	
+
+	static int show_rename = -1;
 	if (ImGui::BeginPopup(("##" + game_object.getName() + std::to_string(id) + "Object context menu").c_str()))
 	{
 		if (ImGui::Button(("Duplicate##" + game_object.getName() + std::to_string(id) + "Duplicate gobj button").c_str()))
@@ -503,12 +504,12 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 		ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
 
 		for (std::list<GameObject*>::iterator it = children.begin(); it != children.end(); it++)
-				DrawHierarchyNode(*(*it), id);
+			if (DrawHierarchyNode(*(*it), id))
+				item_hovered = true;
 
 		ImGui::PopStyleVar();
 		ImGui::TreePop();
 	}
-
 
 	if (show_rename == id)
 	{
@@ -536,8 +537,7 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 			show_rename = -1;
 	}
 
-	return ImGui::IsItemHovered();
-
+	return item_hovered;
 }
 
 void ModuleUI::DrawObjectInspectorTab()
