@@ -19,6 +19,7 @@ class ObjectComunicator{
 class EngineComunicator{
 	foreign static consoleOutput(message)
 	foreign static Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
+	foreign static getTime()
 }
 
 class InputComunicator{

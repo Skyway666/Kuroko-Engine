@@ -1114,6 +1114,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				}
 			}
 
+			if (ImGui::Button("Remove##Remove script"))
+				return false;
+
 		}
 	
 	}

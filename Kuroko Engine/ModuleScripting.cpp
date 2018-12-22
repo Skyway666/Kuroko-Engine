@@ -15,6 +15,7 @@
 // Engine comunicator
 void ConsoleLog(WrenVM* vm); 
 void InstantiatePrefab(WrenVM* vm);
+void getTime(WrenVM* vm);
 
 // Object comunicator
 void SetGameObjectPos(WrenVM* vm);
@@ -376,6 +377,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
 			if (isStatic && strcmp(signature, "Instantiate(_,_,_,_,_,_,_)") == 0)
 				return InstantiatePrefab; // C function for EngineComunicator.Instantiate
+			if (isStatic && strcmp(signature, "getTime()") == 0)
+				return getTime;
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_,_)") == 0)
@@ -607,4 +610,8 @@ void getGameObjectRoll(WrenVM* vm) {
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
 	wrenSetSlotDouble(vm, 0, c_trans->local->getRotationEuler().z);
+}
+
+void getTime(WrenVM* vm) {
+	wrenSetSlotDouble(vm, 0, SDL_GetTicks());
 }

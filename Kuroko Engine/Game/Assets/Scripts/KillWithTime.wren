@@ -11,16 +11,23 @@ InputComunicator
 //Be careful not to overwrite the methods declared in Game/ScriptingAPI/ObjectLinker.wren
 //[gameObject] is a reserved identifier for the engine, don't use it for your own variables
 
-class KillOnSpace is ObjectLinker{
+class KillWithTime is ObjectLinker{
 
 construct new(){}
-
- Start() {}
-
- Update() {
-   if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
-     kill()
-   }
+ 
+ time_to_destroy { _time_to_destroy}
+ time_to_destroy=(v) {_time_to_destroy = v}
+ 
+ starting_time { _starting_time}
+ starting_time=(v) { _starting_time = v}
+ 
+ Start() {
+  starting_time = EngineComunicator.getTime()
  }
 
+ Update() {
+  if(EngineComunicator.getTime() - starting_time > time_to_destroy){
+    kill()
+  }
+ }
 }
