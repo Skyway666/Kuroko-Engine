@@ -1080,7 +1080,24 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 					{
 						type = curr->getType() - 1;
 						if (ImGui::Combo(unique_tag.c_str(), &type, "Bool\0String\0Numeral\0"))
+						{
 							curr->setType((ImportedVariable::WrenDataType)(type + 1));
+							Var nuller;
+							switch (curr->getType())
+							{
+							case ImportedVariable::WrenDataType::WREN_BOOL:
+								nuller.value_bool = false;
+								break;
+							case ImportedVariable::WrenDataType::WREN_NUMBER:
+								nuller.value_number = 0;
+								break;
+							case ImportedVariable::WrenDataType::WREN_STRING:
+								nuller.value_string = nullptr;
+								break;
+							}
+							curr->SetValue(nuller);
+
+						}
 					}
 
 					ImGui::Text(curr->getName().c_str());

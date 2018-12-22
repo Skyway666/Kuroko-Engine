@@ -78,7 +78,10 @@ bool ComponentAABB::Update(float dt)
 		{
 			OBB* child_obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->obb;
 			for (int i = 0; i < 8; i++)
+			{
+				float3 test = child_obb->CornerPoint(i);
 				obb->Enclose(child_obb->CornerPoint(i));
+			}
 		}
 
 		getParent()->centroid = obb->pos;

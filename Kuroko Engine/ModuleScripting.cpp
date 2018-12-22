@@ -129,7 +129,7 @@ update_status ModuleScripting::Update(float dt)
 				script_value.value_string = wrenGetSlotString(vm, 0);
 				break;
 			}
-			(*var).SetValue(script_value, (*var).getType());
+			//(*var).SetValue(script_value, (*var).getType());
 		}
 
 		if ((*instance)->getState() == SCRIPT_STARTING)
