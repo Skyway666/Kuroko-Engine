@@ -200,7 +200,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 
 		std::string mesh_name = node.mName.C_Str();
-		mesh_names.push_back(mesh_name);
+
 		// Look if a mesh with the same name was loaded previously
 		for (auto it = mesh_names.begin(); it != mesh_names.end(); it++) {
 			if ((*it) == mesh_name) { // If it was, add the separator, two meshes can't have the same name
@@ -209,6 +209,8 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 				break;
 			}
 		}
+		mesh_names.push_back(mesh_name);
+
 		json_object_set_string(json_object(mesh_component), "mesh_name", mesh_name.c_str());				// Mesh name(only for file readability)
 		json_object_set_string(json_object(mesh_component), "primitive_type", "NONE");
 

@@ -16,7 +16,7 @@ ComponentScript::ComponentScript(GameObject* g_obj, uint resource_uuid) : Compon
 }
 
 ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Component(parent, SCRIPT) {
-	script_resource_uuid = json_object_get_number(deff, "script_resource_uuid");
+	script_resource_uuid = App->resources->getResourceUuid(json_object_get_string(deff, "script"));
 
 	assignScriptResource(script_resource_uuid);
 	
@@ -138,7 +138,13 @@ void ComponentScript::CleanUp() {
 void ComponentScript::Save(JSON_Object * config) {
 
 	json_object_set_string(config, "type", "script");
-	json_object_set_number(config, "script_resource_uuid", script_resource_uuid); // Gives us all we need but the variables
+
+	ResourceScript* res_script = (ResourceScript*)App->resources->getResource(script_resource_uuid);
+
+	if(res_script)
+		json_object_set_string(config, "script", res_script->asset.c_str()); // Gives us all we need but the variables
+	else
+		json_object_set_string(config, "script", "missing reference"); 
 
 	// Store the variables
 	if (!instance_data) {
