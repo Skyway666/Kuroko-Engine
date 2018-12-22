@@ -28,7 +28,6 @@ Rodrigo De Pedro Lombao
 - Gizmo implemented, with toolbar (does not work in ortographic mode).
 - Mouse Picking.
 
-
 INNOVATION: 
 Rodrigo De Pedro Lombao
 - File import through windows explorer
@@ -63,7 +62,7 @@ Libraries used:
 - Wren 		(http://wren.io/)
 Extra information:
 
-- Press "Space" to see all the viewports at the same time
+- Press "V" to see all the viewports at the same time
 - Use "Empty object" to create an empty object, which will be a child of the currently selected object
 - You can add mesh components to an object, and assign them their material and mesh
 - Using "Import File" or "Drag and drop" on files will add them to the assets folder of the project. 
@@ -73,6 +72,47 @@ Extra information:
   enabled and usable.
 - The update ratio of the resource manager can be changed in the "Resources" window.
 
+
+SUBSYSTEM: Scripting with wren
+
+Features:
+
+- Right click on asset window to add a new script. The name of the script will be the one
+of the class defined in it. The script will automatically include the base libraries to interact
+with the attached gameobject, as well as a constructor, update and start functions, and a comment with instructions
+on how to use it
+
+- Attatch a script to a gameobject by pressing "Add script". This will display a window with all the scripts contained
+in the asset window.
+
+- The same script can be attached to multiple gameobjects, and the variables declared in its class will be displayed
+in the editor. Choose a variable type and assign a value to them. You can force types, which will unable the user to change 
+the variable type from the editor, as well as make variables public or private, which will enable/disable them being shown.
+This is done through the asset inspector, select the script in the asset window and apply the desired changes. The script
+component can be erased using the "Remove" button.
+
+- Variables in the editor will display the value of the variable in the script, even if it is initialized in the "Start()"
+function or modified at runtime.
+
+- Scripts are executed according to the time in the world. "Start()" is executed in the first frame after pressing Play,
+and Update() is executed every frame afterwards. The simulation can be paused as well.
+
+- The system features hot reloading, meaning that scripts can be modified while the engine is running. This will recompile
+all the scripts, but the values assigned to the variables in the editor will remain the same for variables which name's
+are not changed.
+
+- If a script fails to compile, a set of errors will display in the Log. When trying to access components with this script,
+a message will appear warning the user. This can also be seen by selecting said script in the asset window, as it will display
+in the asset inspector.
+
+Constraints:
+
+- Can't modify scripts while the simulation is running
+
+Advices
+
+- Remember to initialize variables in the "Start()" function of the script or the editor, not doing it will lead
+to undetermined behaviours.
 
 
 Link to github: https://github.com/Skyway666/Kuroko-Engine
