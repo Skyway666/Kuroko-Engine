@@ -491,12 +491,13 @@ void ModuleResourcesManager::ReloadVM()
 {
 	JSON_Value* scene = App->scene->serializeScene(); // Save scene with all the editor variables
 
+	App->scene->ClearScene(); //Release handle and data from components script
 	ReleaseResourcesScriptHandles(); // Release handles and data from resources
 	App->scripting->CleanUp();			// Delete VM
 	App->scripting->Init(nullptr);		// Create new VM
 	CompileAndGenerateScripts();		// Create handles and data for resources
 
-	App->scene->ClearScene(); //Release handle and data from components script
+
 	App->scene->loadSerializedScene(scene); // Create handles and data for components script and assign editor variables
 	json_value_free(scene);
 }

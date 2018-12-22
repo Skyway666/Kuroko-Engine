@@ -257,7 +257,7 @@ WrenHandle* ModuleScripting::GetHandlerToClass(const char* module, const char* c
 	return wrenGetSlotHandle(vm, 0);
 }
 
-void ModuleScripting::ReleaseHandlerToClass(WrenHandle* handle)
+void ModuleScripting::ReleaseHandler(WrenHandle* handle)
 {
 	wrenReleaseHandle(vm, handle);
 }

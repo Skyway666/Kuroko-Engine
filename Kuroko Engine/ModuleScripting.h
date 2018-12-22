@@ -23,7 +23,7 @@ public:
 
 	bool CompileIntoVM(const char* module, const char* code);
 	WrenHandle* GetHandlerToClass(const char* module, const char* class_name);
-	void ReleaseHandlerToClass(WrenHandle* handle);
+	void ReleaseHandler(WrenHandle* handle);
 	WrenHandle* getHandlerToMethod(const char* method_name);
 
 	std::vector<std::string> GetMethodsFromClassHandler(WrenHandle* wrenClass);

@@ -35,8 +35,21 @@ void ResourceScript::GenerateScript() {
 
 void ResourceScript::CleanUp()
 {
-	if(data)
+	if(data){
+
+		// Release all getters
+		for (auto it = data->vars.begin(); it != data->vars.end(); it++) {
+			App->scripting->ReleaseHandler((*it).getGetter());
+		}
+		// Release all setters
+		for (auto it = data->methods.begin(); it != data->methods.end(); it++) {
+			App->scripting->ReleaseHandler((*it).getWrenHandle());
+		}
+
 		delete data;
+	}
+
+
 }
 
 

@@ -45,10 +45,11 @@ ImportedMethod::ImportedMethod(std::string name, ImportedVariable::WrenDataType 
 ScriptData::~ScriptData()
 {
 	class_name.clear();
+
 	vars.clear();
 	methods.clear();
 	if (class_handle)
-		App->scripting->ReleaseHandlerToClass(class_handle);
+		App->scripting->ReleaseHandler(class_handle);
 }
 
 
