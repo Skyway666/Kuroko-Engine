@@ -789,31 +789,35 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 					{
 						ImGui::TextWrapped("No material assigned!");
 
-						static bool draw_colorpicker = false;
-						static Color reference_color = c_mesh->getMesh()->tint_color;
-						static GameObject* last_selected = c_mesh->getParent();
+						if (c_mesh->getMesh())
+						{
+							static bool draw_colorpicker = false;
+							static Color reference_color = c_mesh->getMesh()->tint_color;
+							static GameObject* last_selected = c_mesh->getParent();
 
-						std::string label = c_mesh->getParent()->getName() + " color picker";
+							std::string label = c_mesh->getParent()->getName() + " color picker";
 
-						if(last_selected != c_mesh->getParent())
-							reference_color = c_mesh->getMesh()->tint_color;
+							if (last_selected != c_mesh->getParent())
+								reference_color = c_mesh->getMesh()->tint_color;
 
-						ImGui::SameLine();
-						if (ImGui::ColorButton((label + "button").c_str(), ImVec4(c_mesh->getMesh()->tint_color.r, c_mesh->getMesh()->tint_color.g, c_mesh->getMesh()->tint_color.b, c_mesh->getMesh()->tint_color.a)))
-							draw_colorpicker = !draw_colorpicker;
+							ImGui::SameLine();
+							if (ImGui::ColorButton((label + "button").c_str(), ImVec4(c_mesh->getMesh()->tint_color.r, c_mesh->getMesh()->tint_color.g, c_mesh->getMesh()->tint_color.b, c_mesh->getMesh()->tint_color.a)))
+								draw_colorpicker = !draw_colorpicker;
 
-						if (draw_colorpicker)
-							DrawColorPickerWindow(label.c_str(), (Color*)&c_mesh->getMesh()->tint_color, &draw_colorpicker, (Color*)&reference_color);
-						else
-							reference_color = c_mesh->getMesh()->tint_color;
+							if (draw_colorpicker)
+								DrawColorPickerWindow(label.c_str(), (Color*)&c_mesh->getMesh()->tint_color, &draw_colorpicker, (Color*)&reference_color);
+							else
+								reference_color = c_mesh->getMesh()->tint_color;
 
-						last_selected = c_mesh->getParent();
+							last_selected = c_mesh->getParent();
+						}
 
 						if (ImGui::Button("Add material"))
 						{
 							Material* mat = new Material();
 							c_mesh->setMaterial(mat);
 						}
+
 					}
 					ImGui::TreePop();
 				}
