@@ -533,7 +533,7 @@ void getGameObjectPosX(WrenVM* vm) {
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
-	wrenSetSlotDouble(vm, 0, c_trans->local->getPosition().x);
+	wrenSetSlotDouble(vm, 0, c_trans->global->getPosition().x);
 }
 void getGameObjectPosY(WrenVM* vm) {
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
@@ -545,7 +545,7 @@ void getGameObjectPosY(WrenVM* vm) {
 	}
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
-	wrenSetSlotDouble(vm, 0, c_trans->local->getPosition().y);
+	wrenSetSlotDouble(vm, 0, c_trans->global->getPosition().y);
 }
 void getGameObjectPosZ(WrenVM* vm) {
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
@@ -558,7 +558,7 @@ void getGameObjectPosZ(WrenVM* vm) {
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
-	wrenSetSlotDouble(vm, 0, c_trans->local->getPosition().z);
+	wrenSetSlotDouble(vm, 0, c_trans->global->getPosition().z);
 }
 
 void KillGameObject(WrenVM* vm) {
