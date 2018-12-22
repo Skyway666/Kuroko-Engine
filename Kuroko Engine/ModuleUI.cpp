@@ -1114,6 +1114,22 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				}
 			}
 
+			if(ResourceScript* res_script = (ResourceScript*)App->resources->getResource(c_script->getResourceUUID())){ // Check if resource exists
+				if (ImGui::Button("Edit script")) {
+					open_tabs[SCRIPT_EDITOR] = true;
+					open_script_path = res_script->asset;
+
+						if (App->scripting->edited_scripts.find(open_script_path) != App->scripting->edited_scripts.end())
+							script_editor.SetText(App->scripting->edited_scripts.at(open_script_path));
+						else {
+							std::ifstream t(open_script_path.c_str());
+								if (t.good()) {
+									std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+										script_editor.SetText(str);
+								}
+						}
+				}
+			}
 			if (ImGui::Button("Remove##Remove script"))
 				return false;
 
