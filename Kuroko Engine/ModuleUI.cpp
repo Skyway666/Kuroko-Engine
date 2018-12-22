@@ -107,6 +107,8 @@ bool ModuleUI::Start()
 	ui_textures[SCRIPT_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/script_icon.png");
 	ui_textures[PREFAB_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/prefab_icon.png");
 
+	ui_textures[CAUTION_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/caution_icon_32.png");
+	ui_textures[WARNING_ICON]		= (Texture*)App->importer->ImportTexturePointer("Editor textures/warning_icon_32.png");
 
 	ui_fonts[TITLES]				= io->Fonts->AddFontFromFileTTF("Fonts/title.ttf", 16.0f);
 	ui_fonts[REGULAR]				= io->Fonts->AddFontFromFileTTF("Fonts/regular.ttf", 18.0f);
@@ -607,6 +609,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	ComponentCamera* camera = nullptr; // aux pointer
 
 	std::string tag;
+
 	switch (component.getType())
 	{
 	case MESH:
@@ -1058,7 +1061,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		if (ImGui::CollapsingHeader(component_title.c_str())) {
 
 			if (!c_script->instance_data) {
-				ImGui::Text("Couldn't compile script!");
+				ImGui::Image((void*)ui_textures[WARNING_ICON]->getGLid(), ImVec2(16, 16));
+				ImGui::SameLine();
+				ImGui::Text("Compile error");
 			}
 			else{
 				for (auto it = c_script->instance_data->vars.begin(); it != c_script->instance_data->vars.end(); it++) {
@@ -1382,6 +1387,10 @@ void ModuleUI::DrawAssetsWindow()
 			if(column_num > 1)
 				ImGui::SetColumnWidth(ImGui::GetColumnIndex(), element_size + 20);
 
+			bool draw_caution = false;
+			bool draw_warning = false;
+			std::string error_message;
+
 			if (it.status().type() == std::experimental::filesystem::v1::file_type::directory)
 			{
 
@@ -1464,12 +1473,20 @@ void ModuleUI::DrawAssetsWindow()
 
 				else if (type == "script")
 				{
+					ResourceScript* res = (ResourceScript*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
+
+					if (res->IsInvalid())
+					{
+						draw_warning = true;
+						error_message += "Compile error in imported script";
+					}
+
 					if (ImGui::IsMouseDoubleClicked(0)) {
 						ImGui::ImageButton((void*)ui_textures[SCRIPT_ICON]->getGLid(), ImVec2(element_size, element_size), it.path().generic_string().c_str(), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, selected_asset == it.path().generic_string() ? 1.0f : 0.0f));
 						if (ImGui::IsItemHovered())
 						{
-							open_tabs[SCRIPT_EDITOR] = true;
 							open_script_path = it.path().generic_string();
+							open_tabs[SCRIPT_EDITOR] = true;
 
 							if (App->scripting->edited_scripts.find(open_script_path) != App->scripting->edited_scripts.end())
 								script_editor.SetText(App->scripting->edited_scripts.at(open_script_path));
@@ -1493,6 +1510,20 @@ void ModuleUI::DrawAssetsWindow()
 				}
 			}
 			
+			if (draw_warning || draw_caution)
+			{
+				ImGui::Image((void*)ui_textures[draw_warning ? WARNING_ICON : CAUTION_ICON]->getGLid(), ImVec2(16, 16));
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(error_message.c_str());
+					ImGui::EndTooltip();
+				}
+
+				ImGui::SameLine();
+			}
+
 			ImGui::TextWrapped(name.c_str());
 			ImGui::NextColumn();
 		}

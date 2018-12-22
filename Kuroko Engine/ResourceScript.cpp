@@ -16,14 +16,23 @@ void ResourceScript::UpdateCode() {
 	JSON_Value* script_binary = json_parse_file(binary.c_str());
 
 	// Read code and class name
-	code = json_object_get_string(json_object(script_binary), "code");
-	class_name = json_object_get_string(json_object(script_binary), "class_name");
+	const char* code_ptr = json_object_get_string(json_object(script_binary), "code");
+	const char* class_name_ptr = json_object_get_string(json_object(script_binary), "class_name");
+	
+	if (code_ptr) code = code_ptr;	
+	if (class_name_ptr) class_name	= class_name_ptr;
+	
+	invalid_resource = (!(code_ptr && class_name_ptr));
+
 	json_value_free(script_binary);
 }
 
 void ResourceScript::Compile() {
+
 	UpdateCode();
-	invalid_resource = !App->scripting->CompileIntoVM(class_name.c_str(), code.c_str()); // If return false invalidate resource
+
+	if(!invalid_resource)
+		invalid_resource = !App->scripting->CompileIntoVM(class_name.c_str(), code.c_str()); // If return false invalidate resource
 }
 
 void ResourceScript::GenerateScript() {
