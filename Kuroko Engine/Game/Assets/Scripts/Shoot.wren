@@ -22,7 +22,7 @@ construct new(){}
 
  Update() {
    if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
-      EngineComunicator.Instantiate(bullet, getPosX(), getPosY(), getPosZ(),getPitch(),getYaw(),getRoll())
+      EngineComunicator.Instantiate(bullet, getPosX("global"), getPosY("global"), getPosZ("global"),getPitch(),getYaw(),getRoll())
    }
  }
 }

@@ -4,9 +4,9 @@ class ObjectComunicator{
 	foreign static C_modPos(gameObject, x, y, z)
 	foreign static C_lookAt(gameObject, x, y, z)
 
-	foreign static C_getPosX(gameObject)
-	foreign static C_getPosY(gameObject)
-	foreign static C_getPosZ(gameObject)
+	foreign static C_getPosX(gameObject, mode)
+	foreign static C_getPosY(gameObject, mode)
+	foreign static C_getPosZ(gameObject, mode)
 
 	foreign static C_getPitch(gameObject)
 	foreign static C_getYaw(gameObject)
@@ -58,16 +58,16 @@ class ObjectLinker{
 	    ObjectComunicator.C_Kill(gameObject)
 	}
 
-	getPosX(){
-		return ObjectComunicator.C_getPosX(gameObject)
+	getPosX(mode){
+		return ObjectComunicator.C_getPosX(gameObject, mode)
 	}
 
-	getPosY(){
-		return ObjectComunicator.C_getPosY(gameObject)
+	getPosY(mode){
+		return ObjectComunicator.C_getPosY(gameObject, mode)
 	}
 
-	getPosZ(){
-		return ObjectComunicator.C_getPosZ(gameObject)
+	getPosZ(mode){
+		return ObjectComunicator.C_getPosZ(gameObject, mode)
 	}
 
 	getPitch(){

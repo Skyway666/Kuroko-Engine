@@ -371,13 +371,13 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 			if (strcmp(signature, "C_lookAt(_,_,_,_)") == 0) {
 				return lookAt; // C function for ObjectComunicator.C_LookAt
 			}
-			if (strcmp(signature, "C_getPosX(_)") == 0) {
+			if (strcmp(signature, "C_getPosX(_,_)") == 0) {
 				return getGameObjectPosX; // C function for ObjectComunicator.C_getPosX
 			}
-			if (strcmp(signature, "C_getPosY(_)") == 0) {
+			if (strcmp(signature, "C_getPosY(_,_)") == 0) {
 				return getGameObjectPosY; // C function for ObjectComunicator.C_getPosY
 			}
-			if (strcmp(signature, "C_getPosZ(_)") == 0) {
+			if (strcmp(signature, "C_getPosZ(_,_)") == 0) {
 				return getGameObjectPosZ; // C function for ObjectComunicator.C_getPosZ
 			}
 			if (strcmp(signature, "C_getPitch(_)") == 0) {
@@ -530,7 +530,7 @@ void InstantiatePrefab(WrenVM* vm) {  // TODO: Instanciate should accept a trans
 
 void getGameObjectPosX(WrenVM* vm) {
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
-
+	const char* mode = wrenGetSlotString(vm, 2);
 	GameObject* go = App->scene->getGameObject(gameObjectUUID);
 	if (!go) {
 		app_log->AddLog("Script asking for none existing gameObject");
@@ -539,23 +539,38 @@ void getGameObjectPosX(WrenVM* vm) {
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
-	wrenSetSlotDouble(vm, 0, c_trans->global->getPosition().x);
+	float ret = 0;
+
+	if (strcmp(mode, "global") == 0)
+		ret = c_trans->global->getPosition().x;
+	else
+		ret = c_trans->local->getPosition().x;
+
+	wrenSetSlotDouble(vm, 0, ret);
 }
 void getGameObjectPosY(WrenVM* vm) {
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
-
+	const char* mode = wrenGetSlotString(vm, 2);
 	GameObject* go = App->scene->getGameObject(gameObjectUUID);
 	if (!go) {
 		app_log->AddLog("Script asking for none existing gameObject");
 		return;
 	}
+
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
-	wrenSetSlotDouble(vm, 0, c_trans->global->getPosition().y);
+	float ret = 0;
+
+	if (strcmp(mode, "global") == 0)
+		ret = c_trans->global->getPosition().y;
+	else
+		ret = c_trans->local->getPosition().y;
+
+	wrenSetSlotDouble(vm, 0, ret);
 }
 void getGameObjectPosZ(WrenVM* vm) {
 	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
-
+	const char* mode = wrenGetSlotString(vm, 2);
 	GameObject* go = App->scene->getGameObject(gameObjectUUID);
 	if (!go) {
 		app_log->AddLog("Script asking for none existing gameObject");
@@ -564,7 +579,14 @@ void getGameObjectPosZ(WrenVM* vm) {
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 
-	wrenSetSlotDouble(vm, 0, c_trans->global->getPosition().z);
+	float ret = 0;
+
+	if (strcmp(mode, "global") == 0)
+		ret = c_trans->global->getPosition().z;
+	else
+		ret = c_trans->local->getPosition().z;
+
+	wrenSetSlotDouble(vm, 0, ret);
 }
 
 void KillGameObject(WrenVM* vm) {
