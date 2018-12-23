@@ -114,6 +114,12 @@ Advices
 - Remember to initialize variables in the "Start()" function of the script or the editor, not doing it will lead
 to undetermined behaviours.
 
+Demo:
+
+- Tank moves with arrow keys
+- Turret will point where the mouse is pointing to, if it is on top of the black plane
+- Shoot with spacebar
+
 
 Link to website: https://skyway666.github.io/Kuroko-Engine/
 Link to github: https://github.com/Skyway666/Kuroko-Engine
