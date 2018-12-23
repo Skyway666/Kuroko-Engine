@@ -102,6 +102,10 @@ to undetermined behaviours.
 ![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/hot%20reloading.gif)
 *Hot reloading*
 
+# Tank scene setup
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gAQpB8cvS-Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 
 [Github repository](https://github.com/Skyway666/Kuroko-Engine)
 
