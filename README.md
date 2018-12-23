@@ -96,11 +96,15 @@ to undetermined behaviours.
 
 ### Demonstrations
 
-![](https://github.com/Skyway666/Kuroko-Engine/blob/master/Website%20assets/variable%20mod.gif)
+![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/variable%20mod.gif)
 *Variable modification*
 
-![](https://github.com/Skyway666/Kuroko-Engine/blob/master/Website%20assets/hot%20reloading.gif)
+![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/hot%20reloading.gif)
 *Hot reloading*
 
+
+[Github repository](https://github.com/Skyway666/Kuroko-Engine)
+
+[Latest Release]()
 
 
