@@ -22,7 +22,7 @@ ImportedVariable::ImportedVariable(const char* name, WrenDataType type, void* _v
 		value.value_number = *var_float;
 		break;
 	case WREN_STRING:
-		value.value_string = (char*)_value;
+		value_string = (char*)_value;
 		break;
 	}
 }

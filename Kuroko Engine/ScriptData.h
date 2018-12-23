@@ -7,7 +7,6 @@ struct WrenHandle;
 union Var {
 	bool value_bool = false;
 	float value_number;
-	const char* value_string;
 };
 
 struct ImportedVariable
@@ -27,6 +26,7 @@ private:
 public:
 	std::string getName()	{ return var_name; }
 	Var GetValue()			{ return value; }
+	std::string value_string;
 	WrenHandle* getGetter()  { return getter; }
 	WrenDataType getType()	{ return data_type; }
 	bool isPublic()			{ return is_public; }

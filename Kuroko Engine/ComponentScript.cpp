@@ -51,15 +51,8 @@ ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Compo
 					(*it).SetValue(value, ImportedVariable::WREN_BOOL);
 				}
 				if (type_string == "string") {
-					Var value;
-					const char* json_string = json_object_get_string(variable, "value");
-					int string_size = strlen(json_string) + 1; // 1 for the /0
-					char* value_string = new char[string_size];
-					strcpy(value_string, json_string);
-					value_string[string_size - 1] = '\0';
-					value.value_string = value_string;
+					(*it).value_string = json_object_get_string(variable, "value");
 					(*it).setType(ImportedVariable::WREN_STRING);
-					(*it).SetValue(value, ImportedVariable::WREN_STRING);
 				}
 
 				(*it).setEdited(true);
@@ -172,7 +165,7 @@ void ComponentScript::Save(JSON_Object * config) {
 			break;
 		case ImportedVariable::WREN_STRING:
 			json_object_set_string(json_object(var), "type", "string");
-			json_object_set_string(json_object(var), "value", (*it).GetValue().value_string);
+			json_object_set_string(json_object(var), "value", (*it).value_string.c_str());
 			break;
 		}
 

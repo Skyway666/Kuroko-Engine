@@ -104,7 +104,7 @@ update_status ModuleScripting::Update(float dt)
 					wrenSetSlotDouble(vm, 1, (*var).GetValue().value_number);
 					break;
 				case ImportedVariable::WREN_STRING:
-					wrenSetSlotString(vm, 1, (*var).GetValue().value_string);
+					wrenSetSlotString(vm, 1, (*var).value_string.c_str());
 					break;
 				}
 				for (auto setter = (*instance)->methods.begin(); setter != (*instance)->methods.end(); setter++)
@@ -130,10 +130,9 @@ update_status ModuleScripting::Update(float dt)
 				(*var).SetValue(script_value, (*var).getType());
 				break;
 			case ImportedVariable::WREN_STRING:
-				//static char buf[256] = "";
-				//strcpy(buf, wrenGetSlotString(vm, 0));
-				//script_value.value_string = buf;
-				//(*var).SetValue(script_value, (*var).getType());
+				static char buf[256] = "";
+				strcpy(buf, wrenGetSlotString(vm, 0));
+				(*var).value_string = buf;
 				break;
 			}
 

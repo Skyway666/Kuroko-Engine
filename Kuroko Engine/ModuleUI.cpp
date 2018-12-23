@@ -1092,7 +1092,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 								nuller.value_number = 0;
 								break;
 							case ImportedVariable::WrenDataType::WREN_STRING:
-								nuller.value_string = "";
+								curr->value_string = "";
 								break;
 							}
 							curr->SetValue(nuller);
@@ -1116,13 +1116,11 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 						break;
 					case ImportedVariable::WREN_STRING:
 					{
-						if (variable.value_string) 
-							strcpy(buf, variable.value_string);
-						else
-							strcpy(buf, "");
+						strcpy(buf, curr->value_string.c_str());
+
 						if (ImGui::InputText((unique_tag + " string").c_str(), buf, sizeof(buf)))
 						{
-							variable.value_string = buf;
+							curr->value_string = buf;
 							curr->SetValue(variable);
 							curr->setEdited(true);
 						}
