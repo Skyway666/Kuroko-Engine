@@ -109,7 +109,7 @@ to undetermined behaviours.
 
 [Github repository](https://github.com/Skyway666/Kuroko-Engine)
 
-[Latest Release]()
+[Latest Release](https://github.com/Skyway666/Kuroko-Engine/releases/tag/1.0)
 
 MIT License
 
