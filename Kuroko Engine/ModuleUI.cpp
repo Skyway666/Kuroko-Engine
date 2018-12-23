@@ -122,6 +122,10 @@ bool ModuleUI::Start()
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 
+
+	// HARDCODE
+	App->scene->AskSceneLoadFile("Assets/Scenes/tank scene.scene");
+
 	return true;
 }
 
