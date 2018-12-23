@@ -13,7 +13,7 @@ The objective is to develop the basis for a Game Engine, and a subsystem of choi
 
 ### Lucas García Mateu
 
-![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/Lucas.jpeg)
+![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/Lucas.jpg)
 
 Contributions:
 
@@ -34,7 +34,7 @@ Contributions:
 
 ### Rodrigo Pedro de Lombao
 
-![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/Rodri.jpeg)
+![](https://github.com/Skyway666/Kuroko-Engine/raw/master/Website%20assets/Rodri.jpg)
 
 - Geometry storage and render in real time.
 - Primitive shapes (Cube and Plane)
