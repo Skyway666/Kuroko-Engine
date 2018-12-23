@@ -1,4 +1,4 @@
-Kuroko Engine 0.7
+Kuroko Engine 1.0
 
 This is a videogame engine in process, developed by Rodrigo de Pedro Lombao and Lucas García Mateu.
 
@@ -62,12 +62,13 @@ Libraries used:
 - Wren 		(http://wren.io/)
 Extra information:
 
-- Press "V" to see all the viewports at the same time
-- Use "Empty object" to create an empty object, which will be a child of the currently selected object
-- You can add mesh components to an object, and assign them their material and mesh
+- Press "V" to see all the viewports at the same time.
+- Right click on the empty hierarchy and click "Empty object" to create an empty object.
+- Right click on a object to delete, rename, save to prefab or duplicate.
+- You can add mesh components to an object, and assign them their material and mesh.
 - Using "Import File" or "Drag and drop" on files will add them to the assets folder of the project. 
 - Scenes can be loaded by double clicking them on asset window or using "Load Scene" in main menu.
-- Double click any element in the asset window to add it to the scene.
+- Double 3d objects in the asset window to add them to the scene.
 - Camera views can be controled as the background camera by focusing their UI window. Mouse picking is also
   enabled and usable.
 - The update ratio of the resource manager can be changed in the "Resources" window.
@@ -79,8 +80,8 @@ Features:
 
 - Right click on asset window to add a new script. The name of the script will be the one
 of the class defined in it. The script will automatically include the base libraries to interact
-with the attached gameobject, as well as a constructor, update and start functions, and a comment with instructions
-on how to use it
+with the attached gameobject, as well as a constructor, Update() and Start() functions, and a comment with instructions
+on how to use it.
 
 - Attatch a script to a gameobject by pressing "Add script". This will display a window with all the scripts contained
 in the asset window.
@@ -102,12 +103,11 @@ all the scripts, but the values assigned to the variables in the editor will rem
 are not changed.
 
 - If a script fails to compile, a set of errors will display in the Log. When trying to access components with this script,
-a message will appear warning the user. This can also be seen by selecting said script in the asset window, as it will display
-in the asset inspector.
+a message will appear warning the user. This can also be seen in the asset window and asset inspector.
 
 Constraints:
 
-- Can't modify scripts while the simulation is running
+- Can't modify scripts while the simulation is running.
 
 Advices
 
