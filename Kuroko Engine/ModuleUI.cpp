@@ -1092,11 +1092,11 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 								nuller.value_number = 0;
 								break;
 							case ImportedVariable::WrenDataType::WREN_STRING:
-								nuller.value_string = nullptr;
+								nuller.value_string = "";
 								break;
 							}
 							curr->SetValue(nuller);
-
+							curr->setEdited(true);
 						}
 					}
 

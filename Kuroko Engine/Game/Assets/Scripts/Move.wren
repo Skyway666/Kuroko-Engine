@@ -8,6 +8,7 @@ class Move is ObjectLinker{
 	speed { __speed }
 	speed=(v) { __speed = v }
     
+    Start() {}
 
 	Update(){
 		if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){

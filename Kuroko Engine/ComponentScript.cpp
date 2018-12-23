@@ -36,7 +36,6 @@ ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Compo
 				std::string type_string = json_object_get_string(variable, "type");
 
 				(*it).setPublic(json_object_get_boolean(variable, "public"));
-				(*it).setEdited(json_object_get_boolean(variable, "edited"));
 				(*it).setForcedType(json_object_get_boolean(variable, "type_forced"));
 
 				if (type_string == "number") {
@@ -62,6 +61,8 @@ ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Compo
 					(*it).setType(ImportedVariable::WREN_STRING);
 					(*it).SetValue(value, ImportedVariable::WREN_STRING);
 				}
+
+				(*it).setEdited(true);
 			}
 		}
 	}
@@ -153,6 +154,10 @@ void ComponentScript::Save(JSON_Object * config) {
 	// Create and fill array
 	JSON_Value* vars_array = json_value_init_array();
 	for (auto it = instance_data->vars.begin(); it != instance_data->vars.end(); it++) {
+
+		if (strcmp((*it).getName().c_str(), "gameObject") == 0) // Don't save the gameObject variable, is going to be relinked in load
+			continue;
+
 		JSON_Value* var = json_value_init_object();
 
 		json_object_set_string(json_object(var), "name", (*it).getName().c_str());
@@ -172,7 +177,6 @@ void ComponentScript::Save(JSON_Object * config) {
 		}
 
 		json_object_set_boolean(json_object(var), "public", (*it).isPublic());
-		json_object_set_boolean(json_object(var), "edited", (*it).isEdited());
 		json_object_set_boolean(json_object(var), "type_forced", (*it).isTypeForced());
 
 		json_array_append_value(json_array(vars_array), var);

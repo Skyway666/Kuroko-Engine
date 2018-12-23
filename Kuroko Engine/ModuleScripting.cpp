@@ -112,6 +112,8 @@ update_status ModuleScripting::Update(float dt)
 					if ((*setter).getName() == (*var).getName() + "=(_)")
 						wrenCall(vm, (*setter).getWrenHandle());
 				}
+
+				var->setEdited(false);
 			}
 			// Update editor values with variables in script
 			wrenEnsureSlots(vm, 1);
@@ -121,15 +123,20 @@ update_status ModuleScripting::Update(float dt)
 			switch ((*var).getType()) {
 			case ImportedVariable::WREN_BOOL:
 				script_value.value_bool = wrenGetSlotBool(vm, 0);
+				(*var).SetValue(script_value, (*var).getType());
 				break;
 			case ImportedVariable::WREN_NUMBER:
 				script_value.value_number = wrenGetSlotDouble(vm, 0);
+				(*var).SetValue(script_value, (*var).getType());
 				break;
 			case ImportedVariable::WREN_STRING:
-				script_value.value_string = wrenGetSlotString(vm, 0);
+				//static char buf[256] = "";
+				//strcpy(buf, wrenGetSlotString(vm, 0));
+				//script_value.value_string = buf;
+				//(*var).SetValue(script_value, (*var).getType());
 				break;
 			}
-			//(*var).SetValue(script_value, (*var).getType());
+
 		}
 
 		if ((*instance)->getState() == SCRIPT_STARTING)
