@@ -1,8 +1,8 @@
-#Kuroko engine
+# Kuroko engine
 
 By [Lucas García Mateu](https://github.com/Skyway666) and Rodrigo Pedro de Lombao (https://github.com/rodrigodpl).
 
-##Introduction
+## Introduction
 
 "Kuroko engine" is a project developed for the subject Engines in the third year of [Bachelor’s Degree in
 Video Games by UPC at CITM](https://www.citm.upc.edu/ing/estudis/graus-videojocs/), under the supervision of the lecturer [Ricard Pillosu](https://es.linkedin.com/in/ricardpillosu).
@@ -53,6 +53,54 @@ Contributions:
 - Asset viewer window with previews and info about the files in Asset folder.
 - Color picker
 - Scripting system structure in engine
+
+## Scripting sub-system
+
+### Features 
+
+- Right click on asset window to add a new script. The name of the script will be the one
+of the class defined in it. The script will automatically include the base libraries to interact
+with the attached gameobject, as well as a constructor, Update() and Start() functions, and a comment with instructions
+on how to use it.
+
+- Attatch a script to a gameobject by pressing "Add script". This will display a window with all the scripts contained
+in the asset window.
+
+- The same script can be attached to multiple gameobjects, and the variables declared in its class will be displayed
+in the editor. Choose a variable type and assign a value to them. You can force types, which will unable the user to change 
+the variable type from the editor, as well as make variables public or private, which will enable/disable them being shown.
+This is done through the asset inspector, select the script in the asset window and apply the desired changes. The script
+component can be erased using the "Remove" button.
+
+- Variables in the editor will display the value of the variable in the script, even if it is initialized in the "Start()"
+function or modified at runtime.
+
+- Scripts are executed according to the time in the world. "Start()" is executed in the first frame after pressing Play,
+and Update() is executed every frame afterwards. The simulation can be paused as well.
+
+- The system features hot reloading, meaning that scripts can be modified while the engine is running. This will recompile
+all the scripts, but the values assigned to the variables in the editor will remain the same for variables which name's
+are not changed.
+
+- If a script fails to compile, a set of errors will display in the Log. When trying to access components with this script,
+a message will appear warning the user. This can also be seen in the asset window and asset inspector.
+
+### Constraints
+
+- Can't modify scripts while the simulation is running.
+
+### Advices
+
+- Remember to initialize variables in the "Start()" function of the script or the editor, not doing it will lead
+to undetermined behaviours.
+
+### Demonstrations
+
+![](https://github.com/Skyway666/Kuroko-Engine/blob/master/Website%20assets/variable%20mod.gif)
+*Variable modification*
+
+![](https://github.com/Skyway666/Kuroko-Engine/blob/master/Website%20assets/hot%20reloading.gif)
+*Hot reloading*
 
 
 
