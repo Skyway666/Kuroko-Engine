@@ -35,9 +35,9 @@ void Transform::setRotationEuler(const float3& euler)
 	euler_angles = euler;
 }
 
-void Transform::LookAt(const float3& target)
+void Transform::LookAt(const float3& pos, const float3& target)
 {
-	rotation = Quat::RotateFromTo(Forward().Normalized(), (target - getPosition()).Normalized()) * rotation;
+	rotation = Quat::RotateFromTo(Forward().Normalized(), (target - pos).Normalized()) * rotation;
 }
 
 float4x4 Transform::CalculateMatrix()

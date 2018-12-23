@@ -481,7 +481,7 @@ void lookAt(WrenVM* vm) {
 	}
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
-	c_trans->local->LookAt(target);
+	c_trans->local->LookAt(float3(c_trans->global->getPosition().x, target.y, c_trans->global->getPosition().z), target);
 }
 
 void GetKey(WrenVM* vm) {
