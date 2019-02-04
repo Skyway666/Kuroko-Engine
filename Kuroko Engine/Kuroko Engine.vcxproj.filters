@@ -477,6 +477,12 @@
     <ClInclude Include="ResourceScene.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentBone.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAnimation.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -754,6 +760,12 @@
     </ClCompile>
     <ClCompile Include="ResourceScene.cpp">
       <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAnimation.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBone.cpp">
+      <Filter>Sources\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

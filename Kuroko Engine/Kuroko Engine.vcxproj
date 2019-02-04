@@ -80,6 +80,8 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentAABB.h" />
+    <ClInclude Include="ComponentAnimation.h" />
+    <ClInclude Include="ComponentBone.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTransform.h" />
@@ -214,6 +216,8 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ComponentAABB.cpp" />
+    <ClCompile Include="ComponentAnimation.cpp" />
+    <ClCompile Include="ComponentBone.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />

@@ -536,6 +536,18 @@ void ModuleResourcesManager::getScriptResourceList(std::list<resource_deff>& scr
 	}
 }
 
+void ModuleResourcesManager::getAnimationResourceList(std::list<resource_deff>& aimations)
+{
+	//SKELETAL_TODO: uncomment after R_ANIMATION created
+	/*for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_ANIMATION) {
+			Resource* curr = (*it).second;
+			resource_deff deff(curr->uuid, curr->type, curr->binary, curr->asset);
+			animations.push_back(deff);
+		}
+	}*/
+}
+
 std::string ModuleResourcesManager::getPrefabPath(const char * prefab_name) {
 	for (auto it = resources.begin(); it != resources.end(); it++) {
 		if ((*it).second->type == R_PREFAB) {

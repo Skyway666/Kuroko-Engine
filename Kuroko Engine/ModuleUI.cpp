@@ -26,6 +26,7 @@
 #include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
+#include "ComponentAnimation.h"
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
@@ -567,6 +568,7 @@ void ModuleUI::DrawObjectInspectorTab()
 			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); 
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 			if (ImGui::Button("Add Script")) select_script = true;
+			if (ImGui::Button("Add Animation")) selected_obj->addComponent(ANIMATION);
 		}
 
 		std::list<Component*> components;
@@ -1165,6 +1167,26 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	
 	}
 	break;
+	case ANIMATION:
+		if (ImGui::CollapsingHeader("Animation"))
+		{
+			//SKELETAL_TODO: missing resource info
+
+			ComponentAnimation* anim = (ComponentAnimation*)&component;
+
+			static bool animation_active;
+			animation_active = anim->isActive();
+
+			if (ImGui::Checkbox("Active##active animation", &animation_active))
+				anim->setActive(animation_active);
+
+			ImGui::Checkbox("Loop", &anim->loop);
+
+			ImGui::PushID("Speed");
+			ImGui::InputFloat("", &anim->speed, 0.0f, 0.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::PopID();
+		}
+		break;
 	default:
 		break;
 	}
