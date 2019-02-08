@@ -5,6 +5,8 @@
 //TMP - substitute by Bone.h
 #include "Globals.h"
 
+#include "MathGeoLib/Math/float4x4.h"
+
 class ComponentBone : public Component
 {
 public:

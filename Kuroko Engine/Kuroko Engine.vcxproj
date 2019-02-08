@@ -185,6 +185,8 @@
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceAnimation.h" />
+    <ClInclude Include="ResourceBone.h" />
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="Resource3dObject.h" />
     <ClInclude Include="ResourcePrefab.h" />
@@ -286,6 +288,8 @@
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceAnimation.cpp" />
+    <ClCompile Include="ResourceBone.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="Resource3dObject.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />
