@@ -47,6 +47,7 @@ public:
 
 	void LoadToMemory();
 	void UnloadFromMemory();    
+	bool LoadAnimation();
 	
 	void resetFrames();
 	float getDuration() const;

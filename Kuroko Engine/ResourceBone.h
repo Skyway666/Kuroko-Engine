@@ -3,8 +3,18 @@
 
 #include "Resource.h"
 
-class ResourceBone :
-	public Resource
+#include "MathGeoLib/MathGeoLib.h"
+
+struct Weight {
+
+	uint VertexID;
+	float weight;
+
+};
+
+class ComponentMesh;
+
+class ResourceBone : public Resource
 {
 public:
 
@@ -12,7 +22,20 @@ public:
 	~ResourceBone();
 
 	void LoadToMemory();
+	bool LoadBone();
 	void UnloadFromMemory();
+
+public:
+
+	uint numWeights;
+
+	float4x4 Offset;
+	float* pos;
+	float* rot;
+	float* scale;
+
+	Weight* weights;
+	uint boneMeshUID;
 };
 
 #endif // !__RESOURCEBONE_H__

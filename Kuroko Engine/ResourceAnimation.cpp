@@ -16,10 +16,98 @@ ResourceAnimation::~ResourceAnimation()
 
 void ResourceAnimation::LoadToMemory()
 {
+	LoadAnimation();
 }
 
 void ResourceAnimation::UnloadFromMemory()
 {
+
+}
+
+bool ResourceAnimation::LoadAnimation()
+{
+	bool ret = false;
+
+	//Get the buffer
+	char* buffer = App->fs.ImportFile(binary.c_str());
+	char* cursor = buffer;
+
+	//Load ranges
+	uint ranges[3];
+	uint bytes = sizeof(ranges);
+	memcpy(ranges, cursor, bytes);
+	cursor += bytes;
+
+	ticks = ranges[0];
+	ticksXsecond = ranges[1];
+	numBones = ranges[2];
+
+	if (numBones > 0)
+	{
+		boneTransformations = new BoneTransform[numBones];
+
+		//Loading Bones
+		for (int i = 0; i < numBones; i++)
+		{
+			//Loading Ranges
+			uint boneRanges[4];
+			uint bytes = sizeof(boneRanges);
+			memcpy(boneRanges, cursor, bytes);
+			cursor += bytes;
+
+			boneTransformations[i].numPosKeys = boneRanges[0];
+			boneTransformations[i].numScaleKeys = boneRanges[1];
+			boneTransformations[i].numRotKeys = boneRanges[2];
+
+			//Loading Name
+			bytes = boneRanges[3];
+			char* auxName = new char[bytes];
+			memcpy(auxName, cursor, bytes);
+			boneTransformations[i].NodeName = auxName;
+			boneTransformations[i].NodeName = boneTransformations[i].NodeName.substr(0, bytes);
+			RELEASE_ARRAY(auxName);
+			cursor += bytes;
+
+			//Loading Pos Time
+			bytes = boneTransformations[i].numPosKeys * sizeof(double);
+			boneTransformations[i].PosKeysTimes = new double[boneTransformations[i].numPosKeys];
+			memcpy(boneTransformations[i].PosKeysTimes, cursor, bytes);
+			cursor += bytes;
+			//Loading Pos Values
+			bytes = boneTransformations[i].numPosKeys * sizeof(float) * 3;
+			boneTransformations[i].PosKeysValues = new float[boneTransformations[i].numPosKeys * 3];
+			memcpy(boneTransformations[i].PosKeysValues, cursor, bytes);
+			cursor += bytes;
+
+			//Loading Scale Time
+			bytes = boneTransformations[i].numScaleKeys * sizeof(double);
+			boneTransformations[i].ScaleKeysTimes = new double[boneTransformations[i].numScaleKeys];
+			memcpy(boneTransformations[i].ScaleKeysTimes, cursor, bytes);
+			cursor += bytes;
+			//Loading Scale Values
+			bytes = boneTransformations[i].numScaleKeys * sizeof(float) * 3;
+			boneTransformations[i].ScaleKeysValues = new float[boneTransformations[i].numScaleKeys * 3];
+			memcpy(boneTransformations[i].ScaleKeysValues, cursor, bytes);
+			cursor += bytes;
+
+			//Loading Rotation Time
+			bytes = boneTransformations[i].numRotKeys * sizeof(double);
+			boneTransformations[i].RotKeysTimes = new double[boneTransformations[i].numRotKeys];
+			memcpy(boneTransformations[i].RotKeysTimes, cursor, bytes);
+			cursor += bytes;
+			//Loading Rotation Values
+			bytes = boneTransformations[i].numRotKeys * sizeof(float) * 4;
+			boneTransformations[i].RotKeysValues = new float[boneTransformations[i].numRotKeys * 4];
+			memcpy(boneTransformations[i].RotKeysValues, cursor, bytes);
+			cursor += bytes;
+		}
+
+		ret = true;
+	}
+
+	RELEASE_ARRAY(buffer);
+
+	return ret;
 }
 
 void ResourceAnimation::resetFrames()
