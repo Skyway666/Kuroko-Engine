@@ -1,170 +1,117 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleAudio.h"
-#include "ModuleUI.h"
-#include "Applog.h"
+#include "ModuleInput.h"
+#include "ModuleScene.h"
+#include "ModuleUi.h"
+#include "GameObject.h"
+#include "ComponentCamera.h"
+#include "ComponentTransform.h"
+#include "ComponentAudioListener.h"
+#include "Wwise.h"
+
+#include <corecrt_wstring.h>
+
+#include "Wwise/IO/Win32/AkFilePackageLowLevelIOBlocking.h"
 
 
-ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, start_enabled)
-{
-	name = "audio";
-}
-
-// Destructor
-ModuleAudio::~ModuleAudio()
-{}
-
-// Called before render is available
-bool ModuleAudio::Init(const JSON_Object& config)
-{
-	//app_log->AddLog("Loading Audio Mixer");
-	//bool ret = true;
-	//SDL_Init(0);
-
-	//if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
-	//{
-	//	app_log->AddLog("SDL_INIT_AUDIO could not initialize! SDL_Error: %s\n", SDL_GetError());
-	//	ret = false;
-	//}
-
-	//// load support for the OGG format
-	//int flags = MIX_INIT_OGG;
-	//int init = Mix_Init(flags);
-
-	//if((init & flags) != flags)
-	//{
-	//	app_log->AddLog("Could not initialize Mixer lib. Mix_Init: %s", Mix_GetError());
-	//	ret = true;
-	//}
-
-	////Initialize SDL_mixer
-	//if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-	//{
-	//	app_log->AddLog("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
-	//	ret = true;
-	//}
-
-	return true;
-}
-
-// Called before quitting
-bool ModuleAudio::CleanUp()
-{
-	/*app_log->AddLog("Freeing sound FX, closing Mixer and Audio subsystem");
-
-	for(auto it = audio_files.begin(); it != audio_files.end(); it++)
-		delete *it;
-
-	audio_files.clear();
-	Mix_CloseAudio();
-	Mix_Quit();
-	SDL_QuitSubSystem(SDL_INIT_AUDIO);*/
-	return true;
-}
-
-AudioFile* ModuleAudio::LoadAudio(const char* path, const char* name, AudioType type)
-{/*
-	AudioFile* audio_file = nullptr;
-	void* data = nullptr;
-
-	if (type == FX)
-		data = (void*)Mix_LoadWAV(path);
-	else if (type == MUSIC)
-		data = (void*)Mix_LoadMUS(path);
-
-	if (data)
-	{
-		audio_file = new AudioFile(name, last_audio_id++, data, type);
-		audio_files.push_back(audio_file);
-	}
-
-	return audio_file;*/
-	return nullptr;
-}
-
-
-void ModuleAudio::Play(const char* name, uint repeat) const
-{/*
-	for (std::list<AudioFile*>::iterator it = audio_files.begin(); it != audio_files.end(); it++)
-		if ((*it)->name == name)
-		{
-			(*it)->Play(repeat);
-			return;
-		}
-		*/
-}
-
-void ModuleAudio::Play(uint id, uint repeat) const
-{
-	/*for (std::list<AudioFile*>::iterator it = audio_files.begin(); it != audio_files.end(); it++)
-		if ((*it)->id == id)
-		{
-			(*it)->Play(repeat);
-			return;
-		}
-*/
-}
-
-void ModuleAudio::HaltMusic()
-{
-	/*Mix_HaltMusic();*/
-}
-
-void ModuleAudio::setMasterVolume(uint volume)
-{/*
-	master_volume = volume;
-	Mix_Volume(-1, master_volume * MIX_MAX_VOLUME);*/
-}
-
-void ModuleAudio::setMasterMusicVolume(uint volume)
-{
-	//if (!Mix_FadingMusic())
-	//{
-	//	music_volume = volume;
-	//	Mix_VolumeMusic(music_volume  * MIX_MAX_VOLUME);
-	//}
-}
-
-AudioFile::~AudioFile()
-{
-	//if (data)
-	//{
-	//	if(type == MUSIC)	Mix_FreeMusic((Mix_Music*)data);
-	//	else				Mix_FreeChunk((Mix_Chunk*)data);
-	//}
-}
-
-void AudioFile::Play(uint repeat)
-{
-//	if (data)
-//	{
-//		if(type == FX)					// for FX
-//			channel = Mix_PlayChannel(-1, (Mix_Chunk*)data, repeat);  
-//		else if (type == MUSIC)			// for music
-//		{
-//			if (Mix_PlayingMusic())
-//			{
-//				if (fade_time > 0.0f)	Mix_FadeOutMusic((int)(fade_time * 1000.0f));
-//				else					Mix_HaltMusic();
-//			}
+//ModuleAudio::ModuleAudio(bool start_enabled) : Module(start_enabled)
+//{
+//	//name
+//}
 //
-//			int res = -1;
-//			if (fade_time > 0.0f)	res = Mix_FadeInMusic((Mix_Music*)data, -1, (int)(fade_time * 1000.0f));
-//			else					res = Mix_PlayMusic((Mix_Music*)data, -1);
-//			
-//			if(res < 0)
-//				app_log->AddLog("Cannot fade in music. Mix_GetError(): %s", Mix_GetError());
-//		}
+//ModuleAudio::~ModuleAudio()
+//{
+//
+//}
+//
+//bool ModuleAudio::Init(Document& document)
+//{
+//	LOG("Initializing Wwise");
+//	
+//	bool ret = Wwise::InitWwise();
+//	
+//	LoadSoundBank("Music");
+//	
+//	return ret;
+//}
+//
+//bool ModuleAudio::Start()
+//{
+//	return true;
+//}
+//
+//update_status ModuleAudio::PreUpdate(float dt)
+//{
+//	if (!muted) {
+//		SetVolume("Volume", volume);
 //	}
-}
-
-void AudioFile::Stop()
-{
-//	if (data)
+//	else {
+//		SetVolume("Volume", 0);
+//	}
+//
+//	float3 cam_pos = App->scene->GetCurCam()->transform.position;
+//	App->scene->audiolistenerdefault->GetComponent(Component::TRANSFORMATION)->AsTransform()->position = cam_pos;
+//	App->scene->audiolistenerdefault->GetComponent(Component::TRANSFORMATION)->AsTransform()->CalculateMatrix();
+//
+//	return UPDATE_CONTINUE;
+//}
+//
+//
+//update_status ModuleAudio::PostUpdate(float dt)
+//{
+//
+//	AK::SoundEngine::RenderAudio();
+//
+//	return UPDATE_CONTINUE;
+//}
+//
+//bool ModuleAudio::CleanUp()
+//{
+//	LOG("Freeing Wwise");
+//	
+//	return Wwise::CloseWwise();
+//
+//	return true;
+//}
+//
+//bool ModuleAudio::Save(Document& document, FileWriteStream& fws)const
+//{
+//	bool ret = true;
+//
+//	return ret;
+//}
+//
+//bool ModuleAudio::Load(Document& document)
+//{
+//	bool ret = true;
+//
+//	return ret;
+//}
+//
+//// -----------------------------
+//
+//void ModuleAudio::SetVolume(const char* rtpcID, float value)
+//{
+//	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, App->scene->audiolistenerdefault->GetComponent(Component::AUDIOLISTENER)->AsAudioListener()->sound_go->GetID());
+//	if (eResult != AK_Success)
 //	{
-//		if (type == FX)					// for FX
-//			Mix_HaltChannel(channel);
-//		else if (type == MUSIC)			// for music
-//			Mix_HaltMusic();
+//		assert(!"Error changing audio volume!");
 //	}
-}
+//}
+//
+//void ModuleAudio::LoadSoundBank(const char* path)
+//{
+//	//SoundBank* new_bank = new SoundBank();
+//	std::string bank_path = AUDIO_DIRECTORY;
+//	bank_path += path;
+//	bank_path += AUDIO_EXTENSION;
+//
+//	Wwise::LoadBank(bank_path.c_str());
+//
+//	std::string json_file = bank_path.substr(0, bank_path.find_last_of('.')) + ".json"; // Changing .bnk with .json
+//	/*GetBankInfo(json_file, new_bank);
+//	soundbanks.push_back(new_bank);
+//	soundbank = new_bank;
+//	return new_bank;*/
+//}

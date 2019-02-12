@@ -1,73 +1,41 @@
-#ifndef __ModuleAudio_H__
-#define __ModuleAudio_H__
+#ifndef _MODULE_AUDIO_H_
+#define _MODULE_AUDIO_H_
 
 #include "Module.h"
-#include <list>
-#include <string>
+//#include "Include_Wwise.h"
+#include "Wwise.h"
 
-#define DEFAULT_MUSIC_FADE_TIME 2.0f
 
-enum AudioType { A_UNKNOWN, MUSIC, FX};
+#define AUDIO_DIRECTORY "Library/Sounds/"
+#define AUDIO_EXTENSION ".bnk"
+#define DEFAULT_VOLUME 50
 
-class AudioFile
-{
-	friend class ModuleAudio;
-	friend class ModuleUI;
-public:
-	AudioFile(const char* name, uint id, void* data, AudioType type, float volume = 1.0f, float fade_time = DEFAULT_MUSIC_FADE_TIME)
-		: name(name), data(data), type(type), volume(volume), fade_time(fade_time), id(id) {};
-	~AudioFile();
+//class SoundBank;
 
-	void Play(uint repeat = 0);
-	void Stop();
+class ModuleAudio : public Module {
 
-	void setName(const char* new_name)	{ name = new_name; };
-	void setVolume(uint v)				{ volume = v; };
-	void setFadeTime(float f_t)			{ fade_time = f_t; };
-
-private:
-
-	const uint id		= 0;
-	uint channel		= 0;
-	AudioType type		= A_UNKNOWN;
-	float volume		= 1.0f;
-	float fade_time		= DEFAULT_MUSIC_FADE_TIME;
-
-	void* data			= nullptr;
-	std::string name;
-
-};
-
-class ModuleAudio : public Module
-{
-	friend class ModuleUI;
 public:
 
+	ModuleAudio(bool start_enabled = true);
+	virtual ~ModuleAudio();
+	bool Init(Document& document) override;
+	bool Start() override;
+	update_status PreUpdate(float dt) override;
+	update_status PostUpdate(float dt) override;
+	bool CleanUp() override;
 
-	ModuleAudio(Application* app, bool start_enabled = true);
-	~ModuleAudio();
+	bool Save(Document& document, FileWriteStream& fws)const override;
+	bool Load(Document& document) override;
 
-	bool Init(const JSON_Object& config);
-	bool CleanUp();
+	void LoadSoundBank(const char* path);
+	
+	void SetVolume(const char* rtpc, float value);
 
-	AudioFile* LoadAudio(const char* path, const char* name, AudioType type);
-	void Play(uint id, uint repeat = 0) const;   // music always plays in loop, regardless of the value of repeat arg.
-	void Play(const char* name, uint repeat = 0) const; // music always plays in loop, regardless of the value of repeat arg.
-
-	void setMasterVolume(uint volume);
-	void setMasterMusicVolume(uint volume);
-	float getMasterVolume()	const		{ return master_volume; };
-	float getsetMasterMusicVolume()	const { return music_volume; };
-
-	void HaltMusic();
-
-private:
-
-	float master_volume	= 1.0f;	 // _seriazible_var
-	float music_volume	= 1.0f;	 // _seriazible_var
-
-	std::list<AudioFile*> audio_files;
-	uint last_audio_id = 0;
+public:
+	int volume = DEFAULT_VOLUME;
+	bool muted = false;
+	
 };
 
-#endif // __ModuleAudio_H__
+
+#endif // _MODULE_AUDIO_H_

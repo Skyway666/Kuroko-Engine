@@ -108,6 +108,7 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="ImGui\TextEditor.h" />
+    <ClInclude Include="Include_Wwise.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Math.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="Wren\wren_utils.h" />
     <ClInclude Include="Wren\wren_value.h" />
     <ClInclude Include="Wren\wren_vm.h" />
+    <ClInclude Include="Wwise.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -235,6 +237,7 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\ImSequencer.cpp" />
     <ClCompile Include="ImGui\TextEditor.cpp" />
+    <ClCompile Include="Include_Wwise.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -309,6 +312,7 @@
     <ClCompile Include="Wren\wren_utils.c" />
     <ClCompile Include="Wren\wren_value.c" />
     <ClCompile Include="Wren\wren_vm.c" />
+    <ClCompile Include="Wwise.cpp" />
     <ClCompile Include="Wwise\IO\Common\AkDefaultLowLevelIODispatcher.cpp" />
     <ClCompile Include="Wwise\IO\Common\AkFileLocationBase.cpp" />
     <ClCompile Include="Wwise\IO\Common\AkFilePackage.cpp" />
