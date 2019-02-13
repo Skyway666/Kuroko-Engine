@@ -16,6 +16,18 @@ class ObjectComunicator{
 	foreign static C_MoveForward(gameObject, speed)
 }
 
+class Math{
+	foreign static C_sqrt(number)
+
+	static pow(number, power){
+		var ret = 1
+		for(i in 0...power){
+			ret = ret * number
+		}
+		return ret
+	}
+}
+
 class Vec3{
 
 	construct zero(){
@@ -38,6 +50,9 @@ class Vec3{
 
 	z {_z}
 	z=(v) {_z = v}
+
+	magnitude {Math.C_sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))}
+
 }
 class EngineComunicator{
 	foreign static consoleOutput(message)

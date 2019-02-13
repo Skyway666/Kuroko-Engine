@@ -17,6 +17,9 @@ void ConsoleLog(WrenVM* vm);
 void InstantiatePrefab(WrenVM* vm);
 void getTime(WrenVM* vm);
 
+// Math
+void sqrt(WrenVM* vm);
+
 // Object comunicator
 void SetGameObjectPos(WrenVM* vm);
 void ModGameObjectPos(WrenVM* vm);
@@ -396,6 +399,10 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return MoveGameObjectForward; // C function for ObjectComunicator.C_MoveForward
 			}
 		}
+		if (strcmp(className, "Math") == 0) {
+			if (isStatic && strcmp(signature, "C_sqrt(_)") == 0)
+				return sqrt; // C function for Math.C_sqrt(_)
+		}
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
@@ -511,7 +518,7 @@ void getMouseRaycastZ(WrenVM* vm)
 	wrenSetSlotDouble(vm, 0, hit.z);
 }
 
-void InstantiatePrefab(WrenVM* vm) {  // TODO: Instanciate should accept a transform as well (at least)
+void InstantiatePrefab(WrenVM* vm) {  
 
 	std::string prefab_name = wrenGetSlotString(vm, 1);
 
@@ -660,4 +667,9 @@ void getGameObjectRoll(WrenVM* vm) {
 
 void getTime(WrenVM* vm) {
 	wrenSetSlotDouble(vm, 0, SDL_GetTicks());
+}
+
+void sqrt(WrenVM* vm) {
+	int number = wrenGetSlotDouble(vm, 1);
+	wrenSetSlotDouble(vm, 0, sqrt(number));
 }
