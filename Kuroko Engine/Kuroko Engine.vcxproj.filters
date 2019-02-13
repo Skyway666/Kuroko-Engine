@@ -489,6 +489,12 @@
     <ClInclude Include="Wwise.h">
       <Filter>Sources\Helpers\Wwise</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentAudioListener.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAudioSource.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -793,6 +799,12 @@
     </ClCompile>
     <ClCompile Include="Wwise.cpp">
       <Filter>Sources\Helpers\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAudioListener.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAudioSource.cpp">
+      <Filter>Sources\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

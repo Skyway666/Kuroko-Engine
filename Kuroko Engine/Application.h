@@ -10,7 +10,7 @@
 
 class ModuleWindow;
 class ModuleInput;
-//class ModuleAudio;
+class ModuleAudio;
 class ModuleScene;
 class ModuleRenderer3D;
 class ModuleCamera3D;
@@ -26,7 +26,7 @@ class Application
 public:
 	ModuleWindow* window;
 	ModuleInput* input;
-	//ModuleAudio* audio;
+	ModuleAudio* audio;
 	ModuleScene* scene;
 	ModuleDebug* debug;
 	ModuleRenderer3D* renderer3D;
