@@ -16,10 +16,37 @@ class ObjectComunicator{
 	foreign static C_MoveForward(gameObject, speed)
 }
 
+class Vec3{
+
+	construct zero(){
+		x = 0
+		y = 0
+		z = 0
+	}
+
+	construct new(n_x, n_y, n_z){
+		x = n_x
+		y = n_y
+		z = n_z
+	}
+
+	x {_x}
+	x=(v) {_x = v}
+
+	y {_y}
+	y=(v) {_y = v}
+
+	z {_z}
+	z=(v) {_z = v}
+}
 class EngineComunicator{
 	foreign static consoleOutput(message)
 	foreign static Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
 	foreign static getTime()
+
+	static Instantiate(prefab_name, pos, euler){
+		EngineComunicator.Instantiate(prefab_name, pos.x, pos.y, pos.z, euler.x, euler.y, euler.z)
+	}
 }
 
 class InputComunicator{
@@ -37,7 +64,6 @@ class InputComunicator{
 	foreign static getMouseRaycastY()
 	foreign static getMouseRaycastZ()
 }
-
 
 class ObjectLinker{
 	gameObject { _gameObject}		// UUID of the linked GO
@@ -58,6 +84,10 @@ class ObjectLinker{
 	    ObjectComunicator.C_Kill(gameObject)
 	}
 
+	getPos(mode){
+		return Vec3.new(getPosX(mode), getPosY(mode), getPosZ(mode))
+	}
+
 	getPosX(mode){
 		return ObjectComunicator.C_getPosX(gameObject, mode)
 	}
@@ -68,6 +98,10 @@ class ObjectLinker{
 
 	getPosZ(mode){
 		return ObjectComunicator.C_getPosZ(gameObject, mode)
+	}
+
+	getEuler(){
+		return Vec3.new(getPitch(), getYaw(), getRoll())
 	}
 
 	getPitch(){
