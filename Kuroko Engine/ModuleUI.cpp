@@ -452,6 +452,13 @@ void ModuleUI::DrawHierarchyTab()
 			if (App->scene->selected_obj)
 				App->scene->selected_obj->addChild(go);
 		}
+		if (ImGui::Button("UI_Image"))
+		{
+			GameObject* go = new GameObject("Empty", App->scene->selected_obj);
+			if (App->scene->selected_obj)
+				App->scene->selected_obj->addChild(go);
+			//TO DO
+		}
 		ImGui::EndPopup();
 	}
 
