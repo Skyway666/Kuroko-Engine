@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="125">
+	<RootPaths>
+		<ProjectRoot>C:\Users\familia\Documents\WwiseProjects\Wwise Irreal\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\familia\Documents\WwiseProjects\Wwise Irreal\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\familia\Desktop\SoundBanks\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\familia\Documents\WwiseProjects\Wwise Irreal\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="3991942870" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Music</ObjectPath>
+			<ShortName>Music</ShortName>
+			<Path>Music.bnk</Path>
+			<IncludedEvents>
+				<Event Id="3440043877" Name="HeyFuckYou" ObjectPath="\Events\Default Work Unit\HeyFuckYou\HeyFuckYou"/>
+				<Event Id="1936427047" Name="HeyMan" ObjectPath="\Events\Default Work Unit\HeyMan\HeyMan"/>
+				<Event Id="3991942870" Name="Music" ObjectPath="\Events\Default Work Unit\BGMusic\Music"/>
+				<Event Id="1036431723" Name="TrainFX" ObjectPath="\Events\Default Work Unit\TrainFx\TrainFX"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="37872822" Language="SFX">
+					<ShortName>HeyFuckYou.wav</ShortName>
+					<Path>SFX\HeyFuckYou_1C9C67B2.wem</Path>
+				</File>
+				<File Id="141065671" Language="SFX">
+					<ShortName>HeyMan.wav</ShortName>
+					<Path>SFX\HeyMan_1C9C67B2.wem</Path>
+				</File>
+				<File Id="198875166" Language="SFX">
+					<ShortName>Song.wav</ShortName>
+					<Path>SFX\Song_C2E12055.wem</Path>
+				</File>
+				<File Id="936475330" Language="SFX">
+					<ShortName>TRAIN_FX.wav</ShortName>
+					<Path>SFX\TRAIN_FX_544B168E.wem</Path>
+				</File>
+				<File Id="947858482" Language="SFX">
+					<ShortName>ShortForest.wav</ShortName>
+					<Path>SFX\ShortForest_65A560FA.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

@@ -5,6 +5,7 @@
 #include "ModuleScene.h"
 #include "ModuleCamera3D.h"
 #include "ModuleUi.h"
+#include "ModuleImporter.h"
 #include "GameObject.h"
 #include "ComponentCamera.h"
 #include "ComponentTransform.h"
@@ -30,6 +31,8 @@ ModuleAudio::~ModuleAudio()
 
 bool ModuleAudio::Init(const JSON_Object* config)
 {
+	App->importer->ImportSounds();
+
 	app_log->AddLog("Initializing Wwise");
 	
 	bool ret = Wwise::InitWwise();
@@ -54,9 +57,9 @@ update_status ModuleAudio::PreUpdate(float dt)
 	}
 
 	// Set camera listener to camera position
-	float3 cam_pos = App->camera->current_camera->getFrustum()->pos;
-	((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(Component_type::TRANSFORM))->local->setPosition(cam_pos);
-	((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(Component_type::TRANSFORM))->local->CalculateMatrix();
+	float3 cam_pos = App->camera->selected_camera->getFrustum()->pos;
+	//((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(Component_type::TRANSFORM))->local->setPosition(cam_pos);
+	//((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(Component_type::TRANSFORM))->local->CalculateMatrix();
 
 	return UPDATE_CONTINUE;
 }
@@ -91,11 +94,11 @@ void ModuleAudio::LoadConfig(const JSON_Object* config)
 
 void ModuleAudio::SetVolume(const char* rtpcID, float value)
 {
-	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, ((ComponentAudioListener*)App->scene->audiolistenerdefault->getComponent(Component_type::AUDIOLISTENER))->sound_go->GetID());
+	/*AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, ((ComponentAudioListener*)App->scene->audiolistenerdefault->getComponent(Component_type::AUDIOLISTENER))->sound_go->GetID());
 	if (eResult != AK_Success)
 	{
 		assert(!"Error changing audio volume!");
-	}
+	}*/
 }
 
 void ModuleAudio::LoadSoundBank(const char* path)

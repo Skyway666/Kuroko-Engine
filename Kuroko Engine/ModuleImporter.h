@@ -43,6 +43,8 @@ public:
 	Mesh* ExportMeshFromKR(const char* file); 
 	Texture* LoadTextureFromLibrary(const char* file);
 
+	void ImportSounds();
+
 private:
 	void ImportNodeToSceneRecursive(const aiNode& node, const aiScene& scene, JSON_Value* json_scene, const std::vector<material_resource_deff>& in_mat_id, uint parent = 0);  // TODO: Add a parameter for mat id, a vector of JSON_Objects*
 	void ImportMaterialsFromNode(const aiScene& scene, std::vector<material_resource_deff>& out_mat_id);
