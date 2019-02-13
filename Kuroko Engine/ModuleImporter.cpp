@@ -15,6 +15,7 @@
 #include "Timer.h"
 #include "Random.h"
 #include "ModuleResourcesManager.h"
+#include "ResourceAnimation.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -166,7 +167,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 	// Import and store transform
 	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	aiVector3D scl = { 1.0f, 1.0f, 1.0f };;
+	aiVector3D scl = { 1.0f, 1.0f, 1.0f };
 	aiQuaternion rot;
 	node.mTransformation.Decompose(scl, rot, pos);
 	Transform* trans = new Transform();
@@ -198,7 +199,8 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
 		//SKELETAL_TODO: bones
-		//SKELETAL_TODO: animations
+		
+		
 
 		std::string mesh_name = node.mName.C_Str();
 
@@ -231,6 +233,33 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		delete mesh;									// TODO: Delete mesh
 
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
+	}
+
+	//SKELETAL_TODO: animations
+	if (parent == 0 && scene.HasAnimations())
+	{
+		for (int i = 0; i < scene.mNumAnimations; ++i)
+		{			
+			//import animation to own file
+			JSON_Value* animation_component = json_value_init_object();
+
+			uint uuid_number = random32bits();
+			std::string uuid = std::to_string(uuid_number);
+			std::string binary_full_path = ANIMATIONS_FOLDER + uuid + OWN_ANIMATION_EXTENSION;
+			json_object_set_string(json_object(animation_component), "type", "animation");			// Set type
+			json_object_set_string(json_object(animation_component), "animation_binary_path", binary_full_path.c_str()); // (used for deleting binary file when asset is deleted)
+			json_object_set_number(json_object(animation_component), "animation_resource_uuid", uuid_number);
+			json_object_set_string(json_object(animation_component), "animation_name", scene.mAnimations[i]->mName.C_Str());
+			
+			json_array_append_value(json_array(components), animation_component);
+
+			resource_deff deff;
+			deff.uuid = uuid_number;
+			deff.binary = uuid;
+			deff.type = R_ANIMATION;
+			ResourceAnimation* newAnimation = new ResourceAnimation(deff);
+			ImportAnimationToKR(uuid.c_str(), scene.mAnimations[i], newAnimation);
+		}
 	}
 
 	json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
@@ -466,6 +495,61 @@ void ModuleImporter::ImportMeshToKR(const char * file, Mesh* mesh) {
 	app_log->AddLog("Saved %s as own file format", filename.c_str());
 
 	delete data;
+}
+
+void ModuleImporter::ImportAnimationToKR(const char * file, aiAnimation* animation, ResourceAnimation* anim)
+{
+	anim->ticks = animation->mDuration;
+	anim->ticksXsecond = animation->mTicksPerSecond;
+	anim->numBones = animation->mNumChannels;
+
+	if (animation->mNumChannels > 0)
+	{
+		anim->boneTransformations = new BoneTransform[anim->numBones];
+		for (int i = 0; i < anim->numBones; i++)
+		{
+			anim->boneTransformations[i].NodeName = (animation->mChannels[i]->mNodeName.length > 0) ? animation->mChannels[i]->mNodeName.C_Str() : "Unnamed";
+
+			anim->boneTransformations[i].numPosKeys = animation->mChannels[i]->mNumPositionKeys;
+			anim->boneTransformations[i].PosKeysValues = new float[anim->boneTransformations[i].numPosKeys * 3];
+			anim->boneTransformations[i].PosKeysTimes = new double[anim->boneTransformations[i].numPosKeys];
+			for (int j = 0; j < anim->boneTransformations[i].numPosKeys; j++)
+			{
+				int Jvalue = j * 3;
+				anim->boneTransformations[i].PosKeysTimes[j] = animation->mChannels[i]->mPositionKeys[j].mTime;
+				anim->boneTransformations[i].PosKeysValues[Jvalue] = animation->mChannels[i]->mPositionKeys[j].mValue.x;
+				anim->boneTransformations[i].PosKeysValues[Jvalue + 1] = animation->mChannels[i]->mPositionKeys[j].mValue.y;
+				anim->boneTransformations[i].PosKeysValues[Jvalue + 2] = animation->mChannels[i]->mPositionKeys[j].mValue.z;
+			}
+
+			anim->boneTransformations[i].numScaleKeys = animation->mChannels[i]->mNumScalingKeys;
+			anim->boneTransformations[i].ScaleKeysValues = new float[anim->boneTransformations[i].numScaleKeys * 3];
+			anim->boneTransformations[i].ScaleKeysTimes = new double[anim->boneTransformations[i].numScaleKeys];
+			for (int j = 0; j < anim->boneTransformations[i].numScaleKeys; j++)
+			{
+				int Jvalue = j * 3;
+				anim->boneTransformations[i].ScaleKeysTimes[j] = animation->mChannels[i]->mScalingKeys[j].mTime;
+				anim->boneTransformations[i].ScaleKeysValues[Jvalue] = animation->mChannels[i]->mScalingKeys[j].mValue.x;
+				anim->boneTransformations[i].ScaleKeysValues[Jvalue + 1] = animation->mChannels[i]->mScalingKeys[j].mValue.y;
+				anim->boneTransformations[i].ScaleKeysValues[Jvalue + 2] = animation->mChannels[i]->mScalingKeys[j].mValue.z;
+			}
+
+			anim->boneTransformations[i].numRotKeys = animation->mChannels[i]->mNumRotationKeys;
+			anim->boneTransformations[i].RotKeysValues = new float[anim->boneTransformations[i].numRotKeys * 4];
+			anim->boneTransformations[i].RotKeysTimes = new double[anim->boneTransformations[i].numRotKeys];
+			for (int j = 0; j < anim->boneTransformations[i].numRotKeys; j++)
+			{
+				int Jvalue = j * 4;
+				anim->boneTransformations[i].RotKeysTimes[j] = animation->mChannels[i]->mRotationKeys[j].mTime;
+				anim->boneTransformations[i].RotKeysValues[Jvalue] = animation->mChannels[i]->mRotationKeys[j].mValue.x;
+				anim->boneTransformations[i].RotKeysValues[Jvalue + 1] = animation->mChannels[i]->mRotationKeys[j].mValue.y;
+				anim->boneTransformations[i].RotKeysValues[Jvalue + 2] = animation->mChannels[i]->mRotationKeys[j].mValue.z;
+				anim->boneTransformations[i].RotKeysValues[Jvalue + 3] = animation->mChannels[i]->mRotationKeys[j].mValue.w;
+			}
+		}
+
+		//save file
+	}
 }
 
 void ModuleImporter::ImportTextureToDDS(const char* texture_name) {

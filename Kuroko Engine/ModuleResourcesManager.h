@@ -76,7 +76,7 @@ public:
 	// Get
 	void getMeshResourceList(std::list<resource_deff>& meshes);
 	void getScriptResourceList(std::list<resource_deff>& scripts);
-	void getAnimationResourceList(std::list<resource_deff>& aimations);
+	void getAnimationResourceList(std::list<resource_deff>& animations);
 	std::string getPrefabPath(const char* prefab_name); // Retruns the binary file for the given prefab so it can be loaded
 	// get texture list
 	// get scene list

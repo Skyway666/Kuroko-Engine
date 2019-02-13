@@ -8,8 +8,11 @@ class GameObject;
 class ComponentMesh;
 class aiNode;
 class aiScene;
+class aiAnimation;
+class aiBone;
 class AudioFile;
 class Mesh;
+class ResourceAnimation;
 
 //enum ImportType { I_NONE, I_GOBJ, I_TEXTURE, I_FX, I_MUSIC};
 
@@ -39,6 +42,7 @@ public:
 
 	//Own file format
 	void ImportMeshToKR(const char* file, Mesh* mesh);
+	void ImportAnimationToKR(const char* file, aiAnimation* animation, ResourceAnimation* anim);
 	void ImportTextureToDDS(const char* file);
 	Mesh* ExportMeshFromKR(const char* file); 
 	Texture* LoadTextureFromLibrary(const char* file);

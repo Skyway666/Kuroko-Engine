@@ -5,6 +5,8 @@
 
 
 #define OWN_MESH_EXTENSION ".kr"
+#define OWN_ANIMATION_EXTENSION ".krAn"
+#define OWN_BONE_EXTENSION ".krOne"
 #define JSON_EXTENSION ".json"
 #define DDS_EXTENSION ".dds"
 #define META_EXTENSION ".meta"
@@ -13,6 +15,8 @@
 
 #define LIBRARY_FOLDER "Library\\"
 #define MESHES_FOLDER "Library\\Meshes\\"
+#define ANIMATIONS_FOLDER "Library\\Animations\\"
+#define BONES_FOLDER "Library\\Animations\\Bones\\"
 #define TEXTURES_FOLDER "Library\\Textures\\"
 #define OBJECTS_FOLDER "Library\\3dObjects\\"
 #define SCRIPTS_FOLDER "Library\\Scripts\\"
