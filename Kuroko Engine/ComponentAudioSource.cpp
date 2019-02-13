@@ -17,7 +17,7 @@ ComponentAudioSource::~ComponentAudioSource()
 }
 
 
-bool ComponentAudioSource::Update()
+bool ComponentAudioSource::Update(float dt)
 {
 	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
 	sound_go->SetPosition(pos.x, pos.y, pos.z);

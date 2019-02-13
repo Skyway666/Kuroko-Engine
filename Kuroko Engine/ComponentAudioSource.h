@@ -3,7 +3,7 @@
 
 #include "Component.h"
 #include "Wwise.h"
-#include "Game\Library\Sounds\Wwise_IDs.h"
+//#include "Game\Library\Sounds\Wwise_IDs.h"
 
 class WwiseGameObject;
 
@@ -13,11 +13,11 @@ public:
 	ComponentAudioSource(GameObject* gameobject);
 	~ComponentAudioSource();
 
-	bool Update() override;
-	void SetInspectorInfo() override;
+	bool Update(float dt) override;
+	/*void SetInspectorInfo() override;
 
 	Value Save(Document::AllocatorType& allocator) const override;
-	bool Load(Document& document) override;
+	bool Load(Document& document) override;*/
 
 	void SetSoundID(AkUniqueID ID);
 

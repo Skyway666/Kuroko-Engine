@@ -1,6 +1,7 @@
 #include "Wwise.h"
 #include <assert.h>
 #include "Globals.h"
+#include "Applog.h"
 #include "Include_Wwise.h"
 #include "Wwise/IO/Win32/AkFilePackageLowLevelIOBlocking.h"
 #include "Wwise/IO/Win32/AkDefaultIOHookBlocking.h"
@@ -182,7 +183,7 @@ Wwise::WwiseGameObject::WwiseGameObject(unsigned long idGO, const char* nameGO)
 	AKRESULT eResult = AK::SoundEngine::RegisterGameObj(ID, name);
 	if (eResult != AK_Success)
 	{
-		LOG("Failed to register GameObject to Wwise!");
+		app_log->AddLog("Failed to register GameObject to Wwise!");
 	}
 }
 
@@ -191,7 +192,7 @@ Wwise::WwiseGameObject::~WwiseGameObject()
 	AKRESULT eResult = AK::SoundEngine::UnregisterGameObj(ID);
 	if (eResult != AK_Success)
 	{
-		LOG("Failed to unregister GameObject from Wwise!");
+		app_log->AddLog("Failed to unregister GameObject from Wwise!");
 	}
 }
 
@@ -255,13 +256,13 @@ void Wwise::WwiseGameObject::SetPosition(float x, float y, float z, float x_fron
 	float dot_prod = top.X*front.X + top.Y*front.Y + top.Z*front.Z;
 
 	if (dot_prod >= 0.0001)
-		LOG("Vectors are not orthogonal!");
+		app_log->AddLog("Vectors are not orthogonal!");
 
 	AkSoundPosition sound_pos;
 	sound_pos.Set(position, front, top);
 	AKRESULT res = AK::SoundEngine::SetPosition((AkGameObjectID)ID, sound_pos);
 	if (res != AK_Success)
-		LOG("Couldn't update position");
+		app_log->AddLog("Couldn't update position");
 }
 
 void Wwise::WwiseGameObject::PlayEvent(unsigned long id)

@@ -16,16 +16,16 @@ class ModuleAudio : public Module {
 
 public:
 
-	ModuleAudio(bool start_enabled = true);
+	ModuleAudio(Application* app, bool start_enabled = true);
 	virtual ~ModuleAudio();
-	bool Init(Document& document) override;
+	bool Init(const JSON_Object* config) override;
 	bool Start() override;
 	update_status PreUpdate(float dt) override;
 	update_status PostUpdate(float dt) override;
 	bool CleanUp() override;
 
-	bool Save(Document& document, FileWriteStream& fws)const override;
-	bool Load(Document& document) override;
+	void SaveConfig(JSON_Object* config)const override;
+	void LoadConfig(const JSON_Object* config) override;
 
 	void LoadSoundBank(const char* path);
 	
