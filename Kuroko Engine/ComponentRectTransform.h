@@ -7,7 +7,7 @@
 class ComponentRectTransform :	public Component
 {
 public:
-	ComponentRectTransform();
+	ComponentRectTransform(GameObject* parent);
 	~ComponentRectTransform();
 
 	float2 local = float2::zero;

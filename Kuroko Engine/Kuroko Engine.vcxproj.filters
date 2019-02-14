@@ -483,10 +483,22 @@
     <ClInclude Include="ComponentCanvas.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentImageUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentButtonUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
     <ClInclude Include="ComponentRectTransform.h">
       <Filter>Sources\Game\UI</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentImageUI.h">
+    <ClInclude Include="ComponentTextUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentInputUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCheckBoxUI.h">
       <Filter>Sources\Game\UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -774,6 +786,18 @@
       <Filter>Sources\Game\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentImageUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentButtonUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTextUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentInputUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCheckBoxUI.cpp">
       <Filter>Sources\Game\UI</Filter>
     </ClCompile>
   </ItemGroup>

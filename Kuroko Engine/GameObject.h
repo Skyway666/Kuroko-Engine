@@ -15,7 +15,7 @@ class GameObject
 	friend class ComponentAABB;
 public:
 
-	GameObject(const char* name, GameObject* parent = nullptr);
+	GameObject(const char* name, GameObject* parent = nullptr, bool UI = false );
 	GameObject(JSON_Object* deff);
 	~GameObject();
 

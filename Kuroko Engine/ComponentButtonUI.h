@@ -1,14 +1,15 @@
 #ifndef _COMPONENTIMAGEUI_
 #define _COMPONENTIMAGEUI_
+
 #include "Component.h"
 
-class ComponentRectTransform;
 
-class ComponentImageUI : public Component
+class ComponentRectTransform;
+class ComponentButtonUI :public Component
 {
 public:
-	ComponentImageUI(GameObject* parent);
-	~ComponentImageUI();
+	ComponentButtonUI(GameObject* parent);
+	~ComponentButtonUI();
 
 	bool Update(float dt)override;
 	void Draw() const override;
@@ -17,7 +18,7 @@ public:
 
 private:
 
-	ComponentRectTransform* rectTransform = nullptr;
+	ComponentRectTransform * rectTransform = nullptr;
 };
 
 #endif

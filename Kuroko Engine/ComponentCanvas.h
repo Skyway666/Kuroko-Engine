@@ -5,7 +5,7 @@
 class ComponentCanvas :	public Component
 {
 public:
-	ComponentCanvas();
+	ComponentCanvas(GameObject* parent);
 	~ComponentCanvas();
 
 	bool Update(float dt) override;

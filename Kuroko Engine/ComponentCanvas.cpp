@@ -2,7 +2,7 @@
 
 
 
-ComponentCanvas::ComponentCanvas() : Component(parent, CANVAS)
+ComponentCanvas::ComponentCanvas(GameObject* parent) : Component(parent, CANVAS)
 {
 }
 

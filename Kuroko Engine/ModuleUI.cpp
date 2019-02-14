@@ -454,10 +454,11 @@ void ModuleUI::DrawHierarchyTab()
 		}
 		if (ImGui::Button("UI_Image"))
 		{
-			GameObject* go = new GameObject("Empty", App->scene->selected_obj);
-			if (App->scene->selected_obj)
-				App->scene->selected_obj->addChild(go);
-			//TO DO
+			GameObject* canvas = App->scene->getCanvasGameObject();
+			
+			GameObject* image = new GameObject("UI_Image", canvas);			
+			image->addComponent(Component_type::UI_IMAGE);
+			canvas->addChild(image);
 		}
 		ImGui::EndPopup();
 	}
@@ -1172,6 +1173,18 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	
 	}
 	break;
+	case CANVAS:
+		if (ImGui::CollapsingHeader("Canvas"))
+		{
+			// TO FILL
+		}
+	break;
+	case UI_IMAGE:
+		if (ImGui::CollapsingHeader("UI_Image"))
+		{
+			// TO FILL
+		}
+		break;
 	default:
 		break;
 	}

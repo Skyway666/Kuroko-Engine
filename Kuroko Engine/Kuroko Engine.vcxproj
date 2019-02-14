@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>Kuroko Engine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -80,11 +80,15 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentAABB.h" />
+    <ClInclude Include="ComponentButtonUI.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentCanvas.h" />
+    <ClInclude Include="ComponentCheckBoxUI.h" />
     <ClInclude Include="ComponentImageUI.h" />
+    <ClInclude Include="ComponentInputUI.h" />
     <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ComponentScript.h" />
+    <ClInclude Include="ComponentTextUI.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="GameObject.h" />
@@ -217,11 +221,15 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ComponentAABB.cpp" />
+    <ClCompile Include="ComponentButtonUI.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentCanvas.cpp" />
+    <ClCompile Include="ComponentCheckBoxUI.cpp" />
     <ClCompile Include="ComponentImageUI.cpp" />
+    <ClCompile Include="ComponentInputUI.cpp" />
     <ClCompile Include="ComponentRectTransform.cpp" />
     <ClCompile Include="ComponentScript.cpp" />
+    <ClCompile Include="ComponentTextUI.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="GameObject.cpp" />

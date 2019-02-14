@@ -4,7 +4,7 @@
 #include "Parson\parson.h"
 class GameObject;
 
-enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, CANVAS, RECTTRANSFORM, UI_IMAGE };
+enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, CANVAS, RECTTRANSFORM, UI_IMAGE, UI_INPUT, UI_CHECKBOX, UI_BUTTON, UI_TEXT };
 
 class Component
 {

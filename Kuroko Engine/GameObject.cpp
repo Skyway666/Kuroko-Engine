@@ -4,7 +4,9 @@
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
+#include "ComponentCanvas.h"
 #include "ComponentScript.h"
+#include "ComponentImageUI.h"
 #include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
@@ -14,16 +16,22 @@
 #include "ModuleRenderer3D.h"
 
 
-GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits()) 
+GameObject::GameObject(const char* name, GameObject* parent, bool UI) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits())
 {
 	if (uuid == 0)		// Remote case, UUID can never be 0!
 		uuid += 1;
 
-	addComponent(TRANSFORM);
-	addComponent(C_AABB);
+	if (!UI) {
+		addComponent(TRANSFORM);
+		addComponent(C_AABB);
+	}
+	else {
+		addComponent(RECTTRANSFORM);
+	}
 	App->scene->addGameObject(this);
 	
 }
+
 
 GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 	name = json_object_get_string(deff, "name");
@@ -192,6 +200,20 @@ Component* GameObject::addComponent(Component_type type)
 	case SCRIPT:
 		new_component = new ComponentScript(this);
 		components.push_back(new_component);
+		break;
+	case CANVAS:
+		if (!getComponent(CANVAS))
+		{
+			new_component = new ComponentCanvas(this);
+			components.push_back(new_component);			
+		}
+		break;
+	case UI_IMAGE:
+		if (!getComponent(UI_IMAGE))
+		{
+			new_component = new ComponentImageUI(this);
+			components.push_back(new_component);
+		}
 		break;
 	default:
 		break;

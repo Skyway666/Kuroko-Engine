@@ -2,7 +2,7 @@
 
 
 
-ComponentRectTransform::ComponentRectTransform() : Component(parent, UI_IMAGE)
+ComponentRectTransform::ComponentRectTransform(GameObject* parent) : Component(parent, RECTTRANSFORM)
 {
 }
 
