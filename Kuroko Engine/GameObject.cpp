@@ -5,6 +5,8 @@
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
 #include "ComponentScript.h"
+#include "ComponentAudioListener.h"
+#include "ComponentAudioSource.h"
 #include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
@@ -191,6 +193,17 @@ Component* GameObject::addComponent(Component_type type)
 		break;
 	case SCRIPT:
 		new_component = new ComponentScript(this);
+		components.push_back(new_component);
+		break;
+	case AUDIOLISTENER:
+		if (!getComponent(AUDIOLISTENER))
+		{
+			new_component = new ComponentAudioListener(this);
+			components.push_back(new_component);
+		}
+		break;
+	case AUDIOSOURCE:
+		new_component = new ComponentAudioSource(this);
 		components.push_back(new_component);
 		break;
 	default:

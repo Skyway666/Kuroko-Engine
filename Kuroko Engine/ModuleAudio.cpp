@@ -57,9 +57,12 @@ update_status ModuleAudio::PreUpdate(float dt)
 	}
 
 	// Set camera listener to camera position
-	float3 cam_pos = App->camera->selected_camera->getFrustum()->pos;
-	//((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(Component_type::TRANSFORM))->local->setPosition(cam_pos);
-	//((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(Component_type::TRANSFORM))->local->CalculateMatrix();
+	if (App->scene->audiolistenerdefault)
+	{
+		float3 cam_pos = App->camera->selected_camera->getFrustum()->pos;
+		((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(TRANSFORM))->local->setPosition(cam_pos);
+		((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(TRANSFORM))->local->CalculateMatrix();
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -67,7 +70,6 @@ update_status ModuleAudio::PreUpdate(float dt)
 
 update_status ModuleAudio::PostUpdate(float dt)
 {
-
 	AK::SoundEngine::RenderAudio();
 
 	return UPDATE_CONTINUE;
