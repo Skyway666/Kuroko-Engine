@@ -1,5 +1,5 @@
-#ifndef _COMPONENTIMAGEUI_
-#define _COMPONENTIMAGEUI_
+#ifndef _COMPONENTBUTTONUI_
+#define _COMPONENTBUTTONUI_
 
 #include "Component.h"
 

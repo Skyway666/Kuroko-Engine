@@ -216,7 +216,7 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
 
-	if (App->scene->selected_obj && !App->scene->selected_obj->is_static) // Not draw guizmo if it is static
+	if (App->scene->selected_obj && !App->scene->selected_obj->is_static && !App->scene->selected_obj->is_UI) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
 
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
@@ -446,19 +446,55 @@ void ModuleUI::DrawHierarchyTab()
 
 	if (ImGui::BeginPopup("##hierarchy context menu"))
 	{
-		if (ImGui::Button("Empty gameobject"))
+		if (ImGui::MenuItem("Empty gameobject"))
 		{
 			GameObject* go = new GameObject("Empty", App->scene->selected_obj);
 			if (App->scene->selected_obj)
 				App->scene->selected_obj->addChild(go);
 		}
-		if (ImGui::Button("UI_Image"))
+		if (ImGui::TreeNode("UI"))
 		{
-			GameObject* canvas = App->scene->getCanvasGameObject();
-			
-			GameObject* image = new GameObject("UI_Image", canvas);			
-			image->addComponent(Component_type::UI_IMAGE);
-			canvas->addChild(image);
+			if (ImGui::MenuItem("UI_Image"))
+			{
+				GameObject* canvas = App->scene->getCanvasGameObject();
+
+				GameObject* image = new GameObject("UI_Image", canvas, true);
+				image->addComponent(Component_type::UI_IMAGE);
+				canvas->addChild(image);
+			}
+			if (ImGui::MenuItem("UI_Text"))
+			{
+				GameObject* canvas = App->scene->getCanvasGameObject();
+
+				GameObject* text = new GameObject("UI_Text", canvas, true);
+				text->addComponent(Component_type::UI_TEXT);
+				canvas->addChild(text);
+			}
+			if (ImGui::MenuItem("UI_Input"))
+			{
+				GameObject* canvas = App->scene->getCanvasGameObject();
+
+				GameObject* input = new GameObject("UI_Input", canvas, true);
+				input->addComponent(Component_type::UI_INPUT);
+				canvas->addChild(input);
+			}
+			if (ImGui::MenuItem("UI_Button"))
+			{
+				GameObject* canvas = App->scene->getCanvasGameObject();
+
+				GameObject* button = new GameObject("UI_Button", canvas, true);
+				button->addComponent(Component_type::UI_BUTTON);
+				canvas->addChild(button);
+			}
+			if (ImGui::MenuItem("UI_CheckBox"))
+			{
+				GameObject* canvas = App->scene->getCanvasGameObject();
+
+				GameObject* chbox = new GameObject("UI_CheckBox", canvas, true);
+				chbox->addComponent(Component_type::UI_CHECKBOX);
+				canvas->addChild(chbox);
+			}
+			ImGui::TreePop();
 		}
 		ImGui::EndPopup();
 	}
@@ -1178,9 +1214,39 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		{
 			// TO FILL
 		}
-	break;
+		break;
+	case RECTTRANSFORM:
+		if (ImGui::CollapsingHeader("Rect Transform"))
+		{
+			// TO FILL
+		}
+		break;
 	case UI_IMAGE:
-		if (ImGui::CollapsingHeader("UI_Image"))
+		if (ImGui::CollapsingHeader("UI Image"))
+		{
+			// TO FILL
+		}
+		break;
+	case UI_TEXT:
+		if (ImGui::CollapsingHeader("UI Text"))
+		{
+			// TO FILL
+		}
+		break;
+	case UI_BUTTON:
+		if (ImGui::CollapsingHeader("UI Button"))
+		{
+			// TO FILL
+		}
+		break;
+	case UI_INPUT:
+		if (ImGui::CollapsingHeader("UI Input"))
+		{
+			// TO FILL
+		}
+		break;
+	case UI_CHECKBOX:
+		if (ImGui::CollapsingHeader("UI CheckBox"))
 		{
 			// TO FILL
 		}

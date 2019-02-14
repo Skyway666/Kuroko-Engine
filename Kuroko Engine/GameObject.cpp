@@ -1,12 +1,17 @@
 #include "GameObject.h"
 #include "Random.h"
 #include "ComponentMesh.h"
+#include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
 #include "ComponentCanvas.h"
 #include "ComponentScript.h"
 #include "ComponentImageUI.h"
+#include "ComponentButtonUI.h"
+#include "ComponentCheckBoxUI.h"
+#include "ComponentInputUI.h"
+#include "ComponentTextUI.h"
 #include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
@@ -25,8 +30,9 @@ GameObject::GameObject(const char* name, GameObject* parent, bool UI) : name(nam
 		addComponent(TRANSFORM);
 		addComponent(C_AABB);
 	}
-	else {
+	else { // for UI
 		addComponent(RECTTRANSFORM);
+		is_UI = true;
 	}
 	App->scene->addGameObject(this);
 	
@@ -208,10 +214,45 @@ Component* GameObject::addComponent(Component_type type)
 			components.push_back(new_component);			
 		}
 		break;
+	case RECTTRANSFORM:
+		if (!getComponent(RECTTRANSFORM))
+		{
+			new_component = new ComponentRectTransform(this);
+			components.push_back(new_component);
+		}
+		break;
 	case UI_IMAGE:
 		if (!getComponent(UI_IMAGE))
 		{
 			new_component = new ComponentImageUI(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_BUTTON:
+		if (!getComponent(UI_BUTTON))
+		{
+			new_component = new ComponentButtonUI(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_INPUT:
+		if (!getComponent(UI_INPUT))
+		{
+			new_component = new ComponentInputUI(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_CHECKBOX:
+		if (!getComponent(UI_CHECKBOX))
+		{
+			new_component = new ComponentCheckBoxUI(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_TEXT:
+		if (!getComponent(UI_TEXT))
+		{
+			new_component = new ComponentTextUI(this);
 			components.push_back(new_component);
 		}
 		break;

@@ -81,6 +81,7 @@ public:
 
 	bool is_active = true;
 	bool is_static = false;
+	bool is_UI = false;
 
 };
 #endif
