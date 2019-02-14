@@ -21,6 +21,7 @@
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
 #include "Transform.h"
@@ -1218,7 +1219,36 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case RECTTRANSFORM:
 		if (ImGui::CollapsingHeader("Rect Transform"))
 		{
-			// TO FILL
+			ComponentRectTransform* rectTrans = (ComponentRectTransform*)&component;
+
+			static float2 position;
+			static float width;
+			static float height;
+
+			position = rectTrans->rect.global;
+			width = rectTrans->rect.width;
+			height = rectTrans->rect.height;
+
+			//position
+			ImGui::Text("Position:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
+			//Width
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##h", &width, 0.01f, 0.0f, 0.0f, "%.02f");
+			//Height
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f");
+
+			rectTrans->rect.global = position;
+			rectTrans->rect.width = width;
+			rectTrans->rect.height = height;
 		}
 		break;
 	case UI_IMAGE:

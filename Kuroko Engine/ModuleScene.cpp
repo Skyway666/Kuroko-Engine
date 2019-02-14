@@ -410,7 +410,7 @@ GameObject* ModuleScene::getCanvasGameObject()
 	std::list<GameObject*> GOs = std::list<GameObject*>();
 	getGameObjectsByComponent(Component_type::CANVAS, GOs);
 	if (GOs.empty()) { //check if canvas already exists
-		GameObject* canvas = new GameObject("Canvas");
+		GameObject* canvas = new GameObject("Canvas",nullptr, true);
 		canvas->addComponent(Component_type::CANVAS);
 		return canvas;
 	}
