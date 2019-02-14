@@ -42,7 +42,7 @@ public:
 
 	//Own file format
 	void ImportMeshToKR(const char* file, Mesh* mesh);
-	void ImportAnimationToKR(const char* file, aiAnimation* animation, ResourceAnimation* anim);
+	void ImportAnimationToKR(const char* file, aiAnimation* animation);
 	void ImportTextureToDDS(const char* file);
 	Mesh* ExportMeshFromKR(const char* file); 
 	Texture* LoadTextureFromLibrary(const char* file);

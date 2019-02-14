@@ -235,7 +235,6 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
-	//SKELETAL_TODO: animations
 	if (parent == 0 && scene.HasAnimations())
 	{
 		for (int i = 0; i < scene.mNumAnimations; ++i)
@@ -253,12 +252,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 			
 			json_array_append_value(json_array(components), animation_component);
 
-			resource_deff deff;
-			deff.uuid = uuid_number;
-			deff.binary = uuid;
-			deff.type = R_ANIMATION;
-			ResourceAnimation* newAnimation = new ResourceAnimation(deff);
-			ImportAnimationToKR(uuid.c_str(), scene.mAnimations[i], newAnimation);
+			ImportAnimationToKR(uuid.c_str(), scene.mAnimations[i]);
 		}
 	}
 
@@ -497,58 +491,120 @@ void ModuleImporter::ImportMeshToKR(const char * file, Mesh* mesh) {
 	delete data;
 }
 
-void ModuleImporter::ImportAnimationToKR(const char * file, aiAnimation* animation, ResourceAnimation* anim)
+void ModuleImporter::ImportAnimationToKR(const char * file, aiAnimation* animation)
 {
-	anim->ticks = animation->mDuration;
-	anim->ticksXsecond = animation->mTicksPerSecond;
-	anim->numBones = animation->mNumChannels;
-
-	if (animation->mNumChannels > 0)
+	if (animation->mNumChannels > 0) //If the animation has bones
 	{
-		anim->boneTransformations = new BoneTransform[anim->numBones];
-		for (int i = 0; i < anim->numBones; i++)
+		//Calculate file size
+		uint ranges[3] = { animation->mDuration, animation->mTicksPerSecond, animation->mNumChannels };
+		uint size = sizeof(ranges);
+		for (int i = 0; i < animation->mNumChannels; i++)
 		{
-			anim->boneTransformations[i].NodeName = (animation->mChannels[i]->mNodeName.length > 0) ? animation->mChannels[i]->mNodeName.C_Str() : "Unnamed";
+			uint boneRanges[4] = { animation->mChannels[i]->mNumPositionKeys, animation->mChannels[i]->mNumScalingKeys, animation->mChannels[i]->mNumRotationKeys, animation->mChannels[i]->mNodeName.length };
+			size += sizeof(boneRanges);
+			size += animation->mChannels[i]->mNodeName.length;
 
-			anim->boneTransformations[i].numPosKeys = animation->mChannels[i]->mNumPositionKeys;
-			anim->boneTransformations[i].PosKeysValues = new float[anim->boneTransformations[i].numPosKeys * 3];
-			anim->boneTransformations[i].PosKeysTimes = new double[anim->boneTransformations[i].numPosKeys];
-			for (int j = 0; j < anim->boneTransformations[i].numPosKeys; j++)
-			{
-				int Jvalue = j * 3;
-				anim->boneTransformations[i].PosKeysTimes[j] = animation->mChannels[i]->mPositionKeys[j].mTime;
-				anim->boneTransformations[i].PosKeysValues[Jvalue] = animation->mChannels[i]->mPositionKeys[j].mValue.x;
-				anim->boneTransformations[i].PosKeysValues[Jvalue + 1] = animation->mChannels[i]->mPositionKeys[j].mValue.y;
-				anim->boneTransformations[i].PosKeysValues[Jvalue + 2] = animation->mChannels[i]->mPositionKeys[j].mValue.z;
-			}
+			size += sizeof(double)*animation->mChannels[i]->mNumPositionKeys;
+			size += sizeof(float)*animation->mChannels[i]->mNumPositionKeys * 3;
 
-			anim->boneTransformations[i].numScaleKeys = animation->mChannels[i]->mNumScalingKeys;
-			anim->boneTransformations[i].ScaleKeysValues = new float[anim->boneTransformations[i].numScaleKeys * 3];
-			anim->boneTransformations[i].ScaleKeysTimes = new double[anim->boneTransformations[i].numScaleKeys];
-			for (int j = 0; j < anim->boneTransformations[i].numScaleKeys; j++)
-			{
-				int Jvalue = j * 3;
-				anim->boneTransformations[i].ScaleKeysTimes[j] = animation->mChannels[i]->mScalingKeys[j].mTime;
-				anim->boneTransformations[i].ScaleKeysValues[Jvalue] = animation->mChannels[i]->mScalingKeys[j].mValue.x;
-				anim->boneTransformations[i].ScaleKeysValues[Jvalue + 1] = animation->mChannels[i]->mScalingKeys[j].mValue.y;
-				anim->boneTransformations[i].ScaleKeysValues[Jvalue + 2] = animation->mChannels[i]->mScalingKeys[j].mValue.z;
-			}
+			size += sizeof(double)*animation->mChannels[i]->mNumScalingKeys;
+			size += sizeof(float)*animation->mChannels[i]->mNumScalingKeys * 3;
 
-			anim->boneTransformations[i].numRotKeys = animation->mChannels[i]->mNumRotationKeys;
-			anim->boneTransformations[i].RotKeysValues = new float[anim->boneTransformations[i].numRotKeys * 4];
-			anim->boneTransformations[i].RotKeysTimes = new double[anim->boneTransformations[i].numRotKeys];
-			for (int j = 0; j < anim->boneTransformations[i].numRotKeys; j++)
-			{
-				int Jvalue = j * 4;
-				anim->boneTransformations[i].RotKeysTimes[j] = animation->mChannels[i]->mRotationKeys[j].mTime;
-				anim->boneTransformations[i].RotKeysValues[Jvalue] = animation->mChannels[i]->mRotationKeys[j].mValue.x;
-				anim->boneTransformations[i].RotKeysValues[Jvalue + 1] = animation->mChannels[i]->mRotationKeys[j].mValue.y;
-				anim->boneTransformations[i].RotKeysValues[Jvalue + 2] = animation->mChannels[i]->mRotationKeys[j].mValue.z;
-				anim->boneTransformations[i].RotKeysValues[Jvalue + 3] = animation->mChannels[i]->mRotationKeys[j].mValue.w;
-			}
+			size += sizeof(double)*animation->mChannels[i]->mNumRotationKeys;
+			size += sizeof(float)*animation->mChannels[i]->mNumRotationKeys * 4;
 		}
 
-		//save file
+
+		//Save file data
+		char* buffer = new char[size];
+		char* cursor = buffer;
+
+		uint bytes = sizeof(ranges);
+		memcpy(cursor, ranges, bytes);
+		cursor += bytes;
+
+		float* keysValues = nullptr;
+		double* keysTimes = nullptr;
+
+		for (int i = 0; i < animation->mNumChannels; i++)
+		{
+			uint boneRanges[4] = { animation->mChannels[i]->mNumPositionKeys, animation->mChannels[i]->mNumScalingKeys, animation->mChannels[i]->mNumRotationKeys, animation->mChannels[i]->mNodeName.length };
+
+			bytes = sizeof(boneRanges);
+			memcpy(cursor, boneRanges, bytes);
+			cursor += bytes;
+
+			bytes = animation->mChannels[i]->mNodeName.length;
+			memcpy(cursor, animation->mChannels[i]->mNodeName.C_Str(), bytes);
+			cursor += bytes;
+
+			//Position
+			keysValues = new float[animation->mChannels[i]->mNumPositionKeys * 3];
+			keysTimes = new double[animation->mChannels[i]->mNumPositionKeys];
+			for (int j = 0; j < animation->mChannels[i]->mNumPositionKeys; j++)
+			{
+				int Jvalue = j * 3;
+				keysTimes[j] = animation->mChannels[i]->mPositionKeys[j].mTime;
+				keysValues[Jvalue] = animation->mChannels[i]->mPositionKeys[j].mValue.x;
+				keysValues[Jvalue + 1] = animation->mChannels[i]->mPositionKeys[j].mValue.y;
+				keysValues[Jvalue + 2] = animation->mChannels[i]->mPositionKeys[j].mValue.z;
+			}
+
+			bytes = animation->mChannels[i]->mNumPositionKeys * sizeof(double);
+			memcpy(cursor, keysTimes, bytes);
+			cursor += bytes;
+			bytes = animation->mChannels[i]->mNumPositionKeys * sizeof(float) * 3;
+			memcpy(cursor, keysValues, bytes);
+			cursor += bytes;
+			RELEASE_ARRAY(keysValues);
+			RELEASE_ARRAY(keysTimes);
+
+			//Scale
+			keysValues = new float[animation->mChannels[i]->mNumScalingKeys * 3];
+			keysTimes = new double[animation->mChannels[i]->mNumScalingKeys];
+			for (int j = 0; j < animation->mChannels[i]->mNumScalingKeys; j++)
+			{
+				int Jvalue = j * 3;
+				keysTimes[j] = animation->mChannels[i]->mScalingKeys[j].mTime;
+				keysValues[Jvalue] = animation->mChannels[i]->mScalingKeys[j].mValue.x;
+				keysValues[Jvalue + 1] = animation->mChannels[i]->mScalingKeys[j].mValue.y;
+				keysValues[Jvalue + 2] = animation->mChannels[i]->mScalingKeys[j].mValue.z;
+			}
+
+			bytes = animation->mChannels[i]->mNumScalingKeys * sizeof(double);
+			memcpy(cursor, keysTimes, bytes);
+			cursor += bytes;
+			bytes = animation->mChannels[i]->mNumScalingKeys * sizeof(float) * 3;
+			memcpy(cursor, keysValues, bytes);
+			cursor += bytes;
+			RELEASE_ARRAY(keysValues);
+			RELEASE_ARRAY(keysTimes);
+
+			//Rotation
+			keysValues = new float[animation->mChannels[i]->mNumRotationKeys * 4];
+			keysTimes = new double[animation->mChannels[i]->mNumRotationKeys];
+			for (int j = 0; j < animation->mChannels[i]->mNumRotationKeys; j++)
+			{
+				int Jvalue = j * 4;
+				keysTimes[j] = animation->mChannels[i]->mRotationKeys[j].mTime;
+				keysValues[Jvalue] = animation->mChannels[i]->mRotationKeys[j].mValue.x;
+				keysValues[Jvalue + 1] = animation->mChannels[i]->mRotationKeys[j].mValue.y;
+				keysValues[Jvalue + 2] = animation->mChannels[i]->mRotationKeys[j].mValue.z;
+				keysValues[Jvalue + 3] = animation->mChannels[i]->mRotationKeys[j].mValue.w;
+			}
+
+			bytes = animation->mChannels[i]->mNumRotationKeys * sizeof(double);
+			memcpy(cursor, keysTimes, bytes);
+			cursor += bytes;
+			bytes = animation->mChannels[i]->mNumRotationKeys * sizeof(float) * 4;
+			memcpy(cursor, keysValues, bytes);
+			cursor += bytes;
+			RELEASE_ARRAY(keysValues);
+			RELEASE_ARRAY(keysTimes);
+		}
+
+		App->fs.ExportBuffer(buffer, size, file, LIBRARY_ANIMATIONS, OWN_ANIMATION_EXTENSION);
+		RELEASE_ARRAY(buffer);
 	}
 }
 

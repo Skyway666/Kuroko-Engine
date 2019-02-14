@@ -18,21 +18,31 @@ Resource3dObject::Resource3dObject(resource_deff deff): Resource(deff){
 		resource_deff deff;
 		deff.type = R_MESH;
 
-		// Iterate components and look for the mesh
-		bool mesh_found = false;
+		// Iterate components and look for the mesh/animation
 		for (int a = 0; a < json_array_get_count(components); a++) {
-			JSON_Object* mesh_resource = json_array_get_object(components, a);
-			std::string type = json_object_get_string(mesh_resource, "type");
+			bool mesh_found = false;
+			bool animation_found = false;
+
+			JSON_Object* resource = json_array_get_object(components, a);
+			std::string type = json_object_get_string(resource, "type");
 			if (type == "mesh") {
-				deff.binary = json_object_get_string(mesh_resource, "mesh_binary_path");
-				deff.uuid = json_object_get_number(mesh_resource, "mesh_resource_uuid");
-				deff.asset = json_object_get_string(mesh_resource, "mesh_name");
+				deff.binary = json_object_get_string(resource, "mesh_binary_path");
+				deff.uuid = json_object_get_number(resource, "mesh_resource_uuid");
+				deff.asset = json_object_get_string(resource, "mesh_name");
 				deff.Parent3dObject = asset;
 				mesh_found = true;
 			}
+			else if (type == "animation")
+			{
+				deff.binary = json_object_get_string(resource, "animation_binary_path");
+				deff.uuid = json_object_get_number(resource, "aimation_resource_uuid");
+				deff.asset = json_object_get_string(resource, "animation_name");
+				deff.Parent3dObject = asset;
+				animation_found = true;
+			}
 
-			if (mesh_found) {					  // If a mesh was found create a resource for it
-				App->resources->newResource(deff);
+			if (mesh_found || animation_found) {					  // If a mesh/animation was found create a resource for it
+				App->resources->newResource(deff);				
 			}
 		}
 

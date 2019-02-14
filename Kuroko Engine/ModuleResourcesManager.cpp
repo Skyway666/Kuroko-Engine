@@ -10,6 +10,8 @@
 #include "ResourceScript.h"
 #include "ResourceScene.h"
 #include "ResourcePrefab.h"
+#include "ResourceAnimation.h"
+#include "ResourceBone.h"
 #include "Applog.h"
 #include "Mesh.h"
 
@@ -88,6 +90,8 @@ Resource * ModuleResourcesManager::newResource(resource_deff deff) {
 	case R_SCRIPT: ret = (Resource*) new ResourceScript(deff); break;
 	case R_SCENE: ret = (Resource*) new ResourceScene(deff); break;
 	case R_PREFAB: ret = (Resource*) new ResourcePrefab(deff); break;
+	case R_ANIMATION: ret = (Resource*) new ResourceAnimation(deff); break;
+	case R_BONE: ret = (Resource*) new ResourceBone(deff); break;
 	} 
 
 	if (ret)
