@@ -16,8 +16,9 @@ public:
 	void Save(JSON_Object* config) override;
 
 private:
-
+	bool texture = false;
 	ComponentRectTransform* rectTransform = nullptr;
+	float alpha = 1.0f; //not functional yet
 };
 
 #endif

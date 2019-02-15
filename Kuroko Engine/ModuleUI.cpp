@@ -21,6 +21,7 @@
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentCanvas.h"
 #include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
@@ -1263,7 +1264,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case CANVAS:
 		if (ImGui::CollapsingHeader("Canvas"))
 		{
-			// TO FILL
+			ComponentCanvas* canvas = (ComponentCanvas*)&component;
+			ImGui::Text("Resolution  %.0f x %.0f", canvas->getResolution().x, canvas->getResolution().y);
+			ImGui::Checkbox("Draw cross hair", &canvas->draw_cross);
 		}
 		break;
 	case RECTTRANSFORM:
@@ -1299,6 +1302,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			rectTrans->setGlobalPos(position);
 			rectTrans->setWidth(width);
 			rectTrans->setHeight( height);
+
+			ImGui::Checkbox("Debug draw", &rectTrans->debug_draw);
 		}
 		break;
 	case UI_IMAGE:

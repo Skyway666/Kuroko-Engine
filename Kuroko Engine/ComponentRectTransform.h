@@ -32,6 +32,10 @@ public:
 	inline const float2 getGlobalPos() { return rect.global; }
 	inline const float getWidth() { return rect.width; }
 	inline const float getHeight() { return rect.height; }
+	
+
+	bool debug_draw = false;
+
 private:
 	RectTransform rect;
 };

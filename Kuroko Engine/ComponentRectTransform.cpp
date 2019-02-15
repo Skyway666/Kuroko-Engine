@@ -11,6 +11,7 @@ ComponentRectTransform::ComponentRectTransform(GameObject* parent) : Component(p
 	setWidth(1.0f);
 	setHeight(1.0f);
 
+	debug_draw = true;
 	
 }
 
@@ -21,7 +22,7 @@ ComponentRectTransform::~ComponentRectTransform()
 
 bool ComponentRectTransform::Update(float dt)
 {
-	/* TO CHECK
+	/*
 	if (getParent()->getComponent(CANVAS) != nullptr) {//it is canvas
 		setGlobalPos(getLocalPos());
 	}
@@ -35,22 +36,24 @@ bool ComponentRectTransform::Update(float dt)
 
 void ComponentRectTransform::Draw() const
 {
-	glLineWidth(1.5f);
-	glColor3f(1.0f, 0.0f, 0.0f); // red
+	if (debug_draw) {
+		glLineWidth(1.5f);
+		glColor3f(1.0f, 0.0f, 0.0f); // red
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draws quad unfilled
-	glBegin(GL_QUADS);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draws quad unfilled
+		glBegin(GL_QUADS);
 
-	glVertex3f(rect.global.x, rect.global.y, 0);
-	glVertex3f(rect.global.x + rect.width, rect.global.y, 0);
-	glVertex3f(rect.global.x+ rect.width, rect.global.y + rect.height, 0);
-	glVertex3f(rect.global.x, rect.global.y + rect.height, 0);
+		glVertex3f(rect.global.x, rect.global.y, 0);
+		glVertex3f(rect.global.x + rect.width, rect.global.y, 0);
+		glVertex3f(rect.global.x + rect.width, rect.global.y + rect.height, 0);
+		glVertex3f(rect.global.x, rect.global.y + rect.height, 0);
 
-	glEnd();
-	App->scene->global_wireframe ?	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE): glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // returns back to previous polygon fill mode
+		glEnd();
+		App->scene->global_wireframe ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // returns back to previous polygon fill mode
 
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glLineWidth(1.0f);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glLineWidth(1.0f);
+	}
 }
 
 void ComponentRectTransform::Save(JSON_Object * config)
