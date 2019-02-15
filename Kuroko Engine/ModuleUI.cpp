@@ -457,11 +457,20 @@ void ModuleUI::DrawHierarchyTab()
 		{
 			if (ImGui::MenuItem("UI_Image"))
 			{
-				GameObject* canvas = App->scene->getCanvasGameObject();
-
-				GameObject* image = new GameObject("UI_Image", canvas, true);
-				image->addComponent(Component_type::UI_IMAGE);
-				canvas->addChild(image);
+				//COPY TO THE REST OF COMPONENTS
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						GameObject* image = new GameObject("UI_Image", App->scene->selected_obj, true);
+						image->addComponent(Component_type::UI_IMAGE);
+						App->scene->selected_obj->addChild(image);
+					}
+				}
+				else {
+					GameObject* canvas = App->scene->getCanvasGameObject();
+					GameObject* image = new GameObject("UI_Image", canvas, true);
+					image->addComponent(Component_type::UI_IMAGE);
+					canvas->addChild(image);
+				}
 			}
 			if (ImGui::MenuItem("UI_Text"))
 			{
@@ -470,6 +479,7 @@ void ModuleUI::DrawHierarchyTab()
 				GameObject* text = new GameObject("UI_Text", canvas, true);
 				text->addComponent(Component_type::UI_TEXT);
 				canvas->addChild(text);
+				if (App->scene->selected_obj) App->scene->selected_obj->addChild(text);
 			}
 			if (ImGui::MenuItem("UI_Input"))
 			{
@@ -478,6 +488,7 @@ void ModuleUI::DrawHierarchyTab()
 				GameObject* input = new GameObject("UI_Input", canvas, true);
 				input->addComponent(Component_type::UI_INPUT);
 				canvas->addChild(input);
+				if (App->scene->selected_obj) App->scene->selected_obj->addChild(input);
 			}
 			if (ImGui::MenuItem("UI_Button"))
 			{
@@ -486,6 +497,7 @@ void ModuleUI::DrawHierarchyTab()
 				GameObject* button = new GameObject("UI_Button", canvas, true);
 				button->addComponent(Component_type::UI_BUTTON);
 				canvas->addChild(button);
+				if (App->scene->selected_obj) App->scene->selected_obj->addChild(button);
 			}
 			if (ImGui::MenuItem("UI_CheckBox"))
 			{
@@ -494,6 +506,7 @@ void ModuleUI::DrawHierarchyTab()
 				GameObject* chbox = new GameObject("UI_CheckBox", canvas, true);
 				chbox->addComponent(Component_type::UI_CHECKBOX);
 				canvas->addChild(chbox);
+				if (App->scene->selected_obj) App->scene->selected_obj->addChild(chbox);
 			}
 			ImGui::TreePop();
 		}
@@ -1225,9 +1238,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			static float width;
 			static float height;
 
-			position = rectTrans->rect.global;
-			width = rectTrans->rect.width;
-			height = rectTrans->rect.height;
+			position = rectTrans->getGlobalPos();
+			width = rectTrans->getWidth();
+			height = rectTrans->getHeight();
 
 			//position
 			ImGui::Text("Position:");
@@ -1246,9 +1259,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
 			ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f");
 
-			rectTrans->rect.global = position;
-			rectTrans->rect.width = width;
-			rectTrans->rect.height = height;
+			rectTrans->setGlobalPos(position);
+			rectTrans->setWidth(width);
+			rectTrans->setHeight( height);
 		}
 		break;
 	case UI_IMAGE:

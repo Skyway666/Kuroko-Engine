@@ -23,6 +23,16 @@ public:
 	void Draw() const override;
 	void Save(JSON_Object* config) override;
 
+	inline void setLocalPos(float2 pos);
+	void setGlobalPos(float2 pos);
+	inline void setWidth(float width);
+	inline void setHeight(float height);
+
+	inline const float2 getLocalPos() { return rect.local; }
+	inline const float2 getGlobalPos() { return rect.global; }
+	inline const float getWidth() { return rect.width; }
+	inline const float getHeight() { return rect.height; }
+private:
 	RectTransform rect;
 };
 
