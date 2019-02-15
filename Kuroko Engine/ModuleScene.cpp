@@ -29,7 +29,7 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Random.h"
 
-#include "Game/Library/Sounds/Wwise_IDs.h"
+#include "Game/Assets/Sounds/Wwise_IDs.h"
 #include "ImGui\imgui.h"
 
 #include <array>

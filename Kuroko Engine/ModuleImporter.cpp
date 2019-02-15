@@ -592,7 +592,7 @@ void ModuleImporter::ImportSounds()
 					else
 						extension = name[i] + extension;
 
-				if (extension == "bnk" | extension == "h")
+				if (extension == "bnk")
 				{
 					std::string source = path;
 					source.pop_back();

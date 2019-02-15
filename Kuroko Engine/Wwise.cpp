@@ -105,11 +105,11 @@ bool Wwise::InitSoundEngine()
 {
 	// Initializing the Sound Engine
 	AkInitSettings initSettings;
-	AkPlatformInitSettings platformInitSettings;
+	//AkPlatformInitSettings platformInitSettings;
 	AK::SoundEngine::GetDefaultInitSettings(initSettings);
-	AK::SoundEngine::GetDefaultPlatformInitSettings(platformInitSettings);
+	//AK::SoundEngine::GetDefaultPlatformInitSettings(platformInitSettings);
 
-	if (AK::SoundEngine::Init(&initSettings, &platformInitSettings) != AK_Success)
+	if (AK::SoundEngine::Init(&initSettings, NULL) != AK_Success)
 	{
 		assert(!"Could not initialize the Sound Engine.");
 		return false;
