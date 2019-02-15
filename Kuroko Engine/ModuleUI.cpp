@@ -457,56 +457,93 @@ void ModuleUI::DrawHierarchyTab()
 		{
 			if (ImGui::MenuItem("UI_Image"))
 			{
-				//COPY TO THE REST OF COMPONENTS
+				GameObject* parent = nullptr;
 				if (App->scene->selected_obj) {
 					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
-						GameObject* image = new GameObject("UI_Image", App->scene->selected_obj, true);
-						image->addComponent(Component_type::UI_IMAGE);
-						App->scene->selected_obj->addChild(image);
+						parent = App->scene->selected_obj;						
 					}
+
 				}
 				else {
-					GameObject* canvas = App->scene->getCanvasGameObject();
-					GameObject* image = new GameObject("UI_Image", canvas, true);
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* image = new GameObject("UI_Image", parent, true);
 					image->addComponent(Component_type::UI_IMAGE);
-					canvas->addChild(image);
+					parent->addChild(image);
 				}
 			}
 			if (ImGui::MenuItem("UI_Text"))
 			{
-				GameObject* canvas = App->scene->getCanvasGameObject();
-
-				GameObject* text = new GameObject("UI_Text", canvas, true);
-				text->addComponent(Component_type::UI_TEXT);
-				canvas->addChild(text);
-				if (App->scene->selected_obj) App->scene->selected_obj->addChild(text);
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* text = new GameObject("UI_Text", parent, true);
+					text->addComponent(Component_type::UI_TEXT);
+					parent->addChild(text);
+				}
+				
 			}
 			if (ImGui::MenuItem("UI_Input"))
 			{
-				GameObject* canvas = App->scene->getCanvasGameObject();
-
-				GameObject* input = new GameObject("UI_Input", canvas, true);
-				input->addComponent(Component_type::UI_INPUT);
-				canvas->addChild(input);
-				if (App->scene->selected_obj) App->scene->selected_obj->addChild(input);
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* input = new GameObject("UI_Input", parent, true);
+					input->addComponent(Component_type::UI_INPUT);
+					parent->addChild(input);
+				}
+				
 			}
 			if (ImGui::MenuItem("UI_Button"))
 			{
-				GameObject* canvas = App->scene->getCanvasGameObject();
-
-				GameObject* button = new GameObject("UI_Button", canvas, true);
-				button->addComponent(Component_type::UI_BUTTON);
-				canvas->addChild(button);
-				if (App->scene->selected_obj) App->scene->selected_obj->addChild(button);
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* button = new GameObject("UI_Button", parent, true);
+					button->addComponent(Component_type::UI_BUTTON);
+					parent->addChild(button);
+				}
+				
 			}
 			if (ImGui::MenuItem("UI_CheckBox"))
 			{
-				GameObject* canvas = App->scene->getCanvasGameObject();
-
-				GameObject* chbox = new GameObject("UI_CheckBox", canvas, true);
-				chbox->addComponent(Component_type::UI_CHECKBOX);
-				canvas->addChild(chbox);
-				if (App->scene->selected_obj) App->scene->selected_obj->addChild(chbox);
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* chbox = new GameObject("UI_CheckBox", parent, true);
+					chbox->addComponent(Component_type::UI_CHECKBOX);
+					parent->addChild(chbox);
+				}
+				
 			}
 			ImGui::TreePop();
 		}
