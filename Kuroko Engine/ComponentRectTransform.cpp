@@ -12,12 +12,25 @@ ComponentRectTransform::ComponentRectTransform(GameObject* parent) : Component(p
 	setHeight(1.0f);
 
 	debug_draw = true;
-	
+
+	static const float vtx[] = {
+		rect.global.x,  rect.global.y, 0,
+		rect.global.x + rect.width, rect.global.y, 0,
+		rect.global.x + rect.width, rect.global.y + rect.height, 0,
+		rect.global.x, rect.global.y + rect.height, 0
+	};
+	rect.vertex = new float3[4];
+	memcpy(rect.vertex, vtx, sizeof(float3) * 4);
+
+	GenBuffer();
 }
 
 
 ComponentRectTransform::~ComponentRectTransform()
 {
+	//RELEASE MACRO NEEDED
+	delete[] rect.vertex;
+	rect.vertex = nullptr;
 }
 
 bool ComponentRectTransform::Update(float dt)
@@ -37,22 +50,33 @@ bool ComponentRectTransform::Update(float dt)
 void ComponentRectTransform::Draw() const
 {
 	if (debug_draw) {
+
+		glPushMatrix();
+		float4x4 globalMat;
+		globalMat = float4x4::FromTRS(float3(rect.global.x, rect.global.y, 0), Quat(0, 0, 0, 0), float3(rect.width, rect.height, 0));
+		glMultMatrixf(globalMat.Transposed().ptr());
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, 0); //resets the buffer
+
 		glLineWidth(1.5f);
 		glColor3f(1.0f, 0.0f, 0.0f); // red
-
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draws quad unfilled
-		glBegin(GL_QUADS);
 
-		glVertex3f(rect.global.x, rect.global.y, 0);
-		glVertex3f(rect.global.x + rect.width, rect.global.y, 0);
-		glVertex3f(rect.global.x + rect.width, rect.global.y + rect.height, 0);
-		glVertex3f(rect.global.x, rect.global.y + rect.height, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, rect.vertexID);
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glDrawArrays(GL_QUADS, 0, 4);
 
-		glEnd();
+		glBindBuffer(GL_ARRAY_BUFFER, 0); //resets the buffer
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glPopMatrix();
+
 		App->scene->global_wireframe ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // returns back to previous polygon fill mode
 
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glLineWidth(1.0f);
+
+
 	}
 }
 
@@ -83,4 +107,12 @@ inline void ComponentRectTransform::setWidth(float width)
 inline void ComponentRectTransform::setHeight(float height)
 {
 	rect.height = height;
+}
+
+void ComponentRectTransform::GenBuffer()
+{
+	glGenBuffers(1, (GLuint*) &(rect.vertexID));
+	glBindBuffer(GL_ARRAY_BUFFER, rect.vertexID); // set the type of buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float3) * 4, &rect.vertex[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

@@ -11,6 +11,10 @@ public:
 	float2 global = float2::zero;
 	float width = 0.0f;
 	float height = 0.0f;
+	int vertexID = -1;
+	float3* vertex = nullptr;
+
+	
 };
 
 class ComponentRectTransform :	public Component
@@ -32,11 +36,13 @@ public:
 	inline const float2 getGlobalPos() { return rect.global; }
 	inline const float getWidth() { return rect.width; }
 	inline const float getHeight() { return rect.height; }
-	
+	inline const int GetVertexID() { return rect.vertexID; }
 
 	bool debug_draw = false;
 
 private:
+
+	void GenBuffer();
 	RectTransform rect;
 };
 

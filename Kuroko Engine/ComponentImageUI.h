@@ -1,6 +1,7 @@
 #ifndef _COMPONENTIMAGEUI_
 #define _COMPONENTIMAGEUI_
 #include "Component.h"
+#include "MathGeoLib/Math/float2.h"
 
 class ComponentRectTransform;
 
@@ -19,6 +20,8 @@ private:
 	bool texture = false;
 	ComponentRectTransform* rectTransform = nullptr;
 	float alpha = 1.0f; //not functional yet
+	int resourceID = -1;
+	float2* texCoords = nullptr;
 };
 
 #endif
