@@ -52,6 +52,12 @@ GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 		else if (type == "script") {
 			component = new ComponentScript(component_deff, this);
 		}
+		else if (type == "audioListener") {
+			component = new ComponentAudioListener(component_deff, this);
+		}
+		else if (type == "audioSource") {
+			component = new ComponentAudioSource(component_deff, this);
+		}
 
 		// Set component's parent-child
 		if (!component){

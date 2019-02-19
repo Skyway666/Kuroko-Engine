@@ -1170,11 +1170,14 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case AUDIOLISTENER:
 		if (ImGui::CollapsingHeader("Audio Listener", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::Checkbox("Mute", &App->audio->muted);
+			if (ImGui::Checkbox("Mute", &App->audio->muted))
+			{
+				App->audio->SetVolume(App->audio->volume);
+			}
 			if (ImGui::InputInt("Volume", &App->audio->volume))
 			{
-				App->audio->SetVolume("Volume", App->audio->volume);
 				App->audio->muted = false;
+				App->audio->SetVolume(App->audio->volume);
 			}
 		}
 		break;

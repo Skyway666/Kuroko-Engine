@@ -6,10 +6,19 @@
 #include "Transform.h"
 
 
-ComponentAudioSource::ComponentAudioSource(GameObject* gameobject) : Component(gameobject, AUDIOSOURCE)
+ComponentAudioSource::ComponentAudioSource(GameObject* parent) : Component(parent, AUDIOSOURCE)
 {
 	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
 	sound_go = Wwise::CreateSoundObj(parent->getUUID(), parent->getName().c_str(), pos.x, pos.y, pos.z);
+}
+
+ComponentAudioSource::ComponentAudioSource(JSON_Object* deff, GameObject* parent) : Component(parent, AUDIOSOURCE)
+{
+	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
+	sound_go = Wwise::CreateSoundObj(parent->getUUID(), parent->getName().c_str(), pos.x, pos.y, pos.z);
+
+	is_active = json_object_get_boolean(deff, "active");
+	sound_ID = json_object_get_number(deff, "soundID");
 }
 
 ComponentAudioSource::~ComponentAudioSource()
@@ -50,18 +59,13 @@ bool ComponentAudioSource::Update(float dt)
 //		ImGui::Text("PosZ %f", sound_go->GetPos().z);*/
 //	}
 //}
-//
-//Value ComponentAudioSource::Save(Document::AllocatorType& allocator) const
-//{
-//	Value CompArray(kObjectType);
-//
-//	return CompArray;
-//}
-//
-//bool ComponentAudioSource::Load(Document& document)
-//{
-//	return true;
-//}
+
+void ComponentAudioSource::Save(JSON_Object* config)
+{
+	json_object_set_string(config, "type", "audioSource");
+	json_object_set_boolean(config, "active", is_active);
+	json_object_set_number(config, "soundID", sound_ID);
+}
 
 void ComponentAudioSource::SetSoundID(AkUniqueID ID)
 {

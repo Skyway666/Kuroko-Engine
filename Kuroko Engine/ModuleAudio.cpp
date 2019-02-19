@@ -49,12 +49,12 @@ bool ModuleAudio::Start()
 
 update_status ModuleAudio::PreUpdate(float dt)
 {
-	if (!muted) {
+	/*if (!muted) {
 		SetVolume("Volume", volume);
 	}
 	else {
 		SetVolume("Volume", 0);
-	}
+	}*/
 
 	// Set camera listener to camera position
 	if (App->scene->audiolistenerdefault)
@@ -94,13 +94,24 @@ void ModuleAudio::LoadConfig(const JSON_Object* config)
 
 // -----------------------------
 
-void ModuleAudio::SetVolume(const char* rtpcID, float value)
+void ModuleAudio::SetRTCP(const char* rtpcID, float value)
 {
-	/*AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, ((ComponentAudioListener*)App->scene->audiolistenerdefault->getComponent(Component_type::AUDIOLISTENER))->sound_go->GetID());
+	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value);
 	if (eResult != AK_Success)
 	{
 		assert(!"Error changing audio volume!");
-	}*/
+	}
+}
+
+void ModuleAudio::SetVolume(float value)
+{
+	if (!muted)
+	{
+		volume = value;
+		SetRTCP("Volume", volume);
+	}
+	else
+		SetRTCP("Volume", 0);
 }
 
 void ModuleAudio::LoadSoundBank(const char* path)

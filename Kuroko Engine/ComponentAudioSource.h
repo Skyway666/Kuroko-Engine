@@ -3,21 +3,21 @@
 
 #include "Component.h"
 #include "Wwise.h"
-//#include "Game\Library\Sounds\Wwise_IDs.h"
+//#include "Game\Assets\Sounds\Wwise_IDs.h"
 
 class WwiseGameObject;
 
 class ComponentAudioSource : public Component
 {
 public:
-	ComponentAudioSource(GameObject* gameobject);
+	ComponentAudioSource(GameObject* parent);
+	ComponentAudioSource(JSON_Object* deff, GameObject* parent);
 	~ComponentAudioSource();
 
 	bool Update(float dt) override;
-	/*void SetInspectorInfo() override;
+	//void SetInspectorInfo() override;
 
-	Value Save(Document::AllocatorType& allocator) const override;
-	bool Load(Document& document) override;*/
+	void Save(JSON_Object* config) override;
 
 	void SetSoundID(AkUniqueID ID);
 

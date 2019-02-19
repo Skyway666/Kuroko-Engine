@@ -29,7 +29,8 @@ public:
 
 	void LoadSoundBank(const char* path);
 	
-	void SetVolume(const char* rtpc, float value);
+	void SetRTCP(const char* rtpc, float value);
+	void SetVolume(float value = DEFAULT_VOLUME);
 
 public:
 	int volume = DEFAULT_VOLUME;

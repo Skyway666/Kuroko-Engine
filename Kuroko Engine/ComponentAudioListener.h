@@ -10,14 +10,14 @@ class WwiseGameObject;
 class ComponentAudioListener : public Component
 {
 public:
-	ComponentAudioListener(GameObject* gameobject);
+	ComponentAudioListener(GameObject* parent);
+	ComponentAudioListener(JSON_Object* deff, GameObject* parent);
 	~ComponentAudioListener();
 
 	bool Update(float dt) override;
-	/*void SetInspectorInfo() override;
+	//void SetInspectorInfo() override;
 
-	Value Save(Document::AllocatorType& allocator) const override;
-	bool Load(Document& document) override;*/
+	void Save(JSON_Object* config) override;
 
 public:
 	Wwise::WwiseGameObject* sound_go = nullptr;

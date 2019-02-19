@@ -9,10 +9,21 @@
 #include "Camera.h"
 
 
-ComponentAudioListener::ComponentAudioListener(GameObject* gameobject) : Component(gameobject, AUDIOLISTENER)
+ComponentAudioListener::ComponentAudioListener(GameObject* parent) : Component(parent, AUDIOLISTENER)
 {
 	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
 	sound_go = Wwise::CreateSoundObj(parent->getUUID(), parent->getName().c_str(), pos.x, pos.y, pos.z, true);
+}
+
+ComponentAudioListener::ComponentAudioListener(JSON_Object* deff, GameObject* parent) : Component(parent, AUDIOLISTENER)
+{
+	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
+	sound_go = Wwise::CreateSoundObj(parent->getUUID(), parent->getName().c_str(), pos.x, pos.y, pos.z, true);
+
+	is_active = json_object_get_boolean(deff, "active");
+	App->audio->muted = json_object_get_boolean(deff, "muted");
+	App->audio->volume = json_object_get_number(deff, "volume");
+	App->audio->SetVolume(json_object_get_number(deff, "volume"));
 }
 
 ComponentAudioListener::~ComponentAudioListener()
@@ -46,15 +57,11 @@ bool ComponentAudioListener::Update(float dt)
 //		ImGui::Text("PosZ %f", sound_go->GetPos().z);*/
 //	}
 //}
-//
-//Value ComponentAudioListener::Save(Document::AllocatorType& allocator) const
-//{
-//	Value CompArray(kObjectType);
-//
-//	return CompArray;
-//}
-//
-//bool ComponentAudioListener::Load(Document& document)
-//{
-//	return true;
-//}
+
+void ComponentAudioListener::Save(JSON_Object* config)
+{
+	json_object_set_string(config, "type", "audioListener");
+	json_object_set_boolean(config, "active", is_active);
+	json_object_set_boolean(config, "muted", App->audio->muted);
+	json_object_set_number(config, "volume", App->audio->volume);
+}
