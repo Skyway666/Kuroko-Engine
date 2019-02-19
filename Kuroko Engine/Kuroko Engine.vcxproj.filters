@@ -495,9 +495,6 @@
     <ClInclude Include="ComponentTextUI.h">
       <Filter>Sources\Game\UI</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentInputUI.h">
-      <Filter>Sources\Game\UI</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentCheckBoxUI.h">
       <Filter>Sources\Game\UI</Filter>
     </ClInclude>
@@ -792,9 +789,6 @@
       <Filter>Sources\Game\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentTextUI.cpp">
-      <Filter>Sources\Game\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentInputUI.cpp">
       <Filter>Sources\Game\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCheckBoxUI.cpp">

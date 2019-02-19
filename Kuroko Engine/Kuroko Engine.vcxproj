@@ -85,7 +85,6 @@
     <ClInclude Include="ComponentCanvas.h" />
     <ClInclude Include="ComponentCheckBoxUI.h" />
     <ClInclude Include="ComponentImageUI.h" />
-    <ClInclude Include="ComponentInputUI.h" />
     <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTextUI.h" />
@@ -226,7 +225,6 @@
     <ClCompile Include="ComponentCanvas.cpp" />
     <ClCompile Include="ComponentCheckBoxUI.cpp" />
     <ClCompile Include="ComponentImageUI.cpp" />
-    <ClCompile Include="ComponentInputUI.cpp" />
     <ClCompile Include="ComponentRectTransform.cpp" />
     <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTextUI.cpp" />

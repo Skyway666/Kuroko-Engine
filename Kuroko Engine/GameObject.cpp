@@ -10,7 +10,6 @@
 #include "ComponentImageUI.h"
 #include "ComponentButtonUI.h"
 #include "ComponentCheckBoxUI.h"
-#include "ComponentInputUI.h"
 #include "ComponentTextUI.h"
 #include "Camera.h"
 #include "Application.h"
@@ -234,14 +233,7 @@ Component* GameObject::addComponent(Component_type type)
 			new_component = new ComponentButtonUI(this);
 			components.push_back(new_component);
 		}
-		break;
-	case UI_INPUT:
-		if (!getComponent(UI_INPUT))
-		{
-			new_component = new ComponentInputUI(this);
-			components.push_back(new_component);
-		}
-		break;
+		break;	
 	case UI_CHECKBOX:
 		if (!getComponent(UI_CHECKBOX))
 		{

@@ -5,16 +5,19 @@
 #include "MathGeoLib/Math/Quat.h"
 #include "ComponentRectTransform.h"
 
+#include "ResourceTexture.h"
+#include "Material.h"
 
 ComponentImageUI::ComponentImageUI(GameObject* parent) : Component(parent, UI_IMAGE)
 {
 	rectTransform = (ComponentRectTransform*)parent->getComponent(RECTTRANSFORM);
 
 	static const float uvs[] = {
-		0, 0,
-		1, 0,
+		
+		0, 1,
 		1, 1,
-		0, 1
+		1, 0,
+		0, 0
 	};
 
 	texCoords = new float2[4];
@@ -28,6 +31,7 @@ ComponentImageUI::~ComponentImageUI()
 	//RELEASE MACRO NEEDED
 	delete[] texCoords;
 	texCoords = nullptr;
+	texture = nullptr;
 }
 
 bool ComponentImageUI::Update(float dt)
@@ -50,10 +54,11 @@ void ComponentImageUI::Draw() const
 	glColor4f(1.0, 1.0, 1.0, alpha);
 	glLineWidth(4.0f);
 
-	if (texture) {
-
-		glBindTexture(GL_TEXTURE_2D, resourceID);
+	if (texture) { 
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture->texture->getGLid());
 		glTexCoordPointer(2, GL_FLOAT, 0, &(texCoords[0]));
+		
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, rectTransform->GetVertexID());
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -66,6 +71,7 @@ void ComponentImageUI::Draw() const
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
+	if (texture) { glDisable(GL_TEXTURE_2D); }
 	glDisable(GL_BLEND);
 	glPopMatrix();
 

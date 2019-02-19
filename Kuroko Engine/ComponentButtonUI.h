@@ -3,6 +3,11 @@
 
 #include "Component.h"
 
+enum ButtonState {
+	B_IDLE = 0,
+	B_MOUSEOVER,
+	B_PRESSED
+};
 
 class ComponentRectTransform;
 class ComponentButtonUI :public Component

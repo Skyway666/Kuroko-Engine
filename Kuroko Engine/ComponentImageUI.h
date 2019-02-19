@@ -4,6 +4,7 @@
 #include "MathGeoLib/Math/float2.h"
 
 class ComponentRectTransform;
+class ResourceTexture;
 
 class ComponentImageUI : public Component
 {
@@ -15,13 +16,19 @@ public:
 	void Draw() const override;
 
 	void Save(JSON_Object* config) override;
+	
+	inline const ResourceTexture* getResourceTexture() { return texture; }
+	inline void setResourceTexture(ResourceTexture* tex) { texture = tex; }
+	inline void DeassignTexture() { texture = nullptr; }
+
 
 private:
-	bool texture = false;
 	ComponentRectTransform* rectTransform = nullptr;
+	
 	float alpha = 1.0f; //not functional yet
-	int resourceID = -1;
+	ResourceTexture* texture = nullptr;
 	float2* texCoords = nullptr;
+
 };
 
 #endif
