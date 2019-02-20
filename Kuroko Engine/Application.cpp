@@ -14,6 +14,8 @@
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
 #include "ModuleScripting.h"
+#include "ModuleShaders.h"
+
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -54,6 +56,8 @@ Application::Application()
 	time = new ModuleTimeManager(this);
 	resources = new ModuleResourcesManager(this);
 	scripting = new ModuleScripting(this);
+	shaders = new ModuleShaders(this);
+	
 
 
 	// The order of calls is very important!
@@ -77,6 +81,7 @@ Application::Application()
 	// Renderer last!
 	list_modules.push_back(resources);
 	list_modules.push_back(scripting);
+	list_modules.push_back(shaders);
 	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
 

@@ -30,10 +30,14 @@ public:
 	void DirectDrawCube(float3& size, float3& pos) const;
 	void DrawDirectAABB(AABB aabb) const;
 
+public:
+
+	SDL_GLContext context;
+
+
 private:
 
 	Light lights[MAX_LIGHTS];
-	SDL_GLContext context;
 };
 
 #endif

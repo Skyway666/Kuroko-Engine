@@ -172,6 +172,7 @@
     <ClInclude Include="ModuleImporter.h" />
     <ClInclude Include="ModuleResourcesManager.h" />
     <ClInclude Include="ModuleScripting.h" />
+    <ClInclude Include="ModuleShaders.h" />
     <ClInclude Include="ModuleTimeManager.h" />
     <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="ModuleRenderer3D.h" />
@@ -277,6 +278,7 @@
     <ClCompile Include="ModuleImporter.cpp" />
     <ClCompile Include="ModuleResourcesManager.cpp" />
     <ClCompile Include="ModuleScripting.cpp" />
+    <ClCompile Include="ModuleShaders.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
     <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
