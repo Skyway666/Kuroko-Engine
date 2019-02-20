@@ -4,7 +4,7 @@
 #include "ModuleWindow.h"
 #include "Globals.h"
 #include "Applog.h"
-
+#include "FileSystem.h"
 
 
 ModuleShaders::ModuleShaders(Application* app, bool start_enabled):Module(app,start_enabled)
@@ -36,6 +36,26 @@ bool ModuleShaders::Init(const JSON_Object * config)
 	}
 	
 	*/
+	
+	bool findFile = App->fs.ExistisFile(defaultVertexFile.c_str(), LIBRARY_MATERIALS, ".vex");
+	if (findFile)
+	{
+		defVertexShader = App->fs.ImportFile(defaultVertexFile.c_str());
+	}
+	else
+	{
+		CreateDefShaderProgram();
+	}
+
+	findFile = App->fs.ExistisFile(defaultFragmentFile.c_str(), LIBRARY_MATERIALS, ".frag");
+	if (findFile)
+	{
+		defVertexShader = App->fs.ImportFile(defaultVertexFile.c_str());
+	}
+	else
+	{
+		CreateDefShaderProgram();
+	}
 
 	return ret;
 }

@@ -27,7 +27,7 @@ public:
 private:
 
 	std::string defaultVertexFile = "Assets\\Shaders\\DefaultVertexShader.vex";
-	std::string defaultPixelFile = "Assets\\Shaders\\DefaultPixelShader.fmt";
+	std::string defaultFragmentFile = "Assets\\Shaders\\DefaultPixelShader.fmt";
 
 	char* defVertexShader = nullptr;
 	char* defFragmentShader = nullptr;
