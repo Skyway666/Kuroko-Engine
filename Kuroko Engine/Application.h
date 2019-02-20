@@ -20,6 +20,7 @@ class ModuleDebug;
 class ModuleTimeManager;
 class ModuleResourcesManager;
 class ModuleScripting;
+class FontManager;
 
 class Application
 {
@@ -36,6 +37,7 @@ public:
 	ModuleTimeManager* time;
 	ModuleResourcesManager* resources;
 	ModuleScripting* scripting;
+	FontManager* fontManager;
 
 	FileSystem fs;
 private:

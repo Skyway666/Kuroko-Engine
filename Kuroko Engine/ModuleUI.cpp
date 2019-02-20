@@ -21,7 +21,9 @@
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "FontManager.h"
 #include "ComponentCanvas.h"
+#include "ComponentTextUI.h"
 #include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
@@ -36,6 +38,7 @@
 #include "ResourceTexture.h"
 #include "Resource3dObject.h"
 #include "Skybox.h"
+#include "FileSystem.h"
 
 
 #include "Random.h"
@@ -1377,7 +1380,50 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case UI_TEXT:
 		if (ImGui::CollapsingHeader("UI Text"))
 		{
-			// TO FILL
+			ComponentTextUI* text = (ComponentTextUI*)&component;
+			
+			static const int maxSize = 32;
+			if (ImGui::InputText("Label Text", (char*)text->label.text.c_str(), maxSize)) {
+				text->SetText(text->label.text.c_str());
+			}
+			if (ImGui::SliderFloat("Scale", &(text->label.font->scale), 8, MAX_CHARS, "%0.f")) {
+				text->SetFontScale(text->label.font->scale);
+			}
+			ImGui::Checkbox("Draw Characters Frame", &text->drawCharPanel);
+			ImGui::Checkbox("Draw Label Frame", &text->drawLabelrect);
+			std::string currentFont = text->label.font->fontSrc;
+			if (ImGui::BeginCombo("Fonts", currentFont.c_str()))
+			{
+				std::vector<std::string> fonts = App->fontManager->singleFonts;
+
+				for (int i = 0; i < fonts.size(); i++)
+				{
+					bool isSelected = false;
+
+					if (strcmp(currentFont.c_str(), fonts[i].c_str()) == 0) {
+						isSelected = true;
+					}
+
+					if (ImGui::Selectable(fonts[i].c_str(), isSelected)) {
+						std::string newFontName = std::string(fonts[i].c_str());
+						std::string newFontExtension = std::string(fonts[i].c_str());
+						App->fs.getFileNameFromPath(newFontName);
+						App->fs.getExtension(newFontExtension);
+						newFontName += newFontExtension;
+						text->SetFont(newFontName.c_str());
+
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+
+					}
+
+				}
+				ImGui::EndCombo();
+
+			}
+			ImGui::Spacing();
+			ImGui::ColorPicker3("Color##2f", (float*)&text->label.color);
 		}
 		break;
 	case UI_BUTTON:

@@ -76,6 +76,9 @@
     <Filter Include="Sources\Game\UI">
       <UniqueIdentifier>{92f608b4-fb76-43c6-a8b1-74b23f0ca142}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Helpers\FreeType">
+      <UniqueIdentifier>{650bdbf5-ccab-4d4a-88e1-0960de54c0bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -498,6 +501,18 @@
     <ClInclude Include="ComponentCheckBoxUI.h">
       <Filter>Sources\Game\UI</Filter>
     </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeType\include\ft2build.h">
+      <Filter>Sources\Helpers\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeType\include\freetype\config\ftheader.h">
+      <Filter>Sources\Helpers\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeType\include\freetype\freetype.h">
+      <Filter>Sources\Helpers\FreeType</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -792,6 +807,9 @@
       <Filter>Sources\Game\UI</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCheckBoxUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FontManager.cpp">
       <Filter>Sources\Game\UI</Filter>
     </ClCompile>
   </ItemGroup>
