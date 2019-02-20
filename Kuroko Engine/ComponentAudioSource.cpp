@@ -23,6 +23,7 @@ ComponentAudioSource::ComponentAudioSource(JSON_Object* deff, GameObject* parent
 
 ComponentAudioSource::~ComponentAudioSource()
 {
+	//CleanUp();
 }
 
 
@@ -32,6 +33,12 @@ bool ComponentAudioSource::Update(float dt)
 	sound_go->SetPosition(pos.x, pos.y, pos.z);
 
 	return true;
+}
+
+void ComponentAudioSource::CleanUp()
+{
+	delete sound_go;
+	sound_go = nullptr;
 }
 
 //void ComponentAudioSource::SetInspectorInfo()

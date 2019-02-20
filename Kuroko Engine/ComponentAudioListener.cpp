@@ -17,6 +17,7 @@ ComponentAudioListener::ComponentAudioListener(GameObject* parent) : Component(p
 
 ComponentAudioListener::ComponentAudioListener(JSON_Object* deff, GameObject* parent) : Component(parent, AUDIOLISTENER)
 {
+	App->scene->audiolistenerdefault = parent;
 	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
 	sound_go = Wwise::CreateSoundObj(parent->getUUID(), parent->getName().c_str(), pos.x, pos.y, pos.z, true);
 
@@ -28,6 +29,7 @@ ComponentAudioListener::ComponentAudioListener(JSON_Object* deff, GameObject* pa
 
 ComponentAudioListener::~ComponentAudioListener()
 {
+	//CleanUp();
 }
 
 
@@ -39,6 +41,13 @@ bool ComponentAudioListener::Update(float dt)
 	sound_go->SetPosition(pos.x, pos.y, pos.z, front.x, front.y, front.z, top.x, top.y, top.z);
 
 	return true;
+}
+
+void ComponentAudioListener::CleanUp()
+{
+	App->scene->audiolistenerdefault = nullptr;
+	delete sound_go;
+	sound_go = nullptr;
 }
 
 //void ComponentAudioListener::SetInspectorInfo()

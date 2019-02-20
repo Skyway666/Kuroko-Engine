@@ -17,6 +17,7 @@
 #include <corecrt_wstring.h>
 
 #include "Wwise/IO/Win32/AkFilePackageLowLevelIOBlocking.h"
+#include "Game/Assets/Sounds/Wwise_IDs.h"
 
 
 ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, start_enabled)

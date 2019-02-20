@@ -15,6 +15,7 @@ public:
 	~ComponentAudioListener();
 
 	bool Update(float dt) override;
+	void CleanUp();
 	//void SetInspectorInfo() override;
 
 	void Save(JSON_Object* config) override;

@@ -7,7 +7,7 @@
 #include "Wwise/IO/Win32/AkDefaultIOHookBlocking.h"
 #include "Wwise/SDK/include/AkDefaultIOHookBlocking.h"
 #include "Wwise/SDK/include/AkFileHelpers.h"
-//#include "Game/Library/Sounds/Wwise_IDs.h"
+//#include "Game/Assets/Sounds/Wwise_IDs.h"
 #include <AK/Plugin/AkRoomVerbFXFactory.h>
 
 //CAkDefaultIOHookBlocking g_defaultIO;

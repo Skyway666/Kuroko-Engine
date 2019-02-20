@@ -245,6 +245,13 @@ void GameObject::addComponent(Component* component)
 	case SCRIPT:
 		components.push_back(component);
 		break;
+	case AUDIOLISTENER:
+		if (!getComponent(AUDIOLISTENER))
+			components.push_back(component);
+		break;
+	case AUDIOSOURCE:
+		components.push_back(component);
+		break;
 	default:
 		break;
 	}

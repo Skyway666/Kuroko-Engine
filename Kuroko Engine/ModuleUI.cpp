@@ -1179,6 +1179,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				App->audio->muted = false;
 				App->audio->SetVolume(App->audio->volume);
 			}
+			if (ImGui::Button("Remove##Remove audioListener"))
+				return false;
 		}
 		break;
 
@@ -1201,6 +1203,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			{
 				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
 			}
+			if (ImGui::Button("Remove##Remove audioSource"))
+				return false;
 		}
 		break;
 	default:
