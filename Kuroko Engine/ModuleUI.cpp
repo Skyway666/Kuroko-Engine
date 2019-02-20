@@ -30,6 +30,7 @@
 #include "ComponentCamera.h"
 #include "ComponentImageUI.h"
 #include "ComponentCheckBoxUI.h"
+#include "ComponentButtonUI.h"
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
@@ -508,6 +509,7 @@ void ModuleUI::DrawHierarchyTab()
 				}
 				if (parent != nullptr) {
 					GameObject* button = new GameObject("UI_Button", parent, true);
+					button->addComponent(Component_type::UI_IMAGE);
 					button->addComponent(Component_type::UI_BUTTON);
 					parent->addChild(button);
 				}
@@ -1325,12 +1327,12 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		{
 			ComponentCheckBoxUI* chBox = (ComponentCheckBoxUI*)&component;
 
-			ImGui::Image(chBox->getResourceTexture(IDLE) != nullptr ? (void*)chBox->getResourceTexture(IDLE)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::Image(chBox->getResourceTexture(CH_IDLE) != nullptr ? (void*)chBox->getResourceTexture(CH_IDLE)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
 			ImGui::SameLine();
 
 			int w = 0; int h = 0;
-			if (chBox->getResourceTexture(IDLE) != nullptr) {
-				chBox->getResourceTexture(IDLE)->texture->getSize(w, h);
+			if (chBox->getResourceTexture(CH_IDLE) != nullptr) {
+				chBox->getResourceTexture(CH_IDLE)->texture->getSize(w, h);
 			}
 
 			ImGui::Text("Idle texture data: \n x: %d\n y: %d", w, h);
@@ -1341,17 +1343,17 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
 				if (new_resource != 0) {
 					App->resources->assignResource(new_resource);
-					if (chBox->getResourceTexture(IDLE) != nullptr)
-						App->resources->deasignResource(chBox->getResourceTexture(IDLE)->uuid);
-					chBox->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), IDLE);
+					if (chBox->getResourceTexture(CH_IDLE) != nullptr)
+						App->resources->deasignResource(chBox->getResourceTexture(CH_IDLE)->uuid);
+					chBox->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), CH_IDLE);
 				}
 			}
-			ImGui::Image(chBox->getResourceTexture(PRESSED) != nullptr ? (void*)chBox->getResourceTexture(PRESSED)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::Image(chBox->getResourceTexture(CH_PRESSED) != nullptr ? (void*)chBox->getResourceTexture(CH_PRESSED)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
 			ImGui::SameLine();
 
 			int w2 = 0; int h2 = 0;
-			if (chBox->getResourceTexture(PRESSED) != nullptr) {
-				chBox->getResourceTexture(PRESSED)->texture->getSize(w2, h2);
+			if (chBox->getResourceTexture(CH_PRESSED) != nullptr) {
+				chBox->getResourceTexture(CH_PRESSED)->texture->getSize(w2, h2);
 			}
 
 			ImGui::Text("Pressed texture data: \n x: %d\n y: %d", w2, h2);
@@ -1362,9 +1364,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
 				if (new_resource != 0) {
 					App->resources->assignResource(new_resource);
-					if (chBox->getResourceTexture(PRESSED) != nullptr)
-						App->resources->deasignResource(chBox->getResourceTexture(PRESSED)->uuid);
-					chBox->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), PRESSED);
+					if (chBox->getResourceTexture(CH_PRESSED) != nullptr)
+						App->resources->deasignResource(chBox->getResourceTexture(CH_PRESSED)->uuid);
+					chBox->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), CH_PRESSED);
 				}
 			} // For debug
 			bool pressed = chBox->isPressed();
@@ -1381,7 +1383,82 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case UI_BUTTON:
 		if (ImGui::CollapsingHeader("UI Button"))
 		{
-			// TO FILL
+			ComponentButtonUI* button = (ComponentButtonUI*)&component;
+			ButtonState state;//debug
+			ImGui::Image(button->getResourceTexture(B_IDLE) != nullptr ? (void*)button->getResourceTexture(B_IDLE)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w = 0; int h = 0;
+			if (button->getResourceTexture(B_IDLE) != nullptr) {
+				button->getResourceTexture(B_IDLE)->texture->getSize(w, h);
+			}
+
+			ImGui::Text("Idle texture data: \n x: %d\n y: %d", w, h);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (button->getResourceTexture(B_IDLE) != nullptr)
+						App->resources->deasignResource(button->getResourceTexture(B_IDLE)->uuid);
+					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_IDLE);
+				}
+			}
+
+			ImGui::Image(button->getResourceTexture(B_MOUSEOVER) != nullptr ? (void*)button->getResourceTexture(B_MOUSEOVER)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w3 = 0; int h3 = 0;
+			if (button->getResourceTexture(B_MOUSEOVER) != nullptr) {
+				button->getResourceTexture(B_MOUSEOVER)->texture->getSize(w3, h3);
+			}
+
+			ImGui::Text("Hover texture data: \n x: %d\n y: %d", w3, h3);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load2"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (button->getResourceTexture(B_MOUSEOVER) != nullptr)
+						App->resources->deasignResource(button->getResourceTexture(B_MOUSEOVER)->uuid);
+					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_MOUSEOVER);
+				}
+			}
+
+
+			ImGui::Image(button->getResourceTexture(B_PRESSED) != nullptr ? (void*)button->getResourceTexture(B_PRESSED)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w2 = 0; int h2 = 0;
+			if (button->getResourceTexture(B_PRESSED) != nullptr) {
+				button->getResourceTexture(B_PRESSED)->texture->getSize(w2, h2);
+			}
+
+			ImGui::Text("Pressed texture data: \n x: %d\n y: %d", w2, h2);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load3"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (button->getResourceTexture(B_PRESSED) != nullptr)
+						App->resources->deasignResource(button->getResourceTexture(B_PRESSED)->uuid);
+					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_PRESSED);
+				}
+			} 
+			// For debug
+			bool idle = false;
+			bool hover = false;
+			bool pressed = false;
+			ImGui::Separator();
+			if (ImGui::Button("Idle")) { button->setState(B_IDLE); } ImGui::SameLine();
+			if(ImGui::Button("Hover")) { button->setState(B_MOUSEOVER); }ImGui::SameLine();
+			if (ImGui::Button("Pressed")) { button->setState(B_PRESSED); }
 		}
 		break;	
 	

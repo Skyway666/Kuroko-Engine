@@ -8,8 +8,8 @@ class ComponentImageUI;
 class ResourceTexture;
 
 enum CheckBoxState {
-	IDLE = 0,
-	PRESSED
+	CH_IDLE = 0,
+	CH_PRESSED
 };
 
 class ComponentCheckBoxUI :
@@ -20,22 +20,23 @@ public:
 	~ComponentCheckBoxUI();
 
 	bool Update(float dt)override;
-	void Draw() const override;
 
 	void Save(JSON_Object* config) override;
 
-	inline const ResourceTexture* getResourceTexture(CheckBoxState state) { return state == IDLE ? idle : pressed; }
-	inline void setResourceTexture(ResourceTexture* tex, CheckBoxState state) { state == IDLE ? idle = tex : pressed = tex; ChangeGOImage(); }
-	inline void DeassignTexture(CheckBoxState state) { state == IDLE ? idle = nullptr : pressed = nullptr; ChangeGOImage(); }
+	inline const ResourceTexture* getResourceTexture(CheckBoxState state) { return state == CH_IDLE ? idle : pressed; }
+	inline void setResourceTexture(ResourceTexture* tex, CheckBoxState state) { state == CH_IDLE ? idle = tex : pressed = tex; ChangeGOImage(); }
+	inline void DeassignTexture(CheckBoxState state) { state == CH_IDLE ? idle = nullptr : pressed = nullptr; ChangeGOImage(); }
 
-	inline void Press() { state == IDLE ? state = PRESSED : state = IDLE; ChangeGOImage(); } // for debug may be obsolete
-	inline const bool isPressed() { return state == PRESSED; }// for debug may be obsolete
+	inline void Press() { state == CH_IDLE ? state = CH_PRESSED : state = CH_IDLE; ChangeGOImage(); } // for debug, may be obsolete
+	inline const bool isPressed() { return state == CH_PRESSED; }// for debug, may be obsolete
 
-	CheckBoxState state = IDLE;
+	CheckBoxState state = CH_IDLE;
 
 private:
 	void ChangeGOImage();
 	bool isMouseOver();
+	void CheckState();
+
 	ComponentRectTransform * rectTransform = nullptr;
 	ComponentImageUI* image = nullptr;
 

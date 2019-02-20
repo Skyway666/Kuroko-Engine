@@ -3,13 +3,17 @@
 
 #include "Component.h"
 
+
+class ComponentRectTransform;
+class ComponentImageUI;
+class ResourceTexture;
+
 enum ButtonState {
 	B_IDLE = 0,
 	B_MOUSEOVER,
 	B_PRESSED
 };
 
-class ComponentRectTransform;
 class ComponentButtonUI :public Component
 {
 public:
@@ -17,13 +21,26 @@ public:
 	~ComponentButtonUI();
 
 	bool Update(float dt)override;
-	void Draw() const override;
+
+	const ResourceTexture* getResourceTexture(ButtonState state);
+	void setResourceTexture(ResourceTexture* tex, ButtonState state); 
+	void DeassignTexture(ButtonState state);
+
+	inline void setState(ButtonState _state) { state = _state; ChangeGOImage(); };// for debug, may be obsolete
+	void ChangeGOImage();
 
 	void Save(JSON_Object* config) override;
+
+	ButtonState state = B_IDLE;
 
 private:
 
 	ComponentRectTransform * rectTransform = nullptr;
+	ComponentImageUI* image = nullptr;
+
+	ResourceTexture* idle = nullptr;
+	ResourceTexture* hover = nullptr;
+	ResourceTexture* pressed = nullptr;
 };
 
 #endif
