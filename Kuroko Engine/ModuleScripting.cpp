@@ -16,6 +16,7 @@
 void ConsoleLog(WrenVM* vm); 
 void InstantiatePrefab(WrenVM* vm);
 void getTime(WrenVM* vm);
+void BreakPoint(WrenVM* vm);
 
 // Math
 void sqrt(WrenVM* vm);
@@ -410,6 +411,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return InstantiatePrefab; // C function for EngineComunicator.Instantiate
 			if (isStatic && strcmp(signature, "getTime()") == 0)
 				return getTime;
+			if (isStatic && strcmp(signature, "BreakPoint(_,_,_)") == 0)
+				return BreakPoint;
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_,_)") == 0)
@@ -672,4 +675,31 @@ void getTime(WrenVM* vm) {
 void sqrt(WrenVM* vm) {
 	int number = wrenGetSlotDouble(vm, 1);
 	wrenSetSlotDouble(vm, 0, sqrt(number));
+}
+
+void BreakPoint(WrenVM* vm) {
+	std::string message = wrenGetSlotString(vm, 1);
+	WrenType type = wrenGetSlotType(vm, 2);
+	std::string var_name = wrenGetSlotString(vm, 3);
+	int number = 0;
+ 	std::string str;
+	bool boolean = false;
+
+	switch (type) {
+	case WREN_TYPE_NUM:
+		number = wrenGetSlotDouble(vm, 2);
+		break;
+	case WREN_TYPE_BOOL:
+		boolean = wrenGetSlotBool(vm, 2);
+		break;
+	case WREN_TYPE_STRING:
+		str = wrenGetSlotString(vm, 2);
+		break;
+	case WREN_TYPE_UNKNOWN:
+		app_log->AddLog("Variable in the break point is not a C native type");
+		return;
+	}
+
+	return; // PUT A BREAK POINT HERE TO SEE THE VALUE AND NAME OF THE VARIABLE
+
 }

@@ -58,6 +58,7 @@ class EngineComunicator{
 	foreign static consoleOutput(message)
 	foreign static Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
 	foreign static getTime()
+	foreign static BreakPoint(message, variable, variable_name)
 
 	static Instantiate(prefab_name, pos, euler){
 		EngineComunicator.Instantiate(prefab_name, pos.x, pos.y, pos.z, euler.x, euler.y, euler.z)

@@ -36,5 +36,8 @@ construct new(){}
 	System.print(Math.pow(100,0))
 	System.print(Math.pow(4,5))
   }
+  if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
+   EngineComunicator.BreakPoint("Testing Break Point", starting_time, "starting_time")
+  }
  }
 }
