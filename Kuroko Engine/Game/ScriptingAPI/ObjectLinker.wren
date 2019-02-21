@@ -30,6 +30,8 @@ class Math{
 
 class Time{
 	foreign static C_GetDeltaTime()
+	foreign static C_GetTimeScale()
+	foreign static C_SetTimeScale(multiplier)
 
 }
 

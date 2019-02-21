@@ -6,6 +6,7 @@
 #include "ModuleScene.h"
 #include "ModuleInput.h"
 #include "ModuleResourcesManager.h"
+#include "ModuleTimeManager.h"
 
 // May be better to manage in scene
 #include "GameObject.h"
@@ -35,6 +36,11 @@ void getGameObjectRoll(WrenVM* vm);
 
 void KillGameObject(WrenVM* vm);
 void MoveGameObjectForward(WrenVM* vm);
+
+//Time
+void GetDeltaTime(WrenVM* vm);
+void GetTimeScale(WrenVM* vm);
+void SetTimeScale(WrenVM* vm);
 
 // Input comunicator
 void GetKey(WrenVM* vm);
@@ -404,6 +410,17 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 			if (isStatic && strcmp(signature, "C_sqrt(_)") == 0)
 				return sqrt; // C function for Math.C_sqrt(_)
 		}
+		if (strcmp(className, "Time") == 0) {
+			if (isStatic && strcmp(signature, "C_GetDeltaTime()") == 0) {
+				return GetDeltaTime;
+			}
+			if (isStatic && strcmp(signature, "C_GetTimeScale()") == 0) {
+				return GetTimeScale;
+			}
+			if(isStatic && strcmp(signature,"C_SetTimeScale(_)") == 0){
+				return SetTimeScale;
+			}
+		}
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
@@ -626,6 +643,21 @@ void MoveGameObjectForward(WrenVM* vm) {
 	float3 mod_trans_pos = c_trans->local->getPosition() + (c_trans->local->Forward() * speed);
 	c_trans->local->setPosition(mod_trans_pos);
 
+}
+
+void GetDeltaTime(WrenVM * vm)
+{
+	wrenSetSlotDouble(vm, 0, App->time->getDeltaTime());
+}
+
+void GetTimeScale(WrenVM * vm)
+{
+	wrenSetSlotDouble(vm, 0, App->time->getTimeScale());
+}
+
+void SetTimeScale(WrenVM * vm)
+{
+	App->time->setTimeScale(wrenGetSlotDouble(vm,1));
 }
 
 void getGameObjectPitch(WrenVM* vm) {
