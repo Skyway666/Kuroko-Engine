@@ -19,6 +19,8 @@ public:
 
 	bool Init(const JSON_Object* config);
 
+	bool InitializeDefaulShaders();
+
 	void CreateDefVertexShader();
 	void CreateDefFragmentShader();
 	void CreateDefShaderProgram();
@@ -26,8 +28,8 @@ public:
 
 private:
 
-	std::string defaultVertexFile = "Assets\\Shaders\\DefaultVertexShader.vex";
-	std::string defaultFragmentFile = "Assets\\Shaders\\DefaultPixelShader.fmt";
+	std::string defaultVertexFile = "DefaultVertexShader.vex";
+	std::string defaultFragmentFile = "DefaultPixelShader.fmt";
 
 	char* defVertexShader = nullptr;
 	char* defFragmentShader = nullptr;

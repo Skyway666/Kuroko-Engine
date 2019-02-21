@@ -8,6 +8,7 @@
 #include "ModuleCamera3D.h"
 #include "Camera.h"
 #include "ModuleScene.h"
+#include "ModuleShaders.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -112,6 +113,10 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 	}
 	// Projection matrix for
 	OnResize(App->window->main_window->width, App->window->main_window->height);
+
+
+	//Initializing Shaders
+	App->shaders->InitializeDefaulShaders();
 
 	return ret;
 }

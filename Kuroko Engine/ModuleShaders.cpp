@@ -20,23 +20,11 @@ bool ModuleShaders::Init(const JSON_Object * config)
 {
 	bool ret = true;
 
-	//renderer things they should go back to where they belong
-	/*App->renderer3D->context = SDL_GL_CreateContext(App->window->main_window->window);
-	if (App->renderer3D->context == NULL)
-	{
-		app_log->AddLog("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
-		ret = false;
-	}
-	
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
-	{
-		LOG("Glew library not initialized properly %s\n", glewGetErrorString(err));
-		ret = false;
-	}
-	
-	*/
-	
+	return ret;
+}
+
+bool ModuleShaders::InitializeDefaulShaders()
+{
 	bool findFile = App->fs.ExistisFile(defaultVertexFile.c_str(), LIBRARY_MATERIALS, ".vex");
 	if (findFile)
 	{
@@ -44,7 +32,7 @@ bool ModuleShaders::Init(const JSON_Object * config)
 	}
 	else
 	{
-		CreateDefShaderProgram();
+		CreateDefVertexShader();
 	}
 
 	findFile = App->fs.ExistisFile(defaultFragmentFile.c_str(), LIBRARY_MATERIALS, ".frag");
@@ -54,18 +42,40 @@ bool ModuleShaders::Init(const JSON_Object * config)
 	}
 	else
 	{
-		CreateDefShaderProgram();
+		CreateDefFragmentShader();
 	}
 
-	return ret;
+	return true;
 }
 
 void ModuleShaders::CreateDefVertexShader()
 {
+	defVertexShader =
+	"#version 330\n"
+
+	"layout(location = 0)in vec4 vert;\n"
+
+	"uniform mat4 projection;\n"
+	"uniform mat4 view;\n"
+	"uniform mat4 model;\n"
+
+	"void main()\n"
+	"{\n"
+		"gl_Position = projection * view * model * vert;\n"
+	"}\n";
 }
 
 void ModuleShaders::CreateDefFragmentShader()
 {
+	defFragmentShader =
+	"#version 330\n"
+
+	"out vec4 fragColor;\n"
+
+	"void main()\n"
+	"{\n"
+		"fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+	"}\n";
 }
 
 void ModuleShaders::CreateDefShaderProgram()
