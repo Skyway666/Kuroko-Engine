@@ -73,6 +73,16 @@ void ComponentRectTransform::Draw() const
 
 		App->scene->global_wireframe ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // returns back to previous polygon fill mode
 
+		glLineWidth(3.0f);
+
+		//----Anchor Point
+		glBegin(GL_LINES);
+		glVertex3f(rect.anchor.x, rect.anchor.y + 0.1f, 0);
+		glVertex3f(rect.anchor.x, rect.anchor.y - 0.1f, 0);
+		glVertex3f(rect.anchor.x + 0.1f, rect.anchor.y, 0);
+		glVertex3f(rect.anchor.x - 0.1f, rect.anchor.y, 0);
+		glEnd();
+
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glLineWidth(1.0f);
 
@@ -84,39 +94,19 @@ void ComponentRectTransform::Save(JSON_Object * config)
 {
 }
 
-inline void ComponentRectTransform::setLocalPos(float2 pos)
-{
-	rect.local = pos;
-}
-
-void ComponentRectTransform::setGlobalPos(float2 pos)
-{
-	rect.global = pos;
-/*
-	if (getParent()->getParent() != nullptr) {
-		ComponentRectTransform* parentTrans = (ComponentRectTransform*)getParent()->getParent()->getComponent(RECTTRANSFORM);
-		float2 parentGlobal = parentTrans->getGlobalPos();
-		setLocalPos(getGlobalPos() - parentGlobal);
-	}*/
-}
 
 void ComponentRectTransform::setPos(float2 pos)
 {
 	float2 dist = pos - rect.local;
 	rect.local = pos;
 	rect.global +=dist;
+
+	rect.anchor.x = rect.global.x + rect.width / 2;
+	rect.anchor.y = rect.global.y + rect.height / 2;
+
 	UpdateGlobalMatrixRecursive(this);
 }
 
-inline void ComponentRectTransform::setWidth(float width)
-{
-	rect.width = width;
-}
-
-inline void ComponentRectTransform::setHeight(float height)
-{
-	rect.height = height;
-}
 
 void ComponentRectTransform::GenBuffer()
 {

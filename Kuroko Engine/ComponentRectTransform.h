@@ -11,6 +11,7 @@ public:
 	float2 global = float2::zero;
 	float width = 0.0f;
 	float height = 0.0f;
+	float2 anchor = float2(0.f, 0.f);
 	int vertexID = -1;
 	float3* vertex = nullptr;
 
@@ -27,11 +28,10 @@ public:
 	void Draw() const override;
 	void Save(JSON_Object* config) override;
 
-	inline void setLocalPos(float2 pos);
-	void setGlobalPos(float2 pos);
+	
 	void setPos(float2 pos);
-	inline void setWidth(float width);
-	inline void setHeight(float height);
+	inline void setWidth(float width) { rect.width = width; }
+	inline void setHeight(float height) { rect.height = height; }
 
 	inline const float2 getLocalPos() { return rect.local; }
 	inline const float2 getGlobalPos() { return rect.global; }
@@ -42,7 +42,8 @@ public:
 	bool debug_draw = false;
 
 private:
-
+	inline void setLocalPos(float2 pos) { rect.local = pos; }
+	inline void setGlobalPos(float2 pos) { rect.global = pos; }
 	void GenBuffer();
 	void UpdateGlobalMatrixRecursive(ComponentRectTransform * rect);
 	RectTransform rect;
