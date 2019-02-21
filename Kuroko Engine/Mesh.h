@@ -38,6 +38,7 @@ public:
 	~Mesh();
 
 	void Draw(Material* mat, bool draw_as_selected = false) const;
+	void MaxDrawFunctionTest() const;
 	void DrawNormals() const;
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
@@ -58,6 +59,7 @@ public:
 private:
 
 	void LoadDataToVRAM();
+	void LoadDataToVRAMShaders();
 	void BuildCube(float3& size = (float3)float3::one);
 	void BuildPlane(float sx = 1.0f, float sy = 1.0f);
 	void BuildSphere(float radius = 1.0f, float sectorCount = 12.0f, float stackCount = 24.0f);

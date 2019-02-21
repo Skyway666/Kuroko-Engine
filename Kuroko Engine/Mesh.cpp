@@ -122,6 +122,19 @@ void Mesh::LoadDataToVRAM()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+void Mesh::LoadDataToVRAMShaders()
+{
+	/*
+		TODO Here:
+		-----------
+		+ Create an unique array with all the info of the mesh (vertexCoord, ColorCords, textCord, normals)
+		+ Send the info to the VRAM
+		+ 
+	
+	
+	*/
+}
+
 
 
 void Mesh::Draw(Material* mat, bool draw_as_selected)  const
@@ -185,6 +198,12 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	if (diffuse_tex)		glDisable(GL_TEXTURE_2D);
+
+}
+
+void Mesh::MaxDrawFunctionTest() const
+{
+	
 
 }
 

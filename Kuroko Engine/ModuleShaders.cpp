@@ -78,7 +78,15 @@ void ModuleShaders::CreateDefVertexShader()
 	defVertexShader->script =
 	"#version 330\n"
 
-	"layout(location = 0)in vec4 vert;\n"
+	"layout(location = 0) in vec3 position;\n"
+	"layout(location = 1) in vec4 color;\n"
+	"layout(location = 2) in vec2 texCoord;\n"
+	"layout(location = 3) in vec3 normal;\n"
+
+	"out vec4 ourColor;\n"
+	"out vec2 TexCoord;\n"
+	"out vec3 end_pos;\n"
+	"out vec3 ret_normal;\n"
 
 	"uniform mat4 projection;\n"
 	"uniform mat4 view;\n"
@@ -86,7 +94,10 @@ void ModuleShaders::CreateDefVertexShader()
 
 	"void main()\n"
 	"{\n"
-		"gl_Position = projection * view * model * vert;\n"
+		"gl_Position = projection * view * model * vec4(position,1.0f);\n"
+		"ourColor = color;\n"
+		"TexCoord = texCoord;\n"
+		"ret_normal = normal;\n"
 	"}\n";
 }
 
@@ -94,12 +105,20 @@ void ModuleShaders::CreateDefFragmentShader()
 {
 	defFragmentShader->script =
 	"#version 330\n"
+	
+	"in vec4 ourColor;\n"
+	"in vec2 TexCoord;\n"
+	"in vec3 ret_normal;\n"
 
-	"out vec4 fragColor;\n"
+	"out vec4 color;\n"
+	"out vec4 texture_color;\n"
+	
+	"uniform sampler2D ourTexture;\n"
 
 	"void main()\n"
 	"{\n"
-		"fragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+		"texture_color = texture(ourTexture, TexCoord);\n"
+		"color = ourColor;\n"
 	"}\n";
 }
 
