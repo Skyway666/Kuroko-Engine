@@ -23,6 +23,9 @@ ModuleShaders::ModuleShaders(Application* app, bool start_enabled):Module(app,st
 
 ModuleShaders::~ModuleShaders()
 {
+	RELEASE(defVertexShader);
+	RELEASE(defFragmentShader);
+	RELEASE(defShaderProgram);
 }
 
 bool ModuleShaders::Init(const JSON_Object * config)
@@ -31,6 +34,8 @@ bool ModuleShaders::Init(const JSON_Object * config)
 
 	defVertexShader = new Shader(VERTEX);
 	defFragmentShader = new Shader(FRAGMENT);
+
+	defShaderProgram = new ShaderProgram();
 
 	return ret;
 }
@@ -45,8 +50,10 @@ bool ModuleShaders::InitializeDefaulShaders()
 	else
 	{
 		CreateDefVertexShader();
-		CompileShader(defVertexShader);
 	}
+
+	CompileShader(defVertexShader);
+	defShaderProgram->shaders.push_back(defVertexShader->shaderId);
 
 	findFile = App->fs.ExistisFile(defaultFragmentFile.c_str(), LIBRARY_MATERIALS, ".frag");
 	if (findFile)
@@ -56,8 +63,12 @@ bool ModuleShaders::InitializeDefaulShaders()
 	else
 	{
 		CreateDefFragmentShader();
-		CompileShader(defFragmentShader);
 	}
+
+	CompileShader(defFragmentShader);
+	defShaderProgram->shaders.push_back(defFragmentShader->shaderId);
+
+	CompileProgram(defShaderProgram);
 
 	return true;
 }
@@ -92,11 +103,7 @@ void ModuleShaders::CreateDefFragmentShader()
 	"}\n";
 }
 
-void ModuleShaders::CreateDefShaderProgram()
-{
-}
-
-void ModuleShaders::CompileShader(Shader * shader)
+void ModuleShaders::CompileShader(Shader* shader)
 {
 	if (shader->type == VERTEX)
 	{
@@ -126,6 +133,33 @@ void ModuleShaders::CompileShader(Shader * shader)
 		else
 			app_log->AddLog("Fragment Shader compiled successfully!");
 	}
+}
+
+void ModuleShaders::CompileProgram(ShaderProgram* program)
+{
+	program->programID = glCreateProgram();
+
+	for (int i = 0; i < program->shaders.size(); i++)
+	{
+		glAttachShader(program->programID, program->shaders[i]);
+	}
+
+	glLinkProgram(program->programID);
+
+	int success;
+	char Error[512];
+	glGetProgramiv(program->programID, GL_LINK_STATUS, &success);
+
+	if (!success)
+	{
+		glGetProgramInfoLog(program->programID, 512, NULL, Error);
+		app_log->AddLog(Error);
+	}
+	else
+	{
+		app_log->AddLog("Program linked and compiled Successfully!");
+	}
+
 }
 
 
