@@ -23,7 +23,7 @@ ComponentAudioSource::ComponentAudioSource(JSON_Object* deff, GameObject* parent
 
 ComponentAudioSource::~ComponentAudioSource()
 {
-	//CleanUp();
+	CleanUp();
 }
 
 
@@ -37,6 +37,7 @@ bool ComponentAudioSource::Update(float dt)
 
 void ComponentAudioSource::CleanUp()
 {
+	sound_go->PauseEvent(sound_ID);
 	delete sound_go;
 	sound_go = nullptr;
 }

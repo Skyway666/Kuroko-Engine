@@ -64,13 +64,13 @@ Application::Application()
 	list_modules.push_back(window);
 	list_modules.push_back(camera);
 	list_modules.push_back(input);
-	list_modules.push_back(audio);
 	list_modules.push_back(importer);
 
 	
 	
 	// Scenes
 	list_modules.push_back(scene);
+	list_modules.push_back(audio);
 	list_modules.push_back(debug);
 
 	// Renderer last!

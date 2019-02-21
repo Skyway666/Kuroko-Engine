@@ -29,7 +29,7 @@ ComponentAudioListener::ComponentAudioListener(JSON_Object* deff, GameObject* pa
 
 ComponentAudioListener::~ComponentAudioListener()
 {
-	//CleanUp();
+	CleanUp();
 }
 
 
