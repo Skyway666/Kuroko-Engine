@@ -1494,7 +1494,7 @@ void ModuleUI::DrawAssetsWindow()
 				{
 					ResourceScript* res = (ResourceScript*)App->resources->getResource(App->resources->getResourceUuid(it.path().generic_string().c_str()));
 
-					if (res->IsInvalid())
+					if (res && res->IsInvalid())
 					{
 						draw_warning = true;
 						error_message += "Compile error in imported script";
