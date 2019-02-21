@@ -116,6 +116,7 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 
 
 	//Initializing Shaders
+	app_log->AddLog("Compiling Default Shaders...");
 	App->shaders->InitializeDefaulShaders();
 
 	return ret;

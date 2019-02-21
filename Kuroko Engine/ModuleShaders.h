@@ -9,6 +9,16 @@ enum ShaderType
 	FRAGMENT
 };
 
+struct Shader {
+
+	Shader(ShaderType type) :type(type) {};
+
+	char* script = nullptr;
+	ShaderType type;
+	uint shaderId=0;
+
+};
+
 class ModuleShaders : public Module
 {
 public:
@@ -25,14 +35,17 @@ public:
 	void CreateDefFragmentShader();
 	void CreateDefShaderProgram();
 
+	void CompileShader(Shader* shader);
+
 
 private:
 
 	std::string defaultVertexFile = "DefaultVertexShader.vex";
 	std::string defaultFragmentFile = "DefaultPixelShader.fmt";
 
-	char* defVertexShader = nullptr;
-	char* defFragmentShader = nullptr;
+
+	Shader* defVertexShader;
+	Shader* defFragmentShader;
 
 	
 	
