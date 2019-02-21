@@ -1309,6 +1309,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 
 			ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
 
+			ImGui::SliderFloat("Alpha", &image->alpha, 0.0f, 1.0f);
+
 			if (ImGui::Button("Load(from asset folder)##Dif: Load"))
 			{
 				std::string texture_path = openFileWID();
@@ -1499,6 +1501,13 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			bool hover = false;
 			bool pressed = false;
 			ImGui::Separator();
+			if (ImGui::Button("FadeIn")) {
+				button->doFadeIn();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("FadeOut")) {
+				button->doFadeOut();
+			}
 			if (ImGui::Button("Idle")) { button->setState(B_IDLE); } ImGui::SameLine();
 			if(ImGui::Button("Hover")) { button->setState(B_MOUSEOVER); }ImGui::SameLine();
 			if (ImGui::Button("Pressed")) { button->setState(B_PRESSED); }

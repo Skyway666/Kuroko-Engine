@@ -36,6 +36,14 @@ ComponentImageUI::~ComponentImageUI()
 
 bool ComponentImageUI::Update(float dt)
 {
+
+	if (fadingOut) {
+		FadeOut();
+	}
+	if (fadingIn) {
+		FadeIn();
+	}
+
 	return true;
 }
 
@@ -79,4 +87,21 @@ void ComponentImageUI::Draw() const
 
 void ComponentImageUI::Save(JSON_Object * config)
 {
+}
+void ComponentImageUI::FadeIn()
+{
+	alpha += DELTA_ALPHA;
+	if (alpha >= 1.0f) {
+		fadingIn = false;
+		alpha = 1.0f;		
+	}
+}
+
+void ComponentImageUI::FadeOut()
+{
+	alpha -= DELTA_ALPHA;
+	if (alpha <= 0.0f) {
+		fadingOut = false;
+		alpha = 0.0f;
+	}
 }

@@ -22,6 +22,14 @@ ComponentButtonUI::~ComponentButtonUI()
 
 bool ComponentButtonUI::Update(float dt)
 {
+
+	if (fadingOut) {
+		FadeOut();
+	}
+	if (fadingIn) {
+		FadeIn();
+	}
+
 	return true;
 }
 
@@ -92,4 +100,26 @@ void ComponentButtonUI::ChangeGOImage()
 
 void ComponentButtonUI::Save(JSON_Object * config)
 {
+}
+
+
+void ComponentButtonUI::FadeIn()
+{
+	alpha += DELTA_ALPHA;
+	if (alpha >= 1.0f) {
+		fadingIn = false;
+		alpha = 1.0f;
+	}
+
+	image->doFadeIn();
+}
+
+void ComponentButtonUI::FadeOut()
+{
+	alpha -= DELTA_ALPHA;
+	if (alpha <= 0.0f) {
+		fadingOut = false;
+		alpha = 0.0f;
+	}
+	image->doFadeOut();
 }

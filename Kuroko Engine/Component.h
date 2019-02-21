@@ -1,6 +1,9 @@
 #ifndef _COMPONENT_
 #define _COMPONENT_
 
+
+#define DELTA_ALPHA 0.01f
+
 #include "Parson\parson.h"
 class GameObject;
 
