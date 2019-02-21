@@ -1269,7 +1269,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			static float width;
 			static float height;
 
-			position = rectTrans->getGlobalPos();
+			position = rectTrans->getLocalPos();
 			width = rectTrans->getWidth();
 			height = rectTrans->getHeight();
 
@@ -1277,22 +1277,19 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			ImGui::Text("Position:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##p x", &position.x, 0.01f, 0.0f, 0.0f, "%.02f");
-			ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##p y", &position.y, 0.01f, 0.0f, 0.0f, "%.02f");
+			if(ImGui::DragFloat2("##p", (float*)&position, 0.01f)){ rectTrans->setPos(position); }
 			//Width
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##h", &width, 0.01f, 0.0f, 0.0f, "%.02f");
+			if(ImGui::DragFloat("##h", &width, 0.01f, 0.0f, 0.0f, "%.02f")){rectTrans->setWidth(width);}
 			//Height
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f");
+			if(ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f")){rectTrans->setHeight(height);
+			}
 
-			rectTrans->setGlobalPos(position);
-			rectTrans->setWidth(width);
-			rectTrans->setHeight( height);
+			
+			
 
 			ImGui::Checkbox("Debug draw", &rectTrans->debug_draw);
 		}

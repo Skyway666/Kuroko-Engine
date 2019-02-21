@@ -12,7 +12,7 @@ ComponentRectTransform::ComponentRectTransform(GameObject* parent) : Component(p
 	setHeight(1.0f);
 
 	debug_draw = true;
-
+	
 	static const float vtx[] = {
 		rect.global.x,  rect.global.y, 0,
 		rect.global.x + rect.width, rect.global.y, 0,
@@ -92,11 +92,20 @@ inline void ComponentRectTransform::setLocalPos(float2 pos)
 void ComponentRectTransform::setGlobalPos(float2 pos)
 {
 	rect.global = pos;
+/*
 	if (getParent()->getParent() != nullptr) {
 		ComponentRectTransform* parentTrans = (ComponentRectTransform*)getParent()->getParent()->getComponent(RECTTRANSFORM);
 		float2 parentGlobal = parentTrans->getGlobalPos();
 		setLocalPos(getGlobalPos() - parentGlobal);
-	}
+	}*/
+}
+
+void ComponentRectTransform::setPos(float2 pos)
+{
+	float2 dist = pos - rect.local;
+	rect.local = pos;
+	rect.global +=dist;
+	UpdateGlobalMatrixRecursive(this);
 }
 
 inline void ComponentRectTransform::setWidth(float width)
@@ -115,4 +124,17 @@ void ComponentRectTransform::GenBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, rect.vertexID); // set the type of buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float3) * 4, &rect.vertex[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+void ComponentRectTransform::UpdateGlobalMatrixRecursive(ComponentRectTransform* rect)
+{
+	std::list<GameObject*> childs = std::list<GameObject*>();
+	rect->getParent()->getChildren(childs);	
+
+	for (auto it = childs.begin(); it != childs.end(); it++) {
+		ComponentRectTransform* childRect = (ComponentRectTransform*)(*it)->getComponent(RECTTRANSFORM);
+		childRect->setGlobalPos(rect->getGlobalPos() + childRect->getLocalPos());
+		UpdateGlobalMatrixRecursive(childRect);
+	}
 }

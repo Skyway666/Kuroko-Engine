@@ -29,6 +29,7 @@ public:
 
 	inline void setLocalPos(float2 pos);
 	void setGlobalPos(float2 pos);
+	void setPos(float2 pos);
 	inline void setWidth(float width);
 	inline void setHeight(float height);
 
@@ -43,6 +44,7 @@ public:
 private:
 
 	void GenBuffer();
+	void UpdateGlobalMatrixRecursive(ComponentRectTransform * rect);
 	RectTransform rect;
 };
 
