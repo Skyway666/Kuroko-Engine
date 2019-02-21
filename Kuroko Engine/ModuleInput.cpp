@@ -15,6 +15,27 @@
 
 #define MAX_KEYS 300
 
+
+Controller::Controller(SDL_GameController * controller, SDL_Haptic * controller_haptic) : controller(controller), controller_haptic(controller_haptic) {
+	memset(axes, 0.f, sizeof(float) * SDL_CONTROLLER_AXIS_MAX);
+	memset(buttons, KEY_IDLE, sizeof(KEY_STATE) * SDL_CONTROLLER_BUTTON_MAX);
+
+	id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+
+	if (SDL_HapticRumbleSupported(controller_haptic))
+		SDL_HapticRumbleInit(controller_haptic);
+}
+
+Controller::~Controller()
+{
+}
+
+bool Controller::isPressed(CONTROLLER_BUTTON button, KEY_STATE state) const
+{
+	return buttons[button] == state;;
+}
+
+
 ModuleInput::ModuleInput(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	keyboard = new KEY_STATE[MAX_KEYS];
@@ -98,17 +119,16 @@ update_status ModuleInput::PreUpdate(float dt)
 
 	bool quit = false;
 	SDL_Event e;
-	while(SDL_PollEvent(&e))
+	while (SDL_PollEvent(&e))
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
-
-		switch(e.type)
+		switch (e.type)
 		{
-			case SDL_MOUSEWHEEL:
+		case SDL_MOUSEWHEEL:
 			mouse_z = e.wheel.y;
 			break;
 
-			case SDL_MOUSEMOTION:
+		case SDL_MOUSEMOTION:
 			mouse_x = e.motion.x / SCREEN_SIZE;
 			mouse_y = e.motion.y / SCREEN_SIZE;
 
@@ -116,27 +136,60 @@ update_status ModuleInput::PreUpdate(float dt)
 			mouse_y_motion = e.motion.yrel / SCREEN_SIZE;
 			break;
 
-			case SDL_QUIT:
+		case SDL_QUIT:
 			quit = true;
 			break;
 
-			case SDL_WINDOWEVENT:
-				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
-					App->renderer3D->OnResize(e.window.data1, e.window.data2);
+		case SDL_WINDOWEVENT:
+			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+				App->renderer3D->OnResize(e.window.data1, e.window.data2);
 
 			break;
 
-			case SDL_DROPFILE:
-			{
-				std::string extension = e.drop.file;
-				App->fs.getExtension(extension);
-				App->fs.copyFileTo(e.drop.file, ASSETS, extension.c_str());
-				app_log->AddLog("%s copied to Assets folder", e.drop.file);
+		case SDL_DROPFILE:
+		{
+			std::string extension = e.drop.file;
+			App->fs.getExtension(extension);
+			App->fs.copyFileTo(e.drop.file, ASSETS, extension.c_str());
+			app_log->AddLog("%s copied to Assets folder", e.drop.file);
+		}
+
+		case SDL_CONTROLLERDEVICEADDED:
+			if (SDL_IsGameController(e.cdevice.which)) {
+				int index = e.cdevice.which;
+				Controller* ctrl = new Controller(SDL_GameControllerOpen(index), SDL_HapticOpen(index));
+				if (ctrl != nullptr)
+					controllers.push_back(ctrl);
 			}
-	
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+			for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
+				if ((*it)->getControllerID() == e.cdevice.which) {
+					delete (*it);
+					it = controllers.erase(it);
+					break;
+				}
+			}
+		case SDL_CONTROLLERBUTTONDOWN:
+			for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
+				if ((*it)->getControllerID() == e.cbutton.which) {
+					if ((*it)->buttons[e.cbutton.button] != KEY_REPEAT || (*it)->buttons[e.cbutton.button] != KEY_DOWN) {
+						(*it)->buttons[e.cbutton.button] = KEY_DOWN;
+						break;
+					}
+				}
+			}
 				break;
 
-			default: break;
+		case SDL_CONTROLLERBUTTONUP:
+			for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
+				if ((*it)->getControllerID() == e.cbutton.which) {
+					(*it)->buttons[e.cbutton.button] = KEY_UP;
+					break;
+				}
+			}
+			break;
+		default: break;
 		}
 	}
 
@@ -153,3 +206,5 @@ bool ModuleInput::CleanUp()
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }
+
+

@@ -13,6 +13,54 @@ enum KEY_STATE
 	KEY_UP
 };
 
+enum CONTROLLER_BUTTON {
+	BUTTON_INVALID = -1,
+	BUTTON_A,
+	BUTTON_B,
+	BUTTON_X,
+	BUTTON_Y,
+	BUTTON_BACK,
+	BUTTON_GUIDE,
+	BUTTON_START,
+	BUTTON_LEFTSTICK,
+	BUTTON_RIGHTSTICK,
+	BUTTON_LEFTSHOULDER,
+	BUTTON_RIGHTSHOULDER,
+	BUTTON_DPAD_UP,
+	BUTTON_DPAD_DOWN,
+	BUTTON_DPAD_LEFT,
+	BUTTON_DPAD_RIGHT,
+	AXIS_LEFTX_NEGATIVE,
+	AXIS_LEFTX_POSITIVE,
+	AXIS_LEFTY_NEGATIVE,
+	AXIS_LEFTY_POSITIVE,
+	AXIS_RIGHTX_NEGATIVE,
+	AXIS_RIGHTX_POSITIVE,
+	AXIS_RIGHTY_NEGATIVE,
+	AXIS_RIGHTY_POSITIVE,
+	AXIS_TRIGGERLEFT,
+	AXIS_TRIGGERRIGHT,
+	BUTTON_MAX
+};
+
+class Controller
+{
+	public:
+	Controller(SDL_GameController* controller, SDL_Haptic* controller_haptic);
+	virtual ~Controller();
+
+	bool isPressed(CONTROLLER_BUTTON button, KEY_STATE state = KEY_REPEAT) const;
+
+	uint id;
+	SDL_GameController* controller;
+	SDL_Haptic* controller_haptic;
+	uint getControllerID() const { return id; }
+
+public:
+	KEY_STATE buttons[CONTROLLER_BUTTON::BUTTON_MAX];
+	float axes[SDL_CONTROLLER_AXIS_MAX];
+};
+
 class ModuleInput : public Module
 {
 public:
@@ -67,6 +115,8 @@ private:
 	int mouse_z			= 0;
 	int mouse_x_motion  = 0;
 	int mouse_y_motion  = 0;
+
+	std::list<Controller*> controllers;
 
 };
 #endif

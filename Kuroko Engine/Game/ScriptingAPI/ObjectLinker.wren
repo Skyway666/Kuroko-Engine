@@ -28,6 +28,11 @@ class Math{
 	}
 }
 
+class Time{
+	foreign static C_GetDeltaTime()
+
+}
+
 class Vec3{
 
 	construct zero(){
@@ -54,6 +59,7 @@ class Vec3{
 	magnitude {Math.C_sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))}
 
 }
+
 class EngineComunicator{
 	foreign static consoleOutput(message)
 	foreign static Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
