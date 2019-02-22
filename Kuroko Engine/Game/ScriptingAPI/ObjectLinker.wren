@@ -92,6 +92,11 @@ class InputComunicator{
 	static L_AXIS_RIGHT {16}
 
 	static C_A {0}
+	static C_B {1}
+	static C_X {2}
+	static C_Y {3}
+
+
 
 	static KEY_DOWN {1}
 	static KEY_REPEAT {2}
