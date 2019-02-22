@@ -59,6 +59,7 @@ class Controller
 public:
 	KEY_STATE buttons[CONTROLLER_BUTTON::BUTTON_MAX];
 	float axes[SDL_CONTROLLER_AXIS_MAX];
+	void addInput(CONTROLLER_BUTTON input);
 };
 
 class ModuleInput : public Module
@@ -71,6 +72,8 @@ public:
 	bool Init(const JSON_Object* config);
 	update_status PreUpdate(float dt);
 	bool CleanUp();
+
+	Controller* getController(uint id);
 
 	KEY_STATE GetKey(int id) const
 	{
@@ -117,6 +120,8 @@ private:
 	int mouse_y_motion  = 0;
 
 	std::list<Controller*> controllers;
+	void handleAxes(SDL_Event e);
+	float axis_tolerance = 0.1f;
 
 };
 #endif

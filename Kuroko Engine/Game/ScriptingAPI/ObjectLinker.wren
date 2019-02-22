@@ -81,12 +81,32 @@ class InputComunicator{
 	static RIGHT {79}
 	static SPACE {44}
 
+	static D_PAD_UP {11}
+	static D_PAD_DOWN {12}
+	static D_PAD_LEFT {13}
+	static D_PAD_RIGHT {14}
+
+	static L_AXIS_UP {18}
+	static L_AXIS_DOWN {17}
+	static L_AXIS_LEFT {15}
+	static L_AXIS_RIGHT {16}
+
+	static C_A {0}
+
 	static KEY_DOWN {1}
 	static KEY_REPEAT {2}
+
 	foreign static getKey(key, mode)
+
+	foreign static getButton(controller_id, button, mode)
+
 	foreign static getMouseRaycastX()
 	foreign static getMouseRaycastY()
 	foreign static getMouseRaycastZ()
+
+	static getMouseRaycast(){
+		return Vec3.new(InputComunicator.getMouseRaycastX(), InputComunicator.getMouseRaycastY(), InputComunicator.getMouseRaycastZ())
+	}
 }
 
 class ObjectLinker{

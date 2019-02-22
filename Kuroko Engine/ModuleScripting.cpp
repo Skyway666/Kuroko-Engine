@@ -43,7 +43,8 @@ void GetTimeScale(WrenVM* vm);
 void SetTimeScale(WrenVM* vm);
 
 // Input comunicator
-void GetKey(WrenVM* vm);
+void getKey(WrenVM* vm);
+void getButton(WrenVM* vm);
 void getMouseRaycastX(WrenVM* vm);
 void getMouseRaycastY(WrenVM* vm);
 void getMouseRaycastZ(WrenVM* vm);
@@ -433,13 +434,15 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_,_)") == 0)
-				return GetKey; // C function for InputComunicator.getKey
+				return getKey; // C function for InputComunicator.getKey
 			if (isStatic && strcmp(signature, "getMouseRaycastX()") == 0)
 				return getMouseRaycastX; // C function for InputComunicator.getMouseRaycastX
 			if (isStatic && strcmp(signature, "getMouseRaycastY()") == 0)
 				return getMouseRaycastY; // C function for InputComunicator.getMouseRaycastY
 			if (isStatic && strcmp(signature, "getMouseRaycastZ()") == 0)
 				return getMouseRaycastZ; // C function for InputComunicator.getMouseRaycastZ
+			if (isStatic && strcmp(signature, "getButton(_,_,_)") == 0)
+				return getButton;
 		}
 	}
 
@@ -511,7 +514,7 @@ void lookAt(WrenVM* vm) {
 	c_trans->local->LookAt(float3(c_trans->global->getPosition().x, target.y, c_trans->global->getPosition().z), target);
 }
 
-void GetKey(WrenVM* vm) {
+void getKey(WrenVM* vm) {
 	int pressed_key = wrenGetSlotDouble(vm, 1);
 	int mode = wrenGetSlotDouble(vm, 2);
 
@@ -733,5 +736,23 @@ void BreakPoint(WrenVM* vm) {
 	}
 
 	return; // PUT A BREAK POINT HERE TO SEE THE VALUE AND NAME OF THE VARIABLE
+
+}
+
+void getButton(WrenVM* vm) {
+	uint controller_id = wrenGetSlotDouble(vm, 1);
+	CONTROLLER_BUTTON input = (CONTROLLER_BUTTON)(uint)wrenGetSlotDouble(vm, 2);
+	KEY_STATE mode = (KEY_STATE)(uint)wrenGetSlotDouble(vm, 3);
+
+
+	Controller* controller = App->input->getController(controller_id);
+
+	if (!controller) {
+		wrenSetSlotBool(vm, 0, false);
+		app_log->AddLog("Asking for non-plugged controller %i", controller_id);
+		return;
+	}
+	
+	wrenSetSlotBool(vm, 0, controller->isPressed(input, mode));
 
 }

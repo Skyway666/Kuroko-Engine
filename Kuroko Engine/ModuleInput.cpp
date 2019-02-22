@@ -18,7 +18,7 @@
 
 Controller::Controller(SDL_GameController * controller, SDL_Haptic * controller_haptic) : controller(controller), controller_haptic(controller_haptic) {
 	memset(axes, 0.f, sizeof(float) * SDL_CONTROLLER_AXIS_MAX);
-	memset(buttons, KEY_IDLE, sizeof(KEY_STATE) * SDL_CONTROLLER_BUTTON_MAX);
+	memset(buttons, KEY_IDLE, sizeof(KEY_STATE) * BUTTON_MAX);
 
 	id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
 
@@ -33,6 +33,12 @@ Controller::~Controller()
 bool Controller::isPressed(CONTROLLER_BUTTON button, KEY_STATE state) const
 {
 	return buttons[button] == state;;
+}
+
+void Controller::addInput(CONTROLLER_BUTTON input) {
+	if (buttons[input] != KEY_REPEAT || buttons[input] != KEY_DOWN) {
+		buttons[input] = KEY_DOWN;
+	}
 }
 
 
@@ -60,6 +66,15 @@ bool ModuleInput::Init(const JSON_Object* config)
 	if(SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 	{
 		app_log->AddLog("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
+		ret = false;
+	}
+	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0) {
+		app_log->AddLog("mdInput : SDL Controller could not initialize! SDL_Error: %s\n", SDL_GetError());
+		ret = false;
+	}
+
+	if (SDL_InitSubSystem(SDL_INIT_HAPTIC) != 0) {
+		app_log->AddLog("mdInput : SDL Haptic could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 
@@ -117,6 +132,16 @@ update_status ModuleInput::PreUpdate(float dt)
 
 	mouse_x_motion = mouse_y_motion = 0;
 
+
+	for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
+		for (int i = 0; i < BUTTON_MAX; ++i) {
+			if ((*it)->buttons[i] == KEY_UP)
+				(*it)->buttons[i] = KEY_IDLE;
+			else if ((*it)->buttons[i] == KEY_DOWN)
+				(*it)->buttons[i] = KEY_REPEAT;
+		}
+	}
+
 	bool quit = false;
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
@@ -152,6 +177,7 @@ update_status ModuleInput::PreUpdate(float dt)
 			App->fs.getExtension(extension);
 			App->fs.copyFileTo(e.drop.file, ASSETS, extension.c_str());
 			app_log->AddLog("%s copied to Assets folder", e.drop.file);
+			break;
 		}
 
 		case SDL_CONTROLLERDEVICEADDED:
@@ -173,13 +199,11 @@ update_status ModuleInput::PreUpdate(float dt)
 		case SDL_CONTROLLERBUTTONDOWN:
 			for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
 				if ((*it)->getControllerID() == e.cbutton.which) {
-					if ((*it)->buttons[e.cbutton.button] != KEY_REPEAT || (*it)->buttons[e.cbutton.button] != KEY_DOWN) {
-						(*it)->buttons[e.cbutton.button] = KEY_DOWN;
+					(*it)->addInput((CONTROLLER_BUTTON)e.cbutton.button);
 						break;
-					}
 				}
 			}
-				break;
+			break;
 
 		case SDL_CONTROLLERBUTTONUP:
 			for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
@@ -188,6 +212,10 @@ update_status ModuleInput::PreUpdate(float dt)
 					break;
 				}
 			}
+			break;
+
+		case SDL_CONTROLLERAXISMOTION:
+			handleAxes(e);
 			break;
 		default: break;
 		}
@@ -207,4 +235,54 @@ bool ModuleInput::CleanUp()
 	return true;
 }
 
+void ModuleInput::handleAxes(SDL_Event event) {
+	uint device_index = event.caxis.which;
+	for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
+		if ((*it)->getControllerID() == device_index) {
+			float axis_value = event.caxis.value / 16000; //32767 is the max value for an SDL axis
+			float prior_value = (*it)->axes[event.caxis.axis];
+			(*it)->axes[event.caxis.axis] = axis_value;
+			switch (event.caxis.axis) {
+			case SDL_CONTROLLER_AXIS_LEFTX:
+				if (axis_value < prior_value) {
+					if (prior_value >= axis_tolerance && axis_value < axis_tolerance)
+						(*it)->buttons[AXIS_LEFTX_POSITIVE] = KEY_UP;
+					if (prior_value > -axis_tolerance && axis_value <= -axis_tolerance)
+						(*it)->addInput(AXIS_LEFTX_NEGATIVE);
+				}
+				else {
+					if (prior_value <= -axis_tolerance && axis_value > -axis_tolerance)
+						(*it)->buttons[AXIS_LEFTX_NEGATIVE] = KEY_UP;
+					if (prior_value < axis_tolerance && axis_value >= axis_tolerance)
+						(*it)->addInput(AXIS_LEFTX_POSITIVE);
+				}
+				break;
+			case SDL_CONTROLLER_AXIS_LEFTY:
+				if (axis_value < prior_value) {
+					if (prior_value >= axis_tolerance && axis_value < axis_tolerance)
+						(*it)->buttons[AXIS_LEFTY_NEGATIVE] = KEY_UP;
+					if (prior_value > -axis_tolerance && axis_value <= -axis_tolerance)
+						(*it)->addInput(AXIS_LEFTY_POSITIVE);
+				}
+				else {
+					if (prior_value <= -axis_tolerance && axis_value > -axis_tolerance)
+						(*it)->buttons[AXIS_LEFTY_POSITIVE] = KEY_UP;
+					if (prior_value < axis_tolerance && axis_value >= axis_tolerance)
+						(*it)->addInput(AXIS_LEFTY_NEGATIVE);
+				}
+				break;
+			}
+		}
+	}
+}
+
+Controller* ModuleInput::getController(uint id) {
+	for (auto it = controllers.begin(); it != controllers.end(); it++) {
+		if ((*it)->getControllerID() == id)
+			return (*it);
+	}
+
+	return nullptr;
+
+}
 
