@@ -27,6 +27,8 @@ public:
 
 public:
 
+	std::string Parent3dObject;
+
 	uint numWeights;
 
 	float4x4 Offset;

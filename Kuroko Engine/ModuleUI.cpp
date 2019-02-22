@@ -125,7 +125,7 @@ bool ModuleUI::Start()
 
 
 	// HARDCODE
-	App->scene->AskSceneLoadFile("Assets/Scenes/tank scene.scene");
+	App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
 
 	return true;
 }
@@ -1180,11 +1180,20 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			if (ImGui::Checkbox("Active##active animation", &animation_active))
 				anim->setActive(animation_active);
 
+			//Change/Add animation button
+			//getAnimationResourceList()
+
 			ImGui::Checkbox("Loop", &anim->loop);
 
 			ImGui::PushID("Speed");
 			ImGui::InputFloat("", &anim->speed, 0.0f, 0.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::PopID();
+		}
+		break;
+	case BONE:
+		if (ImGui::CollapsingHeader("Bone"))
+		{
+
 		}
 		break;
 	default:

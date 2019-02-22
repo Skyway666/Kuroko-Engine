@@ -3,6 +3,7 @@
 
 ResourceBone::ResourceBone(resource_deff deff):Resource(deff)
 {
+	Parent3dObject = deff.Parent3dObject;
 }
 
 ResourceBone::~ResourceBone()

@@ -54,6 +54,8 @@ public:
 
 public:
 
+	std::string Parent3dObject;
+
 	float ticks = 0.0f;
 	float ticksXsecond = 0.0f;
 

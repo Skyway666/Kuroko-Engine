@@ -141,13 +141,13 @@ void* ModuleImporter::ImportTexturePointer(const char* file) {
 	//}*/
 }
 
-void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, uint parent)
+void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, const std::map<std::string, uint>& in_bone_id, uint parent)
 {
 	std::string name = node.mName.C_Str();
 	if (name.find("$Assimp") != std::string::npos)
 	{
 		for (int i = 0; i < node.mNumChildren; i++)
-			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, parent);
+			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, in_bone_id, parent);
 
 		return;
 	}
@@ -198,9 +198,6 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "type", "mesh");			// Set type
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
-		//SKELETAL_TODO: bones
-		
-		
 
 		std::string mesh_name = node.mName.C_Str();
 
@@ -235,7 +232,21 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
 	}
 
-	if (parent == 0 && scene.HasAnimations())
+	if (in_bone_id.find(name) != in_bone_id.end()) //Exist a bone with this name
+	{
+		JSON_Value* bone_component = json_value_init_object();
+
+		uint bone_uuid = in_bone_id.at(name);
+		std::string bone_binary_full_path = BONES_FOLDER + std::to_string(bone_uuid) + OWN_BONE_EXTENSION;
+		json_object_set_string(json_object(bone_component), "type", "bone");			// Set type
+		json_object_set_string(json_object(bone_component), "bone_binary_path", bone_binary_full_path.c_str()); // (used for deleting binary file when asset is deleted)
+		json_object_set_number(json_object(bone_component), "bone_resource_uuid", bone_uuid);
+		json_object_set_string(json_object(bone_component), "bone_name", name.c_str());
+
+		json_array_append_value(json_array(components), bone_component);
+	}
+
+	if (parent == 0 && scene.HasAnimations()) //Just for the root game object
 	{
 		for (int i = 0; i < scene.mNumAnimations; ++i)
 		{			
@@ -260,7 +271,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 
 	for (int i = 0; i < node.mNumChildren; i++)
-		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, object_uuid);
+		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, in_bone_id, object_uuid);
 
 }
 
@@ -314,6 +325,28 @@ void ModuleImporter::ImportMaterialsFromNode(const aiScene & scene, std::vector<
 	}
 }
 
+void ModuleImporter::ImportBonesRecursive(const aiNode& node, const aiScene & scene, std::map<std::string, uint>& out_bones_id)
+{
+	for (int i = 0; i < node.mNumMeshes; i++) {
+		if (scene.mMeshes[node.mMeshes[i]]->HasBones())
+		{
+			for (int j = 0; j < scene.mMeshes[node.mMeshes[i]]->mNumBones; ++j)
+			{
+				uint bone_uuid_number = random32bits();
+				std::string name = scene.mMeshes[node.mMeshes[i]]->mBones[j]->mName.C_Str();;
+				out_bones_id.insert(std::pair<std::string, uint>(name, bone_uuid_number));
+
+				ImportBoneToKR(std::to_string(bone_uuid_number).c_str(), scene.mMeshes[node.mMeshes[i]]->mBones[j]);
+			}
+		}
+	}
+
+	for (int i = 0; i < node.mNumChildren; i++)
+	{
+		ImportBonesRecursive(*node.mChildren[i], scene, out_bones_id);
+	}
+}
+
 bool ModuleImporter::ImportScene(const char * file_original_name, std::string file_binary_name) {
 
 	const aiScene* imported_scene = aiImportFile(file_original_name, aiProcessPreset_TargetRealtime_MaxQuality);
@@ -327,8 +360,10 @@ bool ModuleImporter::ImportScene(const char * file_original_name, std::string fi
 		json_object_set_value(json_object(scene), "Game Objects", objects_array); // Add array to file
 
 		std::vector<material_resource_deff> out_mat_deff;
+		std::map<std::string, uint> out_bone_id;
 		ImportMaterialsFromNode(*imported_scene, out_mat_deff);
-		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array, out_mat_deff);
+		ImportBonesRecursive(*imported_scene->mRootNode, *imported_scene, out_bone_id);
+		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array, out_mat_deff, out_bone_id);
 
 		std::string path;
 		App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_3DOBJECTS, JSON_EXTENSION);
@@ -514,7 +549,6 @@ void ModuleImporter::ImportAnimationToKR(const char * file, aiAnimation* animati
 			size += sizeof(float)*animation->mChannels[i]->mNumRotationKeys * 4;
 		}
 
-
 		//Save file data
 		char* buffer = new char[size];
 		char* cursor = buffer;
@@ -606,6 +640,64 @@ void ModuleImporter::ImportAnimationToKR(const char * file, aiAnimation* animati
 		App->fs.ExportBuffer(buffer, size, file, LIBRARY_ANIMATIONS, OWN_ANIMATION_EXTENSION);
 		RELEASE_ARRAY(buffer);
 	}
+}
+
+void ModuleImporter::ImportBoneToKR(const char* file, aiBone* bone)
+{
+	uint ranges = bone->mNumWeights;
+
+	uint size = sizeof(ranges);
+
+	//Size of the offset decomposed
+	size += sizeof(float) * 3;
+	size += sizeof(float) * 4;
+	size += sizeof(float) * 3;
+
+	//Size of the weights
+	size += sizeof(uint) * bone->mNumWeights;
+	size += sizeof(float) * bone->mNumWeights;
+
+	char* buffer = new char[size];
+	char* cursor = buffer;
+
+	uint bytes = sizeof(ranges);
+	memcpy(cursor, &ranges, bytes);
+	cursor += bytes;
+
+	aiVector3D translation;
+	aiVector3D scaling;
+	aiQuaternion rotation;
+
+	bone->mOffsetMatrix.Decompose(scaling, rotation, translation);
+
+	float pos[3] = { translation.x, translation.y, translation.z };
+	bytes = sizeof(float) * 3;
+	memcpy(cursor, pos, bytes);
+	cursor += bytes;
+
+	float rot[4] = { rotation.x, rotation.y, rotation.z, rotation.w };
+	bytes = sizeof(float) * 4;
+	memcpy(cursor, rot, bytes);
+	cursor += bytes;
+
+	float scale[3] = { scaling.x, scaling.y, scaling.z };
+	bytes = sizeof(float) * 3;
+	memcpy(cursor, scale, bytes);
+	cursor += bytes;
+
+	for (int i = 0; i < bone->mNumWeights; i++)
+	{
+		bytes = sizeof(uint);
+		memcpy(cursor, &bone->mWeights[i].mVertexId, bytes);
+		cursor += bytes;
+
+		bytes = sizeof(float);
+		memcpy(cursor, &bone->mWeights[i].mWeight, bytes);
+		cursor += bytes;
+	}
+
+	App->fs.ExportBuffer(buffer, size, file, LIBRARY_BONES, OWN_BONE_EXTENSION);
+	RELEASE_ARRAY(buffer);
 }
 
 void ModuleImporter::ImportTextureToDDS(const char* texture_name) {

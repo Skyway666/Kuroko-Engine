@@ -1,6 +1,7 @@
 #include "ComponentAnimation.h"
 #include "Application.h"
 #include "ModuleResourcesManager.h"
+#include "ResourceAnimation.h"
 
 ComponentAnimation::ComponentAnimation(JSON_Object* deff, GameObject* parent): Component(parent, ANIMATION)
 {
@@ -9,7 +10,7 @@ ComponentAnimation::ComponentAnimation(JSON_Object* deff, GameObject* parent): C
 
 	const char* parent3dobject = json_object_get_string(deff, "Parent3dObject");
 	if (parent3dobject) // Means that is being loaded from a scene
-		animation_resource_uuid = App->resources->getMeshResourceUuid(parent3dobject, json_object_get_string(deff, "animation_name")); //SKELETAL_TODO: getAnimationResourceUuid()
+		animation_resource_uuid = App->resources->getAnimationResourceUuid(parent3dobject, json_object_get_string(deff, "animation_name"));
 	else // Means it is being loaded from a 3dObject binary
 		animation_resource_uuid = json_object_get_number(deff, "animation_resource_uuid");
 
@@ -34,16 +35,16 @@ void ComponentAnimation::Save(JSON_Object * config)
 
 	if (animation_resource_uuid != 0)
 	{
-		/*ResourceAnimation* res_anim = (ResourceAnimation*)App->resources->getResource(animation_resource_uuid);
+		ResourceAnimation* res_anim = (ResourceAnimation*)App->resources->getResource(animation_resource_uuid);
 		if (res_anim)
 		{
 			json_object_set_string(config, "animation_name", res_anim->asset.c_str());
 			json_object_set_string(config, "Parent3dObject", res_anim->Parent3dObject.c_str());
 		}
 		else
-		{*/
+		{
 		json_object_set_string(config, "animation_name", "missing reference");
 		json_object_set_string(config, "Parent3dObject", "missing reference");
-		//}
+		}
 	}
 }

@@ -15,6 +15,8 @@ public:
 
 	bool Update(float dt);
 
+	uint getAnimationResource() { return animation_resource_uuid; }
+
 	void Save(JSON_Object* config);
 
 	bool Finished() const { return false; }

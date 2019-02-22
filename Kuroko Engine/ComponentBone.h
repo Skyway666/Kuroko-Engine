@@ -16,6 +16,8 @@ public:
 
 	void Save(JSON_Object* config);
 
+	bool Update(float dt);
+
 private:
 
 	uint bone_resource_uuid = 0;

@@ -206,8 +206,11 @@ Component* GameObject::addComponent(Component_type type)
 		components.push_back(new_component);
 		break;
 	case ANIMATION:
-		new_component = new ComponentAnimation(this);
-		components.push_back(new_component);
+		if (!getComponent(ANIMATION))
+		{
+			new_component = new ComponentAnimation(this);
+			components.push_back(new_component);
+		}
 		break;
 	default:
 		break;
