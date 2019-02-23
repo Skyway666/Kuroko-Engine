@@ -42,6 +42,8 @@ public:
 	void CompileShader(Shader* shader);
 	void CompileProgram(ShaderProgram* program);
 
+	ShaderProgram* GetDefaultShaderProgram()const;
+
 
 private:
 

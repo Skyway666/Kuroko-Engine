@@ -181,4 +181,9 @@ void ModuleShaders::CompileProgram(ShaderProgram* program)
 
 }
 
+ShaderProgram * ModuleShaders::GetDefaultShaderProgram() const
+{
+	return defShaderProgram;
+}
+
 

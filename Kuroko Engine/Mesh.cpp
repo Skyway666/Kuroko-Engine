@@ -8,6 +8,9 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ModuleResourcesManager.h"
 #include "ResourceTexture.h"
+#include "ModuleShaders.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 #include "Assimp\include\scene.h"
 
@@ -260,9 +263,78 @@ void Mesh::FillMeshGPU()
 	}
 }
 
-void Mesh::MaxDrawFunctionTest() const
+void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_as_selected) const
 {
-	
+	//Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
+	Texture* diffuse_tex = nullptr;
+	if (mat) {
+		uint diffuse_resource_id = mat->getTextureResource(DIFFUSE);
+		if (diffuse_resource_id != 0) {
+			ResourceTexture* diffuse_resource = (ResourceTexture*)App->resources->getResource(diffuse_resource_id);
+			if (diffuse_resource)
+				diffuse_tex = diffuse_resource->texture;
+		}
+	}
+
+	if (diffuse_tex)								glEnable(GL_TEXTURE_2D);
+	else if (!draw_as_selected && imported_colors)	glEnableClientState(GL_COLOR_ARRAY);
+
+	if (draw_as_selected)
+	{
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glLineWidth(2.5f);
+	}
+	else
+		glColor3f(tint_color.r, tint_color.b, tint_color.g);
+
+
+	if (mat)
+	{
+		if (diffuse_tex)
+		{
+			glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
+		}
+		//--------
+		else
+			glColor3f(colors->x, colors->y, colors->z);
+		
+		if (App->shaders->GetDefaultShaderProgram())
+		{
+			
+			glUseProgram(App->shaders->GetDefaultShaderProgram()->programID);
+
+			GLint model_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "model_matrix");
+			glUniformMatrix4fv(model_loc, 1, GL_FALSE, global_transform);
+			GLint proj_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "projection");
+			glUniformMatrix4fv(proj_loc, 1, GL_FALSE, App->camera->current_camera->GetProjectionMatrix());
+			GLint view_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "view");
+			glUniformMatrix4fv(view_loc, 1, GL_FALSE, App->camera->current_camera->GetViewMatrix());
+		}
+	}
+	else
+	{
+		glUseProgram(App->shaders->GetDefaultShaderProgram()->programID);
+
+		GLint model_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "model_matrix");
+		glUniformMatrix4fv(model_loc, 1, GL_FALSE, global_transform);
+		GLint proj_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "projection");
+		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, App->camera->current_camera->GetProjectionMatrix());
+		GLint view_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "view");
+		glUniformMatrix4fv(view_loc, 1, GL_FALSE, App->camera->current_camera->GetViewMatrix());
+	}
+
+
+
+
+	glBindVertexArray(vaoId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glDrawElements(GL_TRIANGLES, num_tris, GL_UNSIGNED_INT, NULL);
+	//Disable All The Data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 
 }
 

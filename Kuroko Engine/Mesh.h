@@ -56,7 +56,7 @@ public:
 
 	void Draw(Material* mat, bool draw_as_selected = false) const;
 	void FillMeshGPU();
-	void MaxDrawFunctionTest() const;
+	void MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_as_selected = false) const;
 	void DrawNormals() const;
 
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
