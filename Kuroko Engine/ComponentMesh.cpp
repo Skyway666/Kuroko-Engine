@@ -87,7 +87,6 @@ void ComponentMesh::Draw() const
 				glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
 			}
 
-
 			if (draw_normals || App->scene->global_normals)
 				mesh_from_resource->DrawNormals();
 

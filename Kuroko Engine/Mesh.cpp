@@ -8,6 +8,9 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "ModuleResourcesManager.h"
 #include "ResourceTexture.h"
+#include "ModuleShaders.h"
+#include "ModuleCamera3D.h"
+#include "Camera.h"
 
 #include "Assimp\include\scene.h"
 
@@ -90,6 +93,8 @@ Mesh::~Mesh()
 		glDeleteBuffers(1, &iboId);
 	if (vboId != 0)
 		glDeleteBuffers(1, &vboId);
+	if (vaoId != 0)
+		glDeleteBuffers(1, &vaoId);
 
 	if (vertices)	delete vertices;
 	if (tris)		delete tris;
@@ -133,6 +138,34 @@ void Mesh::LoadDataToVRAMShaders()
 	
 	
 	*/
+
+	//glBindTexture(GL_TEXTURE_2D, id_texture);
+	glGenVertexArrays(1, &vaoId);
+	glGenBuffers(1, &vboId);
+	glGenBuffers(1, &iboId);
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(vaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex::position) + sizeof(Vertex::tex_coords) + sizeof(Vertex::color) + sizeof(Vertex::normal))*num_vertices, &MeshGPU[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) *num_tris, tris, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (GLvoid*)(7 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (GLvoid*)(9 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -201,9 +234,107 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 
 }
 
-void Mesh::MaxDrawFunctionTest() const
+void Mesh::FillMeshGPU()
 {
-	
+	int counter = 0;
+	int tex_counter = 0;
+	MeshGPU = new Vertex[num_vertices];
+	float4 color = { *colors, 1.0f };
+	for (int i = 0; i < num_vertices; ++i)
+	{
+		MeshGPU[counter].Assign({ vertices[i].x,vertices[i].y,vertices[i].z }, color);
+
+		if (imported_tex_coords)
+		{
+			MeshGPU[counter].tex_coords = { tex_coords[tex_counter].x, tex_coords[tex_counter + 1].y };
+		}
+		else
+			MeshGPU[counter].tex_coords = { 0,0 };
+
+		if (imported_normals)
+		{
+			MeshGPU[counter].normal = { normals[i].x, normals[i].y, normals[i].z };
+		}
+		else
+			MeshGPU[counter].normal = { 0,0,0 };
+
+		counter++;
+		tex_counter += 1;
+	}
+}
+
+void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_as_selected) const
+{
+	//Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
+	Texture* diffuse_tex = nullptr;
+	if (mat) {
+		uint diffuse_resource_id = mat->getTextureResource(DIFFUSE);
+		if (diffuse_resource_id != 0) {
+			ResourceTexture* diffuse_resource = (ResourceTexture*)App->resources->getResource(diffuse_resource_id);
+			if (diffuse_resource)
+				diffuse_tex = diffuse_resource->texture;
+		}
+	}
+
+	if (diffuse_tex)								glEnable(GL_TEXTURE_2D);
+	else if (!draw_as_selected && imported_colors)	glEnableClientState(GL_COLOR_ARRAY);
+
+	if (draw_as_selected)
+	{
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glLineWidth(2.5f);
+	}
+	else
+		glColor3f(tint_color.r, tint_color.b, tint_color.g);
+
+
+	if (mat)
+	{
+		if (diffuse_tex)
+		{
+			glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
+		}
+		//--------
+		else
+			glColor3f(colors->x, colors->y, colors->z);
+		
+		if (App->shaders->GetDefaultShaderProgram())
+		{
+			
+			glUseProgram(App->shaders->GetDefaultShaderProgram()->programID);
+
+			GLint model_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "model_matrix");
+			glUniformMatrix4fv(model_loc, 1, GL_FALSE, global_transform);
+			GLint proj_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "projection");
+			glUniformMatrix4fv(proj_loc, 1, GL_FALSE, App->camera->current_camera->GetProjectionMatrix());
+			GLint view_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "view");
+			glUniformMatrix4fv(view_loc, 1, GL_FALSE, App->camera->current_camera->GetViewMatrix());
+		}
+	}
+	else
+	{
+		glUseProgram(App->shaders->GetDefaultShaderProgram()->programID);
+
+		GLint model_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "model_matrix");
+		glUniformMatrix4fv(model_loc, 1, GL_FALSE, global_transform);
+		GLint proj_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "projection");
+		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, App->camera->current_camera->GetProjectionMatrix());
+		GLint view_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "view");
+		glUniformMatrix4fv(view_loc, 1, GL_FALSE, App->camera->current_camera->GetViewMatrix());
+	}
+
+
+
+
+	glBindVertexArray(vaoId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glDrawElements(GL_TRIANGLES, num_tris, GL_UNSIGNED_INT, NULL);
+	//Disable All The Data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 
 }
 
