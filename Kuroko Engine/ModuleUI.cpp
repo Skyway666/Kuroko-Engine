@@ -161,6 +161,8 @@ update_status ModuleUI::Update(float dt) {
 			DrawHardwareLeaf();
 		if (ImGui::CollapsingHeader("Application"))
 			DrawApplicationLeaf();
+		if (ImGui::CollapsingHeader("Editor preferences"))
+			DrawEditorPreferencesLeaf();
 
 		if (ImGui::Button("Reset Camera"))
 			App->camera->editor_camera->Reset();
@@ -2241,6 +2243,18 @@ void ModuleUI::DrawApplicationLeaf() const
 	ImGui::PlotHistogram("##milliseconds", &App->ms_log[0], App->ms_log.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
 	
 	ImGui::PopFont();
+}
+
+void ModuleUI::DrawEditorPreferencesLeaf() const {
+
+	static float camera_speed = 2.5f;
+	if (ImGui::InputFloat("Camera speed", &camera_speed))
+		App->camera->camera_speed = camera_speed;
+
+
+	static float camera_rotation_speed = 0.25f;
+	if (ImGui::InputFloat("Camera rotation speed", &camera_rotation_speed))
+		App->camera->camera_rotation_speed = camera_rotation_speed;
 }
 
 void ModuleUI::DrawTimeControlWindow()

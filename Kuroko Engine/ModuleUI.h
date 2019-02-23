@@ -42,17 +42,18 @@ public:
 	bool CleanUp();
 	void InitializeScriptEditor();
 
-	void DrawGraphicsLeaf() const;
 	void DrawHierarchyTab();
 	bool DrawHierarchyNode(GameObject& game_object, int& id);
 	void DrawObjectInspectorTab();
 	bool DrawComponent(Component& component, int id);
 	//void DrawAudioTab();
 	void DrawPrimitivesTab();
+	void DrawGraphicsLeaf() const;
 	void DrawAboutLeaf();
 	void DrawWindowConfigLeaf() const;
 	void DrawHardwareLeaf() const;
 	void DrawApplicationLeaf() const;
+	void DrawEditorPreferencesLeaf() const;
 	void DrawTimeControlWindow();
 	void DrawCameraViewWindow(Camera& camera);
 	void DrawGizmoMenuTab();
