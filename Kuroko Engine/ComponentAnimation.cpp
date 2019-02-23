@@ -1,7 +1,11 @@
 #include "ComponentAnimation.h"
 #include "Application.h"
+#include "Applog.h"
 #include "ModuleResourcesManager.h"
 #include "ResourceAnimation.h"
+#include "GameObject.h"
+#include "ComponentTransform.h"
+#include "ModuleTimeManager.h"
 
 ComponentAnimation::ComponentAnimation(JSON_Object* deff, GameObject* parent): Component(parent, ANIMATION)
 {
@@ -23,7 +27,66 @@ ComponentAnimation::~ComponentAnimation()
 
 bool ComponentAnimation::Update(float dt)
 {
+	if (App->time->getGameState() != GameState::PLAYING)
+		return true;
+
+	ResourceAnimation* anim = (ResourceAnimation*)App->resources->getResource(animation_resource_uuid);
+	if (anim != nullptr)
+	{
+		if (bones.size() == 0) //If empty try to fill it
+		{
+			setAnimationResource(animation_resource_uuid);
+			app_log->AddLog("Trying to fill component animation with bones");
+		}
+
+		//if (!TestPause)
+		animTime += dt * speed;
+
+		if (animTime > anim->getDuration() && loop)
+		{
+			animTime -= anim->getDuration();
+		}
+
+		for (int i = 0; i < anim->numBones; ++i)
+		{
+			if (bones.find(i) == bones.end())
+				continue;
+
+			GameObject* GO = App->scene->getGameObject(bones[i]);
+			if (GO != nullptr)
+			{
+				ComponentTransform* transform = (ComponentTransform*)GO->getComponent(TRANSFORM);
+				if (anim->boneTransformations[i].calcCurrentIndex(animTime*anim->ticksXsecond, false))
+				{
+					anim->boneTransformations[i].calcTransfrom(animTime*anim->ticksXsecond, true);
+					float4x4 local = anim->boneTransformations[i].lastTransform;
+					float3 pos, scale;
+					Quat rot;
+					local.Decompose(pos, rot, scale);
+					transform->local->Set(pos, rot, scale);
+				}
+			}
+		}
+	}
+
 	return true;
+}
+
+void ComponentAnimation::setAnimationResource(uint uuid)
+{
+	animation_resource_uuid = uuid;
+	ResourceAnimation* anim = (ResourceAnimation*)App->resources->getResource(uuid);
+	if (anim != nullptr)
+	{
+		for (int i = 0; i < anim->numBones; ++i)
+		{
+			GameObject* GO = parent->getChild(anim->boneTransformations[i].NodeName.c_str());
+			if (GO != nullptr)
+			{
+				bones[i] = GO->getUUID();
+			}
+		}
+	}
 }
 
 void ComponentAnimation::Save(JSON_Object * config)

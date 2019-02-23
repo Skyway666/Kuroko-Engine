@@ -47,5 +47,5 @@ bool ComponentBone::Update(float dt)
 	float3 pos = ((ComponentTransform*)parent->getComponent(TRANSFORM))->global->getPosition();
 	App->renderer3D->DirectDrawCube(size, pos);
 
-	return false;
+	return true;
 }

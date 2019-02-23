@@ -144,13 +144,24 @@ bool GameObject::getComponents(Component_type type, std::list<Component*>& list_
 
 GameObject* GameObject::getChild(const char* name) const
 {
-	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); it++)
+	GameObject* child = nullptr;
+
+	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it)
 	{
 		if ((*it)->getName() == name)
-			return *it;
+		{
+			child = (*it);
+			break;
+		}
+		else
+		{
+			child = (*it)->getChild(name);
+			if (child != nullptr)
+				break;
+		}
 	}
 
-	return nullptr;
+	return child;
 }
 
 void GameObject::getAllDescendants(std::list<GameObject*>& list_to_fill) const
