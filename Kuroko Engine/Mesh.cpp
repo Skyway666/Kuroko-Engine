@@ -90,6 +90,8 @@ Mesh::~Mesh()
 		glDeleteBuffers(1, &iboId);
 	if (vboId != 0)
 		glDeleteBuffers(1, &vboId);
+	if (vaoId != 0)
+		glDeleteBuffers(1, &vaoId);
 
 	if (vertices)	delete vertices;
 	if (tris)		delete tris;
@@ -133,6 +135,34 @@ void Mesh::LoadDataToVRAMShaders()
 	
 	
 	*/
+
+	//glBindTexture(GL_TEXTURE_2D, id_texture);
+	glGenVertexArrays(1, &vaoId);
+	glGenBuffers(1, &vboId);
+	glGenBuffers(1, &iboId);
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(vaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex::position) + sizeof(Vertex::tex_coords) + sizeof(Vertex::color) + sizeof(Vertex::normal))*num_vertices, &MeshGPU[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) *num_tris, tris, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (GLvoid*)(7 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (GLvoid*)(9 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -199,6 +229,35 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 
 	if (diffuse_tex)		glDisable(GL_TEXTURE_2D);
 
+}
+
+void Mesh::FillMeshGPU()
+{
+	int counter = 0;
+	int tex_counter = 0;
+	MeshGPU = new Vertex[num_vertices];
+	float4 color = { *colors, 1.0f };
+	for (int i = 0; i < num_vertices; ++i)
+	{
+		MeshGPU[counter].Assign({ vertices[i].x,vertices[i].y,vertices[i].z }, color);
+
+		if (imported_tex_coords)
+		{
+			MeshGPU[counter].tex_coords = { tex_coords[tex_counter].x, tex_coords[tex_counter + 1].y };
+		}
+		else
+			MeshGPU[counter].tex_coords = { 0,0 };
+
+		if (imported_normals)
+		{
+			MeshGPU[counter].normal = { normals[i].x, normals[i].y, normals[i].z };
+		}
+		else
+			MeshGPU[counter].normal = { 0,0,0 };
+
+		counter++;
+		tex_counter += 1;
+	}
 }
 
 void Mesh::MaxDrawFunctionTest() const
