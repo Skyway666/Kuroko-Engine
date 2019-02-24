@@ -78,6 +78,9 @@ bool ModuleUI::Init(const JSON_Object* config) {
 
 	InitializeScriptEditor();
 
+	// If it is a game build, we hide UI
+	enabled = !App->is_game;
+
 
 	return true;
 }
@@ -136,6 +139,8 @@ update_status ModuleUI::PreUpdate(float dt) {
 
 	ImGui_ImplSDL2_NewFrame(App->window->main_window->window);
 	ImGui::NewFrame();
+
+	
 
 	//ImGui::ShowDemoWindow();
 	return UPDATE_CONTINUE;
