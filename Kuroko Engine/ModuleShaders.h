@@ -43,7 +43,7 @@ public:
 	void CompileProgram(ShaderProgram* program);
 
 	ShaderProgram* GetDefaultShaderProgram()const;
-
+	ShaderProgram* GetAnimationShaderProgram()const;
 
 private:
 
@@ -52,8 +52,10 @@ private:
 
 	Shader* defVertexShader=nullptr;
 	Shader* defFragmentShader=nullptr;
+	Shader* animationShader = nullptr;
 	
 	ShaderProgram* defShaderProgram=nullptr;
+	ShaderProgram* animationShaderProgram = nullptr;
 	
 };
 

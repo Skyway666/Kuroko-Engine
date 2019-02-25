@@ -95,7 +95,9 @@ void ComponentMesh::Draw() const
 
 			mesh_from_resource->Draw(mat);
 			//Descoment to use shader render
-			//mesh_from_resource->MaxDrawFunctionTest(mat, *transform->global->getMatrix().Transposed().v);
+			/*ComponentAnimation* animation = nullptr;
+			animation = (ComponentAnimation*)getParent()->getComponent(ANIMATION);
+			mesh_from_resource->MaxDrawFunctionTest(mat, animation,*transform->global->getMatrix().Transposed().v);*/
 
 
 			if (transform)
@@ -133,6 +135,8 @@ void ComponentMesh::DrawSelected() const
 
 			mesh_from_resource->Draw(nullptr, true);
 			//Descoment to use shader render
+			/*ComponentAnimation* animation = nullptr;
+			animation = (ComponentAnimation*)getParent()->getComponent(ANIMATION);*/
 			//mesh_from_resource->MaxDrawFunctionTest(nullptr, *transform->global->getMatrix().Transposed().v, true);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

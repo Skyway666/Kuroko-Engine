@@ -34,14 +34,18 @@ bool ModuleShaders::Init(const JSON_Object * config)
 
 	defVertexShader = new Shader(VERTEX);
 	defFragmentShader = new Shader(FRAGMENT);
-
 	defShaderProgram = new ShaderProgram();
+
+	animationShader = new Shader(VERTEX);
+	animationShaderProgram = new ShaderProgram();
+
 
 	return ret;
 }
 
 bool ModuleShaders::InitializeDefaulShaders()
 {
+	//Default shaders
 	bool findFile = App->fs.ExistisFile(defaultVertexFile.c_str(), LIBRARY_MATERIALS, ".vex");
 	if (findFile)
 	{
@@ -69,6 +73,10 @@ bool ModuleShaders::InitializeDefaulShaders()
 	defShaderProgram->shaders.push_back(defFragmentShader->shaderId);
 
 	CompileProgram(defShaderProgram);
+
+	//Animation Shaders
+	CompileShader(animationShader);
+	animationShaderProgram->shaders.push_back(animationShader->shaderId);
 
 	return true;
 }
@@ -99,6 +107,40 @@ void ModuleShaders::CreateDefVertexShader()
 		"ourColor = color;\n"
 		"TexCoord = texCoord;\n"
 		"ret_normal = normal;\n"
+	"}\n";
+
+	animationShader->script =
+	"#version 330\n"
+
+	"layout(location = 0) in vec3 Position;\n"
+	"layout(location = 1) in vec2 TexCoord;\n"
+	"layout(location = 2) in vec3 Normal;\n"
+	"layout(location = 3) in ivec4 BoneIDs;\n"
+	"layout(location = 4) in vec4 Weights;\n"
+
+	"out vec2 TexCoord0;\n"
+	"out vec3 Normal0;\n"
+	"out vec3 WorldPos0;\n"
+
+	"const int MAX_BONES = 100;\n"
+
+	"uniform mat4 view;\n"
+	"uniform mat4 projection;\n"
+	"uniform mat4 gBones[MAX_BONES];\n"
+
+	"void main()\n"
+	"{\n"
+	"	mat4 BoneTransform = gBones[BoneIDs[0]] * Weights[0];\n"
+	"	BoneTransform += gBones[BoneIDs[1]] * Weights[1];\n"
+	"	BoneTransform += gBones[BoneIDs[2]] * Weights[2];\n"
+	"	BoneTransform += gBones[BoneIDs[3]] * Weights[3];\n"
+
+	"	vec4 PosL = BoneTransform * vec4(Position, 1.0);\n"
+	"	gl_Position = projection * PosL;\n"
+	"	TexCoord0 = TexCoord;\n"
+	"	vec4 NormalL = BoneTransform * vec4(Normal, 0.0);\n"
+	"	Normal0 = (view * NormalL).xyz;\n"
+	"	WorldPos0 = (view * PosL).xyz;\n"
 	"}\n";
 }
 
@@ -206,6 +248,11 @@ void ModuleShaders::CompileProgram(ShaderProgram* program)
 ShaderProgram * ModuleShaders::GetDefaultShaderProgram() const
 {
 	return defShaderProgram;
+}
+
+ShaderProgram * ModuleShaders::GetAnimationShaderProgram() const
+{
+	return animationShaderProgram;
 }
 
 

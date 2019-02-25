@@ -11,6 +11,7 @@
 #include "ModuleShaders.h"
 #include "ModuleCamera3D.h"
 #include "Camera.h"
+#include "ComponentAnimation.h"
 
 #include "Assimp\include\scene.h"
 
@@ -255,7 +256,7 @@ void Mesh::FillMeshGPU()
 	}
 }
 
-void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_as_selected) const
+void Mesh::MaxDrawFunctionTest(Material* mat,ComponentAnimation* animation,float* global_transform, bool draw_as_selected) const
 {
 	float3 lightPosition = { 0.0f,0.0f,0.0f };
 	float3 lightColors = { 1.0f,1.0f,1.0f };
@@ -291,10 +292,8 @@ void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_
 			glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 		}
 		
-		if (App->shaders->GetDefaultShaderProgram())
+		if (animation == nullptr)
 		{
-			
-
 			glUseProgram(App->shaders->GetDefaultShaderProgram()->programID);
 
 			GLint model_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "model_matrix");
@@ -318,6 +317,15 @@ void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_
 				GLint texture = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "test");
 				glUniform1i(texture, 0);
 			}
+		}
+		else
+		{
+			glUseProgram(App->shaders->GetAnimationShaderProgram()->programID);
+
+			/*
+			TODO
+			Introduce uniform variables
+			*/
 		}
 	}
 	else
