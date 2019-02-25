@@ -22,6 +22,9 @@ speed=(v){__speed = v}
 direction {__direction}
 direction=(v){__direction = v}
 
+old_direction {__old_direction}
+old_direction=(v){__old_direction = v}
+
 //Dash
 dash_speed {__dash_speed}
 dash_speed=(v){__dash_speed = v}
@@ -35,7 +38,8 @@ dashing=(v){__dashing = v}
 
 
  Start() {
-direction = Vec3.new(0,0,0)
+direction = Vec3.zero()
+old_direction = Vec3.zero()
 }
 
  Update() {
@@ -62,27 +66,35 @@ if(InputComunicator.getButton(1, InputComunicator.L_AXIS_RIGHT, InputComunicator
 
 if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
 			direction.z = 1
+            move = true
 		}
 		
 		if(InputComunicator.getKey(InputComunicator.DOWN, InputComunicator.KEY_REPEAT)){
 			direction.z = -1
+            move = true
 		}
 
 		if(InputComunicator.getKey(InputComunicator.LEFT, InputComunicator.KEY_REPEAT)){
 			direction.x = 1
+            move = true
 		}
 		
 		if(InputComunicator.getKey(InputComunicator.RIGHT, InputComunicator.KEY_REPEAT)){
 			direction.x = -1
+            move = true
 		}
 
-var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
-modPos(movement.x,movement.y,movement.z)
 
-var pos = getPos("global")
-var look = Vec3.new(direction.x+pos.x,0,direction.z+pos.z)
+if(move){
+  var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
+  modPos(movement.x,movement.y,movement.z)
 
-lookAt(look.x,0,look.z)
-direction = Vec3.zero()
+  var pos = getPos("global")
+  var look = Vec3.new(direction.x+pos.x,0,direction.z+pos.z)
+
+  lookAt(look.x,0,look.z)
+   direction = Vec3.zero()
+}
+
 }
 }
