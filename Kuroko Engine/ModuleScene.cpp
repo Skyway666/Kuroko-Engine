@@ -154,6 +154,10 @@ update_status ModuleScene::Update(float dt)
 		GameObject* audiosource = new GameObject("Audio Source");
 		ComponentAudioSource* component = (ComponentAudioSource*)audiosource->addComponent(AUDIOSOURCE);
 		component->SetSoundID(AK::EVENTS::PUNCH);
+		component->SetSoundName("Punch");
+		component = (ComponentAudioSource*)audiosource->addComponent(AUDIOSOURCE);
+		component->SetSoundID(AK::EVENTS::FOOTSTEPS);
+		component->SetSoundName("Footsteps");
 	}
 
 	return UPDATE_CONTINUE;

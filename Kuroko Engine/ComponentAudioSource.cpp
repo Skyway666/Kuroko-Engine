@@ -79,3 +79,8 @@ void ComponentAudioSource::SetSoundID(AkUniqueID ID)
 {
 	sound_ID = ID;
 }
+
+void ComponentAudioSource::SetSoundName(const char* newName)
+{
+	name = newName;
+}

@@ -1190,6 +1190,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			AkUniqueID ID = ((ComponentAudioSource*)&component)->sound_ID;
 			if (ID != 0)
 			{
+				ImGui::TextColored({ 0, 1, 0, 1 }, ((ComponentAudioSource*)&component)->name.c_str());
+				ImGui::PushID(ID);
 				if (ImGui::Button("Play"))
 				{
 					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
@@ -1198,13 +1200,17 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				{
 					((ComponentAudioSource*)&component)->sound_go->PauseEvent(ID);
 				}
+				ImGui::PopID();
 			}
 			else
 			{
 				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
 			}
+
+			ImGui::PushID(ID);
 			if (ImGui::Button("Remove##Remove audioSource"))
 				return false;
+			ImGui::PopID();
 		}
 		break;
 	default:

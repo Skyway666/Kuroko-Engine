@@ -21,10 +21,12 @@ public:
 	void Save(JSON_Object* config) override;
 
 	void SetSoundID(AkUniqueID ID);
+	void SetSoundName(const char* newName);
 
 public:
 	Wwise::WwiseGameObject* sound_go = nullptr;
 	AkUniqueID sound_ID = 0;
+	std::string name = "Sound";
 };
 
 #endif

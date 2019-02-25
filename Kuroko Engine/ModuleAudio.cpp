@@ -38,7 +38,7 @@ bool ModuleAudio::Init(const JSON_Object* config)
 	
 	bool ret = Wwise::InitWwise();
 	
-	LoadSoundBank("Combat");
+	LoadSoundBank("Character");
 	
 	return ret;
 }
