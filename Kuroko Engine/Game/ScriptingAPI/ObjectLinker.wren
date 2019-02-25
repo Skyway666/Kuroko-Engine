@@ -59,6 +59,10 @@ class Vec3{
 	z=(v) {_z = v}
 
 	magnitude {Math.C_sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))}
+	
+	static add(vec1, vec2){
+		return ret = Vec3.new(vec1.x + vec2.x,vec1.y + vec2.y,vec1.z + vec2.z)
+	}
 
 }
 
