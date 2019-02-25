@@ -75,6 +75,9 @@ bool ModuleScripting::Init(const JSON_Object* config)
 	wconfig.loadModuleFn = loadModule;
 	wconfig.writeFn = write;
 	wconfig.errorFn = error;
+
+	tags.push_back("undefined");
+
 	//wconfig.reallocateFn = reallocate;
 
 	if (vm = wrenNewVM(&wconfig))
