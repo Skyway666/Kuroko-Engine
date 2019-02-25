@@ -67,6 +67,8 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 	calculateCentroidandHalfsize();
 	this->centroid = centroid;
 	LoadDataToVRAM();
+	//Descoment to use shader render
+	//LoadDataToVRAMShaders();
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
@@ -83,7 +85,8 @@ Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
 
 	calculateCentroidandHalfsize();
 	LoadDataToVRAM();
-
+	//Descoment to use shader render
+	//LoadDataToVRAMShaders();
 }
 
 
@@ -94,13 +97,15 @@ Mesh::~Mesh()
 	if (vboId != 0)
 		glDeleteBuffers(1, &vboId);
 	if (vaoId != 0)
-		glDeleteBuffers(1, &vaoId);
+		glDeleteVertexArrays(1, &vaoId);
 
 	if (vertices)	delete vertices;
 	if (tris)		delete tris;
 	if (normals)	delete normals;
 	if (colors)		delete colors;
 	if (tex_coords) delete tex_coords;
+	
+	RELEASE(MeshGPU);
 }
 
 void Mesh::LoadDataToVRAM()
@@ -129,15 +134,7 @@ void Mesh::LoadDataToVRAM()
 
 void Mesh::LoadDataToVRAMShaders()
 {
-	/*
-		TODO Here:
-		-----------
-		+ Create an unique array with all the info of the mesh (vertexCoord, ColorCords, textCord, normals)
-		+ Send the info to the VRAM
-		+ 
-	
-	
-	*/
+	FillMeshGPU();
 
 	//glBindTexture(GL_TEXTURE_2D, id_texture);
 	glGenVertexArrays(1, &vaoId);
@@ -146,10 +143,10 @@ void Mesh::LoadDataToVRAMShaders()
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(vaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
-	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex::position) + sizeof(Vertex::tex_coords) + sizeof(Vertex::color) + sizeof(Vertex::normal))*num_vertices, &MeshGPU[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex::position) + sizeof(Vertex::tex_coords) + sizeof(Vertex::color) + sizeof(Vertex::normal))*num_vertices, MeshGPU, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) *num_tris, tris, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) *num_tris*3, tris, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -164,8 +161,8 @@ void Mesh::LoadDataToVRAMShaders()
 	glEnableVertexAttribArray(3);
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -236,35 +233,33 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 
 void Mesh::FillMeshGPU()
 {
-	int counter = 0;
-	int tex_counter = 0;
 	MeshGPU = new Vertex[num_vertices];
 	float4 color = { *colors, 1.0f };
-	for (int i = 0; i < num_vertices; ++i)
+	for (int i = 0; i < num_vertices; i++)
 	{
-		MeshGPU[counter].Assign({ vertices[i].x,vertices[i].y,vertices[i].z }, color);
+		MeshGPU[i].Assign(vertices[i], color);
 
 		if (imported_tex_coords)
 		{
-			MeshGPU[counter].tex_coords = { tex_coords[tex_counter].x, tex_coords[tex_counter + 1].y };
+			MeshGPU[i].tex_coords = tex_coords[i];
 		}
 		else
-			MeshGPU[counter].tex_coords = { 0,0 };
+			MeshGPU[i].tex_coords = { 0,0 };
 
 		if (imported_normals)
 		{
-			MeshGPU[counter].normal = { normals[i].x, normals[i].y, normals[i].z };
+			MeshGPU[i].normal = normals[i];
 		}
 		else
-			MeshGPU[counter].normal = { 0,0,0 };
-
-		counter++;
-		tex_counter += 1;
+			MeshGPU[i].normal = { 0,0,0 };
 	}
 }
 
 void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_as_selected) const
 {
+	float3 lightPosition = { 0.0f,0.0f,0.0f };
+	float3 lightColors = { 1.0f,1.0f,1.0f };
+
 	//Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
 	Texture* diffuse_tex = nullptr;
 	if (mat) {
@@ -276,8 +271,10 @@ void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_
 		}
 	}
 
-	if (diffuse_tex)								glEnable(GL_TEXTURE_2D);
-	else if (!draw_as_selected && imported_colors)	glEnableClientState(GL_COLOR_ARRAY);
+	if (diffuse_tex)
+		glEnable(GL_TEXTURE_2D);
+	else if (!draw_as_selected /*&& imported_colors*/)	
+		glEnableClientState(GL_COLOR_ARRAY);
 
 	if (draw_as_selected)
 	{
@@ -287,20 +284,17 @@ void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_
 	else
 		glColor3f(tint_color.r, tint_color.b, tint_color.g);
 
-
 	if (mat)
 	{
 		if (diffuse_tex)
 		{
 			glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
 		}
-		//--------
-		else
-			glColor3f(colors->x, colors->y, colors->z);
 		
 		if (App->shaders->GetDefaultShaderProgram())
 		{
 			
+
 			glUseProgram(App->shaders->GetDefaultShaderProgram()->programID);
 
 			GLint model_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "model_matrix");
@@ -309,6 +303,21 @@ void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_
 			glUniformMatrix4fv(proj_loc, 1, GL_FALSE, App->camera->current_camera->GetProjectionMatrix());
 			GLint view_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "view");
 			glUniformMatrix4fv(view_loc, 1, GL_FALSE, App->camera->current_camera->GetViewMatrix());
+			GLint lightPos = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "lightPos");
+			glUniform3f(lightPos,lightPosition.x, lightPosition.y, lightPosition.z);
+			GLint lightColor = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "lightColor");
+			glUniform3f(lightColor, lightColors.x, lightColors.y, lightColors.z);
+
+			if (diffuse_tex)
+			{
+				GLint texture = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "test");
+				glUniform1i(texture,1);
+			}
+			else
+			{
+				GLint texture = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "test");
+				glUniform1i(texture, 0);
+			}
 		}
 	}
 	else
@@ -321,20 +330,34 @@ void Mesh::MaxDrawFunctionTest(Material* mat,float* global_transform, bool draw_
 		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, App->camera->current_camera->GetProjectionMatrix());
 		GLint view_loc = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "view");
 		glUniformMatrix4fv(view_loc, 1, GL_FALSE, App->camera->current_camera->GetViewMatrix());
+		GLint lightPos = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "lightPos");
+		glUniform3f(lightPos, lightPosition.x, lightPosition.y, lightPosition.z);
+		GLint lightColor = glGetUniformLocation(App->shaders->GetDefaultShaderProgram()->programID, "lightColor");
+		glUniform3f(lightColor, lightColors.x, lightColors.y, lightColors.z);
+
 	}
-
-
-
 
 	glBindVertexArray(vaoId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glDrawElements(GL_TRIANGLES, num_tris, GL_UNSIGNED_INT, NULL);
+
+	glDrawElements(GL_TRIANGLES, num_tris*3, GL_UNSIGNED_INT, 0);
 	//Disable All The Data
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
+	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, 0);
+	else					glDisableClientState(GL_COLOR_ARRAY);
+
+	if (draw_as_selected)
+		glLineWidth(1.0f);
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	// unbind VBOs
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	if (diffuse_tex)		glDisable(GL_TEXTURE_2D);
 
 }
 
@@ -706,12 +729,15 @@ void Mesh::ClearData()
 {
 	glDeleteBuffers(1, &iboId);
 	glDeleteBuffers(1, &vboId);
+	glDeleteVertexArrays(1, &vaoId);
 
 	if (vertices)	delete vertices;
 	if (tris)		delete tris;
 	if (normals)	delete normals;
 	if (colors)		delete colors;
 	if (tex_coords) delete tex_coords;
+
+	RELEASE(MeshGPU);
 	
 	imported_normals = imported_colors = imported_tex_coords = false;
 	num_vertices = num_tris = iboId = vboId = 0;

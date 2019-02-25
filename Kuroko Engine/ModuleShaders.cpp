@@ -85,16 +85,17 @@ void ModuleShaders::CreateDefVertexShader()
 
 	"out vec4 ourColor;\n"
 	"out vec2 TexCoord;\n"
-	"out vec3 end_pos;\n"
 	"out vec3 ret_normal;\n"
+	"out vec3 FragPos;\n"
 
-	"uniform mat4 projection;\n"
+	"uniform mat4 model_matrix;\n"
 	"uniform mat4 view;\n"
-	"uniform mat4 model;\n"
+	"uniform mat4 projection;\n"
 
 	"void main()\n"
 	"{\n"
-		"gl_Position = projection * view * model * vec4(position,1.0f);\n"
+		"FragPos=vec3(model_matrix*vec4(position,1.0));\n"
+		"gl_Position = projection * view * model_matrix * vec4(position,1.0f);\n"
 		"ourColor = color;\n"
 		"TexCoord = texCoord;\n"
 		"ret_normal = normal;\n"
@@ -105,20 +106,41 @@ void ModuleShaders::CreateDefFragmentShader()
 {
 	defFragmentShader->script =
 	"#version 330\n"
-	
+
+	"in vec3 FragPos;\n"
 	"in vec4 ourColor;\n"
 	"in vec2 TexCoord;\n"
 	"in vec3 ret_normal;\n"
 
 	"out vec4 color;\n"
-	"out vec4 texture_color;\n"
-	
+
 	"uniform sampler2D ourTexture;\n"
+	"uniform int test;\n"
+	"uniform vec3 lightPos;\n"
+	"uniform vec3 lightColor;\n"
 
 	"void main()\n"
 	"{\n"
-		"texture_color = texture(ourTexture, TexCoord);\n"
-		"color = ourColor;\n"
+		"if(test==1)\n"
+		"{\n"
+			"color=texture(ourTexture,TexCoord);\n"
+		"}\n"
+
+		"else \n"
+		"{\n"
+			//ambient
+			"float ambientStrength=0.1;\n"
+			"vec3 ambient= ambientStrength*lightColor;\n"
+
+			//diffuse
+			"vec3 norm = normalize(ret_normal);\n"
+			"vec3 lightDir = normalize(lightPos - FragPos);\n"
+			"float diff = max(dot(norm, lightDir), 0.0);\n"
+			"vec3 diffuse = diff * lightColor;\n"
+
+			"vec3 result = (ambient + diffuse) * vec3(ourColor.x,ourColor.y,ourColor.z);\n"
+			"color=vec4(result, 1.0);\n"
+		"}\n"
 	"}\n";
 }
 

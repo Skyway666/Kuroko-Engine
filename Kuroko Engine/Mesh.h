@@ -110,6 +110,7 @@ private:
 	float3 centroid = float3::zero;
 
 	Vertex* MeshGPU = nullptr;
+	int meshgpucounter = 0;
 
 public:
 	Color tint_color = White;
