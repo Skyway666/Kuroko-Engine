@@ -68,6 +68,7 @@ public:
 	void DrawScriptEditor();
 
 	void DrawGuizmo();
+	void DrawTagSelection(GameObject* object);
 
 
 	void InvisibleDockingBegin();

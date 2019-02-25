@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 
+
 struct WrenVM;
 struct WrenHandle;
 struct ScriptData;
@@ -39,6 +40,8 @@ public:
 	std::map<std::string, std::string> edited_scripts;
 	std::map<std::string, WrenHandle*> base_signatures;
 	std::list<ScriptData*> loaded_instances;
+
+	std::list<std::string> tags;
 
 	std::string object_linker_code;
 

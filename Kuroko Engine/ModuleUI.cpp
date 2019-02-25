@@ -366,10 +366,6 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::End();
 	}
 
-
-	//if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
-	//	open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
-
 	if (App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN && !disable_keyboard_control) {
 		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
 		for (int i = 0; i < 6; i++)
@@ -567,7 +563,8 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::SameLine();
 		if (ImGui::Checkbox("Static", &selected_obj->is_static)) // If an object is set/unset static, reload the quadtree
 			App->scene->quadtree_reload = true;
-		
+
+		DrawTagSelection(selected_obj);
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
@@ -2473,6 +2470,40 @@ void ModuleUI::DrawGuizmo()
 			}
 			trans->CalculateMatrix();
 			transform->GlobalToLocal();
+		}
+	}
+}
+
+void ModuleUI::DrawTagSelection(GameObject* object) {
+
+	std::string object_tag = object->tag; // Current tag
+	int inx = 0;						  // Index of the current tag
+
+
+	std::string posible_tags; // All the tags in the same string
+	bool inx_found = false; // Stop when tag is found
+
+	for (auto it = App->scripting->tags.begin(); it != App->scripting->tags.end(); it++){
+		// Store every tag in the same string
+		posible_tags += (*it);
+		posible_tags += '\0';
+
+		// Figure out which inx is the tag of the gameobject
+		if (object_tag == (*it))
+			inx_found = true;
+		if (!inx_found) {
+			inx++;
+		}
+	}
+	if (ImGui::Combo("Tag selector", &inx, posible_tags.c_str())) {
+		// Out of the selected index, extract the "tag" of the gameobject and return it
+		int inx_it = 0;
+		for (auto it = App->scripting->tags.begin(); it != App->scripting->tags.end(); it++) {
+			if (inx_it == inx){
+				object->tag = (*it);
+				break;
+			}
+			inx_it++;
 		}
 	}
 }

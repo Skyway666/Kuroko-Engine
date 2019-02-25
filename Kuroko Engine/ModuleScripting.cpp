@@ -75,6 +75,12 @@ bool ModuleScripting::Init(const JSON_Object* config)
 	wconfig.loadModuleFn = loadModule;
 	wconfig.writeFn = write;
 	wconfig.errorFn = error;
+
+	tags.push_back("undefined");
+
+	tags.push_back("enemy");
+	tags.push_back("player");
+	tags.push_back("powerup");
 	//wconfig.reallocateFn = reallocate;
 
 	if (vm = wrenNewVM(&wconfig))
