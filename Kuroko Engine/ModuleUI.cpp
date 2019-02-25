@@ -1200,6 +1200,10 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				{
 					((ComponentAudioSource*)&component)->sound_go->PauseEvent(ID);
 				}
+				if (ImGui::SliderInt("Volume", &((ComponentAudioSource*)&component)->volume, 0, 100))
+				{
+					App->audio->SetRTCP("VOLUME", ((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
+				}
 				ImGui::PopID();
 			}
 			else

@@ -2,6 +2,9 @@ Event	ID	Name			Wwise Object Path	Notes
 	645565787	Punch			\Default Work Unit\Punch	
 	2385628198	Footsteps			\Default Work Unit\Footsteps	
 
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	2415836739	Volume			\Default Work Unit\Volume	
+
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	154814369	Footsteps-03	F:\GitHub Desktop\Kuroko-Engine\Kuroko Engine\Game\Assets\Sounds\Wwise_Project\Project3\.cache\Windows\SFX\Footsteps-03_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Footsteps\Footsteps-03		90184
 	248678784	Footsteps-06	F:\GitHub Desktop\Kuroko-Engine\Kuroko Engine\Game\Assets\Sounds\Wwise_Project\Project3\.cache\Windows\SFX\Footsteps-06_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Footsteps\Footsteps-06		68024

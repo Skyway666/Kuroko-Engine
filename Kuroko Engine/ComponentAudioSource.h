@@ -27,6 +27,7 @@ public:
 	Wwise::WwiseGameObject* sound_go = nullptr;
 	AkUniqueID sound_ID = 0;
 	std::string name = "Sound";
+	int volume = 100;
 };
 
 #endif

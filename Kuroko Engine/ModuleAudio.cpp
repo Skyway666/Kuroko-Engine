@@ -95,9 +95,9 @@ void ModuleAudio::LoadConfig(const JSON_Object* config)
 
 // -----------------------------
 
-void ModuleAudio::SetRTCP(const char* rtpcID, float value)
+void ModuleAudio::SetRTCP(const char* rtpcID, float value, AkGameObjectID id)
 {
-	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value);
+	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, id);
 	if (eResult != AK_Success)
 	{
 		assert(!"Error changing audio volume!");
@@ -109,10 +109,10 @@ void ModuleAudio::SetVolume(float value)
 	if (!muted)
 	{
 		volume = value;
-		SetRTCP("VOLUME", volume);
+		AK::SoundEngine::SetRTPCValue("VOLUME", value);
 	}
 	else
-		SetRTCP("VOLUME", 0);
+		AK::SoundEngine::SetRTPCValue("VOLUME", value);
 }
 
 void ModuleAudio::LoadSoundBank(const char* path)
