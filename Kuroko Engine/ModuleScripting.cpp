@@ -76,6 +76,8 @@ bool ModuleScripting::Init(const JSON_Object* config)
 	wconfig.writeFn = write;
 	wconfig.errorFn = error;
 
+	LoadConfig(config);
+
 	tags.push_back("undefined");
 
 	//wconfig.reallocateFn = reallocate;
@@ -184,9 +186,32 @@ update_status ModuleScripting::Update(float dt)
 }
 
 
-void ModuleScripting::StartInstances() { for (auto it : loaded_instances) (*it).setState(SCRIPT_STARTING); };
-void ModuleScripting::PauseInstances() { for (auto it : loaded_instances) (*it).setState(SCRIPT_PAUSED); };
-void ModuleScripting::StopInstances() { for (auto it : loaded_instances)  (*it).setState(SCRIPT_STOPPED); };
+void ModuleScripting::StartInstances() { for (auto it : loaded_instances) (*it).setState(SCRIPT_STARTING); }
+void ModuleScripting::PauseInstances() { for (auto it : loaded_instances) (*it).setState(SCRIPT_PAUSED); }
+void ModuleScripting::StopInstances() { for (auto it : loaded_instances)  (*it).setState(SCRIPT_STOPPED); }
+
+
+void ModuleScripting::SaveConfig(JSON_Object * config) const {
+	JSON_Array* tags_arr = json_array(json_value_init_array());
+
+	for (auto it = tags.begin(); it != tags.end(); it++) {
+		if ((*it) == "undefined") // Hardcoded value, omit saving to avoid repetition
+			continue;
+		json_array_append_string(tags_arr, (*it).c_str());
+	}
+
+	json_object_set_value(config, "tags", json_array_get_wrapping_value(tags_arr));
+
+}
+void ModuleScripting::LoadConfig(const JSON_Object * config) {
+	tags.clear();
+
+	JSON_Array* tags_arr = json_object_get_array(config, "tags");
+
+	for (int i = 0; i != json_array_get_count(tags_arr); i++)
+		tags.push_back(json_array_get_string(tags_arr, i));
+}
+
 
 bool ModuleScripting::CleanUp() 
 {

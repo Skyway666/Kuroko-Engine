@@ -45,6 +45,9 @@ public:
 
 	std::string object_linker_code;
 
+
+	virtual void SaveConfig(JSON_Object* config) const;
+	virtual void LoadConfig(const JSON_Object* config);
 private:
 
 	std::vector<ScriptData*> loaded_scripts;
