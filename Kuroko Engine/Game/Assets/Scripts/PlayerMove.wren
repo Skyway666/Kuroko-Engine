@@ -39,24 +39,24 @@ direction = Vec3.new(0,0,0)
 }
 
  Update() {
+var move = false
 //TODO: Update the player's direction with the input and then move him using the speed
 //TODO 2:If the player dashes, deactivate movement and make him dash
 //Needed: A way to use classes effectively. comunication between scripts
-direction = Vec3.new(0,0,0)
-//if(InputComunicator.getButton(1, InputComunicator.L_AXIS_UP, InputComunicator.KEY_REPEAT)){
-		//	direction.z = 1
-		//}
+if(InputComunicator.getButton(1, InputComunicator.L_AXIS_UP, InputComunicator.KEY_REPEAT)){
+			direction.z = 1
+		}
 		
-//if(InputComunicator.getButton(1, InputComunicator.L_AXIS_DOWN, InputComunicator.KEY_REPEAT)){
-//			direction.z = -1
-//		}
-//if(InputComunicator.getButton(1, InputComunicator.L_AXIS_LEFT, InputComunicator.KEY_REPEAT)){
-		//	direction.x = 1
-		//}
+if(InputComunicator.getButton(1, InputComunicator.L_AXIS_DOWN, InputComunicator.KEY_REPEAT)){
+			direction.z = -1
+		}
+if(InputComunicator.getButton(1, InputComunicator.L_AXIS_LEFT, InputComunicator.KEY_REPEAT)){
+			direction.x = 1
+		}
 		
-//if(InputComunicator.getButton(1, InputComunicator.L_AXIS_RIGHT, InputComunicator.KEY_REPEAT)){
-	//	direction.z = -1
-		//}
+if(InputComunicator.getButton(1, InputComunicator.L_AXIS_RIGHT, InputComunicator.KEY_REPEAT)){
+		direction.z = -1
+		}
 //var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
 //modPos(movement.x,movement.y,movement.z)
 
@@ -75,11 +75,14 @@ if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
 		if(InputComunicator.getKey(InputComunicator.RIGHT, InputComunicator.KEY_REPEAT)){
 			direction.x = -1
 		}
+
 var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
 modPos(movement.x,movement.y,movement.z)
 
 var pos = getPos("global")
-var look = direction + pos
-lookAt(look.x,0.look.z)
+var look = Vec3.new(direction.x+pos.x,0,direction.z+pos.z)
+
+lookAt(look.x,0,look.z)
+direction = Vec3.zero()
 }
 }

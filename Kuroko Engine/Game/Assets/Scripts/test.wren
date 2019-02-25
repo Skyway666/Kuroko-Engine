@@ -15,7 +15,9 @@ class test is ObjectLinker{
 
 construct new(){}
 
- Start() {}
+ Start() {
+
+}
 
  Update() {}
 }
