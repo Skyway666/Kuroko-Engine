@@ -1,7 +1,8 @@
 import "ObjectLinker" for ObjectLinker,
 EngineComunicator,
 InputComunicator,
-Vec3
+Vec3,
+Time
 
 //For each var you declare, remember to create
 //		setters [varname=(v) { __varname = v }]
@@ -19,11 +20,9 @@ construct new(){}
 speed {__speed}
 speed=(v){__speed = v}
 
+
 direction {__direction}
 direction=(v){__direction = v}
-
-old_direction {__old_direction}
-old_direction=(v){__old_direction = v}
 
 //Dash
 dash_speed {__dash_speed}
@@ -32,14 +31,24 @@ dash_speed=(v){__dash_speed = v}
 dash_duration {__dash_duration}
 dash_duration=(v){__dash_duration = v}
 
+dash_current_time {__dash_current_time}
+dash_current_time=(v){__dash_current_time = v}
+
+dash_cooldown {__dash_cooldown}
+dash_cooldown=(v){__dash_cooldown = v}
+
 dashing {__dashing}
 dashing=(v){__dashing = v}
+
+dash_available {__dash_available}
+dash_available=(v){__dash_available = v}
 
 
 
  Start() {
 direction = Vec3.zero()
-old_direction = Vec3.zero()
+dashing = false
+dash_current_time = 0.0
 }
 
  Update() {
@@ -47,6 +56,9 @@ var move = false
 //TODO: Update the player's direction with the input and then move him using the speed
 //TODO 2:If the player dashes, deactivate movement and make him dash
 //Needed: A way to use classes effectively. comunication between scripts
+
+if(dashing == false){
+
 if(InputComunicator.getButton(1, InputComunicator.L_AXIS_UP, InputComunicator.KEY_REPEAT)){
 			direction.z = 1
 		}
@@ -61,8 +73,7 @@ if(InputComunicator.getButton(1, InputComunicator.L_AXIS_LEFT, InputComunicator.
 if(InputComunicator.getButton(1, InputComunicator.L_AXIS_RIGHT, InputComunicator.KEY_REPEAT)){
 		direction.z = -1
 		}
-//var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
-//modPos(movement.x,movement.y,movement.z)
+
 
 if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
 			direction.z = 1
@@ -84,6 +95,13 @@ if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
             move = true
 		}
 
+}
+
+if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN) && dash_available){
+dashing = true
+dash_current_time = 0.0
+move = false
+}
 
 if(move){
   var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
@@ -93,8 +111,24 @@ if(move){
   var look = Vec3.new(direction.x+pos.x,0,direction.z+pos.z)
 
   lookAt(look.x,0,look.z)
-   direction = Vec3.zero()
+  direction = Vec3.zero()
 }
 
+if(dashing){
+  dash_current_time =  dash_current_time + Time.C_GetDeltaTime()
+  if(dash_current_time >= dash_duration){
+     dashing = false
+     dash_available = false
+     dash_current_time = 0.0
+  }
+ var movement = Vec3.new(direction.x*dash_speed,0,direction.z*dash_speed)
+ modPos(movement.x,movement.y,movement.z)
+}
+if(dash_available == false){
+ dash_current_time =  dash_current_time + Time.C_GetDeltaTime()
+ if(dash_current_time >= dash_cooldown){
+     dash_available = true
+  }
+}
 }
 }
