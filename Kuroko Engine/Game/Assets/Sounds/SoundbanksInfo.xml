@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="125">
 	<RootPaths>
-		<ProjectRoot>C:\Users\familia\Documents\WwiseProjects\Wwise Irreal\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\familia\Documents\WwiseProjects\Wwise Irreal\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\familia\Desktop\SoundBanks\</SoundBanksRoot>
+		<ProjectRoot>F:\GitHub Desktop\Kuroko-Engine\Kuroko Engine\Game\Assets\Sounds\Wwise_Project\Project3\</ProjectRoot>
+		<SourceFilesRoot>F:\GitHub Desktop\Kuroko-Engine\Kuroko Engine\Game\Assets\Sounds\Wwise_Project\Project3\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>F:\GitHub Desktop\Kuroko-Engine\Kuroko Engine\Game\Assets\Sounds\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\familia\Documents\WwiseProjects\Wwise Irreal\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>F:\GitHub Desktop\Kuroko-Engine\Kuroko Engine\Game\Assets\Sounds\Wwise_Project\Project3\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -16,36 +16,21 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="3991942870" Language="SFX">
-			<ObjectPath>\SoundBanks\Default Work Unit\Music</ObjectPath>
-			<ShortName>Music</ShortName>
-			<Path>Music.bnk</Path>
+		<SoundBank Id="2764240573" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Combat</ObjectPath>
+			<ShortName>Combat</ShortName>
+			<Path>Combat.bnk</Path>
 			<IncludedEvents>
-				<Event Id="3440043877" Name="HeyFuckYou" ObjectPath="\Events\Default Work Unit\HeyFuckYou\HeyFuckYou"/>
-				<Event Id="1936427047" Name="HeyMan" ObjectPath="\Events\Default Work Unit\HeyMan\HeyMan"/>
-				<Event Id="3991942870" Name="Music" ObjectPath="\Events\Default Work Unit\BGMusic\Music"/>
-				<Event Id="1036431723" Name="TrainFX" ObjectPath="\Events\Default Work Unit\TrainFx\TrainFX"/>
+				<Event Id="645565787" Name="Punch" ObjectPath="\Events\Default Work Unit\Punch"/>
 			</IncludedEvents>
 			<IncludedMemoryFiles>
-				<File Id="37872822" Language="SFX">
-					<ShortName>HeyFuckYou.wav</ShortName>
-					<Path>SFX\HeyFuckYou_1C9C67B2.wem</Path>
+				<File Id="355593492" Language="SFX">
+					<ShortName>SFX\Punch2.wav</ShortName>
+					<Path>SFX\SFX\Punch2_1C9C67B2.wem</Path>
 				</File>
-				<File Id="141065671" Language="SFX">
-					<ShortName>HeyMan.wav</ShortName>
-					<Path>SFX\HeyMan_1C9C67B2.wem</Path>
-				</File>
-				<File Id="198875166" Language="SFX">
-					<ShortName>Song.wav</ShortName>
-					<Path>SFX\Song_C2E12055.wem</Path>
-				</File>
-				<File Id="936475330" Language="SFX">
-					<ShortName>TRAIN_FX.wav</ShortName>
-					<Path>SFX\TRAIN_FX_544B168E.wem</Path>
-				</File>
-				<File Id="947858482" Language="SFX">
-					<ShortName>ShortForest.wav</ShortName>
-					<Path>SFX\ShortForest_65A560FA.wem</Path>
+				<File Id="675138151" Language="SFX">
+					<ShortName>SFX\Punch1.wav</ShortName>
+					<Path>SFX\SFX\Punch1_1C9C67B2.wem</Path>
 				</File>
 			</IncludedMemoryFiles>
 		</SoundBank>

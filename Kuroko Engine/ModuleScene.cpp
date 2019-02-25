@@ -153,7 +153,7 @@ update_status ModuleScene::Update(float dt)
 		// Create audio source
 		GameObject* audiosource = new GameObject("Audio Source");
 		ComponentAudioSource* component = (ComponentAudioSource*)audiosource->addComponent(AUDIOSOURCE);
-		component->SetSoundID(AK::EVENTS::HEYMAN);
+		component->SetSoundID(AK::EVENTS::PUNCH);
 	}
 
 	return UPDATE_CONTINUE;

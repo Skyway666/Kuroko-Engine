@@ -38,7 +38,7 @@ bool ModuleAudio::Init(const JSON_Object* config)
 	
 	bool ret = Wwise::InitWwise();
 	
-	LoadSoundBank("Music");
+	LoadSoundBank("Combat");
 	
 	return ret;
 }
@@ -109,10 +109,10 @@ void ModuleAudio::SetVolume(float value)
 	if (!muted)
 	{
 		volume = value;
-		SetRTCP("Volume", volume);
+		SetRTCP("VOLUME", volume);
 	}
 	else
-		SetRTCP("Volume", 0);
+		SetRTCP("VOLUME", 0);
 }
 
 void ModuleAudio::LoadSoundBank(const char* path)

@@ -1174,7 +1174,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			{
 				App->audio->SetVolume(App->audio->volume);
 			}
-			if (ImGui::InputInt("Volume", &App->audio->volume))
+			if (ImGui::SliderInt("Volume", &App->audio->volume, 0, 100))
 			{
 				App->audio->muted = false;
 				App->audio->SetVolume(App->audio->volume);
