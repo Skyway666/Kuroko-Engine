@@ -20,6 +20,7 @@ class ModuleDebug;
 class ModuleTimeManager;
 class ModuleResourcesManager;
 class ModuleScripting;
+class FontManager;
 class ModuleShaders;
 
 class Application
@@ -37,6 +38,7 @@ public:
 	ModuleTimeManager* time;
 	ModuleResourcesManager* resources;
 	ModuleScripting* scripting;
+	FontManager* fontManager;
 	ModuleShaders* shaders;
 
 	FileSystem fs;

@@ -15,7 +15,7 @@ class GameObject
 	friend class ComponentAABB;
 public:
 
-	GameObject(const char* name, GameObject* parent = nullptr);
+	GameObject(const char* name, GameObject* parent = nullptr, bool UI = false );
 	GameObject(JSON_Object* deff);
 	~GameObject();
 
@@ -82,6 +82,7 @@ public:
 
 	bool is_active = true;
 	bool is_static = false;
+	bool is_UI = false;
 	std::string tag = "undefined";
 
 };

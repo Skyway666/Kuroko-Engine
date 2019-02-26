@@ -21,17 +21,25 @@
 
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "FontManager.h"
+#include "ComponentCanvas.h"
+#include "ComponentTextUI.h"
+#include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
 #include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
+#include "ComponentImageUI.h"
+#include "ComponentCheckBoxUI.h"
+#include "ComponentButtonUI.h"
 #include "ComponentAnimation.h"
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
 #include "Resource3dObject.h"
 #include "Skybox.h"
+#include "FileSystem.h"
 
 
 #include "Random.h"
@@ -224,7 +232,7 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
 
-	if (App->scene->selected_obj && !App->scene->selected_obj->is_static) // Not draw guizmo if it is static
+	if (App->scene->selected_obj && !App->scene->selected_obj->is_static && !App->scene->selected_obj->is_UI) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
 
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
@@ -450,11 +458,90 @@ void ModuleUI::DrawHierarchyTab()
 
 	if (ImGui::BeginPopup("##hierarchy context menu"))
 	{
-		if (ImGui::Button("Empty gameobject"))
+		if (ImGui::MenuItem("Empty gameobject"))
 		{
 			GameObject* go = new GameObject("Empty", App->scene->selected_obj);
 			if (App->scene->selected_obj)
 				App->scene->selected_obj->addChild(go);
+		}
+		if (ImGui::TreeNode("UI"))
+		{
+			if (ImGui::MenuItem("UI_Image"))
+			{
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;						
+					}
+
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* image = new GameObject("UI_Image", parent, true);
+					image->addComponent(Component_type::UI_IMAGE);
+					parent->addChild(image);
+				}
+			}
+			if (ImGui::MenuItem("UI_Text"))
+			{
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* text = new GameObject("UI_Text", parent, true);
+					text->addComponent(Component_type::UI_TEXT);
+					parent->addChild(text);
+				}
+				
+			}
+			
+			if (ImGui::MenuItem("UI_Button"))
+			{
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* button = new GameObject("UI_Button", parent, true);
+					button->addComponent(Component_type::UI_IMAGE);
+					button->addComponent(Component_type::UI_BUTTON);
+					parent->addChild(button);
+				}
+				
+			}
+			if (ImGui::MenuItem("UI_CheckBox"))
+			{
+				GameObject* parent = nullptr;
+				if (App->scene->selected_obj) {
+					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj;
+					}
+				}
+				else {
+					parent = App->scene->getCanvasGameObject();// creates or checks for the cnavas					
+				}
+				if (parent != nullptr) {
+					GameObject* chbox = new GameObject("UI_CheckBox", parent, true);
+					chbox->addComponent(Component_type::UI_IMAGE);
+					chbox->addComponent(Component_type::UI_CHECKBOX);
+					parent->addChild(chbox);
+				}
+				
+			}
+			ImGui::TreePop();
 		}
 		ImGui::EndPopup();
 	}
@@ -1180,6 +1267,267 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	
 	}
 	break;
+	case CANVAS:
+		if (ImGui::CollapsingHeader("Canvas"))
+		{
+			ComponentCanvas* canvas = (ComponentCanvas*)&component;
+			ImGui::Text("Resolution  %.0f x %.0f", canvas->getResolution().x, canvas->getResolution().y);
+			ImGui::Checkbox("Draw cross hair", &canvas->draw_cross);
+		}
+		break;
+	case RECTTRANSFORM:
+		if (ImGui::CollapsingHeader("Rect Transform"))
+		{
+			ComponentRectTransform* rectTrans = (ComponentRectTransform*)&component;
+
+			static float2 position;
+			static float width;
+			static float height;
+
+			position = rectTrans->getLocalPos();
+			width = rectTrans->getWidth();
+			height = rectTrans->getHeight();
+
+			//position
+			ImGui::Text("Position:");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			if(ImGui::DragFloat2("##p", (float*)&position, 0.01f)){ rectTrans->setPos(position); }
+			//Width
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			if(ImGui::DragFloat("##h", &width, 0.01f, 0.0f, 0.0f, "%.02f")){rectTrans->setWidth(width);}
+			//Height
+			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
+			if(ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f")){rectTrans->setHeight(height);
+			}
+
+			
+			
+
+			ImGui::Checkbox("Debug draw", &rectTrans->debug_draw);
+		}
+		break;
+	case UI_IMAGE:
+		if (ImGui::CollapsingHeader("UI Image"))
+		{
+			ComponentImageUI* image = (ComponentImageUI*)&component;
+			
+			ImGui::Image(image->getResourceTexture()!= nullptr ? (void*)image->getResourceTexture()->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w = 0; int h = 0;
+			if (image->getResourceTexture() != nullptr) {
+				image->getResourceTexture()->texture->getSize(w, h);
+			}
+
+			ImGui::Text("texture data: \n x: %d\n y: %d", w, h);
+
+			ImGui::SliderFloat("Alpha", &image->alpha, 0.0f, 1.0f);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if(image->getResourceTexture()!=nullptr)
+						App->resources->deasignResource(image->getResourceTexture()->uuid);
+					image->setResourceTexture((ResourceTexture* )App->resources->getResource(new_resource));
+				}
+			}
+		}
+		break;
+	case UI_CHECKBOX:
+		if (ImGui::CollapsingHeader("UI CheckBox"))
+		{
+			ComponentCheckBoxUI* chBox = (ComponentCheckBoxUI*)&component;
+
+			ImGui::Image(chBox->getResourceTexture(CH_IDLE) != nullptr ? (void*)chBox->getResourceTexture(CH_IDLE)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w = 0; int h = 0;
+			if (chBox->getResourceTexture(CH_IDLE) != nullptr) {
+				chBox->getResourceTexture(CH_IDLE)->texture->getSize(w, h);
+			}
+
+			ImGui::Text("Idle texture data: \n x: %d\n y: %d", w, h);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (chBox->getResourceTexture(CH_IDLE) != nullptr)
+						App->resources->deasignResource(chBox->getResourceTexture(CH_IDLE)->uuid);
+					chBox->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), CH_IDLE);
+				}
+			}
+			ImGui::Image(chBox->getResourceTexture(CH_PRESSED) != nullptr ? (void*)chBox->getResourceTexture(CH_PRESSED)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w2 = 0; int h2 = 0;
+			if (chBox->getResourceTexture(CH_PRESSED) != nullptr) {
+				chBox->getResourceTexture(CH_PRESSED)->texture->getSize(w2, h2);
+			}
+
+			ImGui::Text("Pressed texture data: \n x: %d\n y: %d", w2, h2);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load2"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (chBox->getResourceTexture(CH_PRESSED) != nullptr)
+						App->resources->deasignResource(chBox->getResourceTexture(CH_PRESSED)->uuid);
+					chBox->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), CH_PRESSED);
+				}
+			} // For debug
+			bool pressed = chBox->isPressed();
+			ImGui::Checkbox("Pressed", &pressed);
+			if (pressed != chBox->isPressed()) { chBox->Press(); }
+		}
+		break;
+	case UI_TEXT:
+		if (ImGui::CollapsingHeader("UI Text"))
+		{
+			ComponentTextUI* text = (ComponentTextUI*)&component;
+			
+			static const int maxSize = 32;
+			if (ImGui::InputText("Label Text", (char*)text->label.text.c_str(), maxSize)) {
+				text->SetText(text->label.text.c_str());
+			}
+			if (ImGui::SliderFloat("Scale", &(text->label.font->scale), 8, MAX_CHARS, "%0.f")) {
+				text->SetFontScale(text->label.font->scale);
+			}
+			ImGui::Checkbox("Draw Characters Frame", &text->drawCharPanel);
+			ImGui::Checkbox("Draw Label Frame", &text->drawLabelrect);
+			std::string currentFont = text->label.font->fontSrc;
+			if (ImGui::BeginCombo("Fonts", currentFont.c_str()))
+			{
+				std::vector<std::string> fonts = App->fontManager->singleFonts;
+
+				for (int i = 0; i < fonts.size(); i++)
+				{
+					bool isSelected = false;
+
+					if (strcmp(currentFont.c_str(), fonts[i].c_str()) == 0) {
+						isSelected = true;
+					}
+
+					if (ImGui::Selectable(fonts[i].c_str(), isSelected)) {
+						std::string newFontName = std::string(fonts[i].c_str());
+						std::string newFontExtension = std::string(fonts[i].c_str());
+						App->fs.getFileNameFromPath(newFontName);
+						App->fs.getExtension(newFontExtension);
+						newFontName += newFontExtension;
+						text->SetFont(newFontName.c_str());
+
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+
+					}
+
+				}
+				ImGui::EndCombo();
+
+			}
+			ImGui::Spacing();
+			ImGui::ColorPicker3("Color##2f", (float*)&text->label.color);
+		}
+		break;
+	case UI_BUTTON:
+		if (ImGui::CollapsingHeader("UI Button"))
+		{
+			ComponentButtonUI* button = (ComponentButtonUI*)&component;
+			ButtonState state;//debug
+			ImGui::Image(button->getResourceTexture(B_IDLE) != nullptr ? (void*)button->getResourceTexture(B_IDLE)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w = 0; int h = 0;
+			if (button->getResourceTexture(B_IDLE) != nullptr) {
+				button->getResourceTexture(B_IDLE)->texture->getSize(w, h);
+			}
+
+			ImGui::Text("Idle texture data: \n x: %d\n y: %d", w, h);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (button->getResourceTexture(B_IDLE) != nullptr)
+						App->resources->deasignResource(button->getResourceTexture(B_IDLE)->uuid);
+					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_IDLE);
+				}
+			}
+
+			ImGui::Image(button->getResourceTexture(B_MOUSEOVER) != nullptr ? (void*)button->getResourceTexture(B_MOUSEOVER)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w3 = 0; int h3 = 0;
+			if (button->getResourceTexture(B_MOUSEOVER) != nullptr) {
+				button->getResourceTexture(B_MOUSEOVER)->texture->getSize(w3, h3);
+			}
+
+			ImGui::Text("Hover texture data: \n x: %d\n y: %d", w3, h3);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load2"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (button->getResourceTexture(B_MOUSEOVER) != nullptr)
+						App->resources->deasignResource(button->getResourceTexture(B_MOUSEOVER)->uuid);
+					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_MOUSEOVER);
+				}
+			}
+
+
+			ImGui::Image(button->getResourceTexture(B_PRESSED) != nullptr ? (void*)button->getResourceTexture(B_PRESSED)->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+			ImGui::SameLine();
+
+			int w2 = 0; int h2 = 0;
+			if (button->getResourceTexture(B_PRESSED) != nullptr) {
+				button->getResourceTexture(B_PRESSED)->texture->getSize(w2, h2);
+			}
+
+			ImGui::Text("Pressed texture data: \n x: %d\n y: %d", w2, h2);
+
+			if (ImGui::Button("Load(from asset folder)##Dif: Load3"))
+			{
+				std::string texture_path = openFileWID();
+				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
+				if (new_resource != 0) {
+					App->resources->assignResource(new_resource);
+					if (button->getResourceTexture(B_PRESSED) != nullptr)
+						App->resources->deasignResource(button->getResourceTexture(B_PRESSED)->uuid);
+					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_PRESSED);
+				}
+			} 
+			// For debug
+			bool idle = false;
+			bool hover = false;
+			bool pressed = false;
+			ImGui::Separator();
+			if (ImGui::Button("FadeIn")) {
+				button->doFadeIn();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("FadeOut")) {
+				button->doFadeOut();
+			}
+			if (ImGui::Button("Idle")) { button->setState(B_IDLE); } ImGui::SameLine();
+			if(ImGui::Button("Hover")) { button->setState(B_MOUSEOVER); }ImGui::SameLine();
+			if (ImGui::Button("Pressed")) { button->setState(B_PRESSED); }
+		}
+		break;	
 	case ANIMATION:
 		if (ImGui::CollapsingHeader("Animation"))
 		{

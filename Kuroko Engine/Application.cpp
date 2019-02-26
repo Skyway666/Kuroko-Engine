@@ -14,6 +14,7 @@
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
 #include "ModuleScripting.h"
+#include "FontManager.h"
 #include "ModuleShaders.h"
 
 #include <Windows.h>
@@ -57,6 +58,7 @@ Application::Application()
 	time = new ModuleTimeManager(this);
 	resources = new ModuleResourcesManager(this);
 	scripting = new ModuleScripting(this);
+	fontManager = new FontManager;
 	shaders = new ModuleShaders(this);
 	
 
@@ -85,6 +87,8 @@ Application::Application()
 	list_modules.push_back(shaders);
 	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
+
+
 
 	// HARDCODED
 	vector_limit = 100;
@@ -128,7 +132,9 @@ bool Application::Init()
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Start();
 	
+	
 	json_value_free(config_value);
+	fontManager->LoadAllFolderFonts();
 
 	ms_timer.Start();
 	return ret;
@@ -201,6 +207,8 @@ bool Application::CleanUp()
 		ret = (*it)->CleanUp();
 		delete (*it);
 	}
+	delete fontManager;
+	fontManager = nullptr;
 
 
 	return ret;

@@ -1,10 +1,16 @@
 #include "GameObject.h"
 #include "Random.h"
 #include "ComponentMesh.h"
+#include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
+#include "ComponentCanvas.h"
 #include "ComponentScript.h"
+#include "ComponentImageUI.h"
+#include "ComponentButtonUI.h"
+#include "ComponentCheckBoxUI.h"
+#include "ComponentTextUI.h"
 #include "ComponentBone.h"
 #include "ComponentAnimation.h"
 #include "Camera.h"
@@ -16,16 +22,23 @@
 #include "ModuleRenderer3D.h"
 
 
-GameObject::GameObject(const char* name, GameObject* parent) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits()) 
+GameObject::GameObject(const char* name, GameObject* parent, bool UI) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits())
 {
 	if (uuid == 0)		// Remote case, UUID can never be 0!
 		uuid += 1;
 
-	addComponent(TRANSFORM);
-	addComponent(C_AABB);
+	if (!UI) {
+		addComponent(TRANSFORM);
+		addComponent(C_AABB);
+	}
+	else { // for UI
+		addComponent(RECTTRANSFORM);
+		is_UI = true;
+	}
 	App->scene->addGameObject(this);
 	
 }
+
 
 GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 	name = json_object_get_string(deff, "name");
@@ -213,6 +226,46 @@ Component* GameObject::addComponent(Component_type type)
 		new_component = new ComponentScript(this);
 		components.push_back(new_component);
 		break;
+	case CANVAS:
+		if (!getComponent(CANVAS))
+		{
+			new_component = new ComponentCanvas(this);
+			components.push_back(new_component);			
+		}
+		break;
+	case RECTTRANSFORM:
+		if (!getComponent(RECTTRANSFORM))
+		{
+			new_component = new ComponentRectTransform(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_IMAGE:
+		if (!getComponent(UI_IMAGE))
+		{
+			new_component = new ComponentImageUI(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_BUTTON:
+		if (!getComponent(UI_BUTTON))
+		{
+			new_component = new ComponentButtonUI(this);
+			components.push_back(new_component);
+		}
+		break;	
+	case UI_CHECKBOX:
+		if (!getComponent(UI_CHECKBOX))
+		{
+			new_component = new ComponentCheckBoxUI(this);
+			components.push_back(new_component);
+		}
+		break;
+	case UI_TEXT:
+		if (!getComponent(UI_TEXT))
+		{
+			new_component = new ComponentTextUI(this);
+		}
 	case BONE:
 		new_component = new ComponentBone(this);
 		components.push_back(new_component);

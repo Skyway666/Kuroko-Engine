@@ -1,10 +1,13 @@
 #ifndef _COMPONENT_
 #define _COMPONENT_
 
+
+#define DELTA_ALPHA 0.01f
+
 #include "Parson\parson.h"
 class GameObject;
 
-enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, BONE, ANIMATION };
+enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, BONE, ANIMATION, CANVAS, RECTTRANSFORM, UI_IMAGE, UI_CHECKBOX, UI_BUTTON, UI_TEXT };
 
 class Component
 {
