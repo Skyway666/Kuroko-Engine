@@ -18,6 +18,8 @@ namespace Wwise
 		
 		void PlayEvent(unsigned long id);
 		void PauseEvent(unsigned long id);
+		void ResumeEvent(unsigned long id);
+		void StopEvent(unsigned long id);
 
 		void SetAuxiliarySends(AkReal32 value, const char * target_bus, AkGameObjectID listener_id);
 

@@ -1199,9 +1199,20 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				{
 					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
 				}
+				ImGui::SameLine();
 				if (ImGui::Button("Stop"))
 				{
+					((ComponentAudioSource*)&component)->sound_go->StopEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Pause"))
+				{
 					((ComponentAudioSource*)&component)->sound_go->PauseEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Resume"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->ResumeEvent(ID);
 				}
 				if (ImGui::SliderInt("Volume", &((ComponentAudioSource*)&component)->volume, 0, 100))
 				{

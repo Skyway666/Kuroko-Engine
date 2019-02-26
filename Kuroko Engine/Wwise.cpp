@@ -281,6 +281,22 @@ void Wwise::WwiseGameObject::PauseEvent(unsigned long id)
 	}
 }
 
+void Wwise::WwiseGameObject::ResumeEvent(unsigned long id)
+{
+	if (AK::SoundEngine::ExecuteActionOnEvent(id, AK::SoundEngine::AkActionOnEventType::AkActionOnEventType_Resume, ID) == AK_INVALID_PLAYING_ID)
+	{
+		assert(!"Error resuming event");
+	}
+}
+
+void Wwise::WwiseGameObject::StopEvent(unsigned long id)
+{
+	if (AK::SoundEngine::ExecuteActionOnEvent(id, AK::SoundEngine::AkActionOnEventType::AkActionOnEventType_Stop, ID) == AK_INVALID_PLAYING_ID)
+	{
+		assert(!"Error stopping event");
+	}
+}
+
 void Wwise::WwiseGameObject::SetAuxiliarySends(AkReal32 value, const char* target_bus, AkGameObjectID listener_id)
 {
 	AkAuxSendValue reverb;
