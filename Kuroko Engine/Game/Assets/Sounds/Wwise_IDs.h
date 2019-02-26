@@ -19,6 +19,7 @@ namespace AK
 
     namespace GAME_PARAMETERS
     {
+        static const AkUniqueID PITCH = 1908158473U;
         static const AkUniqueID VOLUME = 2415836739U;
     } // namespace GAME_PARAMETERS
 

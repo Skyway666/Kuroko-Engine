@@ -1272,7 +1272,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	}
 	break;
 	case AUDIOLISTENER:
-		if (ImGui::CollapsingHeader("Audio Listener", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Audio Listener"))
 		{
 			if (ImGui::Checkbox("Mute", &App->audio->muted))
 			{
@@ -1289,13 +1289,13 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		break;
 
 	case AUDIOSOURCE:
-		if (ImGui::CollapsingHeader("Audio Source", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Audio Source"))
 		{
 			AkUniqueID ID = ((ComponentAudioSource*)&component)->sound_ID;
 			if (ID != 0)
 			{
 				ImGui::TextColored({ 0, 1, 0, 1 }, ((ComponentAudioSource*)&component)->name.c_str());
-				//ImGui::PushID(ID);
+
 				if (ImGui::Button("Play"))
 				{
 					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
@@ -1317,20 +1317,21 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				}
 				if (ImGui::SliderInt("Volume", &((ComponentAudioSource*)&component)->volume, 0, 100))
 				{
-					App->audio->SetRTCP("VOLUME", ((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
+					App->audio->SetVolume(((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
 				}
-				//ImGui::PopID();
+				if (ImGui::SliderInt("Pitch", &((ComponentAudioSource*)&component)->pitch, -100, 100))
+				{
+					App->audio->SetPitch(((ComponentAudioSource*)&component)->pitch, ((ComponentAudioSource*)&component)->sound_go->GetID());
+				}
 			}
 			else
 			{
 				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
 			}
-
-			//ImGui::PushID(ID);
 			if (ImGui::Button("Remove##Remove audioSource"))
 				ret = false;
-			//ImGui::PopID();
 		}
+		break;
 	case CANVAS:
 		if (ImGui::CollapsingHeader("Canvas"))
 		{

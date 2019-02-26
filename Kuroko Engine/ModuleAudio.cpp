@@ -101,20 +101,31 @@ void ModuleAudio::SetRTCP(const char* rtpcID, float value, AkGameObjectID id)
 {
 	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, id);
 	if (eResult != AK_Success)
-	{
-		assert(!"Error changing audio volume!");
-	}
+		assert(!"Error setting RTPC value!");
 }
 
-void ModuleAudio::SetVolume(float value)
+void ModuleAudio::SetVolume(float value, AkGameObjectID id)
 {
+	AKRESULT eResult = AK_Fail;
+
 	if (!muted)
 	{
-		volume = value;
-		AK::SoundEngine::SetRTPCValue("VOLUME", value);
+		if (id == AK_INVALID_GAME_OBJECT)
+			volume = value;
+		eResult = AK::SoundEngine::SetRTPCValue("VOLUME", value, id);
 	}
 	else
-		AK::SoundEngine::SetRTPCValue("VOLUME", value);
+		eResult = AK::SoundEngine::SetRTPCValue("VOLUME", 0, id);
+
+	if (eResult != AK_Success)
+		assert(!"Error changing audio volume!");
+}
+
+void ModuleAudio::SetPitch(float value, AkGameObjectID id)
+{
+	AKRESULT eResult = AK::SoundEngine::SetRTPCValue("PITCH", value, id);
+	if (eResult != AK_Success)
+		assert(!"Error changing audio pitch!");
 }
 
 void ModuleAudio::LoadSoundBank(const char* path)

@@ -26,6 +26,34 @@
 						</Sound>
 						<RandomSequenceContainer Name="Punch" ID="{036996C4-7AC8-47E4-8E4C-7726A1BB8B12}" ShortID="234585494">
 							<PropertyList>
+								<Property Name="Pitch" Type="int32">
+									<RTPCList>
+										<RTPC Name="" ID="{0842453F-8F8C-4274-9292-5858C13A5DC6}" ShortID="128694962">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Pitch" ID="{26A73E64-0C87-4736-986F-95FF7B5265D3}" WorkUnitID="{F5585687-25F5-483E-9A74-37DCCD005D5D}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{B76E8795-80C9-4E60-B41D-0EAFA29CF78B}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>-100</XPos>
+														<YPos>-1250</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>1250</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
 								<Property Name="PositioningType" Type="int16" Value="1"/>
 								<Property Name="Volume" Type="Real64">
 									<RTPCList>
@@ -161,6 +189,34 @@
 						</RandomSequenceContainer>
 						<RandomSequenceContainer Name="Footsteps" ID="{54D9E859-6D83-47DE-A722-83F769EBD2AD}" ShortID="846351833">
 							<PropertyList>
+								<Property Name="Pitch" Type="int32">
+									<RTPCList>
+										<RTPC Name="" ID="{95A91C28-57D4-4C3C-BF6E-77BC37346E5F}" ShortID="797814296">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="Pitch" ID="{26A73E64-0C87-4736-986F-95FF7B5265D3}" WorkUnitID="{F5585687-25F5-483E-9A74-37DCCD005D5D}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{7C2BF7DD-CA92-4FBA-A600-EDD7513B5C6E}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>-100</XPos>
+														<YPos>-1250</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>100</XPos>
+														<YPos>1250</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
 								<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
 								<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
 								<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="1"/>
