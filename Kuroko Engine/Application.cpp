@@ -14,6 +14,8 @@
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
 #include "ModuleScripting.h"
+#include "ModuleShaders.h"
+
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -26,9 +28,12 @@ Application::Application()
 	// Create library directory if it does not exist
 	CreateDirectory("Library", NULL);
 	CreateDirectory("Library\\Meshes", NULL);
+	CreateDirectory("Library\\Animations", NULL);
+	CreateDirectory("Library\\Animations\\Bones", NULL);
 	CreateDirectory("Library\\Textures", NULL);
 	CreateDirectory("Library\\3dObjects", NULL);
 	CreateDirectory("Library\\Scripts", NULL);
+	CreateDirectory("Library\\Materials", NULL);
 
 
 	CreateDirectory("Library\\Prefabs", NULL);
@@ -52,6 +57,8 @@ Application::Application()
 	time = new ModuleTimeManager(this);
 	resources = new ModuleResourcesManager(this);
 	scripting = new ModuleScripting(this);
+	shaders = new ModuleShaders(this);
+	
 
 
 	// The order of calls is very important!
@@ -75,6 +82,7 @@ Application::Application()
 	// Renderer last!
 	list_modules.push_back(resources);
 	list_modules.push_back(scripting);
+	list_modules.push_back(shaders);
 	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
 
