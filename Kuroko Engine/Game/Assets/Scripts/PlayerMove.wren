@@ -43,7 +43,25 @@ dashing=(v){__dashing = v}
 dash_available {__dash_available}
 dash_available=(v){__dash_available = v}
 
+class state{
+no_state={0}
+idle={1}
+running={2}
+dashing={3}
+attack={4}
 
+state {__state}
+state=(v){__state = v}
+
+construct new(){
+  state = 0
+}
+
+construct state(var int){
+  state = int
+}
+
+}
 
  Start() {
 direction = Vec3.zero()
@@ -61,17 +79,21 @@ if(dashing == false){
 
 if(InputComunicator.getButton(1, InputComunicator.L_AXIS_UP, InputComunicator.KEY_REPEAT)){
 			direction.z = 1
+			move = true
 		}
 		
 if(InputComunicator.getButton(1, InputComunicator.L_AXIS_DOWN, InputComunicator.KEY_REPEAT)){
 			direction.z = -1
+			move = true
 		}
 if(InputComunicator.getButton(1, InputComunicator.L_AXIS_LEFT, InputComunicator.KEY_REPEAT)){
 			direction.x = 1
+            move = true
 		}
 		
 if(InputComunicator.getButton(1, InputComunicator.L_AXIS_RIGHT, InputComunicator.KEY_REPEAT)){
-		direction.z = -1
+			direction.z = -1
+			move = true
 		}
 
 
