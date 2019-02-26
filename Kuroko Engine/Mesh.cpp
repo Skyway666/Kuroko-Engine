@@ -67,9 +67,9 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 
 	calculateCentroidandHalfsize();
 	this->centroid = centroid;
-	LoadDataToVRAM();
+	//LoadDataToVRAM();
 	//Descoment to use shader render
-	//LoadDataToVRAMShaders();
+	LoadDataToVRAMShaders();
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
@@ -85,9 +85,9 @@ Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
 	}
 
 	calculateCentroidandHalfsize();
-	LoadDataToVRAM();
+	//LoadDataToVRAM();
 	//Descoment to use shader render
-	//LoadDataToVRAMShaders();
+	LoadDataToVRAMShaders();
 }
 
 
@@ -240,25 +240,16 @@ void Mesh::FillMeshGPU()
 	{
 		MeshGPU[i].Assign(vertices[i], color);
 
-		if (imported_tex_coords)
-		{
-			MeshGPU[i].tex_coords = tex_coords[i];
-		}
-		else
-			MeshGPU[i].tex_coords = { 0,0 };
+		MeshGPU[i].tex_coords = tex_coords[i];
 
-		if (imported_normals)
-		{
-			MeshGPU[i].normal = normals[i];
-		}
-		else
-			MeshGPU[i].normal = { 0,0,0 };
+		MeshGPU[i].normal = normals[i];
+		
 	}
 }
 
 void Mesh::MaxDrawFunctionTest(Material* mat,ComponentAnimation* animation,float* global_transform, bool draw_as_selected) const
 {
-	float3 lightPosition = { 0.0f,0.0f,0.0f };
+	float3 lightPosition = { 0.0f,10.0f,10.0f };
 	float3 lightColors = { 1.0f,1.0f,1.0f };
 
 	//Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
@@ -464,7 +455,6 @@ void Mesh::BuildPlane(float sx, float sy)
 	tex_coords[2] = { 0.0f, 1.0f };   tex_coords[3] = { 1.0f, 1.0f };
 	tex_coords[4] = { 0.0f, 0.0f }; tex_coords[5] = { 1.0f, 0.0f };
 	tex_coords[6] = { 0.0f, 1.0f }; tex_coords[7] = { 1.0f, 1.0f };
-
 
 	tint_color.setRandom();
 }

@@ -171,7 +171,7 @@ void ModuleShaders::CreateDefFragmentShader()
 		"else \n"
 		"{\n"
 			//ambient
-			"float ambientStrength=0.1;\n"
+			"float ambientStrength=1.0;\n"
 			"vec3 ambient= ambientStrength*lightColor;\n"
 
 			//diffuse
