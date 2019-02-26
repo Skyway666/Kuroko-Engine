@@ -7,7 +7,7 @@
 
 class GameObject;
 
-enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, AUDIOLISTENER, AUDIOSOURCE };
+enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, BONE, ANIMATION, AUDIOLISTENER, AUDIOSOURCE };
 
 class Component
 {
