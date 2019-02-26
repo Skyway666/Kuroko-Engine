@@ -22,7 +22,14 @@ construct new(){}
 
  Update() {
    if(InputComunicator.getKey(InputComunicator.SPACE, InputComunicator.KEY_DOWN)){
-      EngineComunicator.Instantiate(bullet, getPosX("global"), getPosY("global"), getPosZ("global"),getPitch(),getYaw(),getRoll())
+      EngineComunicator.Instantiate(bullet, getPos("global"),getEuler())
    }
+   
+   
+   if(InputComunicator.getButton(1, InputComunicator.C_A, InputComunicator.KEY_DOWN)){
+      EngineComunicator.Instantiate(bullet, getPos("global"),getEuler())
+   }
+
+
  }
 }

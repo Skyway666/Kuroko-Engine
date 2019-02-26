@@ -78,6 +78,11 @@
     </Filter>
     <Filter Include="Sources\Helpers\Wwise">
       <UniqueIdentifier>{c5af1ade-1df7-43f7-aece-b87d70efaf91}</UniqueIdentifier>
+    <Filter Include="Sources\Game\UI">
+      <UniqueIdentifier>{92f608b4-fb76-43c6-a8b1-74b23f0ca142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers\FreeType">
+      <UniqueIdentifier>{650bdbf5-ccab-4d4a-88e1-0960de54c0bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -495,6 +500,50 @@
     <ClInclude Include="ComponentAudioSource.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentCanvas.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentImageUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentButtonUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentRectTransform.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTextUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentCheckBoxUI.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Sources\Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeType\include\ft2build.h">
+      <Filter>Sources\Helpers\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeType\include\freetype\config\ftheader.h">
+      <Filter>Sources\Helpers\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeType\include\freetype\freetype.h">
+      <Filter>Sources\Helpers\FreeType</Filter>
+    <ClInclude Include="ComponentBone.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAnimation.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAnimation.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBone.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleShaders.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -805,6 +854,40 @@
     </ClCompile>
     <ClCompile Include="ComponentAudioSource.cpp">
       <Filter>Sources\Game</Filter>
+    <ClCompile Include="ComponentCanvas.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentRectTransform.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentImageUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentButtonUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentTextUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCheckBoxUI.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Sources\Game\UI</Filter>
+    <ClCompile Include="ComponentAnimation.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBone.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceAnimation.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBone.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleShaders.cpp">
+      <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

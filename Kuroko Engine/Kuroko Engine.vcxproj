@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>Kuroko Engine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -53,7 +53,7 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Wwise</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Wwise;$(ProjectDir)\FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
@@ -89,10 +89,22 @@
     <ClInclude Include="ComponentAABB.h" />
     <ClInclude Include="ComponentAudioListener.h" />
     <ClInclude Include="ComponentAudioSource.h" />
+    <ClInclude Include="ComponentButtonUI.h" />
+    <ClInclude Include="ComponentAnimation.h" />
+    <ClInclude Include="ComponentBone.h" />
     <ClInclude Include="ComponentCamera.h" />
+    <ClInclude Include="ComponentCanvas.h" />
+    <ClInclude Include="ComponentCheckBoxUI.h" />
+    <ClInclude Include="ComponentImageUI.h" />
+    <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ComponentScript.h" />
+    <ClInclude Include="ComponentTextUI.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="FontManager.h" />
+    <ClInclude Include="FreeType\include\freetype\config\ftheader.h" />
+    <ClInclude Include="FreeType\include\freetype\freetype.h" />
+    <ClInclude Include="FreeType\include\ft2build.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew-2.1.0\include\GL\eglew.h" />
     <ClInclude Include="glew-2.1.0\include\GL\glew.h" />
@@ -180,6 +192,7 @@
     <ClInclude Include="ModuleImporter.h" />
     <ClInclude Include="ModuleResourcesManager.h" />
     <ClInclude Include="ModuleScripting.h" />
+    <ClInclude Include="ModuleShaders.h" />
     <ClInclude Include="ModuleTimeManager.h" />
     <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="ModuleRenderer3D.h" />
@@ -193,6 +206,8 @@
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceAnimation.h" />
+    <ClInclude Include="ResourceBone.h" />
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="Resource3dObject.h" />
     <ClInclude Include="ResourcePrefab.h" />
@@ -227,10 +242,19 @@
     <ClCompile Include="ComponentAABB.cpp" />
     <ClCompile Include="ComponentAudioListener.cpp" />
     <ClCompile Include="ComponentAudioSource.cpp" />
+    <ClCompile Include="ComponentButtonUI.cpp" />
+    <ClCompile Include="ComponentAnimation.cpp" />
+    <ClCompile Include="ComponentBone.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
+    <ClCompile Include="ComponentCanvas.cpp" />
+    <ClCompile Include="ComponentCheckBoxUI.cpp" />
+    <ClCompile Include="ComponentImageUI.cpp" />
+    <ClCompile Include="ComponentRectTransform.cpp" />
     <ClCompile Include="ComponentScript.cpp" />
+    <ClCompile Include="ComponentTextUI.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\ImGuizmo.cpp" />
@@ -285,6 +309,7 @@
     <ClCompile Include="ModuleImporter.cpp" />
     <ClCompile Include="ModuleResourcesManager.cpp" />
     <ClCompile Include="ModuleScripting.cpp" />
+    <ClCompile Include="ModuleShaders.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
     <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
@@ -296,6 +321,8 @@
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceAnimation.cpp" />
+    <ClCompile Include="ResourceBone.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="Resource3dObject.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />

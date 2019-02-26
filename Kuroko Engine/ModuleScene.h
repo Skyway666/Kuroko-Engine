@@ -15,6 +15,10 @@ class Texture;
 class Skybox;
 class Quadtree;
 
+
+enum Component_type;
+
+
 struct RayHit
 {
 	RayHit(GameObject*obj) : obj(obj) {};
@@ -42,7 +46,8 @@ public:
 	void addGameObject(GameObject* gobj)	{ game_objects.push_back(gobj); };
 	GameObject* duplicateGameObject(GameObject* gobj);
 
-	GameObject* getGameObject(uint uuid) const;;
+	GameObject* getGameObject(uint uuid) const;
+	void getGameObjectsByComponent(Component_type type, std::list<GameObject*>& list_to_fill);
 	Quadtree* getQuadtree() { return quadtree; }
 	bool existingScene() { return working_on_existing_scene;}
 	std::string getWorkigSceneName() { return current_working_scene; }
@@ -56,6 +61,8 @@ public:
 	// Script hot reloading
 	void CleanScriptComponents();
 	void LoadScriptComponents();
+
+	GameObject* getCanvasGameObject();//creates gameobject with a canvas component if it's not created already (just 1 canvas needed)
 
 
 	void AskPrefabLoadFile(const char* path, float3 pos, float3 eulerang);

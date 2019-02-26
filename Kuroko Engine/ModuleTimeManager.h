@@ -56,6 +56,7 @@ public:
 	float getDeltaTime(); // Will only return delta if the game isn't stopped
 	float getGameDeltaTime() { return game_time.getDeltaTime(); }
 	int getFrameCount() { return frame_count; }
+	float getTimeScale() { return time_scale; }
 	void setTimeScale(float scale) { game_time.setScale(scale); }
 
 private:

@@ -14,6 +14,9 @@
 #include "ModuleTimeManager.h"
 #include "ModuleResourcesManager.h"
 #include "ModuleScripting.h"
+#include "FontManager.h"
+#include "ModuleShaders.h"
+
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -26,10 +29,13 @@ Application::Application()
 	// Create library directory if it does not exist
 	CreateDirectory("Library", NULL);
 	CreateDirectory("Library\\Meshes", NULL);
+	CreateDirectory("Library\\Animations", NULL);
+	CreateDirectory("Library\\Animations\\Bones", NULL);
 	CreateDirectory("Library\\Textures", NULL);
 	CreateDirectory("Library\\3dObjects", NULL);
 	CreateDirectory("Library\\Scripts", NULL);
 	CreateDirectory("Library\\Sounds", NULL);
+	CreateDirectory("Library\\Materials", NULL);
 
 
 	CreateDirectory("Library\\Prefabs", NULL);
@@ -53,6 +59,9 @@ Application::Application()
 	time = new ModuleTimeManager(this);
 	resources = new ModuleResourcesManager(this);
 	scripting = new ModuleScripting(this);
+	fontManager = new FontManager;
+	shaders = new ModuleShaders(this);
+	
 
 
 	// The order of calls is very important!
@@ -76,8 +85,11 @@ Application::Application()
 	// Renderer last!
 	list_modules.push_back(resources);
 	list_modules.push_back(scripting);
+	list_modules.push_back(shaders);
 	list_modules.push_back(gui);
 	list_modules.push_back(renderer3D);
+
+
 
 	// HARDCODED
 	vector_limit = 100;
@@ -111,6 +123,8 @@ bool Application::Init()
 
 	config = json_value_get_object(config_value);
 
+	is_game = json_object_get_boolean(config, "is_game");
+
 	app_log->AddLog("Application Init --------------\n");
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Init(json_object_get_object(config, (*it)->name.c_str()));
@@ -119,7 +133,9 @@ bool Application::Init()
 	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret; it++)
 		ret = (*it)->Start();
 	
+	
 	json_value_free(config_value);
+	fontManager->LoadAllFolderFonts();
 
 	ms_timer.Start();
 	return ret;
@@ -162,14 +178,20 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 	
-	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; it++)
-		ret = (*it)->PreUpdate(dt);
+	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; it++){
+		if((*it)->enabled)
+			ret = (*it)->PreUpdate(dt);
+	}
 
-	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; it++)
-		ret = (*it)->Update(dt);
+	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; it++){
+		if ((*it)->enabled)
+			ret = (*it)->Update(dt);
+	}
 
-	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; it++)
-		ret = (*it)->PostUpdate(dt);
+	for (std::list<Module*>::iterator it = list_modules.begin(); it != list_modules.end() && ret == UPDATE_CONTINUE; it++){
+		if ((*it)->enabled)
+			ret = (*it)->PostUpdate(dt);
+	}
 
 	FinishUpdate();
 	if (close_app) {
@@ -186,6 +208,8 @@ bool Application::CleanUp()
 		ret = (*it)->CleanUp();
 		delete (*it);
 	}
+	delete fontManager;
+	fontManager = nullptr;
 
 
 	return ret;

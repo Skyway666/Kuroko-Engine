@@ -76,11 +76,16 @@ bool ComponentAABB::Update(float dt)
 
 		for (auto it = children.begin(); it != children.end(); it++)
 		{
-			OBB* child_obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->obb;
-			for (int i = 0; i < 8; i++)
-			{
-				float3 test = child_obb->CornerPoint(i);
-				obb->Enclose(child_obb->CornerPoint(i));
+			ComponentAABB* aabbComp = (ComponentAABB*)(*it)->getComponent(C_AABB);
+			
+			if (aabbComp != nullptr) {
+				OBB* child_obb = aabbComp->obb;
+
+				for (int i = 0; i < 8; i++)
+				{
+					float3 test = child_obb->CornerPoint(i);
+					obb->Enclose(child_obb->CornerPoint(i));
+				}
 			}
 		}
 

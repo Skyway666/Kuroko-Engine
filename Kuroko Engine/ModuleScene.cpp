@@ -14,6 +14,7 @@
 #include "FileSystem.h"
 #include "ModuleDebug.h"
 #include "ModuleWindow.h"
+#include "Component.h"
 #include "ComponentAABB.h"
 #include "ComponentTransform.h"
 #include "Transform.h"
@@ -362,6 +363,15 @@ GameObject* ModuleScene::getGameObject(uint uuid) const
 	return nullptr;
 }
 
+void ModuleScene::getGameObjectsByComponent(Component_type type, std::list<GameObject*>& list_to_fill)
+{
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++) {
+		if ((*it)->getComponent(type) != nullptr) {
+			list_to_fill.push_back(*it);
+		}
+	}
+}
+
 
 void ModuleScene::ClearScene()
 {
@@ -416,6 +426,21 @@ void ModuleScene::LoadScriptComponents() {
 			}
 		}
 	}
+}
+
+GameObject* ModuleScene::getCanvasGameObject()
+{
+	std::list<GameObject*> GOs = std::list<GameObject*>();
+	getGameObjectsByComponent(Component_type::CANVAS, GOs);
+	if (GOs.empty()) { //check if canvas already exists
+		GameObject* canvas = new GameObject("Canvas",nullptr, true);
+		canvas->addComponent(Component_type::CANVAS);
+		return canvas;
+	}
+	else {
+		return *GOs.begin();
+	}
+	
 }
 
 
