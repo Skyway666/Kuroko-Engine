@@ -75,6 +75,8 @@ public:
 
 	GameObject* MousePicking(GameObject* ignore = nullptr);
 	float3 MousePickingHit(GameObject* ignore = nullptr);
+
+	GameObject* audiolistenerdefault = nullptr;
 private:
 	
 	void ManageSceneSaveLoad();

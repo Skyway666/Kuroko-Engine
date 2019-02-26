@@ -5,15 +5,19 @@
 #define DELTA_ALPHA 0.01f
 
 #include "Parson\parson.h"
+#include "Globals.h"
+#include "Random.h"
+
 class GameObject;
 
-enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, BONE, ANIMATION, CANVAS, RECTTRANSFORM, UI_IMAGE, UI_CHECKBOX, UI_BUTTON, UI_TEXT };
+enum Component_type { NONE, MESH, TRANSFORM, C_AABB, CAMERA, SCRIPT, BONE, ANIMATION, CANVAS, RECTTRANSFORM, UI_IMAGE, UI_CHECKBOX, UI_BUTTON, UI_TEXT, AUDIOLISTENER, AUDIOSOURCE
+};
 
 class Component
 {
 public:
 
-	Component(GameObject* gameobject, Component_type type) : parent(gameobject), type(type) {};
+	Component(GameObject* gameobject, Component_type type) : parent(gameobject), type(type), uuid(random32bits()) {};
 	virtual ~Component() {};
 
 	virtual bool Update(float dt) { return true; };
@@ -25,6 +29,7 @@ public:
 	Component_type getType() const { return type; };
 	GameObject* getParent() const { return parent; };
 	void setParent(GameObject* new_parent) { parent = new_parent; } // Can recieve nullptr
+	uint getUUID() const { return uuid; }
 
 	virtual void Save(JSON_Object* config) {}
 
@@ -33,5 +38,6 @@ protected:
 	bool is_active = true;
 	const Component_type type = NONE;
 	GameObject* parent = nullptr;
+	uint uuid = 0;
 };
 #endif

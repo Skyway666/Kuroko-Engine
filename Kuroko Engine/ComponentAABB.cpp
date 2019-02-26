@@ -143,6 +143,7 @@ void ComponentAABB::DrawOBB() const
 
 void ComponentAABB::Save(JSON_Object* config) {
 
+	json_object_set_number(config, "UUID", uuid);
 	json_object_set_string(config, "type", "AABB");
 
 }

@@ -1,8 +1,23 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleAudio.h"
-#include "ModuleUI.h"
+#include "ModuleInput.h"
+#include "ModuleScene.h"
+#include "ModuleCamera3D.h"
+#include "ModuleUi.h"
+#include "ModuleImporter.h"
+#include "GameObject.h"
+#include "ComponentCamera.h"
+#include "ComponentTransform.h"
+#include "ComponentAudioListener.h"
+#include "Camera.h"
+#include "Wwise.h"
 #include "Applog.h"
+
+#include <corecrt_wstring.h>
+
+#include "Wwise/IO/Win32/AkFilePackageLowLevelIOBlocking.h"
+#include "Game/Assets/Sounds/Wwise_IDs.h"
 
 
 ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -10,161 +25,110 @@ ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, sta
 	name = "audio";
 }
 
-// Destructor
 ModuleAudio::~ModuleAudio()
-{}
-
-// Called before render is available
-bool ModuleAudio::Init(const JSON_Object& config)
 {
-	//app_log->AddLog("Loading Audio Mixer");
-	//bool ret = true;
-	//SDL_Init(0);
 
-	//if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
-	//{
-	//	app_log->AddLog("SDL_INIT_AUDIO could not initialize! SDL_Error: %s\n", SDL_GetError());
-	//	ret = false;
-	//}
+}
 
-	//// load support for the OGG format
-	//int flags = MIX_INIT_OGG;
-	//int init = Mix_Init(flags);
+bool ModuleAudio::Init(const JSON_Object* config)
+{
+	App->importer->ImportSounds();
 
-	//if((init & flags) != flags)
-	//{
-	//	app_log->AddLog("Could not initialize Mixer lib. Mix_Init: %s", Mix_GetError());
-	//	ret = true;
-	//}
+	app_log->AddLog("Initializing Wwise");
+	
+	bool ret = Wwise::InitWwise();
+	
+	LoadSoundBank("Character");
+	
+	return ret;
+}
 
-	////Initialize SDL_mixer
-	//if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-	//{
-	//	app_log->AddLog("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
-	//	ret = true;
-	//}
+bool ModuleAudio::Start()
+{
+	SetVolume(75);
 
 	return true;
 }
 
-// Called before quitting
-bool ModuleAudio::CleanUp()
+update_status ModuleAudio::PreUpdate(float dt)
 {
-	/*app_log->AddLog("Freeing sound FX, closing Mixer and Audio subsystem");
+	/*if (!muted) {
+		SetVolume("Volume", volume);
+	}
+	else {
+		SetVolume("Volume", 0);
+	}*/
 
-	for(auto it = audio_files.begin(); it != audio_files.end(); it++)
-		delete *it;
-
-	audio_files.clear();
-	Mix_CloseAudio();
-	Mix_Quit();
-	SDL_QuitSubSystem(SDL_INIT_AUDIO);*/
-	return true;
-}
-
-AudioFile* ModuleAudio::LoadAudio(const char* path, const char* name, AudioType type)
-{/*
-	AudioFile* audio_file = nullptr;
-	void* data = nullptr;
-
-	if (type == FX)
-		data = (void*)Mix_LoadWAV(path);
-	else if (type == MUSIC)
-		data = (void*)Mix_LoadMUS(path);
-
-	if (data)
+	// Set camera listener to camera position
+	if (App->scene->audiolistenerdefault)
 	{
-		audio_file = new AudioFile(name, last_audio_id++, data, type);
-		audio_files.push_back(audio_file);
+		float3 cam_pos = App->camera->selected_camera->getFrustum()->pos;
+		((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(TRANSFORM))->local->setPosition(cam_pos);
+		((ComponentTransform*)App->scene->audiolistenerdefault->getComponent(TRANSFORM))->local->CalculateMatrix();
 	}
 
-	return audio_file;*/
-	return nullptr;
+	return UPDATE_CONTINUE;
 }
 
 
-void ModuleAudio::Play(const char* name, uint repeat) const
-{/*
-	for (std::list<AudioFile*>::iterator it = audio_files.begin(); it != audio_files.end(); it++)
-		if ((*it)->name == name)
-		{
-			(*it)->Play(repeat);
-			return;
-		}
-		*/
-}
-
-void ModuleAudio::Play(uint id, uint repeat) const
+update_status ModuleAudio::PostUpdate(float dt)
 {
-	/*for (std::list<AudioFile*>::iterator it = audio_files.begin(); it != audio_files.end(); it++)
-		if ((*it)->id == id)
-		{
-			(*it)->Play(repeat);
-			return;
-		}
-*/
+	AK::SoundEngine::RenderAudio();
+
+	return UPDATE_CONTINUE;
 }
 
-void ModuleAudio::HaltMusic()
+bool ModuleAudio::CleanUp()
 {
-	/*Mix_HaltMusic();*/
+	app_log->AddLog("Freeing Wwise");
+	
+	return Wwise::CloseWwise();
+
+	return true;
 }
 
-void ModuleAudio::setMasterVolume(uint volume)
-{/*
-	master_volume = volume;
-	Mix_Volume(-1, master_volume * MIX_MAX_VOLUME);*/
-}
-
-void ModuleAudio::setMasterMusicVolume(uint volume)
+void ModuleAudio::SaveConfig(JSON_Object* config)const
 {
-	//if (!Mix_FadingMusic())
-	//{
-	//	music_volume = volume;
-	//	Mix_VolumeMusic(music_volume  * MIX_MAX_VOLUME);
-	//}
 }
 
-AudioFile::~AudioFile()
+void ModuleAudio::LoadConfig(const JSON_Object* config)
 {
-	//if (data)
-	//{
-	//	if(type == MUSIC)	Mix_FreeMusic((Mix_Music*)data);
-	//	else				Mix_FreeChunk((Mix_Chunk*)data);
-	//}
 }
 
-void AudioFile::Play(uint repeat)
+// -----------------------------
+
+void ModuleAudio::SetRTCP(const char* rtpcID, float value, AkGameObjectID id)
 {
-//	if (data)
-//	{
-//		if(type == FX)					// for FX
-//			channel = Mix_PlayChannel(-1, (Mix_Chunk*)data, repeat);  
-//		else if (type == MUSIC)			// for music
-//		{
-//			if (Mix_PlayingMusic())
-//			{
-//				if (fade_time > 0.0f)	Mix_FadeOutMusic((int)(fade_time * 1000.0f));
-//				else					Mix_HaltMusic();
-//			}
-//
-//			int res = -1;
-//			if (fade_time > 0.0f)	res = Mix_FadeInMusic((Mix_Music*)data, -1, (int)(fade_time * 1000.0f));
-//			else					res = Mix_PlayMusic((Mix_Music*)data, -1);
-//			
-//			if(res < 0)
-//				app_log->AddLog("Cannot fade in music. Mix_GetError(): %s", Mix_GetError());
-//		}
-//	}
+	AKRESULT eResult = AK::SoundEngine::SetRTPCValue(rtpcID, value, id);
+	if (eResult != AK_Success)
+	{
+		assert(!"Error changing audio volume!");
+	}
 }
 
-void AudioFile::Stop()
+void ModuleAudio::SetVolume(float value)
 {
-//	if (data)
-//	{
-//		if (type == FX)					// for FX
-//			Mix_HaltChannel(channel);
-//		else if (type == MUSIC)			// for music
-//			Mix_HaltMusic();
-//	}
+	if (!muted)
+	{
+		volume = value;
+		AK::SoundEngine::SetRTPCValue("VOLUME", value);
+	}
+	else
+		AK::SoundEngine::SetRTPCValue("VOLUME", value);
+}
+
+void ModuleAudio::LoadSoundBank(const char* path)
+{
+	//SoundBank* new_bank = new SoundBank();
+	std::string bank_path = AUDIO_DIRECTORY;
+	bank_path += path;
+	bank_path += AUDIO_EXTENSION;
+
+	Wwise::LoadBank(bank_path.c_str());
+
+	std::string json_file = bank_path.substr(0, bank_path.find_last_of('.')) + ".json"; // Changing .bnk with .json
+	/*GetBankInfo(json_file, new_bank);
+	soundbanks.push_back(new_bank);
+	soundbank = new_bank;
+	return new_bank;*/
 }

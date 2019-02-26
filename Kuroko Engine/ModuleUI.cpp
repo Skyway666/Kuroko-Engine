@@ -27,6 +27,7 @@
 #include "ComponentRectTransform.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
+#include "ComponentAudioSource.h"
 #include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
@@ -712,9 +713,12 @@ void ModuleUI::DrawObjectInspectorTab()
 
 bool ModuleUI::DrawComponent(Component& component, int id)
 {
+	bool ret = true;
+
 	ComponentCamera* camera = nullptr; // aux pointer
 
 	std::string tag;
+	ImGui::PushID(component.getUUID());
 
 	switch (component.getType())
 	{
@@ -934,7 +938,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove Component##Remove mesh"))
-				return false;
+				ret = false;
 		}
 		break;
 	case TRANSFORM:
@@ -1157,7 +1161,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove##Remove camera"))
-				return false;
+				ret = false;
 		}
 		break;
 	case SCRIPT:
@@ -1253,20 +1257,80 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							script_editor.SetText(App->scripting->edited_scripts.at(open_script_path));
 						else {
 							std::ifstream t(open_script_path.c_str());
-								if (t.good()) {
-									std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-										script_editor.SetText(str);
-								}
+							if (t.good()) {
+								std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+									script_editor.SetText(str);
+							}
 						}
 				}
 			}
 			if (ImGui::Button("Remove##Remove script"))
-				return false;
+				ret = false;
 
 		}
 	
 	}
 	break;
+	case AUDIOLISTENER:
+		if (ImGui::CollapsingHeader("Audio Listener", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::Checkbox("Mute", &App->audio->muted))
+			{
+				App->audio->SetVolume(App->audio->volume);
+			}
+			if (ImGui::SliderInt("Volume", &App->audio->volume, 0, 100))
+			{
+				App->audio->muted = false;
+				App->audio->SetVolume(App->audio->volume);
+			}
+			if (ImGui::Button("Remove##Remove audioListener"))
+				ret = false;
+		}
+		break;
+
+	case AUDIOSOURCE:
+		if (ImGui::CollapsingHeader("Audio Source", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			AkUniqueID ID = ((ComponentAudioSource*)&component)->sound_ID;
+			if (ID != 0)
+			{
+				ImGui::TextColored({ 0, 1, 0, 1 }, ((ComponentAudioSource*)&component)->name.c_str());
+				//ImGui::PushID(ID);
+				if (ImGui::Button("Play"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Stop"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->StopEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Pause"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->PauseEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Resume"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->ResumeEvent(ID);
+				}
+				if (ImGui::SliderInt("Volume", &((ComponentAudioSource*)&component)->volume, 0, 100))
+				{
+					App->audio->SetRTCP("VOLUME", ((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
+				}
+				//ImGui::PopID();
+			}
+			else
+			{
+				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
+			}
+
+			//ImGui::PushID(ID);
+			if (ImGui::Button("Remove##Remove audioSource"))
+				ret = false;
+			//ImGui::PopID();
+		}
 	case CANVAS:
 		if (ImGui::CollapsingHeader("Canvas"))
 		{
@@ -1292,19 +1356,20 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			ImGui::Text("Position:");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			if(ImGui::DragFloat2("##p", (float*)&position, 0.01f)){ rectTrans->setPos(position); }
+			if (ImGui::DragFloat2("##p", (float*)&position, 0.01f)) { rectTrans->setPos(position); }
 			//Width
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			if(ImGui::DragFloat("##h", &width, 0.01f, 0.0f, 0.0f, "%.02f")){rectTrans->setWidth(width);}
+			if (ImGui::DragFloat("##h", &width, 0.01f, 0.0f, 0.0f, "%.02f")) { rectTrans->setWidth(width); }
 			//Height
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.15f);
-			if(ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f")){rectTrans->setHeight(height);
+			if (ImGui::DragFloat("##w", &height, 0.01f, 0.0f, 0.0f, "%.02f")) {
+				rectTrans->setHeight(height);
 			}
 
-			
-			
+
+
 
 			ImGui::Checkbox("Debug draw", &rectTrans->debug_draw);
 		}
@@ -1313,8 +1378,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		if (ImGui::CollapsingHeader("UI Image"))
 		{
 			ComponentImageUI* image = (ComponentImageUI*)&component;
-			
-			ImGui::Image(image->getResourceTexture()!= nullptr ? (void*)image->getResourceTexture()->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
+
+			ImGui::Image(image->getResourceTexture() != nullptr ? (void*)image->getResourceTexture()->texture->getGLid() : (void*)ui_textures[NO_TEXTURE]->getGLid(), ImVec2(128, 128));
 			ImGui::SameLine();
 
 			int w = 0; int h = 0;
@@ -1332,9 +1397,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				uint new_resource = App->resources->getResourceUuid(texture_path.c_str());
 				if (new_resource != 0) {
 					App->resources->assignResource(new_resource);
-					if(image->getResourceTexture()!=nullptr)
+					if (image->getResourceTexture() != nullptr)
 						App->resources->deasignResource(image->getResourceTexture()->uuid);
-					image->setResourceTexture((ResourceTexture* )App->resources->getResource(new_resource));
+					image->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource));
 				}
 			}
 		}
@@ -1395,7 +1460,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 		if (ImGui::CollapsingHeader("UI Text"))
 		{
 			ComponentTextUI* text = (ComponentTextUI*)&component;
-			
+
 			static const int maxSize = 32;
 			if (ImGui::InputText("Label Text", (char*)text->label.text.c_str(), maxSize)) {
 				text->SetText(text->label.text.c_str());
@@ -1510,7 +1575,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 						App->resources->deasignResource(button->getResourceTexture(B_PRESSED)->uuid);
 					button->setResourceTexture((ResourceTexture*)App->resources->getResource(new_resource), B_PRESSED);
 				}
-			} 
+			}
 			// For debug
 			bool idle = false;
 			bool hover = false;
@@ -1524,10 +1589,10 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				button->doFadeOut();
 			}
 			if (ImGui::Button("Idle")) { button->setState(B_IDLE); } ImGui::SameLine();
-			if(ImGui::Button("Hover")) { button->setState(B_MOUSEOVER); }ImGui::SameLine();
+			if (ImGui::Button("Hover")) { button->setState(B_MOUSEOVER); }ImGui::SameLine();
 			if (ImGui::Button("Pressed")) { button->setState(B_PRESSED); }
 		}
-		break;	
+		break;
 	case ANIMATION:
 		if (ImGui::CollapsingHeader("Animation"))
 		{
@@ -1560,8 +1625,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	default:
 		break;
 	}
+	ImGui::PopID();
 
-	return true;
+	return ret;
 }
 
 void ModuleUI::DrawCameraViewWindow(Camera& camera)
