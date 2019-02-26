@@ -158,6 +158,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	uint object_uuid = random32bits();
 
 	json_object_set_string(json_object(game_object), "name", node.mName.C_Str());
+	json_object_set_string(json_object(game_object), "tag", "undefined");
 	json_object_set_boolean(json_object(game_object), "static", false);
 	json_object_set_number(json_object(game_object), "UUID", object_uuid);
 	if (parent != 0)

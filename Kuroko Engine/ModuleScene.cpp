@@ -352,16 +352,22 @@ GameObject* ModuleScene::duplicateGameObject(GameObject * gobj) {
 
 GameObject* ModuleScene::getGameObject(uint uuid) const
 {
-	for (auto it = game_objs_to_delete.begin(); it != game_objs_to_delete.end(); it++)
-		if (uuid == (*it)->getUUID())
-			return *it;
-
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		if (uuid == (*it)->getUUID())
 			return *it;
 
 	return nullptr;
 }
+std::list<GameObject*> ModuleScene::getGameObjectsByTag(std::string tag) {
+
+	std::list<GameObject*> ret;
+	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
+		if (tag == (*it)->tag)
+			ret.push_back((*it));
+
+	return ret;
+}
+
 
 void ModuleScene::getGameObjectsByComponent(Component_type type, std::list<GameObject*>& list_to_fill)
 {

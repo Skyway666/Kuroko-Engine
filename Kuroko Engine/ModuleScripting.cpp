@@ -18,6 +18,7 @@ void ConsoleLog(WrenVM* vm);
 void InstantiatePrefab(WrenVM* vm);
 void getTime(WrenVM* vm);
 void BreakPoint(WrenVM* vm);
+void FindGameObjectByTag(WrenVM* vm);
 
 // Math
 void sqrt(WrenVM* vm);
@@ -459,6 +460,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return getTime;
 			if (isStatic && strcmp(signature, "BreakPoint(_,_,_)") == 0)
 				return BreakPoint;
+			if (isStatic && strcmp(signature, "FindGameObjectsByTag(_)") == 0)
+				return FindGameObjectByTag;
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
 			if (isStatic && strcmp(signature, "getKey(_,_)") == 0)
@@ -783,4 +786,23 @@ void getButton(WrenVM* vm) {
 	
 	wrenSetSlotBool(vm, 0, controller->isPressed(input, mode));
 
+}
+
+void FindGameObjectByTag(WrenVM* vm) {
+	std::string tag = wrenGetSlotString(vm, 1);
+
+	std::list<GameObject*> tagged_gos = App->scene->getGameObjectsByTag(tag);
+
+	// Initialized list
+	wrenSetSlotNewList(vm, 0); 
+
+	// Fill list
+	wrenEnsureSlots(vm, 3);
+	for(auto it = tagged_gos.begin(); it != tagged_gos.end(); it++){
+		wrenSetSlotDouble(vm, 2, (*it)->getUUID());
+		wrenInsertInList(vm, 0, -1, 2);
+	}
+
+
+	// retrun the list in slot 0
 }

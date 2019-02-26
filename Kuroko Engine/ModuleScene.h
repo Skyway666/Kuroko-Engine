@@ -47,6 +47,7 @@ public:
 	GameObject* duplicateGameObject(GameObject* gobj);
 
 	GameObject* getGameObject(uint uuid) const;
+	std::list<GameObject*> getGameObjectsByTag(std::string tag);
 	void getGameObjectsByComponent(Component_type type, std::list<GameObject*>& list_to_fill);
 	Quadtree* getQuadtree() { return quadtree; }
 	bool existingScene() { return working_on_existing_scene;}
