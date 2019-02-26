@@ -15,8 +15,7 @@
 
 #include "glew-2.1.0\include\GL\glew.h"
 
-#define CAM_SPEED_CONST 2.5f
-#define CAM_ROT_SPEED_CONST 0.25f
+
 
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -40,6 +39,9 @@ bool ModuleCamera3D::Init(const JSON_Object* config)
 	viewports[VP_DOWN]	= new Camera(float3(0.0, -10.0f, 0.0f), float3::zero);
 	viewports[VP_FRONT] = new Camera(float3(0.0, 0.0f, 10.0f ), float3::zero);
 	viewports[VP_BACK]	= new Camera(float3(0.0, 0.0f, -10.0f), float3::zero);
+
+	camera_speed = 2.5f;
+	camera_rotation_speed = 0.25f;
 
 	return true;
 }
@@ -83,7 +85,7 @@ update_status ModuleCamera3D::Update(float dt)
 	{
 		// Movement
 		float3 displacement = float3::zero;
-		float speed = CAM_SPEED_CONST * dt;
+		float speed = camera_speed * dt;
 		bool orbit = (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && selected_camera == editor_camera);
 
 		ComponentTransform* transform = nullptr;
@@ -157,15 +159,15 @@ update_status ModuleCamera3D::Update(float dt)
 
 			if (dx)
 			{
-				X = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * X;
-				Y = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
-				Z = Quat::RotateY(dx * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
+				X = Quat::RotateY(dx * camera_rotation_speed * DEGTORAD) * X;
+				Y = Quat::RotateY(dx * camera_rotation_speed * DEGTORAD) * Y;
+				Z = Quat::RotateY(dx * camera_rotation_speed * DEGTORAD) * Z;
 			}
 
 			if (dy)
 			{
-				Y = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Y;
-				Z = Quat::RotateAxisAngle(X, dy * CAM_ROT_SPEED_CONST * DEGTORAD) * Z;
+				Y = Quat::RotateAxisAngle(X, dy * camera_rotation_speed * DEGTORAD) * Y;
+				Z = Quat::RotateAxisAngle(X, dy * camera_rotation_speed * DEGTORAD) * Z;
 
 				if (Y.y < 0.0f)
 				{

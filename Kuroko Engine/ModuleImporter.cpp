@@ -144,13 +144,13 @@ void* ModuleImporter::ImportTexturePointer(const char* file) {
 void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, const std::map<std::string, uint>& in_bone_id, uint parent)
 {
 	std::string name = node.mName.C_Str();
-	if (name.find("$Assimp") != std::string::npos)
-	{
-		for (int i = 0; i < node.mNumChildren; i++)
-			ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, in_bone_id, parent);
 
-		return;
-	}
+	//if (name.find("$Assimp") != std::string::npos)
+	//{
+	//	for (int i = 0; i < node.mNumChildren; i++)
+	//		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, parent);
+	//	return;
+	//}
 
 
 	JSON_Value* game_object = json_value_init_object();

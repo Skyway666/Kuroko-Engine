@@ -65,6 +65,8 @@ public:
 	int vector_limit; 
 	std::string config_file_name, custom_config_file_name;
 
+	bool is_game = false;
+
 
 private:
 
@@ -78,6 +80,7 @@ private:
 	bool want_to_load_default_config = false;
 
 	bool close_app = false;
+
 };
 
 extern Application* App;
