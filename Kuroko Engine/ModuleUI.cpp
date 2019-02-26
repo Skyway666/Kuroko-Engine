@@ -128,7 +128,7 @@ bool ModuleUI::Start()
 
 
 	// HARDCODE
-	App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
+	//App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
 
 	return true;
 }
