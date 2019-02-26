@@ -21,6 +21,7 @@ class ModuleTimeManager;
 class ModuleResourcesManager;
 class ModuleScripting;
 class FontManager;
+class ModuleShaders;
 
 class Application
 {
@@ -38,6 +39,7 @@ public:
 	ModuleResourcesManager* resources;
 	ModuleScripting* scripting;
 	FontManager* fontManager;
+	ModuleShaders* shaders;
 
 	FileSystem fs;
 private:
@@ -65,6 +67,8 @@ public:
 	int vector_limit; 
 	std::string config_file_name, custom_config_file_name;
 
+	bool is_game = false;
+
 
 private:
 
@@ -78,6 +82,7 @@ private:
 	bool want_to_load_default_config = false;
 
 	bool close_app = false;
+
 };
 
 extern Application* App;
