@@ -800,4 +800,47 @@ Texture * ModuleImporter::LoadTextureFromLibrary(const char * file) {
 	return new Texture(ilutGLLoadImage((char*)file), file, false);
 }
 
+void ModuleImporter::ImportSounds()
+{
+	char folderPath[256];
+	GetCurrentDirectory(256, folderPath);
+	// Add the assets folder to the path
+	std::string path = folderPath;
+	path += "\\Assets\\Sounds/*";
 
+	WIN32_FIND_DATA file;
+	HANDLE search_handle = FindFirstFile(path.c_str(), &file);
+	if (search_handle)
+	{
+		do
+		{
+			if (file.dwFileAttributes && FILE_ATTRIBUTE_DIRECTORY)
+			{
+				// Check type of flie
+				std::string name = file.cFileName;
+				std::string extension = "";
+				for (int i = name.size() - 1; i >= 0; i--)
+					if (name[i] == '.' | name[i] == ' ')
+						break;
+					else
+						extension = name[i] + extension;
+
+				if (extension == "bnk")
+				{
+					std::string source = path;
+					source.pop_back();
+					source += name;
+
+					std::string destiny = folderPath;
+					destiny += "\\Library\\Sounds/" + name;
+
+					std::ifstream  src(source, std::ios::binary);
+					std::ofstream  dst(destiny, std::ios::binary);
+
+					dst << src.rdbuf();
+				}
+			}
+		} while (FindNextFile(search_handle, &file));
+		FindClose(search_handle);
+	}
+}

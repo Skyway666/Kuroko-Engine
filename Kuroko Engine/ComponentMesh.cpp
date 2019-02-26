@@ -23,6 +23,7 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	
 	//std::string mesh_name = json_object_get_string(deff, "mesh_name"); // Mesh name not used for now
 
+	uuid = json_object_get_number(deff, "UUID");
 	primitive_type = primitiveString2PrimitiveType(json_object_get_string(deff, "primitive_type"));
 
 
@@ -205,6 +206,7 @@ std::string ComponentMesh::PrimitiveType2primitiveString(PrimitiveTypes type) {
 }
 
 void ComponentMesh::Save(JSON_Object* config) {
+	json_object_set_number(config, "UUID", uuid);
 	// Determine the type of the mesh
  	// Component has two strings, one for mesh name, and another for diffuse texture name
 	json_object_set_string(config, "type", "mesh");

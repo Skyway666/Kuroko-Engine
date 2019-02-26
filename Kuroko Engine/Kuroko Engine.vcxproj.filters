@@ -73,6 +73,12 @@
     <Filter Include="Sources\Wren">
       <UniqueIdentifier>{c8910b2e-3ed2-4c21-9d95-9612a86c5349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Wwise">
+      <UniqueIdentifier>{55d2cb8f-4c73-4633-9935-c1796e772170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Helpers\Wwise">
+      <UniqueIdentifier>{c5af1ade-1df7-43f7-aece-b87d70efaf91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -477,6 +483,18 @@
     <ClInclude Include="ResourceScene.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Include_Wwise.h">
+      <Filter>Sources\Helpers\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise.h">
+      <Filter>Sources\Helpers\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAudioListener.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentAudioSource.h">
+      <Filter>Sources\Game</Filter>
+    </ClInclude>
     <ClInclude Include="ComponentBone.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
@@ -770,6 +788,38 @@
     <ClCompile Include="ResourceScene.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Wwise\IO\Common\AkDefaultLowLevelIODispatcher.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\IO\Common\AkFileLocationBase.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\IO\Common\AkFilePackage.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\IO\Common\AkFilePackageLUT.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\IO\Win32\AkDefaultIOHookDeferred.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\IO\Win32\AkDefaultIOHookBlocking.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\IO\Win32\stdafx.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Include_Wwise.cpp">
+      <Filter>Sources\Helpers\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise.cpp">
+      <Filter>Sources\Helpers\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAudioListener.cpp">
+      <Filter>Sources\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentAudioSource.cpp">
+      <Filter>Sources\Game</Filter>
     <ClCompile Include="ComponentAnimation.cpp">
       <Filter>Sources\Game</Filter>
     </ClCompile>

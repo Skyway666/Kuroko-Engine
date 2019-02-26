@@ -5,6 +5,8 @@
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
 #include "ComponentScript.h"
+#include "ComponentAudioListener.h"
+#include "ComponentAudioSource.h"
 #include "ComponentBone.h"
 #include "ComponentAnimation.h"
 #include "Camera.h"
@@ -53,6 +55,11 @@ GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 		else if (type == "script") {
 			component = new ComponentScript(component_deff, this);
 		}
+		else if (type == "audioListener") {
+			component = new ComponentAudioListener(component_deff, this);
+		}
+		else if (type == "audioSource") {
+			component = new ComponentAudioSource(component_deff, this);
 		else if (type == "bone") {
 			component = new ComponentBone(component_deff, this);
 		}
@@ -213,6 +220,17 @@ Component* GameObject::addComponent(Component_type type)
 		new_component = new ComponentScript(this);
 		components.push_back(new_component);
 		break;
+	case AUDIOLISTENER:
+		if (!getComponent(AUDIOLISTENER))
+		{
+			new_component = new ComponentAudioListener(this);
+			components.push_back(new_component);
+		}
+		break;
+	case AUDIOSOURCE:
+		new_component = new ComponentAudioSource(this);
+		components.push_back(new_component);
+		break;
 	case BONE:
 		new_component = new ComponentBone(this);
 		components.push_back(new_component);
@@ -255,6 +273,13 @@ void GameObject::addComponent(Component* component)
 			components.push_back(component);
 		break;
 	case SCRIPT:
+		components.push_back(component);
+		break;
+	case AUDIOLISTENER:
+		if (!getComponent(AUDIOLISTENER))
+			components.push_back(component);
+		break;
+	case AUDIOSOURCE:
 		components.push_back(component);
 		break;
 	case BONE:

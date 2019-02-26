@@ -2,7 +2,7 @@
 
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
-//#include "ModuleAudio.h"
+#include "ModuleAudio.h"
 #include "ModuleScene.h"
 #include "ModuleDebug.h"
 #include "ModuleRenderer3D.h"
@@ -33,6 +33,7 @@ Application::Application()
 	CreateDirectory("Library\\Textures", NULL);
 	CreateDirectory("Library\\3dObjects", NULL);
 	CreateDirectory("Library\\Scripts", NULL);
+	CreateDirectory("Library\\Sounds", NULL);
 	CreateDirectory("Library\\Materials", NULL);
 
 
@@ -46,7 +47,7 @@ Application::Application()
 
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
-	//audio = new ModuleAudio(this, true);   // dummy module until further implementation
+	audio = new ModuleAudio(this);
 	scene = new ModuleScene(this);
 	debug = new ModuleDebug(this);
 	renderer3D = new ModuleRenderer3D(this);
@@ -70,13 +71,13 @@ Application::Application()
 	list_modules.push_back(window);
 	list_modules.push_back(camera);
 	list_modules.push_back(input);
-	//list_modules.push_back(audio);
 	list_modules.push_back(importer);
 
 	
 	
 	// Scenes
 	list_modules.push_back(scene);
+	list_modules.push_back(audio);
 	list_modules.push_back(debug);
 
 	// Renderer last!

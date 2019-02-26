@@ -19,6 +19,8 @@
 #include "Transform.h"
 #include "ComponentMesh.h"
 #include "ComponentScript.h"
+#include "ComponentAudioListener.h"
+#include "ComponentAudioSource.h"
 #include "ModuleUI.h"
 #include "ModuleResourcesManager.h"
 
@@ -27,6 +29,7 @@
 #include "glew-2.1.0\include\GL\glew.h"
 #include "Random.h"
 
+#include "Game/Assets/Sounds/Wwise_IDs.h"
 #include "ImGui\imgui.h"
 
 #include <array>
@@ -56,6 +59,7 @@ bool ModuleScene::Start()
 	skybox->setAllTextures(skybox_texs);
 
 	quadtree = new Quadtree(AABB(float3(-50, -10, -50), float3(50, 10, 50)));
+
 	return true;
 }
 
@@ -136,6 +140,25 @@ update_status ModuleScene::Update(float dt)
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
 		(*it)->Update(dt);
+
+	if (!audiolistenerdefault && App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
+	{
+		// Create audio listener
+		audiolistenerdefault = new GameObject("Default Audio Listener");
+		audiolistenerdefault->addComponent(AUDIOLISTENER);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN)
+	{
+		// Create audio source
+		GameObject* audiosource = new GameObject("Audio Source");
+		ComponentAudioSource* component = (ComponentAudioSource*)audiosource->addComponent(AUDIOSOURCE);
+		component->SetSoundID(AK::EVENTS::PUNCH);
+		component->SetSoundName("Punch");
+		component = (ComponentAudioSource*)audiosource->addComponent(AUDIOSOURCE);
+		component->SetSoundID(AK::EVENTS::FOOTSTEPS);
+		component->SetSoundName("Footsteps");
+	}
 
 	return UPDATE_CONTINUE;
 }

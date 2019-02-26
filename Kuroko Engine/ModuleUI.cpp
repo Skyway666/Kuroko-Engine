@@ -23,6 +23,7 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
+#include "ComponentAudioSource.h"
 #include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
@@ -625,9 +626,12 @@ void ModuleUI::DrawObjectInspectorTab()
 
 bool ModuleUI::DrawComponent(Component& component, int id)
 {
+	bool ret = true;
+
 	ComponentCamera* camera = nullptr; // aux pointer
 
 	std::string tag;
+	ImGui::PushID(component.getUUID());
 
 	switch (component.getType())
 	{
@@ -847,7 +851,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove Component##Remove mesh"))
-				return false;
+				ret = false;
 		}
 		break;
 	case TRANSFORM:
@@ -1070,7 +1074,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove##Remove camera"))
-				return false;
+				ret = false;
 		}
 		break;
 	case SCRIPT:
@@ -1166,20 +1170,79 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							script_editor.SetText(App->scripting->edited_scripts.at(open_script_path));
 						else {
 							std::ifstream t(open_script_path.c_str());
-								if (t.good()) {
-									std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-										script_editor.SetText(str);
-								}
+							if (t.good()) {
+								std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+									script_editor.SetText(str);
+							}
 						}
 				}
 			}
 			if (ImGui::Button("Remove##Remove script"))
-				return false;
+				ret = false;
 
 		}
 	
 	}
 	break;
+	case AUDIOLISTENER:
+		if (ImGui::CollapsingHeader("Audio Listener", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (ImGui::Checkbox("Mute", &App->audio->muted))
+			{
+				App->audio->SetVolume(App->audio->volume);
+			}
+			if (ImGui::SliderInt("Volume", &App->audio->volume, 0, 100))
+			{
+				App->audio->muted = false;
+				App->audio->SetVolume(App->audio->volume);
+			}
+			if (ImGui::Button("Remove##Remove audioListener"))
+				ret = false;
+		}
+		break;
+
+	case AUDIOSOURCE:
+		if (ImGui::CollapsingHeader("Audio Source", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			AkUniqueID ID = ((ComponentAudioSource*)&component)->sound_ID;
+			if (ID != 0)
+			{
+				ImGui::TextColored({ 0, 1, 0, 1 }, ((ComponentAudioSource*)&component)->name.c_str());
+				//ImGui::PushID(ID);
+				if (ImGui::Button("Play"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Stop"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->StopEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Pause"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->PauseEvent(ID);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Resume"))
+				{
+					((ComponentAudioSource*)&component)->sound_go->ResumeEvent(ID);
+				}
+				if (ImGui::SliderInt("Volume", &((ComponentAudioSource*)&component)->volume, 0, 100))
+				{
+					App->audio->SetRTCP("VOLUME", ((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
+				}
+				//ImGui::PopID();
+			}
+			else
+			{
+				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
+			}
+
+			//ImGui::PushID(ID);
+			if (ImGui::Button("Remove##Remove audioSource"))
+				ret = false;
+			//ImGui::PopID(
 	case ANIMATION:
 		if (ImGui::CollapsingHeader("Animation"))
 		{
@@ -1212,8 +1275,9 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	default:
 		break;
 	}
+	ImGui::PopID();
 
-	return true;
+	return ret;
 }
 
 void ModuleUI::DrawCameraViewWindow(Camera& camera)
