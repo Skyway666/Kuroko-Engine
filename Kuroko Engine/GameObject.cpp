@@ -5,10 +5,6 @@
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
 #include "ComponentScript.h"
-#include "ComponentAudioListener.h"
-#include "ComponentAudioSource.h"
-#include "ComponentBone.h"
-#include "ComponentAnimation.h"
 #include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
@@ -31,7 +27,6 @@ GameObject::GameObject(const char* name, GameObject* parent) : name(name), paren
 
 GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 	name = json_object_get_string(deff, "name");
-	tag = json_object_get_string(deff, "tag");
 	is_static = json_object_get_boolean(deff, "static");
 
 	// Create components
@@ -54,17 +49,6 @@ GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 		}
 		else if (type == "script") {
 			component = new ComponentScript(component_deff, this);
-		}
-		else if (type == "audioListener") {
-			component = new ComponentAudioListener(component_deff, this);
-		}
-		else if (type == "audioSource") {
-			component = new ComponentAudioSource(component_deff, this);
-		else if (type == "bone") {
-			component = new ComponentBone(component_deff, this);
-		}
-		else if (type == "animation") {
-			component = new ComponentAnimation(component_deff, this);
 		}
 
 		// Set component's parent-child
@@ -152,24 +136,13 @@ bool GameObject::getComponents(Component_type type, std::list<Component*>& list_
 
 GameObject* GameObject::getChild(const char* name) const
 {
-	GameObject* child = nullptr;
-
-	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it)
+	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); it++)
 	{
 		if ((*it)->getName() == name)
-		{
-			child = (*it);
-			break;
-		}
-		else
-		{
-			child = (*it)->getChild(name);
-			if (child != nullptr)
-				break;
-		}
+			return *it;
 	}
 
-	return child;
+	return nullptr;
 }
 
 void GameObject::getAllDescendants(std::list<GameObject*>& list_to_fill) const
@@ -220,28 +193,6 @@ Component* GameObject::addComponent(Component_type type)
 		new_component = new ComponentScript(this);
 		components.push_back(new_component);
 		break;
-	case AUDIOLISTENER:
-		if (!getComponent(AUDIOLISTENER))
-		{
-			new_component = new ComponentAudioListener(this);
-			components.push_back(new_component);
-		}
-		break;
-	case AUDIOSOURCE:
-		new_component = new ComponentAudioSource(this);
-		components.push_back(new_component);
-		break;
-	case BONE:
-		new_component = new ComponentBone(this);
-		components.push_back(new_component);
-		break;
-	case ANIMATION:
-		if (!getComponent(ANIMATION))
-		{
-			new_component = new ComponentAnimation(this);
-			components.push_back(new_component);
-		}
-		break;
 	default:
 		break;
 	}
@@ -274,20 +225,6 @@ void GameObject::addComponent(Component* component)
 		break;
 	case SCRIPT:
 		components.push_back(component);
-		break;
-	case AUDIOLISTENER:
-		if (!getComponent(AUDIOLISTENER))
-			components.push_back(component);
-		break;
-	case AUDIOSOURCE:
-		components.push_back(component);
-		break;
-	case BONE:
-		components.push_back(component);
-		break;
-	case ANIMATION:
-		if (!getComponent(ANIMATION))
-			components.push_back(component);
 		break;
 	default:
 		break;
@@ -326,10 +263,8 @@ void GameObject::Save(JSON_Object * config) {
 
 	// Saving object own variables
 	json_object_set_string(config, "name", name.c_str());
-	json_object_set_string(config, "tag", tag.c_str());
 	json_object_set_boolean(config, "static", is_static);
 	json_object_set_number(config, "UUID", uuid);
-
 	if (parent) json_object_set_number(config, "Parent", parent->uuid);
 
 	// Saving components components

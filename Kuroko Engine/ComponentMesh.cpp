@@ -23,7 +23,6 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	
 	//std::string mesh_name = json_object_get_string(deff, "mesh_name"); // Mesh name not used for now
 
-	uuid = json_object_get_number(deff, "UUID");
 	primitive_type = primitiveString2PrimitiveType(json_object_get_string(deff, "primitive_type"));
 
 
@@ -88,17 +87,14 @@ void ComponentMesh::Draw() const
 				glLoadMatrixf((GLfloat*)(transform->global->getMatrix().Transposed() * view_mat).v);
 			}
 
+
 			if (draw_normals || App->scene->global_normals)
 				mesh_from_resource->DrawNormals();
 
 			if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-			//mesh_from_resource->Draw(mat);
-			//Descoment to use shader render
-			ComponentAnimation* animation = nullptr;
-			animation = (ComponentAnimation*)getParent()->getComponent(ANIMATION);
-			mesh_from_resource->MaxDrawFunctionTest(mat, animation,*transform->global->getMatrix().Transposed().v);
+			mesh_from_resource->Draw(mat);
 
 
 			if (transform)
@@ -134,11 +130,7 @@ void ComponentMesh::DrawSelected() const
 			Mesh* mesh_from_resource = getMeshFromResource();
 
 
-			//mesh_from_resource->Draw(nullptr, true);
-			//Descoment to use shader render
-			ComponentAnimation* animation = nullptr;
-			animation = (ComponentAnimation*)getParent()->getComponent(ANIMATION);
-			mesh_from_resource->MaxDrawFunctionTest(nullptr,animation,*transform->global->getMatrix().Transposed().v, true);
+			mesh_from_resource->Draw(nullptr, true);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -206,7 +198,6 @@ std::string ComponentMesh::PrimitiveType2primitiveString(PrimitiveTypes type) {
 }
 
 void ComponentMesh::Save(JSON_Object* config) {
-	json_object_set_number(config, "UUID", uuid);
 	// Determine the type of the mesh
  	// Component has two strings, one for mesh name, and another for diffuse texture name
 	json_object_set_string(config, "type", "mesh");

@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>Kuroko Engine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -40,12 +40,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(WWISESDK)\include</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(WWISESDK)\include</IncludePath>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -53,7 +48,6 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Wwise</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
@@ -70,7 +64,6 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Wwise</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -87,10 +80,6 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentAABB.h" />
-    <ClInclude Include="ComponentAudioListener.h" />
-    <ClInclude Include="ComponentAudioSource.h" />
-    <ClInclude Include="ComponentAnimation.h" />
-    <ClInclude Include="ComponentBone.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTransform.h" />
@@ -112,7 +101,6 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="ImGui\TextEditor.h" />
-    <ClInclude Include="Include_Wwise.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Math.h" />
@@ -182,7 +170,6 @@
     <ClInclude Include="ModuleImporter.h" />
     <ClInclude Include="ModuleResourcesManager.h" />
     <ClInclude Include="ModuleScripting.h" />
-    <ClInclude Include="ModuleShaders.h" />
     <ClInclude Include="ModuleTimeManager.h" />
     <ClInclude Include="ModuleUI.h" />
     <ClInclude Include="ModuleRenderer3D.h" />
@@ -196,8 +183,6 @@
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="ResourceAnimation.h" />
-    <ClInclude Include="ResourceBone.h" />
     <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="Resource3dObject.h" />
     <ClInclude Include="ResourcePrefab.h" />
@@ -223,17 +208,12 @@
     <ClInclude Include="Wren\wren_utils.h" />
     <ClInclude Include="Wren\wren_value.h" />
     <ClInclude Include="Wren\wren_vm.h" />
-    <ClInclude Include="Wwise.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ComponentAABB.cpp" />
-    <ClCompile Include="ComponentAudioListener.cpp" />
-    <ClCompile Include="ComponentAudioSource.cpp" />
-    <ClCompile Include="ComponentAnimation.cpp" />
-    <ClCompile Include="ComponentBone.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
@@ -248,7 +228,6 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\ImSequencer.cpp" />
     <ClCompile Include="ImGui\TextEditor.cpp" />
-    <ClCompile Include="Include_Wwise.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -292,7 +271,6 @@
     <ClCompile Include="ModuleImporter.cpp" />
     <ClCompile Include="ModuleResourcesManager.cpp" />
     <ClCompile Include="ModuleScripting.cpp" />
-    <ClCompile Include="ModuleShaders.cpp" />
     <ClCompile Include="ModuleTimeManager.cpp" />
     <ClCompile Include="ModuleUI.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
@@ -304,8 +282,6 @@
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ResourceAnimation.cpp" />
-    <ClCompile Include="ResourceBone.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="Resource3dObject.cpp" />
     <ClCompile Include="ResourcePrefab.cpp" />
@@ -326,14 +302,6 @@
     <ClCompile Include="Wren\wren_utils.c" />
     <ClCompile Include="Wren\wren_value.c" />
     <ClCompile Include="Wren\wren_vm.c" />
-    <ClCompile Include="Wwise.cpp" />
-    <ClCompile Include="Wwise\IO\Common\AkDefaultLowLevelIODispatcher.cpp" />
-    <ClCompile Include="Wwise\IO\Common\AkFileLocationBase.cpp" />
-    <ClCompile Include="Wwise\IO\Common\AkFilePackage.cpp" />
-    <ClCompile Include="Wwise\IO\Common\AkFilePackageLUT.cpp" />
-    <ClCompile Include="Wwise\IO\Win32\AkDefaultIOHookBlocking.cpp" />
-    <ClCompile Include="Wwise\IO\Win32\AkDefaultIOHookDeferred.cpp" />
-    <ClCompile Include="Wwise\IO\Win32\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Geometry\KDTree.inl" />

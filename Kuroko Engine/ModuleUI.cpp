@@ -23,11 +23,9 @@
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "ComponentScript.h"
-#include "ComponentAudioSource.h"
 #include "Transform.h"
 #include "ComponentAABB.h"
 #include "ComponentCamera.h"
-#include "ComponentAnimation.h"
 #include "Camera.h"
 #include "Quadtree.h"
 #include "ResourceTexture.h"
@@ -80,9 +78,6 @@ bool ModuleUI::Init(const JSON_Object* config) {
 
 	InitializeScriptEditor();
 
-	// If it is a game build, we hide UI
-	enabled = !App->is_game;
-
 
 	return true;
 }
@@ -129,7 +124,7 @@ bool ModuleUI::Start()
 
 
 	// HARDCODE
-	App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
+	App->scene->AskSceneLoadFile("Assets/Scenes/tank scene.scene");
 
 	return true;
 }
@@ -141,8 +136,6 @@ update_status ModuleUI::PreUpdate(float dt) {
 
 	ImGui_ImplSDL2_NewFrame(App->window->main_window->window);
 	ImGui::NewFrame();
-
-	
 
 	//ImGui::ShowDemoWindow();
 	return UPDATE_CONTINUE;
@@ -168,8 +161,6 @@ update_status ModuleUI::Update(float dt) {
 			DrawHardwareLeaf();
 		if (ImGui::CollapsingHeader("Application"))
 			DrawApplicationLeaf();
-		if (ImGui::CollapsingHeader("Editor preferences"))
-			DrawEditorPreferencesLeaf();
 
 		if (ImGui::Button("Reset Camera"))
 			App->camera->editor_camera->Reset();
@@ -368,6 +359,10 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::End();
 	}
 
+
+	//if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN) 
+	//	open_tabs[CONFIGURATION] = !open_tabs[CONFIGURATION];
+
 	if (App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN && !disable_keyboard_control) {
 		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
 		for (int i = 0; i < 6; i++)
@@ -565,24 +560,13 @@ void ModuleUI::DrawObjectInspectorTab()
 		ImGui::SameLine();
 		if (ImGui::Checkbox("Static", &selected_obj->is_static)) // If an object is set/unset static, reload the quadtree
 			App->scene->quadtree_reload = true;
-
-		DrawTagSelection(selected_obj);
-		// Add a new tag
-		static char new_tag[64];
-		ImGui::InputText("New Tag", new_tag, 64);
-		if (ImGui::Button("Add Tag")) {
-			App->scripting->tags.push_back(new_tag);
-			for (int i = 0; i < 64; i++)
-				new_tag[i] = '\0';
-			
-		}
+		
 
 		if (ImGui::CollapsingHeader("Add component"))
 		{
 			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); 
 			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 			if (ImGui::Button("Add Script")) select_script = true;
-			if (ImGui::Button("Add Animation")) selected_obj->addComponent(ANIMATION);
 		}
 
 		std::list<Component*> components;
@@ -626,12 +610,9 @@ void ModuleUI::DrawObjectInspectorTab()
 
 bool ModuleUI::DrawComponent(Component& component, int id)
 {
-	bool ret = true;
-
 	ComponentCamera* camera = nullptr; // aux pointer
 
 	std::string tag;
-	ImGui::PushID(component.getUUID());
 
 	switch (component.getType())
 	{
@@ -851,7 +832,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove Component##Remove mesh"))
-				ret = false;
+				return false;
 		}
 		break;
 	case TRANSFORM:
@@ -1074,7 +1055,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove##Remove camera"))
-				ret = false;
+				return false;
 		}
 		break;
 	case SCRIPT:
@@ -1170,114 +1151,25 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 							script_editor.SetText(App->scripting->edited_scripts.at(open_script_path));
 						else {
 							std::ifstream t(open_script_path.c_str());
-							if (t.good()) {
-								std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-									script_editor.SetText(str);
-							}
+								if (t.good()) {
+									std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+										script_editor.SetText(str);
+								}
 						}
 				}
 			}
 			if (ImGui::Button("Remove##Remove script"))
-				ret = false;
+				return false;
 
 		}
 	
 	}
 	break;
-	case AUDIOLISTENER:
-		if (ImGui::CollapsingHeader("Audio Listener", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			if (ImGui::Checkbox("Mute", &App->audio->muted))
-			{
-				App->audio->SetVolume(App->audio->volume);
-			}
-			if (ImGui::SliderInt("Volume", &App->audio->volume, 0, 100))
-			{
-				App->audio->muted = false;
-				App->audio->SetVolume(App->audio->volume);
-			}
-			if (ImGui::Button("Remove##Remove audioListener"))
-				ret = false;
-		}
-		break;
-
-	case AUDIOSOURCE:
-		if (ImGui::CollapsingHeader("Audio Source", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			AkUniqueID ID = ((ComponentAudioSource*)&component)->sound_ID;
-			if (ID != 0)
-			{
-				ImGui::TextColored({ 0, 1, 0, 1 }, ((ComponentAudioSource*)&component)->name.c_str());
-				//ImGui::PushID(ID);
-				if (ImGui::Button("Play"))
-				{
-					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Stop"))
-				{
-					((ComponentAudioSource*)&component)->sound_go->StopEvent(ID);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Pause"))
-				{
-					((ComponentAudioSource*)&component)->sound_go->PauseEvent(ID);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Resume"))
-				{
-					((ComponentAudioSource*)&component)->sound_go->ResumeEvent(ID);
-				}
-				if (ImGui::SliderInt("Volume", &((ComponentAudioSource*)&component)->volume, 0, 100))
-				{
-					App->audio->SetRTCP("VOLUME", ((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
-				}
-				//ImGui::PopID();
-			}
-			else
-			{
-				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
-			}
-
-			//ImGui::PushID(ID);
-			if (ImGui::Button("Remove##Remove audioSource"))
-				ret = false;
-			//ImGui::PopID(
-	case ANIMATION:
-		if (ImGui::CollapsingHeader("Animation"))
-		{
-			//SKELETAL_TODO: missing resource info
-
-			ComponentAnimation* anim = (ComponentAnimation*)&component;
-
-			static bool animation_active;
-			animation_active = anim->isActive();
-
-			if (ImGui::Checkbox("Active##active animation", &animation_active))
-				anim->setActive(animation_active);
-
-			//Change/Add animation button
-			//getAnimationResourceList()
-
-			ImGui::Checkbox("Loop", &anim->loop);
-
-			ImGui::PushID("Speed");
-			ImGui::InputFloat("", &anim->speed, 0.0f, 0.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-			ImGui::PopID();
-		}
-		break;
-	case BONE:
-		if (ImGui::CollapsingHeader("Bone"))
-		{
-
-		}
-		break;
 	default:
 		break;
 	}
-	ImGui::PopID();
 
-	return ret;
+	return true;
 }
 
 void ModuleUI::DrawCameraViewWindow(Camera& camera)
@@ -2351,18 +2243,6 @@ void ModuleUI::DrawApplicationLeaf() const
 	ImGui::PopFont();
 }
 
-void ModuleUI::DrawEditorPreferencesLeaf() const {
-
-	static float camera_speed = 2.5f;
-	if (ImGui::InputFloat("Camera speed", &camera_speed))
-		App->camera->camera_speed = camera_speed;
-
-
-	static float camera_rotation_speed = 0.25f;
-	if (ImGui::InputFloat("Camera rotation speed", &camera_rotation_speed))
-		App->camera->camera_rotation_speed = camera_rotation_speed;
-}
-
 void ModuleUI::DrawTimeControlWindow()
 {
 	ImGui::Begin("Time control", &open_tabs[TIME_CONTROL]);
@@ -2420,24 +2300,26 @@ void ModuleUI::DrawGizmoMenuTab() {
 	else
 	{
 
-		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)) || App->input->GetKey(SDL_SCANCODE_U) == KEY_DOWN)
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SELECT]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, !draw_guizmo ? 1.0f : 0.0f)))
 			draw_guizmo = !draw_guizmo;
 
-
 		ImGui::SameLine();
-		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)) || App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_TRANSLATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::TRANSLATE && draw_guizmo ? 1.0f : 0.0f)))
+		{
 			gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
 			draw_guizmo = true;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)) || App->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN) {
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_ROTATE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::ROTATE && draw_guizmo ? 1.0f : 0.0f)))
+		{
 			gizmo_operation = ImGuizmo::OPERATION::ROTATE;
 			draw_guizmo = true;
 		}
 
 		ImGui::SameLine();
-		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)) || App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+		if (ImGui::ImageButton((void*)ui_textures[GUIZMO_SCALE]->getGLid(), ImVec2(32, 32), nullptr, ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.7f, 0.7f, gizmo_operation == ImGuizmo::OPERATION::SCALE&& draw_guizmo ? 1.0f : 0.0f)))
+		{
 			gizmo_operation = ImGuizmo::OPERATION::SCALE;
 			draw_guizmo = true;
 		}
@@ -2576,41 +2458,6 @@ void ModuleUI::DrawGuizmo()
 			transform->GlobalToLocal();
 		}
 	}
-}
-
-void ModuleUI::DrawTagSelection(GameObject* object) {
-
-	std::string object_tag = object->tag; // Current tag
-	int inx = 0;						  // Index of the current tag
-
-
-	std::string posible_tags; // All the tags in the same string
-	bool inx_found = false; // Stop when tag is found
-
-	for (auto it = App->scripting->tags.begin(); it != App->scripting->tags.end(); it++){
-		// Store every tag in the same string
-		posible_tags += (*it);
-		posible_tags += '\0';
-
-		// Figure out which inx is the tag of the gameobject
-		if (object_tag == (*it))
-			inx_found = true;
-		if (!inx_found) {
-			inx++;
-		}
-	}
-	if (ImGui::Combo("Tag selector", &inx, posible_tags.c_str())) {
-		// Out of the selected index, extract the "tag" of the gameobject and return it
-		int inx_it = 0;
-		for (auto it = App->scripting->tags.begin(); it != App->scripting->tags.end(); it++) {
-			if (inx_it == inx){
-				object->tag = (*it);
-				break;
-			}
-			inx_it++;
-		}
-	}
-	
 }
 
 void ModuleUI::SaveConfig(JSON_Object* config) const
