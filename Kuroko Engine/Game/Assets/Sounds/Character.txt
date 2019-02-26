@@ -3,6 +3,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	2385628198	Footsteps			\Default Work Unit\Footsteps	
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
+	1908158473	Pitch			\Default Work Unit\Pitch	
 	2415836739	Volume			\Default Work Unit\Volume	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size

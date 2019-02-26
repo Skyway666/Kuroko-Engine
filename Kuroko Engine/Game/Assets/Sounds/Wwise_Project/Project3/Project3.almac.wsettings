@@ -55,6 +55,7 @@
 				<Property Name="ProjectExplorer\x64_Expanded_6_1" Type="string" Value="+bxB22yrYEKat96WYuKljg=="/>
 				<Property Name="ProjectExplorer\x64_Expanded_7_1" Type="string" Value="h1ZY9fUlPkiadDfczQBdXQ=="/>
 				<Property Name="ProjectExplorer\x64_Expanded_8_1" Type="string" Value=""/>
+				<Property Name="RTPC\GameParameterSimValue\{26A73E64-0C87-4736-986F-95FF7B5265D3}" Type="Real64" Value="50"/>
 				<Property Name="RTPC\GameParameterSimValue\{50522D6F-986D-46A2-888F-61B2AE02C8B8}" Type="Real64" Value="50"/>
 				<Property Name="SettingsUserOverride" Type="bool" Value="True"/>
 				<Property Name="SoundBank Manager\x64_Expand States" Type="string" Value="+bxB22yrYEKat96WYuKljg=="/>

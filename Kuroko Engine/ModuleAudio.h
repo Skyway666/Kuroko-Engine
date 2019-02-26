@@ -30,7 +30,8 @@ public:
 	void LoadSoundBank(const char* path);
 	
 	void SetRTCP(const char* rtpc, float value, AkGameObjectID id = AK_INVALID_GAME_OBJECT);
-	void SetVolume(float value = DEFAULT_VOLUME);
+	void SetVolume(float value = DEFAULT_VOLUME, AkGameObjectID id = AK_INVALID_GAME_OBJECT);
+	void SetPitch(float value = DEFAULT_VOLUME, AkGameObjectID id = AK_INVALID_GAME_OBJECT);
 
 public:
 	int volume = DEFAULT_VOLUME;
