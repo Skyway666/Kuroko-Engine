@@ -8,7 +8,7 @@
 
 #define AUDIO_DIRECTORY "Library/Sounds/"
 #define AUDIO_EXTENSION ".bnk"
-#define DEFAULT_VOLUME 50
+#define DEFAULT_VOLUME 75
 
 //class SoundBank;
 

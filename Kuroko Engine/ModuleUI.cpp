@@ -611,9 +611,12 @@ void ModuleUI::DrawObjectInspectorTab()
 
 bool ModuleUI::DrawComponent(Component& component, int id)
 {
+	bool ret = true;
+
 	ComponentCamera* camera = nullptr; // aux pointer
 
 	std::string tag;
+	ImGui::PushID(component.getUUID());
 
 	switch (component.getType())
 	{
@@ -833,7 +836,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove Component##Remove mesh"))
-				return false;
+				ret = false;
 		}
 		break;
 	case TRANSFORM:
@@ -1056,7 +1059,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			}
 
 			if (ImGui::Button("Remove##Remove camera"))
-				return false;
+				ret = false;
 		}
 		break;
 	case SCRIPT:
@@ -1160,7 +1163,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				}
 			}
 			if (ImGui::Button("Remove##Remove script"))
-				return false;
+				ret = false;
 
 		}
 	
@@ -1180,7 +1183,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				App->audio->SetVolume(App->audio->volume);
 			}
 			if (ImGui::Button("Remove##Remove audioListener"))
-				return false;
+				ret = false;
 		}
 		break;
 
@@ -1191,7 +1194,7 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			if (ID != 0)
 			{
 				ImGui::TextColored({ 0, 1, 0, 1 }, ((ComponentAudioSource*)&component)->name.c_str());
-				ImGui::PushID(ID);
+				//ImGui::PushID(ID);
 				if (ImGui::Button("Play"))
 				{
 					((ComponentAudioSource*)&component)->sound_go->PlayEvent(ID);
@@ -1204,24 +1207,25 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				{
 					App->audio->SetRTCP("VOLUME", ((ComponentAudioSource*)&component)->volume, ((ComponentAudioSource*)&component)->sound_go->GetID());
 				}
-				ImGui::PopID();
+				//ImGui::PopID();
 			}
 			else
 			{
 				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
 			}
 
-			ImGui::PushID(ID);
+			//ImGui::PushID(ID);
 			if (ImGui::Button("Remove##Remove audioSource"))
-				return false;
-			ImGui::PopID();
+				ret = false;
+			//ImGui::PopID();
 		}
 		break;
 	default:
 		break;
 	}
+	ImGui::PopID();
 
-	return true;
+	return ret;
 }
 
 void ModuleUI::DrawCameraViewWindow(Camera& camera)

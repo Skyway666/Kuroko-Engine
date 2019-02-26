@@ -45,6 +45,8 @@ bool ModuleAudio::Init(const JSON_Object* config)
 
 bool ModuleAudio::Start()
 {
+	SetVolume(75);
+
 	return true;
 }
 
