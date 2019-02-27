@@ -170,7 +170,7 @@ GameObject* GameObject::getChild(const char* name) const
 
 	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it)
 	{
-		if ((*it)->getName() == name)
+		if ((*it)->getName().find(name) != -1)
 		{
 			child = (*it);
 			break;

@@ -261,6 +261,8 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 			json_object_set_string(json_object(animation_component), "animation_binary_path", binary_full_path.c_str()); // (used for deleting binary file when asset is deleted)
 			json_object_set_number(json_object(animation_component), "animation_resource_uuid", uuid_number);
 			json_object_set_string(json_object(animation_component), "animation_name", scene.mAnimations[i]->mName.C_Str());
+			json_object_set_number(json_object(animation_component), "speed", 1);
+			json_object_set_boolean(json_object(animation_component), "loop", true);
 			
 			json_array_append_value(json_array(components), animation_component);
 

@@ -39,7 +39,7 @@ Resource3dObject::Resource3dObject(resource_deff deff): Resource(deff){
 			{
 				deff.type = R_ANIMATION;
 				deff.binary = json_object_get_string(resource, "animation_binary_path");
-				deff.uuid = json_object_get_number(resource, "aimation_resource_uuid");
+				deff.uuid = json_object_get_number(resource, "animation_resource_uuid");
 				deff.asset = json_object_get_string(resource, "animation_name");
 				deff.Parent3dObject = asset;
 				animation_found = true;
