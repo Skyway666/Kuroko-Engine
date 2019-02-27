@@ -67,9 +67,9 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 
 	calculateCentroidandHalfsize();
 	this->centroid = centroid;
-	//LoadDataToVRAM();
+	LoadDataToVRAM();
 	//Descoment to use shader render
-	LoadDataToVRAMShaders();
+	//LoadDataToVRAMShaders();
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
@@ -85,9 +85,9 @@ Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
 	}
 
 	calculateCentroidandHalfsize();
-	//LoadDataToVRAM();
+	LoadDataToVRAM();
 	//Descoment to use shader render
-	LoadDataToVRAMShaders();
+	//LoadDataToVRAMShaders();
 }
 
 
@@ -109,6 +109,12 @@ Mesh::~Mesh()
 	RELEASE(MeshGPU);
 }
 
+void Mesh::setMorphedVertices(float3 * vertices)
+{
+	RELEASE(morphed_vertices);
+	morphed_vertices = vertices;
+}
+
 void Mesh::LoadDataToVRAM()
 {
 	// create VBOs
@@ -121,7 +127,10 @@ void Mesh::LoadDataToVRAM()
 	// copy vertex attribs data to VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
 	glBufferData(GL_ARRAY_BUFFER, vSize + vSize + vSize + tSize, 0, GL_STATIC_DRAW); // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices);                  // copy verts at offset 0
+	if (morphed_vertices == nullptr)
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices);                  // copy verts at offset 0
+	else
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, morphed_vertices);
 	glBufferSubData(GL_ARRAY_BUFFER, vSize, vSize, normals);               // copy norms after verts
 	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize, vSize, colors);          // copy cols after norms
 	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize + vSize, tSize, tex_coords); // copy texs after cols
@@ -206,6 +215,10 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 	size_t Offset = sizeof(float3) * num_vertices;
 
 	// specify vertex arrays with their offsets
+	/*if (morphed_vertices == nullptr) //No skining
+		glVertexPointer(3, GL_FLOAT, 0, vertices);
+	else
+		glVertexPointer(3, GL_FLOAT, 0, vertices);*/
 	glVertexPointer(3, GL_FLOAT, 0, (void*)0);
 	glNormalPointer(GL_FLOAT, 0, (void*)Offset);
 	glColorPointer(3, GL_FLOAT, 0, (void*)(Offset * 2));
@@ -375,6 +388,11 @@ void Mesh::DrawNormals() const
 	}
 
 	glEnd();
+}
+
+void Mesh::updateVRAM()
+{
+	LoadDataToVRAM(); //Load to VRAM each frame due to skinning
 }
 
 void Mesh::BuildCube(float3& size)

@@ -157,6 +157,30 @@ Component* GameObject::getComponent(Component_type type) const
 	return nullptr;
 }
 
+Component* GameObject::getChildComponent(uint uuid) const
+{
+	Component* component = nullptr;
+	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it)
+	{
+		for (std::list<Component*>::const_iterator it_c = (*it)->components.begin(); it_c != (*it)->components.end(); it_c++)
+		{
+			if ((*it_c)->getUUID() == uuid)
+			{
+				component = (*it_c);
+				break;
+			}
+		}
+		if (component != nullptr)
+			break;
+		else
+		{
+			component = (*it)->getChildComponent(uuid);
+		}
+	}
+
+	return component;
+}
+
 bool GameObject::getComponents(Component_type type, std::list<Component*>& list_to_fill) const
 {
 	for (std::list<Component*>::const_iterator it = components.begin(); it != components.end(); it++)

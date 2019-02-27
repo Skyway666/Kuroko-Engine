@@ -60,6 +60,8 @@ public:
 	void MaxDrawFunctionTest(Material* mat, ComponentAnimation* animation,float* global_transform, bool draw_as_selected = false) const;
 	void DrawNormals() const;
 
+	void updateVRAM();
+
 	void getData(uint& vert_num, uint& poly_count, bool& has_normals, bool& has_colors, bool& has_texcoords) const;
 	float3 getHalfSize() const { return half_size; }
 	float3 getCentroid() const { return centroid; }
@@ -74,6 +76,7 @@ public:
 	void setName(const char* name)	{ mesh_name = name; }
 	uint getNumVertices() { return num_vertices; }
 	uint getNumTris() { return num_tris; }
+	void setMorphedVertices(float3* vertices);
 
 private:
 
@@ -102,6 +105,7 @@ private:
 	bool imported_tex_coords = false;
 
 	float3* vertices = nullptr;
+	float3* morphed_vertices = nullptr;
 	Tri* tris = nullptr;
 	float3* normals = nullptr;
 	float3* colors = nullptr;
