@@ -218,6 +218,11 @@ void ModuleWindow::setBrightness(float brightness, uint id)
 
 }
 
+void ModuleWindow::GetSize(int &w, int &h)const {
+
+	SDL_GetWindowSize(main_window->window, &w, &h);
+}
+
 void ModuleWindow::setSize(int x, int y, uint id) 
 {
 	if (id == 0)

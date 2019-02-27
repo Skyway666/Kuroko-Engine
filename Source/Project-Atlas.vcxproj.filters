@@ -78,7 +78,7 @@
     </Filter>
     <Filter Include="Sources\Helpers\Wwise">
       <UniqueIdentifier>{c5af1ade-1df7-43f7-aece-b87d70efaf91}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="Sources\Game\UI">
       <UniqueIdentifier>{92f608b4-fb76-43c6-a8b1-74b23f0ca142}</UniqueIdentifier>
     </Filter>
@@ -530,7 +530,7 @@
     </ClInclude>
     <ClInclude Include="FreeType\include\freetype\freetype.h">
       <Filter>Sources\Helpers\FreeType</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="ComponentBone.h">
       <Filter>Sources\Game</Filter>
     </ClInclude>
@@ -545,6 +545,9 @@
     </ClInclude>
     <ClInclude Include="ModuleShaders.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="FBO.h">
+      <Filter>Sources\Tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -856,7 +859,7 @@
     </ClCompile>
     <ClCompile Include="ComponentAudioSource.cpp">
       <Filter>Sources\Game</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ComponentCanvas.cpp">
       <Filter>Sources\Game</Filter>
     </ClCompile>
@@ -877,7 +880,7 @@
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>Sources\Game\UI</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ComponentAnimation.cpp">
       <Filter>Sources\Game</Filter>
     </ClCompile>
@@ -892,6 +895,9 @@
     </ClCompile>
     <ClCompile Include="ModuleShaders.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="FBO.cpp">
+      <Filter>Sources\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

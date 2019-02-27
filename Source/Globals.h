@@ -53,7 +53,7 @@ enum update_status
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
-#define TITLE "Kuroko Engine"
+#define TITLE "Project Atlas Engine"
 #define PI       3.14159265358979323846   // pi
 
 #endif

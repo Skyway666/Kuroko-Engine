@@ -100,6 +100,7 @@
     <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTextUI.h" />
     <ClInclude Include="ComponentTransform.h" />
+    <ClInclude Include="FBO.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="FreeType\include\freetype\config\ftheader.h" />
@@ -253,6 +254,7 @@
     <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTextUI.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
+    <ClCompile Include="FBO.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameObject.cpp" />

@@ -45,6 +45,7 @@ public:
 	void setBorderless(bool borderless, uint id = 0);
 	void setFullDesktop(bool fulldesk, uint id = 0);
 	void setBrightness(float brightness, uint id = 0);
+	void GetSize(int & w, int & h) const;
 	void setSize(int x, int y, uint id = 0);
 
 	void fillWindowConfig(const JSON_Object* config);

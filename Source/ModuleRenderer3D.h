@@ -11,6 +11,8 @@
 
 #define MAX_LIGHTS 8
 
+class FBO;
+
 class ModuleRenderer3D : public Module
 {
 public:
@@ -38,6 +40,9 @@ public:
 private:
 
 	Light lights[MAX_LIGHTS];
+
+	FBO* sceneFboTex = nullptr;
+	FBO* gameFboTex = nullptr;
 };
 
 #endif

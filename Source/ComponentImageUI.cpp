@@ -7,6 +7,7 @@
 
 #include "ResourceTexture.h"
 #include "Material.h"
+#include "Globals.h"
 
 ComponentImageUI::ComponentImageUI(GameObject* parent) : Component(parent, UI_IMAGE)
 {
@@ -29,8 +30,7 @@ ComponentImageUI::~ComponentImageUI()
 {
 	rectTransform = nullptr;
 	//RELEASE MACRO NEEDED
-	delete[] texCoords;
-	texCoords = nullptr;
+	RELEASE_ARRAY(texCoords);
 	texture = nullptr;
 }
 

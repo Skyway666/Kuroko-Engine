@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "ModuleScene.h"
 #include "ModuleShaders.h"
+#include "FBO.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -59,6 +60,13 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 		{
 			ret = false;
 		}
+
+		sceneFboTex = new FBO();
+		gameFboTex = new FBO();
+		int w, h;
+		App->window->GetSize(w, h);
+		sceneFboTex->Create(w, h);
+		gameFboTex->Create(w, h);
 
 		//Initialize Modelview Matrix
 		glMatrixMode(GL_MODELVIEW);
