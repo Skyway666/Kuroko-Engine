@@ -132,6 +132,7 @@ class InputComunicator{
 	foreign static getKey(key, mode)
 
 	foreign static getButton(controller_id, button, mode)
+	foreign static getAxis(controller_id, axis)
 
 	foreign static getMouseRaycastX()
 	foreign static getMouseRaycastY()
