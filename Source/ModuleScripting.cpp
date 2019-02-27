@@ -454,13 +454,13 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
-			if (isStatic && strcmp(signature, "Instantiate(_,_,_,_,_,_,_)") == 0)
+			if (isStatic && strcmp(signature, "C_Instantiate(_,_,_,_,_,_,_)") == 0)
 				return InstantiatePrefab; // C function for EngineComunicator.Instantiate
 			if (isStatic && strcmp(signature, "getTime()") == 0)
 				return getTime;
 			if (isStatic && strcmp(signature, "BreakPoint(_,_,_)") == 0)
 				return BreakPoint;
-			if (isStatic && strcmp(signature, "FindGameObjectsByTag(_)") == 0)
+			if (isStatic && strcmp(signature, "C_FindGameObjectsByTag(_)") == 0)
 				return FindGameObjectByTag;
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
@@ -484,11 +484,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 
 void ConsoleLog(WrenVM* vm)
 {
-	static int call_times = 1;
 	const char* message = wrenGetSlotString(vm, 1);
-
-	app_log->AddLog("This is a C function called from wren, from a wren function called from C\nIt has been called %i times now\nIt contained this message: %s", call_times, message);
-	call_times++;
+	app_log->AddLog(message);
 }
 
 void SetGameObjectPos(WrenVM* vm) {
