@@ -26,6 +26,7 @@ class sound_test is ObjectLinker{
 
 	Start() {
 		 audio_source = getComponent(ComponentType.AUDIO_SOURCE)
+         audio_source.setSound(sound_name)
 	}
 
 	Update() {
