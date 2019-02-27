@@ -120,6 +120,7 @@ class InputComunicator{
 	static L_AXIS_RIGHT {16}
 
 	static L_AXIS_X {0}
+	
 	static L_AXIS_Y {1}
 
 	static C_A {0}
@@ -137,13 +138,16 @@ class InputComunicator{
 	foreign static getButton(controller_id, button, mode)
 	foreign static getAxis(controller_id, axis)
 
-
 	foreign static getMouseRaycastX()
 	foreign static getMouseRaycastY()
 	foreign static getMouseRaycastZ()
 
 	static getMouseRaycast(){
 		return Vec3.new(InputComunicator.getMouseRaycastX(), InputComunicator.getMouseRaycastY(), InputComunicator.getMouseRaycastZ())
+	}
+	
+	static getAxisNormalized(controller_id, axis){
+		return getAxis(controller_id, axis)/32767
 	}
 }
 
