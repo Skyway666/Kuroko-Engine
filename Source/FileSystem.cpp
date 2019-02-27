@@ -136,7 +136,8 @@ void FileSystem::FormFullPath(std::string & path, const char * file_name, lib_di
 		break;
 	}
 	path.append(file_name);
-	path.append(extension);
+	if (extension)
+		path.append(extension);
 }
 
 bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const char * extension, std::string file_new_name) {
@@ -149,7 +150,7 @@ bool FileSystem::copyFileTo(const char * full_path_src, lib_dir dest_lib, const 
 	// Form destination path
 	std::string dest_path;
 
-	FormFullPath(dest_path, file_new_name.c_str(), dest_lib, extension);
+	FormFullPath(dest_path, file_new_name.c_str(), dest_lib, nullptr);
 
 	if (dest_path.compare(full_path_src) == 0) {
 		app_log->AddLog("Trying to copy/paste same file in same location, avoiding operation");
