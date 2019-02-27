@@ -121,7 +121,7 @@ private:
 
 	std::list<Controller*> controllers;
 	void handleAxes(SDL_Event e);
-	float axis_tolerance = 0.1f;
+	float axis_tolerance = 1600;
 
 };
 #endif

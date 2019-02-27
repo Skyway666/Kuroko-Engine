@@ -239,7 +239,7 @@ void ModuleInput::handleAxes(SDL_Event event) {
 	uint device_index = event.caxis.which;
 	for (std::list<Controller*>::iterator it = controllers.begin(); it != controllers.end(); ++it) {
 		if ((*it)->getControllerID() == device_index) {
-			float axis_value = event.caxis.value / 16000; //32767 is the max value for an SDL axis
+			float axis_value = event.caxis.value; //32767 is the max value for an SDL axis
 			float prior_value = (*it)->axes[event.caxis.axis];
 			(*it)->axes[event.caxis.axis] = axis_value;
 			switch (event.caxis.axis) {

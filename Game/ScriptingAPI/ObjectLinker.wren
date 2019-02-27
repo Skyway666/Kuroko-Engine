@@ -73,14 +73,31 @@ class Vec3{
 }
 
 class EngineComunicator{
+	// Foreigners User usable
 	foreign static consoleOutput(message)
-	foreign static Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
+	foreign static C_Instantiate(prefab_name, x, y, z, pitch, yaw, roll)
 	foreign static getTime()
 	foreign static BreakPoint(message, variable, variable_name)
-	foreign static FindGameObjectsByTag(tag)
 
+	// Foreigners Intermediate
+	foreign static C_FindGameObjectsByTag(tag)
+
+
+	// Static User usable
 	static Instantiate(prefab_name, pos, euler){
 		EngineComunicator.Instantiate(prefab_name, pos.x, pos.y, pos.z, euler.x, euler.y, euler.z)
+	}
+
+	static FindGameObjectsByTag(tag){
+		var uuids = EngineComunicator.C_FindGameObjectsByTag(tag)
+		var gameObjects = []
+		for(i in 0...uuids.count){
+			var add_obj = ObjectLinker.new()
+			add_obj.gameObject = uuids[i]
+			gameObjects.insert(i, add_obj)
+		}
+
+		return gameObjects
 	}
 }
 
@@ -102,6 +119,9 @@ class InputComunicator{
 	static L_AXIS_LEFT {15}
 	static L_AXIS_RIGHT {16}
 
+	static L_AXIS_X {0}
+	static L_AXIS_Y {1}
+
 	static C_A {0}
 	static C_B {1}
 	static C_X {2}
@@ -115,6 +135,8 @@ class InputComunicator{
 	foreign static getKey(key, mode)
 
 	foreign static getButton(controller_id, button, mode)
+	foreign static getAxis(controller_id, axis)
+
 
 	foreign static getMouseRaycastX()
 	foreign static getMouseRaycastY()
@@ -128,6 +150,8 @@ class InputComunicator{
 class ObjectLinker{
 	gameObject { _gameObject}		// UUID of the linked GO
 	gameObject=(v){ _gameObject = v}
+
+	construct new(){}
 
 	setPos(x,y,z){
 		ObjectComunicator.C_setPos(gameObject, x, y, z)

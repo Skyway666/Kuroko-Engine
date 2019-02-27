@@ -173,9 +173,9 @@ int FileSystem::getFileLastTimeMod(const char * file_name, lib_dir lib, const ch
 	if (stat(path.c_str(), &result) == 0) {
 		ret = result.st_mtime;
 	}
-	else
-		app_log->AddLog("There has been an error getting last modification of %s", path.c_str());
-
+	//else
+	//	app_log->AddLog("There has been an error getting last modification of %s", path.c_str());
+	//TODO delete the audio missing files
 	return ret;
 }
 
