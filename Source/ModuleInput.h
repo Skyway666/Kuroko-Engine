@@ -73,7 +73,11 @@ public:
 	update_status PreUpdate(float dt);
 	bool CleanUp();
 
-	Controller* getController(uint id);
+	bool getControllerButton(int id, CONTROLLER_BUTTON button, KEY_STATE state);
+	bool getFirstControllerButton(CONTROLLER_BUTTON button, KEY_STATE state);
+	float getControllerAxis(int id, SDL_GameControllerAxis button);
+	float getFirstControllerAxis(SDL_GameControllerAxis axis);
+
 
 	KEY_STATE GetKey(int id) const
 	{

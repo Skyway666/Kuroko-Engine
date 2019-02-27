@@ -771,37 +771,35 @@ void BreakPoint(WrenVM* vm) {
 }
 
 void getButton(WrenVM* vm) {
-	uint controller_id = wrenGetSlotDouble(vm, 1);
-	CONTROLLER_BUTTON input = (CONTROLLER_BUTTON)(uint)wrenGetSlotDouble(vm, 2);
+	int controller_id = wrenGetSlotDouble(vm, 1);
+	CONTROLLER_BUTTON button = (CONTROLLER_BUTTON)(uint)wrenGetSlotDouble(vm, 2);
 	KEY_STATE mode = (KEY_STATE)(uint)wrenGetSlotDouble(vm, 3);
 
+	bool ret = false;
 
-	Controller* controller = App->input->getController(controller_id);
+	if (controller_id != -1)
+		ret = App->input->getControllerButton(controller_id, button, mode);
+	else
+		ret = App->input->getFirstControllerButton(button, mode);
 
-	if (!controller) {
-		wrenSetSlotBool(vm, 0, false);
-		app_log->AddLog("Asking for non-plugged controller %i", controller_id);
-		return;
-	}
-	
-	wrenSetSlotBool(vm, 0, controller->isPressed(input, mode));
+
+	wrenSetSlotBool(vm, 0, ret);
 
 }
 
 void getAxes(WrenVM* vm) {
-	uint controller_id = wrenGetSlotDouble(vm, 1);
-	SDL_GameControllerAxis input = (SDL_GameControllerAxis)(uint)wrenGetSlotDouble(vm, 2);
+	int controller_id = wrenGetSlotDouble(vm, 1);
+	SDL_GameControllerAxis axis = (SDL_GameControllerAxis)(uint)wrenGetSlotDouble(vm, 2);
 
-	Controller* controller = App->input->getController(controller_id);
+	float ret = 0;
+	if (controller_id != -1)
+		ret = App->input->getControllerAxis(controller_id, axis);
+	else
+		ret = App->input->getFirstControllerAxis(axis);
 
-	if (!controller) {
-		wrenSetSlotDouble(vm, 0, 0);
-		app_log->AddLog("Asking for non-plugged controller %i", controller_id);
-		return;
-	}
-
-	wrenSetSlotDouble(vm, 0, controller->axes[input]);
+	wrenSetSlotDouble(vm, 0, ret);
 }
+
 void FindGameObjectByTag(WrenVM* vm) {
 	std::string tag = wrenGetSlotString(vm, 1);
 
