@@ -16,9 +16,9 @@ class Texture;
 class Material;
 class Camera;
 struct Color;
-class TextEditor;
+class UI_Element;
 
-enum GUI_Tabs { HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION,
+enum UI_Type { UI_UNKNOWN, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, COLOR_PICKER,
 				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, ASSET_WINDOW, RESOURCES_TAB, SKYBOX_MENU, SCRIPT_EDITOR, LAST_UI_TAB };  
 				// LAST is an utility value to store the max num of tabs.
 
@@ -26,7 +26,7 @@ enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUI
 					GUIZMO_SELECT, FOLDER_ICON, OBJECT_ICON, SCENE_ICON, SCRIPT_ICON, PREFAB_ICON, RETURN_ICON, CAUTION_ICON,
 					WARNING_ICON, LAST_UI_TEX};
 
-enum UI_Fonts {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, IMGUI_DEFAULT, LAST_UI_FONT};
+enum UI_Font {REGULAR, REGULAR_BOLD, REGULAR_ITALIC, REGULAR_BOLDITALIC, TITLES, IMGUI_DEFAULT, LAST_UI_FONT};
 
 class ModuleUI :
 	public Module {
@@ -70,14 +70,20 @@ public:
 	void DrawGuizmo();
 	void DrawTagSelection(GameObject* object);
 
-
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
+
+	void ActivateUI_Element(UI_Type type); // TODO
+	UI_Element* getUI_Element(UI_Type type);  // TODO
 
 	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(const JSON_Object* config);
 
 	bool disable_keyboard_control = false;
+	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
+	std::array<Texture*, LAST_UI_TEX> ui_textures;
+	TextEditor script_editor;
+	std::string open_script_path;
 
 private:
 	
@@ -88,12 +94,7 @@ private:
 	ImGuizmo::OPERATION	gizmo_operation = ImGuizmo::TRANSLATE;
 	ImGuizmo::MODE gizmo_mode = ImGuizmo::WORLD;
 
-	TextEditor script_editor;
-	std::string open_script_path;
-
 	bool open_tabs[LAST_UI_TAB];  // _serializable_var
-	std::array<Texture*, LAST_UI_TEX> ui_textures;
-	std::array<ImFont*, LAST_UI_FONT> ui_fonts;
 
 	std::string asset_window_path = ASSETS_FOLDER;
 	std::string selected_asset;

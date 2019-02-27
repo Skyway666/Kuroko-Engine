@@ -85,6 +85,9 @@
     <Filter Include="Sources\Helpers\FreeType">
       <UniqueIdentifier>{650bdbf5-ccab-4d4a-88e1-0960de54c0bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\UI">
+      <UniqueIdentifier>{2e54badd-1933-4018-ac99-09ac0cbcb2f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -549,6 +552,24 @@
     <ClInclude Include="FBO.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="UI_Window.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Element.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Leaf.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_HierarchyTab.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_ObjectInspectorTab.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_ColorPickerWindow.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -898,6 +919,15 @@
     </ClCompile>
     <ClCompile Include="FBO.cpp">
       <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_HierarchyTab.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_ObjectInspectorTab.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_ColorPickerWindow.cpp">
+      <Filter>Sources\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

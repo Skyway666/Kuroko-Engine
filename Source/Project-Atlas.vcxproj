@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>Project-Atlas</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -219,7 +219,13 @@
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UI_ColorPickerWindow.h" />
+    <ClInclude Include="UI_Element.h" />
+    <ClInclude Include="UI_HierarchyTab.h" />
+    <ClInclude Include="UI_Leaf.h" />
+    <ClInclude Include="UI_ObjectInspectorTab.h" />
     <ClInclude Include="VRAM.h" />
+    <ClInclude Include="UI_Window.h" />
     <ClInclude Include="WinItemDialog.h" />
     <ClInclude Include="Wren\wren.h" />
     <ClInclude Include="Wren\wren.hpp" />
@@ -335,6 +341,9 @@
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UI_ColorPickerWindow.cpp" />
+    <ClCompile Include="UI_HierarchyTab.cpp" />
+    <ClCompile Include="UI_ObjectInspectorTab.cpp" />
     <ClCompile Include="VRAM.cpp" />
     <ClCompile Include="Wren\wren_compiler.c" />
     <ClCompile Include="Wren\wren_core.c" />
