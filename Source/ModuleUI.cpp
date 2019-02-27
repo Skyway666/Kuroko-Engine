@@ -233,7 +233,7 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[AUDIO])
 		DrawAudioTab();*/
 
-	if (App->scene->selected_obj && !App->scene->selected_obj->is_static && !App->scene->selected_obj->is_UI) // Not draw guizmo if it is static
+	if (!App->scene->selected_obj.empty() && !App->scene->selected_obj[0]->is_static && !App->scene->selected_obj[0]->is_UI) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
 
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
@@ -446,13 +446,13 @@ void ModuleUI::DrawHierarchyTab()
 	bool item_hovered = false;
 
 	for (auto it = root_objs.begin(); it != root_objs.end(); it++)
-		if (DrawHierarchyNode(*(*it), id))
+		if (DrawHierarchyNode(*(*it), id)) 
 			item_hovered = true;
-
+		
 	if (ImGui::IsWindowHovered())
 	{
-		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
-			App->scene->selected_obj = nullptr;
+		if (!item_hovered&&App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+			App->scene->selected_obj.clear();
 		else if(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN && !item_hovered)
 			ImGui::OpenPopup("##hierarchy context menu");
 	}
@@ -461,18 +461,18 @@ void ModuleUI::DrawHierarchyTab()
 	{
 		if (ImGui::MenuItem("Empty gameobject"))
 		{
-			GameObject* go = new GameObject("Empty", App->scene->selected_obj);
-			if (App->scene->selected_obj)
-				App->scene->selected_obj->addChild(go);
+			GameObject* go = new GameObject("Empty", App->scene->selected_obj[0]);
+			if (!App->scene->selected_obj.empty())
+				App->scene->selected_obj[0]->addChild(go);
 		}
 		if (ImGui::TreeNode("UI"))
 		{
 			if (ImGui::MenuItem("UI_Image"))
 			{
 				GameObject* parent = nullptr;
-				if (App->scene->selected_obj) {
-					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj;						
+				if (!App->scene->selected_obj.empty() ) {
+					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj[0];						
 					}
 
 				}
@@ -488,9 +488,9 @@ void ModuleUI::DrawHierarchyTab()
 			if (ImGui::MenuItem("UI_Text"))
 			{
 				GameObject* parent = nullptr;
-				if (App->scene->selected_obj) {
-					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj;
+				if (!App->scene->selected_obj.empty()) {
+					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj[0];
 					}
 				}
 				else {
@@ -507,9 +507,9 @@ void ModuleUI::DrawHierarchyTab()
 			if (ImGui::MenuItem("UI_Button"))
 			{
 				GameObject* parent = nullptr;
-				if (App->scene->selected_obj) {
-					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj;
+				if (!App->scene->selected_obj.empty()) {
+					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj[0];
 					}
 				}
 				else {
@@ -526,9 +526,9 @@ void ModuleUI::DrawHierarchyTab()
 			if (ImGui::MenuItem("UI_CheckBox"))
 			{
 				GameObject* parent = nullptr;
-				if (App->scene->selected_obj) {
-					if (App->scene->selected_obj->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj;
+				if (!App->scene->selected_obj.empty()) {
+					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = App->scene->selected_obj[0];
 					}
 				}
 				else {
@@ -555,25 +555,37 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 {
 	id++;
 	static int selection_mask = (1 << 2);
-	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((selection_mask & (1 << id)) ? ImGuiTreeNodeFlags_Selected : 0);
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick; 
 
 	std::list<GameObject*> children;
 	game_object.getChildren(children);
 
 	if(children.empty())
 		node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; 
+	for (auto it = App->scene->selected_obj.begin(); it != App->scene->selected_obj.end(); it++) {
+		if (*it == &game_object) {
+			node_flags |= ImGuiTreeNodeFlags_Selected;
+			break;
+		}
+	}
 
 	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)game_object.getUUID(), node_flags, game_object.getName().c_str()) && !children.empty();
 	bool item_hovered = ImGui::IsItemHovered();
 
-	if(App->scene->selected_obj == &game_object)
+	
+	if(!App->scene->selected_obj.empty() && App->scene->selected_obj[0] == &game_object)
 		selection_mask = (1 << id);
-	else if (App->scene->selected_obj == nullptr)
+	else if (App->scene->selected_obj.empty())
 		selection_mask = (1 >> id);
 
 
-	if (ImGui::IsItemClicked())
-		App->scene->selected_obj = &game_object;
+	if (ImGui::IsItemClicked()) {
+		if (!App->input->GetKey(SDL_SCANCODE_LCTRL)) {
+			App->scene->selected_obj.clear();
+		}
+		App->scene->selected_obj.push_back(&game_object);
+		
+	}
 	else if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
 		ImGui::OpenPopup(("##" + game_object.getName() + std::to_string(id) + "Object context menu").c_str());
 
@@ -642,69 +654,70 @@ void ModuleUI::DrawObjectInspectorTab()
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	static bool select_script = false;
-	GameObject* selected_obj = App->scene->selected_obj;
+	if (App->scene->selected_obj.size() == 1) {
+		GameObject* selected_obj = App->scene->selected_obj[0];
 
-	if (selected_obj)
-	{
-		ImGui::Text("Name: %s", selected_obj->getName().c_str());
-
-		ImGui::Checkbox("Active", &selected_obj->is_active);
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Static", &selected_obj->is_static)) // If an object is set/unset static, reload the quadtree
-			App->scene->quadtree_reload = true;
-
-		DrawTagSelection(selected_obj);
-		// Add a new tag
-		static char new_tag[64];
-		ImGui::InputText("New Tag", new_tag, 64);
-		if (ImGui::Button("Add Tag")) {
-			App->scripting->tags.push_back(new_tag);
-			for (int i = 0; i < 64; i++)
-				new_tag[i] = '\0';
-			
-		}
-
-		if (ImGui::CollapsingHeader("Add component"))
+		if (selected_obj)
 		{
-			if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH); 
-			if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
-			if (ImGui::Button("Add Script")) select_script = true;
-			if (ImGui::Button("Add Animation")) selected_obj->addComponent(ANIMATION);
-		}
+			ImGui::Text("Name: %s", selected_obj->getName().c_str());
 
-		std::list<Component*> components;
-		selected_obj->getComponents(components);
+			ImGui::Checkbox("Active", &selected_obj->is_active);
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Static", &selected_obj->is_static)) // If an object is set/unset static, reload the quadtree
+				App->scene->quadtree_reload = true;
 
-		std::list<Component*> components_to_erase;
-		int id = 0;
-		for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++){
-			if (!DrawComponent(*(*it), id))
-				components_to_erase.push_back(*it);
-			id++;
-		}
+			DrawTagSelection(selected_obj);
+			// Add a new tag
+			static char new_tag[64];
+			ImGui::InputText("New Tag", new_tag, 64);
+			if (ImGui::Button("Add Tag")) {
+				App->scripting->tags.push_back(new_tag);
+				for (int i = 0; i < 64; i++)
+					new_tag[i] = '\0';
 
-		for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
-			selected_obj->removeComponent(*it);
-
-		if (select_script) {
-			std::list<resource_deff> script_res;
-			App->resources->getScriptResourceList(script_res);
-
-			ImGui::Begin("Script selector", &select_script);
-			for (auto it = script_res.begin(); it != script_res.end(); it++) {
-				resource_deff script_deff = (*it);
-				if (ImGui::MenuItem(script_deff.asset.c_str())) {
-					ComponentScript* c_script =  (ComponentScript*)selected_obj->addComponent(SCRIPT);
-					c_script->assignScriptResource(script_deff.uuid);
-					select_script = false;
-					break;
-				}
 			}
 
-			ImGui::End();
+			if (ImGui::CollapsingHeader("Add component"))
+			{
+				if (ImGui::Button("Add Mesh"))	selected_obj->addComponent(MESH);
+				if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
+				if (ImGui::Button("Add Script")) select_script = true;
+				if (ImGui::Button("Add Animation")) selected_obj->addComponent(ANIMATION);
+			}
+
+			std::list<Component*> components;
+			selected_obj->getComponents(components);
+
+			std::list<Component*> components_to_erase;
+			int id = 0;
+			for (std::list<Component*>::iterator it = components.begin(); it != components.end(); it++) {
+				if (!DrawComponent(*(*it), id))
+					components_to_erase.push_back(*it);
+				id++;
+			}
+
+			for (std::list<Component*>::iterator it = components_to_erase.begin(); it != components_to_erase.end(); it++)
+				selected_obj->removeComponent(*it);
+
+			if (select_script) {
+				std::list<resource_deff> script_res;
+				App->resources->getScriptResourceList(script_res);
+
+				ImGui::Begin("Script selector", &select_script);
+				for (auto it = script_res.begin(); it != script_res.end(); it++) {
+					resource_deff script_deff = (*it);
+					if (ImGui::MenuItem(script_deff.asset.c_str())) {
+						ComponentScript* c_script = (ComponentScript*)selected_obj->addComponent(SCRIPT);
+						c_script->assignScriptResource(script_deff.uuid);
+						select_script = false;
+						break;
+					}
+				}
+
+				ImGui::End();
+			}
 		}
 	}
-
 
 	ImGui::PopFont();
 	ImGui::End();
@@ -1662,7 +1675,7 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 			x = (((x - window_pos.x) / ImGui::GetItemRectSize().x) * 2)  - 1;
 			y = (((y - window_pos.y) / ImGui::GetItemRectSize().y) * -2) + 1;
 
-			App->scene->selected_obj = App->scene->MousePicking(camera.getParent() ? camera.getParent()->getParent() : nullptr);
+			App->scene->selected_obj[0] = App->scene->MousePicking(camera.getParent() ? camera.getParent()->getParent() : nullptr);
 		}
 		ImGui::End();
 	}
@@ -2876,7 +2889,7 @@ void ModuleUI::DrawGuizmo()
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj->getComponent(TRANSFORM);
+		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj[0]->getComponent(TRANSFORM);
 		Transform* trans = transform->global;
 
 		Transform aux_transform;

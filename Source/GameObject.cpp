@@ -121,8 +121,12 @@ void GameObject::Draw() const
 		for (auto it = components.begin(); it != components.end(); it++)
 			(*it)->Draw();
 
-		if (App->scene->selected_obj == this)
-			DrawSelected();
+		for (auto it = App->scene->selected_obj.begin(); it != App->scene->selected_obj.end(); it++) {
+			if (*it == this) {
+				DrawSelected();
+				break;
+			}
+		}
 	}
 }
 

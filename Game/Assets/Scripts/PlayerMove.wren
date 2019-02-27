@@ -52,7 +52,7 @@ attack_current_time {__attack_current_time}
 attack_current_time=(v) {__attack_current_time = v}
 
 attacking  {__attacking}
-attacking=(v) {__attacking}
+attacking=(v) {__attacking = v}
 
  Start() {
 direction = Vec3.zero()
@@ -69,24 +69,18 @@ var move = false
 
 if(dashing == false && attacking == false){
 
-if(InputComunicator.getButton(1, InputComunicator.L_AXIS_UP, InputComunicator.KEY_REPEAT)){
-			direction.z = 1
-			move = true
-		}
+        var z_value = InputComunicator.getAxisNormalized(0,InputComunicator.L_AXIS_Y)
+        direction.z = -z_value
+
+        var x_value = InputComunicator.getAxisNormalized(0,InputComunicator.L_AXIS_X)
+        direction.x = -x_value
+
+         if(direction.z != 0 || direction.x != 0){
+         move = true
+         }
 		
-if(InputComunicator.getButton(1, InputComunicator.L_AXIS_DOWN, InputComunicator.KEY_REPEAT)){
-			direction.z = -1
-			move = true
-		}
-if(InputComunicator.getButton(1, InputComunicator.L_AXIS_LEFT, InputComunicator.KEY_REPEAT)){
-			direction.x = 1
-            move = true
-		}
-		
-if(InputComunicator.getButton(1, InputComunicator.L_AXIS_RIGHT, InputComunicator.KEY_REPEAT)){
-			direction.z = -1
-			move = true
-		}
+
+
 
 
 if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
@@ -111,13 +105,13 @@ if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
 
 }
 
-if(InputComunicator.getKey(InputComunicator.C_A, InputComunicator.KEY_DOWN) && dash_available && !attacking){
+if(InputComunicator.getButton(0,InputComunicator.C_A, InputComunicator.KEY_DOWN) && dash_available && !attacking){
   dashing = true
   dash_current_time = 0.0
   move = false
 }
 
-if(InputComunicator.getKey(InputComunicator.C_X, InputComunicator.KEY_DOWN) && !attacking && !dashing){
+if(InputComunicator.getButton(0,InputComunicator.C_X, InputComunicator.KEY_DOWN) && !attacking && !dashing){
   attacking = true
   attack_current_time = 0.0
   move = false
@@ -152,6 +146,7 @@ if(dash_available == false){
 }
 
 if(attacking){
+EngineComunicator.consoleOutput("Attacking")
  attack_current_time =  attack_current_time + Time.C_GetDeltaTime()
   if(attack_current_time >= attack_duration){
      attacking = false

@@ -46,6 +46,7 @@ void SetTimeScale(WrenVM* vm);
 // Input comunicator
 void getKey(WrenVM* vm);
 void getButton(WrenVM* vm);
+void getAxes(WrenVM* vm);
 void getMouseRaycastX(WrenVM* vm);
 void getMouseRaycastY(WrenVM* vm);
 void getMouseRaycastZ(WrenVM* vm);
@@ -454,13 +455,13 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 		if (strcmp(className, "EngineComunicator") == 0) {
 			if (isStatic && strcmp(signature, "consoleOutput(_)") == 0)
 				return ConsoleLog; // C function for EngineComunicator.consoleOutput
-			if (isStatic && strcmp(signature, "Instantiate(_,_,_,_,_,_,_)") == 0)
+			if (isStatic && strcmp(signature, "C_Instantiate(_,_,_,_,_,_,_)") == 0)
 				return InstantiatePrefab; // C function for EngineComunicator.Instantiate
 			if (isStatic && strcmp(signature, "getTime()") == 0)
 				return getTime;
 			if (isStatic && strcmp(signature, "BreakPoint(_,_,_)") == 0)
 				return BreakPoint;
-			if (isStatic && strcmp(signature, "FindGameObjectsByTag(_)") == 0)
+			if (isStatic && strcmp(signature, "C_FindGameObjectsByTag(_)") == 0)
 				return FindGameObjectByTag;
 		}
 		if (strcmp(className, "InputComunicator") == 0) {
@@ -474,6 +475,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return getMouseRaycastZ; // C function for InputComunicator.getMouseRaycastZ
 			if (isStatic && strcmp(signature, "getButton(_,_,_)") == 0)
 				return getButton;
+			if (isStatic && strcmp(signature, "getAxis(_,_)") == 0)
+				return getAxes;
 		}
 	}
 
@@ -484,11 +487,8 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 
 void ConsoleLog(WrenVM* vm)
 {
-	static int call_times = 1;
 	const char* message = wrenGetSlotString(vm, 1);
-
-	app_log->AddLog("This is a C function called from wren, from a wren function called from C\nIt has been called %i times now\nIt contained this message: %s", call_times, message);
-	call_times++;
+	app_log->AddLog(message);
 }
 
 void SetGameObjectPos(WrenVM* vm) {
@@ -771,21 +771,33 @@ void BreakPoint(WrenVM* vm) {
 }
 
 void getButton(WrenVM* vm) {
-	uint controller_id = wrenGetSlotDouble(vm, 1);
-	CONTROLLER_BUTTON input = (CONTROLLER_BUTTON)(uint)wrenGetSlotDouble(vm, 2);
+	int controller_id = wrenGetSlotDouble(vm, 1);
+	CONTROLLER_BUTTON button = (CONTROLLER_BUTTON)(uint)wrenGetSlotDouble(vm, 2);
 	KEY_STATE mode = (KEY_STATE)(uint)wrenGetSlotDouble(vm, 3);
 
+	bool ret = false;
 
-	Controller* controller = App->input->getController(controller_id);
+	if (controller_id != -1)
+		ret = App->input->getControllerButton(controller_id, button, mode);
+	else
+		ret = App->input->getFirstControllerButton(button, mode);
 
-	if (!controller) {
-		wrenSetSlotBool(vm, 0, false);
-		app_log->AddLog("Asking for non-plugged controller %i", controller_id);
-		return;
-	}
-	
-	wrenSetSlotBool(vm, 0, controller->isPressed(input, mode));
 
+	wrenSetSlotBool(vm, 0, ret);
+
+}
+
+void getAxes(WrenVM* vm) {
+	int controller_id = wrenGetSlotDouble(vm, 1);
+	SDL_GameControllerAxis axis = (SDL_GameControllerAxis)(uint)wrenGetSlotDouble(vm, 2);
+
+	float ret = 0;
+	if (controller_id != -1)
+		ret = App->input->getControllerAxis(controller_id, axis);
+	else
+		ret = App->input->getFirstControllerAxis(axis);
+
+	wrenSetSlotDouble(vm, 0, ret);
 }
 
 void FindGameObjectByTag(WrenVM* vm) {
