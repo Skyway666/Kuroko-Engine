@@ -21,6 +21,7 @@ public:
 
 	bool Init(const JSON_Object* config);
 	bool Start();
+	void CreateGameTexture();
 	update_status PreUpdate(float dt);
 	update_status PostUpdate(float dt);
 	bool CleanUp();

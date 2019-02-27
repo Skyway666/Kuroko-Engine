@@ -121,7 +121,7 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 	}
 	// Projection matrix for
 	OnResize(App->window->main_window->width, App->window->main_window->height);
-
+	////////////DELETEEEEEEE
 
 	//Initializing Shaders
 	app_log->AddLog("Compiling Default Shaders...");
@@ -133,6 +133,23 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 bool ModuleRenderer3D::Start()
 {
 	return true;
+}
+
+void ModuleRenderer3D::CreateGameTexture() {
+	gameFboTex->BindFBO();
+	/*if (App->scene->mainCamera == nullptr) { return; }
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	ComponentCamera* mainCam = App->scene->mainCamera->GetComponentCamera();
+	glLoadMatrixf(mainCam->GetProjectionMatrix());
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(mainCam->GetViewMatrix());*/
+
 }
 
 // PreUpdate: clear buffer
@@ -184,6 +201,28 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 		
 	}
+	//sceneFboTex->BindFBO();
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glLoadIdentity();
+
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//glLoadMatrixf(App->camera->editor_camera->GetProjectionMatrix());
+
+	//glMatrixMode(GL_MODELVIEW);
+	////-
+
+	//glLoadMatrixf(App->camera->editor_camera->GetViewMatrix());
+
+	//lights[0].SetPos(App->camera->editor_camera->getFrustum()->pos.x, App->camera->editor_camera->getFrustum()->pos.y, App->camera->editor_camera->getFrustum()->pos.z);
+
+	//for (uint i = 0; i < MAX_LIGHTS; ++i)
+	//	lights[i].Render();
+
+	//bool editor = true;
+	////App->scene->ToggleEditorCam();
+	//App->scene->DrawScene(App->camera->editor_camera->getFrustum()->pos);
+	//sceneFboTex->UnBindFBO();
 
 	return UPDATE_CONTINUE;
 }
