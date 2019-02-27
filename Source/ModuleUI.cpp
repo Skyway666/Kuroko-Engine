@@ -229,9 +229,6 @@ update_status ModuleUI::Update(float dt) {
 
 	if (open_tabs[SCRIPT_EDITOR])
 		DrawScriptEditor();
-/*
-	if (open_tabs[AUDIO])
-		DrawAudioTab();*/
 
 	if (!App->scene->selected_obj.empty() && !App->scene->selected_obj[0]->is_static && !App->scene->selected_obj[0]->is_UI) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
@@ -297,7 +294,6 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::MenuItem("Resources", NULL, &open_tabs[RESOURCES_TAB]);
 			ImGui::MenuItem("Skybox", NULL, &open_tabs[SKYBOX_MENU]);
 			ImGui::MenuItem("Script Editor", NULL, &open_tabs[SCRIPT_EDITOR]);
-			//ImGui::MenuItem("Audio", NULL, &open_tabs[AUDIO]);
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help")) {

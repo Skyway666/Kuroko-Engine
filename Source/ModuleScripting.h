@@ -12,6 +12,7 @@ struct WrenHandle;
 struct ScriptData;
 
 #define OBJECT_LINKER "ScriptingAPI/ObjectLinker.wren"
+#define AUDIO "ScriptingAPI/Audio.wren"
 
 class ModuleScripting : public Module {
 public:
@@ -44,6 +45,7 @@ public:
 	std::list<std::string> tags;
 
 	std::string object_linker_code;
+	std::string audio_code;
 
 
 	virtual void SaveConfig(JSON_Object* config) const;

@@ -37,6 +37,8 @@ void getGameObjectRoll(WrenVM* vm);
 
 void KillGameObject(WrenVM* vm);
 void MoveGameObjectForward(WrenVM* vm);
+void GetComponentUUID(WrenVM* vm);
+
 
 //Time
 void GetDeltaTime(WrenVM* vm);
@@ -94,6 +96,7 @@ bool ModuleScripting::Init(const JSON_Object* config)
 
 		
 		object_linker_code = App->fs.GetFileString(OBJECT_LINKER);
+		audio_code = App->fs.GetFileString(AUDIO);
 		return true;
 	}
 	else
@@ -361,7 +364,14 @@ char* loadModule(WrenVM* vm, const char* name)
 		strcpy(ret, App->scripting->object_linker_code.c_str());
 		ret[string_size - 1] = '\0';
 	}
-	return ret;	
+
+	if (strcmp(name, "Audio") == 0) {
+		int string_size = strlen(App->scripting->audio_code.c_str()) + 1; // 1 for the /0
+		ret = new char[string_size];
+		strcpy(ret, App->scripting->audio_code.c_str());
+		ret[string_size - 1] = '\0';
+	}
+	return ret;
 }
 
 
@@ -435,6 +445,9 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 			}
 			if (strcmp(signature, "C_MoveForward(_,_)") == 0) {
 				return MoveGameObjectForward; // C function for ObjectComunicator.C_MoveForward
+			}
+			if (strcmp(signature, "C_GetComponentUUID(_,_)") == 0) {
+				return GetComponentUUID; // C function for ObjectComunicator.C_MoveForward
 			}
 		}
 		if (strcmp(className, "Math") == 0) {
@@ -818,3 +831,25 @@ void FindGameObjectByTag(WrenVM* vm) {
 
 	// retrun the list in slot 0
 }
+
+void GetComponentUUID(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	Component_type type = (Component_type)(int)wrenGetSlotDouble(vm, 2);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	Component* component = go->getComponent(type);
+
+	if (!component) {
+		app_log->AddLog("Game Object: %s has no (make enum2component)", go->getName().c_str());
+		return;
+	}
+
+	wrenSetSlotDouble(vm, 0, component->getUUID());
+}
+

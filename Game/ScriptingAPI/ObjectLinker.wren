@@ -1,3 +1,5 @@
+import "Audio" for ComponentAudioSource
+
 
 class ObjectComunicator{
 	foreign static C_setPos(gameObject, x, y, z)
@@ -14,6 +16,8 @@ class ObjectComunicator{
 
 	foreign static C_Kill(gameObject)
 	foreign static C_MoveForward(gameObject, speed)
+
+	foreign static C_GetComponentUUID(gameObject, component_type)
 }
 
 class Math{
@@ -151,6 +155,11 @@ class InputComunicator{
 	}
 }
 
+
+class ComponentType{
+	static AUDIO_SOURCE {15}
+}
+
 class ObjectLinker{
 	gameObject { _gameObject}		// UUID of the linked GO
 	gameObject=(v){ _gameObject = v}
@@ -206,5 +215,14 @@ class ObjectLinker{
 
 	moveForward(speed){
 		ObjectComunicator.C_MoveForward(gameObject, speed)
+	}
+
+	// Returns a class depending on the component
+	getComponent(type){
+		var component_uuid = ObjectComunicator.C_GetComponentUUID(gameObject, type)
+
+		if(type == ComponentType.AUDIO_SOURCE){
+			return ComponentAudioSource.new(gameObject, component_uuid)
+		}
 	}
 }
