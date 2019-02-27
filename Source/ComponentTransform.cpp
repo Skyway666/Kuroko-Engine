@@ -40,7 +40,9 @@ ComponentTransform::ComponentTransform(GameObject* parent, const ComponentTransf
 }
 
 ComponentTransform::ComponentTransform(JSON_Object* deff, GameObject* parent): Component(parent, TRANSFORM){
-	uuid = json_object_get_number(deff, "UUID");
+	uint newUUID = json_object_get_number(deff, "UUID");
+	if (newUUID != 0)
+		uuid = newUUID;
 	local = new Transform(json_object_get_object(deff, "local"));
 	global = new Transform(json_object_get_object(deff, "global"));
 	

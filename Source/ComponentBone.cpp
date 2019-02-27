@@ -8,6 +8,10 @@
 
 ComponentBone::ComponentBone(JSON_Object* deff, GameObject* parent) : Component(parent, BONE)
 {
+	uint newUUID = json_object_get_number(deff, "UUID");
+	if (newUUID != 0)
+		uuid = newUUID;
+
 	const char* parent3dobject = json_object_get_string(deff, "Parent3dObject");
 	if (parent3dobject) // Means that is being loaded from a scene
 		bone_resource_uuid = App->resources->getBoneResourceUuid(parent3dobject, json_object_get_string(deff, "bone_name"));
@@ -23,6 +27,7 @@ ComponentBone::~ComponentBone()
 
 void ComponentBone::Save(JSON_Object * config)
 {
+	json_object_set_number(config, "UUID", uuid);
 	json_object_set_string(config, "type", "bone");
 
 	if (bone_resource_uuid != 0)

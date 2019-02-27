@@ -17,7 +17,9 @@ ComponentAudioSource::ComponentAudioSource(JSON_Object* deff, GameObject* parent
 	float3 pos = ((ComponentTransform*)parent->getComponent(Component_type::TRANSFORM))->local->getPosition();
 	sound_go = Wwise::CreateSoundObj(random32bits(), parent->getName().c_str(), pos.x, pos.y, pos.z);
 
-	uuid = json_object_get_number(deff, "UUID");
+	uint newUUID = json_object_get_number(deff, "UUID");
+	if (newUUID != 0)
+		uuid = newUUID;
 	is_active = json_object_get_boolean(deff, "active");
 	sound_ID = json_object_get_number(deff, "soundID");
 	name = json_object_get_string(deff, "soundName");

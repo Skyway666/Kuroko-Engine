@@ -934,6 +934,12 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 					}
 					ImGui::TreePop();
 				}
+
+				if (c_mesh->components_bones.size() > 0 && ImGui::TreeNode("Connected Bones"))
+				{
+					ImGui::Text("Num Bones: %d", c_mesh->components_bones.size());
+					ImGui::TreePop();
+				}
 			
 			}
 

@@ -226,6 +226,18 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_value(json_object(mesh_component), "material", material);			// Add material to component mesh
 		}
 
+		if (scene.mMeshes[node.mMeshes[i]]->HasBones()) //If it has bones
+		{
+			JSON_Value* bones = json_value_init_array();
+			for (int j = 0; j < scene.mMeshes[node.mMeshes[i]]->mNumBones; ++j)
+			{
+				JSON_Value* bone = json_value_init_object();
+				json_object_set_string(json_object(bone), "bone_name", scene.mMeshes[node.mMeshes[i]]->mBones[j]->mName.C_Str());
+				json_array_append_value(json_array(bones), bone);
+			}
+			json_object_set_value(json_object(mesh_component), "bones", bones);
+		}
+
 		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
 		ImportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		delete mesh;									// TODO: Delete mesh

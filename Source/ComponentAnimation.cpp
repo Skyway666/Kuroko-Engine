@@ -9,6 +9,10 @@
 
 ComponentAnimation::ComponentAnimation(JSON_Object* deff, GameObject* parent): Component(parent, ANIMATION)
 {
+	uint newUUID = json_object_get_number(deff, "UUID");
+	if (newUUID != 0)
+		uuid = newUUID;
+
 	loop = json_object_get_boolean(deff, "loop");
 	speed = json_object_get_number(deff, "speed");
 
@@ -91,6 +95,7 @@ void ComponentAnimation::setAnimationResource(uint uuid)
 
 void ComponentAnimation::Save(JSON_Object * config)
 {
+	json_object_set_number(config, "UUID", uuid);
 	json_object_set_string(config, "type", "animation");
 
 	json_object_set_boolean(config, "loop", loop);
