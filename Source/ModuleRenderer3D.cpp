@@ -165,7 +165,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 		}
 
 		App->camera->current_camera = *cam;
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glMatrixMode(GL_PROJECTION);
@@ -198,8 +197,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 		}
-
-		
 	}
 	//sceneFboTex->BindFBO();
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -253,7 +250,19 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glLoadMatrixf((GLfloat*)App->camera->editor_camera->getFrustum()->ProjectionMatrix().v);
 }
 
-
+//----------------------------------------------------------------------------------------This should be how the OnResize work for the size of each window-------------------------------------------------------
+//void ModuleRenderer3D::OnResize(const int width, const int height, bool scene)
+//{
+//	if (scene) {
+//		App->camera->cameraComp->SetAspectRatio((float)width / (float)height);
+//	}
+//	else {
+//		if (App->scene->mainCamera) {
+//			ComponentCamera* mainCam = App->scene->mainCamera->GetComponentCamera();
+//			mainCam->SetAspectRatio((float)width / (float)height);
+//		}
+//	}
+//}
 
 void ModuleRenderer3D::DirectDrawCube(float3& size, float3& pos) const
 {
