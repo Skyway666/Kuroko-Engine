@@ -7,10 +7,12 @@
 #include "ModuleInput.h"
 #include "ModuleResourcesManager.h"
 #include "ModuleTimeManager.h"
+#include "Include_Wwise.h"
 
 // May be better to manage in scene
 #include "GameObject.h"
 #include "ComponentTransform.h"
+#include "ComponentAudioSource.h"
 #include "Transform.h"
 
 // Engine comunicator
@@ -52,6 +54,14 @@ void getAxes(WrenVM* vm);
 void getMouseRaycastX(WrenVM* vm);
 void getMouseRaycastY(WrenVM* vm);
 void getMouseRaycastZ(WrenVM* vm);
+
+// Audio
+void SetSound(WrenVM* vm);
+void Play(WrenVM* vm);
+void Pause(WrenVM* vm);
+void Resume(WrenVM* vm);
+void Stop(WrenVM* vm);
+
 
 
 
@@ -492,6 +502,21 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 				return getAxes;
 		}
 	}
+	// AUDIO
+	if (strcmp(module, "Audio") == 0) {
+		if (strcmp(className, "AudioSourceComunicator") == 0) {
+			if (isStatic && strcmp(signature, "C_SetSound(_,_,_)") == 0)
+				return SetSound;
+			if (isStatic && strcmp(signature, "C_Play(_,_)") == 0)
+				return Play;
+			if (isStatic && strcmp(signature, "C_Pause(_,_)") == 0)
+				return Pause;
+			if (isStatic && strcmp(signature, "C_Resume(_,_)") == 0)
+				return Resume;
+			if (isStatic && strcmp(signature, "C_Stop(_,_)") == 0)
+				return Stop;
+		}
+	}
 
 
 }
@@ -584,6 +609,8 @@ void getMouseRaycastZ(WrenVM* vm)
 	float3 hit = App->scene->MousePickingHit();
 	wrenSetSlotDouble(vm, 0, hit.z);
 }
+
+
 
 void InstantiatePrefab(WrenVM* vm) {  
 
@@ -853,3 +880,110 @@ void GetComponentUUID(WrenVM* vm) {
 	wrenSetSlotDouble(vm, 0, component->getUUID());
 }
 
+void SetSound(WrenVM * vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
+	std::string sound_string = wrenGetSlotString(vm, 3);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAudioSource* component = (ComponentAudioSource*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAudioSource with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->sound_ID = AK::SoundEngine::GetIDFromString(sound_string.c_str());
+}
+
+void Play(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
+
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAudioSource* component = (ComponentAudioSource*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAudioSource with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->sound_go->PlayEvent(component->sound_ID);
+}
+
+void Pause(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
+
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAudioSource* component = (ComponentAudioSource*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAudioSource with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->sound_go->PauseEvent(component->sound_ID);
+}
+void Resume(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
+	uint sound_ID = wrenGetSlotDouble(vm, 3);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAudioSource* component = (ComponentAudioSource*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAudioSource with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->sound_go->ResumeEvent(component->sound_ID);
+}
+void Stop(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
+	uint sound_ID = wrenGetSlotDouble(vm, 3);
+
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAudioSource* component = (ComponentAudioSource*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAudioSource with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->sound_go->StopEvent(component->sound_ID);
+}

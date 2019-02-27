@@ -1,7 +1,10 @@
 
 import "ObjectLinker" for ObjectLinker,
 EngineComunicator,
-InputComunicator
+InputComunicator,
+ComponentType
+
+import "Audio" for ComponentAudioSource
 
 //For each var you declare, remember to create
 //		setters [varname=(v) { __varname = v }]
@@ -11,13 +14,23 @@ InputComunicator
 //Be careful not to overwrite the methods declared in Game/ScriptingAPI/ObjectLinker.wren
 //[gameObject] is a reserved identifier for the engine, don't use it for your own variables
 
-class test is ObjectLinker{
+class sound_test is ObjectLinker{
 
-construct new(){}
+	sound_name { _sound_name }
+	sound_name=(v) { _sound_name = v }
 
- Start() {
+	audio_source {_audio_source}
+	audio_source=(v) {_audio_source = v}
 
-}
+	construct new(){}
 
- Update() {}
+	Start() {
+		 audio_source = getComponent(ComponentType.AUDIO_SOURCE)
+	}
+
+	Update() {
+		if(InputComunicator.getButton(-1, InputComunicator.C_A, InputComunicator.KEY_DOWN)){
+			audio_source.Play()
+		}
+	}
 }

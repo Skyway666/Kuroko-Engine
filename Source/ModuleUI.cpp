@@ -2118,11 +2118,13 @@ void ModuleUI::DrawAssetInspector()
 			ImGui::Text("type: %s", type);
 
 		Resource* res = App->resources->getResource(App->resources->getResourceUuid(selected_asset.c_str()));
-		if(res){
+		if (res) {
 			ImGui::Text("Used by %s components", std::to_string(res->components_used_by).c_str());
-			if(res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
+			if (res->IsLoaded())		ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Loaded");
 			else					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Unloaded");
 		}
+		else
+			return;
 
 		if (type == "texture")
 		{
@@ -2141,6 +2143,7 @@ void ModuleUI::DrawAssetInspector()
 		}
 		else if (type == "script")
 		{
+			
 			ScriptData* script_data = ((ResourceScript*)res)->getData();
 
 			bool updated = false;
