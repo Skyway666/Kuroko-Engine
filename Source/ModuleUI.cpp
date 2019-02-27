@@ -679,6 +679,8 @@ void ModuleUI::DrawObjectInspectorTab()
 				if (ImGui::Button("Add Camera"))  selected_obj->addComponent(CAMERA);
 				if (ImGui::Button("Add Script")) select_script = true;
 				if (ImGui::Button("Add Animation")) selected_obj->addComponent(ANIMATION);
+				if (ImGui::Button("Add Audio Source")) selected_obj->addComponent(AUDIOSOURCE);
+				if (ImGui::Button("Add Listener")) selected_obj->addComponent(AUDIOLISTENER);
 			}
 
 			std::list<Component*> components;

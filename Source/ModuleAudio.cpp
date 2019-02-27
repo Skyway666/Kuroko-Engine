@@ -39,6 +39,8 @@ bool ModuleAudio::Init(const JSON_Object* config)
 	bool ret = Wwise::InitWwise();
 	
 	LoadSoundBank("Character");
+
+	GetBanksAndEvents();
 	
 	return ret;
 }
@@ -130,16 +132,37 @@ void ModuleAudio::SetPitch(float value, AkGameObjectID id)
 
 void ModuleAudio::LoadSoundBank(const char* path)
 {
-	//SoundBank* new_bank = new SoundBank();
 	std::string bank_path = AUDIO_DIRECTORY;
 	bank_path += path;
 	bank_path += AUDIO_EXTENSION;
 
 	Wwise::LoadBank(bank_path.c_str());
+}
 
-	std::string json_file = bank_path.substr(0, bank_path.find_last_of('.')) + ".json"; // Changing .bnk with .json
-	/*GetBankInfo(json_file, new_bank);
-	soundbanks.push_back(new_bank);
-	soundbank = new_bank;
-	return new_bank;*/
+void ModuleAudio::GetBanksAndEvents()
+{
+	std::string infoFile_path = "Assets/Sounds/SoundbanksInfo.json";
+	JSON_Value* infoFile = json_parse_file(infoFile_path.c_str());
+	if (!infoFile) {
+		app_log->AddLog("Couldn't load %s, no value", infoFile_path);
+		return;
+	}
+	//JSON_Object* asd = json_value_get_object(infoFile);
+	//JSON_Array* banks_array = json_object_get_array(json_object(infoFile), "SoundBanks");
+	//std::vector<std::string> stringBanks;
+	//std::vector<std::string> stringEvents;
+
+	//// Load all the SoundBanks
+	//for (int i = 0; i < json_array_get_count(banks_array); i++) {
+	//	JSON_Object* bank_obj = json_array_get_object(banks_array, i);
+	//	stringBanks.push_back(json_object_get_string(bank_obj, "ShortName"));  // Get bank name
+
+	//	//JSON_Array* events_array = json_object_get_array(json_object(infoFile), "IncludedEvents");
+
+	//}
+
+	//soundBanks = stringBanks;
+	//events = stringEvents;
+
+	json_value_free(infoFile);
 }
