@@ -79,8 +79,8 @@ bool ModuleScene::CleanUp()
 	if (local_scene_save) {
 		json_value_free(local_scene_save);
 	}
-
-	selected_obj = nullptr;
+	
+	selected_obj.clear();
 	return true;
 }
 
@@ -106,7 +106,8 @@ update_status ModuleScene::PostUpdate(float dt)
 		//If something is deleted, ask quadtree to reload
 		GameObject* current = (*it);
 		quadtree_reload = true;
-		if (current == selected_obj) selected_obj = nullptr;
+		if (current == selected_obj[0]) 
+			selected_obj.clear();
 		game_objects.remove(current);
 
 		// Remove child from parent
@@ -136,7 +137,10 @@ update_status ModuleScene::Update(float dt)
 		float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
 		float y = (((((float)App->window->main_window->height - (float)App->input->GetMouseY()) / (float)App->window->main_window->height) * 2) - 1);
 
-		selected_obj = MousePicking();
+		
+		GameObject* picked = MousePicking();
+		if (picked != nullptr)
+			selected_obj.push_back(picked);
 	}
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
@@ -386,7 +390,7 @@ void ModuleScene::ClearScene()
 
 	game_objects.clear();
 
-	selected_obj = nullptr;
+	selected_obj.clear();
 }
 
 void ModuleScene::getRootObjs(std::list<GameObject*>& list_to_fill)

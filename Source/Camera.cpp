@@ -76,7 +76,7 @@ void Camera::Move(const float3 &Movement)
 
 void Camera::LookAtSelectedGeometry()
 {
-	if (GameObject* selected_obj = App->scene->selected_obj)
+	if (GameObject* selected_obj = App->scene->selected_obj[0])
 		LookAt(selected_obj->getCentroid());
 
 	updateFrustum();
@@ -84,7 +84,7 @@ void Camera::LookAtSelectedGeometry()
 
 void Camera::FitToSizeSelectedGeometry(float distance)
 {
-	if (GameObject* selected_obj = App->scene->selected_obj)
+	if (GameObject* selected_obj = App->scene->selected_obj[0])
 	{
 		AABB* aabb = ((ComponentAABB*)selected_obj->getComponent(C_AABB))->getAABB(); 
 		float3 new_pos = aabb->Centroid() + aabb->HalfSize() + float3(distance, distance, distance);
