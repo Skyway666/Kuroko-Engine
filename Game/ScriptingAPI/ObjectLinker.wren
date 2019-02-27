@@ -119,6 +119,9 @@ class InputComunicator{
 	static L_AXIS_LEFT {15}
 	static L_AXIS_RIGHT {16}
 
+	static L_AXIS_X {0}
+	static L_AXIS_Y {1}
+
 	static C_A {0}
 	static C_B {1}
 	static C_X {2}
@@ -133,6 +136,7 @@ class InputComunicator{
 
 	foreign static getButton(controller_id, button, mode)
 	foreign static getAxis(controller_id, axis)
+
 
 	foreign static getMouseRaycastX()
 	foreign static getMouseRaycastY()

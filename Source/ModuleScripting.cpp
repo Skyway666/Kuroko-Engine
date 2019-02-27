@@ -790,7 +790,7 @@ void getButton(WrenVM* vm) {
 
 void getAxes(WrenVM* vm) {
 	uint controller_id = wrenGetSlotDouble(vm, 1);
-	CONTROLLER_BUTTON input = (CONTROLLER_BUTTON)(uint)wrenGetSlotDouble(vm, 2);
+	SDL_GameControllerAxis input = (SDL_GameControllerAxis)(uint)wrenGetSlotDouble(vm, 2);
 
 	Controller* controller = App->input->getController(controller_id);
 
@@ -800,28 +800,7 @@ void getAxes(WrenVM* vm) {
 		return;
 	}
 
-	float ret = 0;
-	switch (input) {
-		case AXIS_LEFTY_POSITIVE:
-			if (controller->axes[SDL_CONTROLLER_AXIS_LEFTY] > 0)	// If it is negative return 0
-				ret = controller->axes[SDL_CONTROLLER_AXIS_LEFTY];
-			break;
-		case AXIS_LEFTY_NEGATIVE:
-			if (controller->axes[SDL_CONTROLLER_AXIS_LEFTY] < 0)	// If it is positive return 0
-				ret = abs(controller->axes[SDL_CONTROLLER_AXIS_LEFTY]); // Absolute value
-			break;
-		case AXIS_LEFTX_NEGATIVE:
-			if (controller->axes[SDL_CONTROLLER_AXIS_LEFTX] < 0)	// If it is positive return 0
-				ret = abs(controller->axes[SDL_CONTROLLER_AXIS_LEFTX]); // Absolute value
-			break;
-		case AXIS_LEFTX_POSITIVE:
-			if (controller->axes[SDL_CONTROLLER_AXIS_LEFTX] > 0)	// If it is positive return 0
-				ret = controller->axes[SDL_CONTROLLER_AXIS_LEFTX];
-			break;
-	}
-
-	wrenSetSlotDouble(vm, 0, ret);
-
+	wrenSetSlotDouble(vm, 0, controller->axes[input]);
 }
 void FindGameObjectByTag(WrenVM* vm) {
 	std::string tag = wrenGetSlotString(vm, 1);
