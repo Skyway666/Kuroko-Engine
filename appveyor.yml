@@ -9,13 +9,13 @@ configuration:
 build:
   verbosity: minimal
 before_package:
-- ps: Copy-Item C:\projects\Project-Alpha\Project-Alpha\$env:CONFIGURATION\Project-Alpha.exe C:\projects\Project-Alpha\Game\.
+- ps: Copy-Item C:\projects\Project-Atlas\$env:CONFIGURATION\Project-Atlas.exe C:\projects\Project-Atlas\Game\.
 artifacts:
-- path: Project-Alpha\Game
-  name: Project Alpha
+- path: Game
+  name: Project Atlas
 deploy:
 - provider: GitHub
   description: Project Atlas Engine
   auth_token:
-    secure: piE1WY+KQYZkBVZ0eaCkCJJru7Wzo0OObLas5xrwYWRROcQivrqnrCrK++IW59H9
+    secure: MaB3ICkr038Fii5AVhE9ML/MeFQzJ8XupqTvTnv+QuDE2H/rh17Z0QIdoc/vvNWM
   draft: true
