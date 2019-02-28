@@ -79,7 +79,7 @@ class MovingState is State {
     }
 
     HandleInput() {
-        if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_DOWN) == false){
+        if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_UP)){
             _player.SetState = _player.IdleState
         }
     }
