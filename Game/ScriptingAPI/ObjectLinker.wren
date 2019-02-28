@@ -32,7 +32,7 @@ class Math{
 	}
 
 	static lerp(a, b, f){
-		return (a + f) * (b - a)
+		return a + (f * (b - a))
 	}
 
 	static clamp(value, min, max){
