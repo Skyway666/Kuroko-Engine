@@ -19,9 +19,6 @@ construct new(){}
 
  focusTag { _focusTag }
  focusTag=(v) { _focusTag = v}
-
- focus { _focus }
- focus=(v) { _focus = v}
  
  offset_x {__offset_x}
  offset_x=(v){__offset_x = v}
@@ -39,10 +36,10 @@ construct new(){}
 
 
  Start() {
- focus = EngineComunicator.FindGameObjectsByTag(focusTag)[0]
+ _focus = EngineComunicator.FindGameObjectsByTag(focusTag)[0]
 
  //Set Pos
- var focuspos = focus.getPos("global")
+ var focuspos = _focus.getPos("global")
  setPos(focuspos.x + offset_x, focuspos.y + offset_y, focuspos.z + offset_z)
 
   lookAt(focuspos.x, focuspos.y, focuspos.z)
@@ -51,11 +48,11 @@ construct new(){}
 
  Update() {
 
- if(focus == null){
+ if(_focus == null){
    EngineComunicator.consoleOutput("Focus not found")
  }
 
- var focuspos = focus.getPos("global")
+ var focuspos = _focus.getPos("global")
  var pos = getPos("global")
 
 
@@ -72,14 +69,16 @@ construct new(){}
  //dir.y = Math.clamp(dir.y, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
  //dir.z = Math.clamp(dir.z, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
  
- dir.x = Math.lerp(pos.x, dir.x, maxSpeed * Time.C_GetDeltaTime())
- dir.y = Math.lerp(pos.y, dir.y, maxSpeed * Time.C_GetDeltaTime())
- dir.z = Math.lerp(pos.z, dir.z, maxSpeed * Time.C_GetDeltaTime())
+ var smoothedPos = Vec3.zero()
+
+ smoothedPos.x = Math.lerp(pos.x, dir.x, maxSpeed * Time.C_GetDeltaTime())
+ smoothedPos.y = Math.lerp(pos.y, dir.y, maxSpeed * Time.C_GetDeltaTime())
+ smoothedPos.z = Math.lerp(pos.z, dir.z, maxSpeed * Time.C_GetDeltaTime())
 
  //consoleOutput(dir.x)
  //setPos(newpos.x, newpos.y, newpos.z)
 
- setPos(dir.x ,dir.y , dir.z)
+ setPos(smoothedPos.x ,smoothedPos.y , smoothedPos.z)
 
  }
 }

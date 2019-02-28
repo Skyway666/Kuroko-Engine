@@ -9,6 +9,7 @@
 #include "ModuleCamera3D.h"
 #include "ComponentAABB.h"
 
+
 #include "MathGeoLib\Math\Quat.h"
 #include "MathGeoLib\Geometry\Plane.h"
 
@@ -232,5 +233,28 @@ void Camera::initFrameBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, frame_buffer->size_x, frame_buffer->size_y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+}
+
+void Camera::Save(JSON_Object * deff){
+
+	// Frustum pos
+	json_object_set_number(deff, "pos_x", frustum->pos.x);
+	json_object_set_number(deff, "pos_y", frustum->pos.y);
+	json_object_set_number(deff, "pos_z", frustum->pos.z);
+
+	// Frustum reference
+	json_object_set_number(deff, "ref_x", Reference.x);
+	json_object_set_number(deff, "ref_y", Reference.y);
+	json_object_set_number(deff, "ref_z", Reference.z);
+
+	// Frustum type
+	json_object_set_number(deff, "frustum_type", (int)frustum_type);
+
+	// Bools
+	json_object_set_boolean(deff, "active", active);
+	json_object_set_boolean(deff, "draw_in_UI", draw_in_UI);
+	json_object_set_boolean(deff, "draw_frustum", draw_frustum);
+	json_object_set_boolean(deff, "draw_depth", draw_depth);
 
 }
