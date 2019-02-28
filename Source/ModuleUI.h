@@ -75,8 +75,8 @@ public:
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
 
-	bool MouseOnScene(bool mouseScene) {mouseOnScene = mouseScene;}; //USED FOR USING MOUSE ON SCENE (MOUSEWHEEL, ETC..)
-	bool MouseOnGame(bool mouseGame) { mouseOnGame = mouseGame; };
+	void MouseOnScene(bool mouseScene) {mouseOnScene = mouseScene;}; //USED FOR USING MOUSE ON SCENE (MOUSEWHEEL, ETC..)
+	void MouseOnGame(bool mouseGame) { mouseOnGame = mouseGame; };
 	bool isMouseOnScene() { return mouseOnScene; };
 	bool isMouseOnGame() { return mouseOnGame; };
 

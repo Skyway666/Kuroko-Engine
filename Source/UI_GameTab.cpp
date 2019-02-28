@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Material.h"
 #include "ModuleScene.h"
+#include "ModuleRenderer3D.h"
 
 void UI_GameTab::UpdateContent()
 {
@@ -17,7 +18,7 @@ void UI_GameTab::UpdateContent()
 	{
 		lastSize.x = size.x; lastSize.y = size.y;
 
-		//App->renderer3D->OnResize(size.x, size.y, true);
+		/*App->renderer3D->OnResize(size.x, size.y, true);*/
 	}
 
 	/*img = (ImTextureID)App->camera->selected_camera;*/

@@ -112,7 +112,7 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 
 	}
 	// Projection matrix for
-	OnResize(App->window->main_window->width, App->window->main_window->height);
+	//OnResize(App->window->main_window->width, App->window->main_window->height);
 	////////////DELETEEEEEEE
 
 	//Initializing Shaders
@@ -203,18 +203,18 @@ void ModuleRenderer3D::OnResize(int width, int height)
 }
 
 //----------------------------------------------------------------------------------------This should be how the OnResize work for the size of each window-------------------------------------------------------
-//void ModuleRenderer3D::OnResize(const int width, const int height, bool scene)
-//{
-//	if (scene) {
-//		App->camera->cameraComp->SetAspectRatio((float)width / (float)height);
-//	}
-//	else {
-//		if (App->scene->mainCamera) {
-//			ComponentCamera* mainCam = App->scene->mainCamera->GetComponentCamera();
-//			mainCam->SetAspectRatio((float)width / (float)height);
-//		}
-//	}
-//}
+void ModuleRenderer3D::OnResize2(const int width, const int height, bool scene)
+{
+	if (scene) {
+		App->camera->editor_camera->setFov((float)width, (float)height);
+	}
+	else {
+		/*if (App->scene->mainCamera) {
+			ComponentCamera* mainCam = App->scene->mainCamera->GetComponentCamera();
+			mainCam->SetAspectRatio((float)width / (float)height);
+		}*/
+	}
+}
 
 void ModuleRenderer3D::DirectDrawCube(float3& size, float3& pos) const
 {

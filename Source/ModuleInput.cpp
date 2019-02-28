@@ -5,6 +5,7 @@
 #include "ModuleImporter.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleResourcesManager.h"
+#include "ModuleWindow.h"
 #include "FileSystem.h"
 
 #include "ImGui/imgui.h"
@@ -167,9 +168,10 @@ update_status ModuleInput::PreUpdate(float dt)
 
 		case SDL_WINDOWEVENT:
 			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
-				App->renderer3D->OnResize(e.window.data1, e.window.data2);
+				App->window->setSize(e.window.data1, e.window.data2, 0);
+				//App->renderer3D->OnResize(e.window.data1, e.window.data2);
 			//---------------------------------------------OnResizeChanged to this---------------------------------
-			//App->window->SetSize(e.window.data1, e.window.data2);
+			
 
 			break;
 

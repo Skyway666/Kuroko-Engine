@@ -28,6 +28,8 @@ public:
 
 	SDL_GLContext getContext() const	{ return context; }
 
+	void OnResize2(const int width, const int height, bool scene);
+
 	void DirectDrawCube(float3& size, float3& pos) const;
 	void DrawDirectAABB(AABB aabb) const;
 
