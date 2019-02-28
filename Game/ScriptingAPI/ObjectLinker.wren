@@ -84,9 +84,10 @@ class Vec3{
 	normalized { Vec3.new(x/magnitude, y/magnitude, z/magnitude)}
 
 	normalize(){
-		x = x/magnitude
-		y = y/magnitude
-		x = z/magnitude
+		var static_magnitude = magnitude
+		x = x/static_magnitude
+		y = y/static_magnitude
+		z = z/static_magnitude
 	}
 
 	static add(vec1, vec2){
