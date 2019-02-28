@@ -68,6 +68,7 @@ public:
 	uint getResourceUuid(const char* file); // Will not assign the resource 
 	uint getMeshResourceUuid(const char* Parent3dObject, const char* name);
 	uint getAnimationResourceUuid(const char* Parent3dObject, const char* name);
+	uint getAnimationResourceUuid(const char* name);
 	uint getBoneResourceUuid(const char* Parent3dObject, const char* name);
 
 	void CleanResources() { cleanResources = true; }
