@@ -530,7 +530,7 @@ void ModuleScene::SaveScene(std::string name) {
 
 	std::string path;
 	App->fs.FormFullPath(path, name.c_str(), ASSETS_SCENES, SCENE_EXTENSION);
-	json_serialize_to_file(scene, path.c_str());
+	json_serialize_to_file_pretty(scene, path.c_str());
 
 	// Free everything
 	json_value_free(scene);
@@ -548,7 +548,7 @@ void ModuleScene::SavePrefab(GameObject* root, const char* name)
 
 	std::string path;
 	App->fs.FormFullPath(path, name, ASSETS_PREFABS, PREFAB_EXTENSION);
-	json_serialize_to_file(prefab, path.c_str());
+	json_serialize_to_file_pretty(prefab, path.c_str());
 
 	// Free everything
 	json_value_free(prefab);

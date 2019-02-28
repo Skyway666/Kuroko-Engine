@@ -382,7 +382,7 @@ bool ModuleImporter::ImportScene(const char * file_original_name, std::string fi
 
 		std::string path;
 		App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_3DOBJECTS, JSON_EXTENSION);
-		json_serialize_to_file(scene, path.c_str());
+		json_serialize_to_file_pretty(scene, path.c_str());
 		json_value_free(scene);
 		aiReleaseImport(imported_scene);
 		app_log->AddLog("Success importing file %s (scene)", file_original_name);
@@ -451,7 +451,7 @@ bool ModuleImporter::ImportScript(const char* file_original_name, std::string fi
 	std::string path;
 	App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_SCRIPTS, JSON_EXTENSION);
 
-	json_serialize_to_file(script_json, path.c_str());
+	json_serialize_to_file_pretty(script_json, path.c_str());
 	json_value_free(script_json);
 
 	return true;
