@@ -594,6 +594,9 @@
     <ClInclude Include="UI_EditorPreferencesLeaf.h">
       <Filter>Sources\UI\Leaves</Filter>
     </ClInclude>
+    <ClInclude Include="UI_SceneTab.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -973,6 +976,9 @@
     </ClCompile>
     <ClCompile Include="UI_EditorPreferencesLeaf.cpp">
       <Filter>Sources\UI\Leaves</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_SceneTab.cpp">
+      <Filter>Sources\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -230,6 +230,7 @@
     <ClInclude Include="UI_Leaf.h" />
     <ClInclude Include="UI_ObjectInspectorTab.h" />
     <ClInclude Include="UI_PrimitivesTab.h" />
+    <ClInclude Include="UI_SceneTab.h" />
     <ClInclude Include="UI_WindowConfigLeaf.h" />
     <ClInclude Include="VRAM.h" />
     <ClInclude Include="UI_Window.h" />
@@ -357,6 +358,7 @@
     <ClCompile Include="UI_ColorPickerWindow.cpp" />
     <ClCompile Include="UI_HierarchyTab.cpp" />
     <ClCompile Include="UI_ObjectInspectorTab.cpp" />
+    <ClCompile Include="UI_SceneTab.cpp" />
     <ClCompile Include="UI_WindowConfigLeaf.cpp" />
     <ClCompile Include="VRAM.cpp" />
     <ClCompile Include="Wren\wren_compiler.c" />

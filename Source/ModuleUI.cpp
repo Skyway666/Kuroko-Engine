@@ -43,6 +43,7 @@
 #include "FileSystem.h"
 
 #include "UI_Element.h"
+#include "UI_SceneTab.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -136,7 +137,8 @@ bool ModuleUI::Start()
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 
-
+	scene = new UI_SceneTab;
+	
 	// HARDCODE
 	//App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
 
@@ -201,7 +203,7 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[UI_PRIMITIVE])
 		DrawPrimitivesTab();
 
-	if (open_tabs[ABOUT])
+	if (open_tabs[UI_ABOUT])
 		DrawAboutLeaf();
 	
 	if (open_tabs[LOG])
@@ -302,7 +304,7 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help")) {
-			ImGui::MenuItem("About", NULL, &open_tabs[ABOUT]);
+			ImGui::MenuItem("About", NULL, &open_tabs[UI_ABOUT]);
 			if(ImGui::MenuItem("Documentation"))
 				App->requestBrowser("https://github.com/Skyway666/Kuroko-Engine/wiki");
 			if(ImGui::MenuItem("Download latest"))
@@ -376,6 +378,7 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::PopFont();
 		ImGui::End();
 	}
+	scene->Update();
 
 	if (App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN && !disable_keyboard_control) {
 		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
@@ -2459,7 +2462,7 @@ void ModuleUI::DrawScriptEditor()
 
 void ModuleUI::DrawAboutLeaf()
 {
-	ImGui::Begin("About", &open_tabs[ABOUT]); 
+	ImGui::Begin("About", &open_tabs[UI_ABOUT]); 
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	ImGui::Text("Kuroko Engine");
@@ -2981,10 +2984,10 @@ void ModuleUI::DrawTagSelection(GameObject* object) {
 
 void ModuleUI::SaveConfig(JSON_Object* config) const
 {
-	json_object_set_boolean(config, "hierarchy", open_tabs[HIERARCHY]);
-	json_object_set_boolean(config, "obj_inspector", open_tabs[OBJ_INSPECTOR]);
-	json_object_set_boolean(config, "primitive", open_tabs[PRIMITIVE]);
-	json_object_set_boolean(config, "about", open_tabs[ABOUT]);
+	json_object_set_boolean(config, "hierarchy", open_tabs[UI_HIERARCHY]);
+	json_object_set_boolean(config, "obj_inspector", open_tabs[UI_OBJ_INSPECTOR]);
+	json_object_set_boolean(config, "primitive", open_tabs[UI_PRIMITIVE]);
+	json_object_set_boolean(config, "about", open_tabs[UI_ABOUT]);
 	json_object_set_boolean(config, "configuration", open_tabs[CONFIGURATION]);
 	json_object_set_boolean(config, "log", open_tabs[LOG]);
 	json_object_set_boolean(config, "time_control", open_tabs[TIME_CONTROL]);
@@ -3001,7 +3004,7 @@ void ModuleUI::LoadConfig(const JSON_Object* config)
 	open_tabs[UI_HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
 	open_tabs[UI_OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
 	open_tabs[UI_PRIMITIVE]		= json_object_get_boolean(config, "primitive");
-	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
+	open_tabs[UI_ABOUT]			= json_object_get_boolean(config, "about");
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");
 	open_tabs[QUADTREE_CONFIG]	= json_object_get_boolean(config, "quadtree_config");

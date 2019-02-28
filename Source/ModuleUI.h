@@ -17,11 +17,12 @@ class Material;
 class Camera;
 struct Color;
 class UI_Element;
+class UI_SceneTab;
 
 enum UI_Type { UI_UNKNOWN, UI_HIERARCHY, UI_OBJ_INSPECTOR, UI_PRIMITIVE, UI_GRAPHICS, UI_ABOUT, LOG, TIME_CONTROL, CONFIGURATION, COLOR_PICKER, UI_WINDOW_CONFIG,
-				UI_HARDWARE, UI_APPLICATION, 
+				UI_HARDWARE, UI_APPLICATION, UI_SCENE, UI_GAME,
 				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, ASSET_WINDOW, RESOURCES_TAB, SKYBOX_MENU, SCRIPT_EDITOR, LAST_UI_TAB };  
-				// LAST is an utility value to store the max num of tabs.
+
 
 enum UI_textures { NO_TEXTURE, PLAY, PAUSE, STOP, ADVANCE, GUIZMO_TRANSLATE, GUIZMO_ROTATE, GUIZMO_SCALE, GUIZMO_LOCAL, GUIZMO_GLOBAL, 
 					GUIZMO_SELECT, FOLDER_ICON, OBJECT_ICON, SCENE_ICON, SCRIPT_ICON, PREFAB_ICON, RETURN_ICON, CAUTION_ICON,
@@ -76,6 +77,8 @@ public:
 
 	void setActiveUI_Element(UI_Type type, bool active); // TODO
 	UI_Element* getUI_Element(UI_Type type);  // TODO
+
+	UI_SceneTab* scene; //TO ERASE
 
 	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(const JSON_Object* config);
