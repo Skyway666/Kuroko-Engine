@@ -64,18 +64,22 @@ construct new(){}
 
 
  var dir = Vec3.zero()
- dir.x = (focuspos.x + offset_x) - pos.x
- dir.y = (focuspos.y + offset_y) - pos.y
- dir.z = (focuspos.z + offset_z) - pos.z
+ dir.x = (focuspos.x + offset_x) 
+ dir.y = (focuspos.y + offset_y) 
+ dir.z = (focuspos.z + offset_z) 
 
- dir.x = Math.clamp(dir.x, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
- dir.y = Math.clamp(dir.y, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
- dir.z = Math.clamp(dir.z, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
+ //dir.x = Math.clamp(dir.x, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
+ //dir.y = Math.clamp(dir.y, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
+ //dir.z = Math.clamp(dir.z, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
  
+ dir.x = Math.lerp(pos.x, dir.x, maxSpeed * Time.C_GetDeltaTime())
+ dir.y = Math.lerp(pos.y, dir.y, maxSpeed * Time.C_GetDeltaTime())
+ dir.z = Math.lerp(pos.z, dir.z, maxSpeed * Time.C_GetDeltaTime())
 
  //consoleOutput(dir.x)
  //setPos(newpos.x, newpos.y, newpos.z)
- modPos(dir.x ,dir.y , dir.z)
+
+ setPos(dir.x ,dir.y , dir.z)
 
  }
 }
