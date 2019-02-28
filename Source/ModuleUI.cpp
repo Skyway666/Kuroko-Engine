@@ -1694,12 +1694,31 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 
 			ImGui::Checkbox("Loop", &anim->loop);
 
-			ImGui::PushID("Speed");
-			ImGui::InputFloat("", &anim->speed, 0.0f, 0.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-			ImGui::PopID();
+			ImGui::InputFloat("Speed", &anim->speed, 0.0f, 0.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 
 			if (R_anim != nullptr)
 			{
+				if (App->time->getGameState() != GameState::PLAYING)
+				{
+					ImGui::Text("Play");
+					ImGui::SameLine();
+					ImGui::Text("Pause");
+				}
+				else if (anim->isPaused())
+				{
+					if (ImGui::Button("Play"))
+						anim->Play();
+					ImGui::SameLine();
+					ImGui::Text("Pause");
+				}
+				else
+				{
+					ImGui::Text("Play");
+					ImGui::SameLine();
+					if (ImGui::Button("Pause"))
+						anim->Pause();
+				}
+
 				ImGui::Text("Animation info:");
 				ImGui::Text(" Duration: %.1f ms", R_anim->getDuration()*1000);
 				ImGui::Text(" Animation Bones: %d", R_anim->numBones);
