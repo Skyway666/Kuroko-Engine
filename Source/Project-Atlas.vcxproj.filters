@@ -570,6 +570,7 @@
     <ClInclude Include="UI_ColorPickerWindow.h">
       <Filter>Sources\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI_SceneTab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -929,6 +930,7 @@
     <ClCompile Include="UI_ColorPickerWindow.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
+    <ClCompile Include="UI_SceneTab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\Math\Matrix.inl">

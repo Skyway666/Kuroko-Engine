@@ -43,6 +43,7 @@
 #include "FileSystem.h"
 
 #include "UI_Element.h"
+#include "UI_SceneTab.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -136,7 +137,8 @@ bool ModuleUI::Start()
 	io->IniFilename = "Settings\\imgui.ini";
 	docking_background = true;
 
-
+	scene = new UI_SceneTab;
+	
 	// HARDCODE
 	//App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
 
@@ -376,6 +378,7 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::PopFont();
 		ImGui::End();
 	}
+	scene->Update();
 
 	if (App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN && !disable_keyboard_control) {
 		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];
