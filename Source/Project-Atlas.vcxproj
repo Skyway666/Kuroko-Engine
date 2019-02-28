@@ -95,6 +95,7 @@
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentCanvas.h" />
     <ClInclude Include="ComponentCheckBoxUI.h" />
+    <ClInclude Include="ComponentColliderCube.h" />
     <ClInclude Include="ComponentImageUI.h" />
     <ClInclude Include="ComponentRectTransform.h" />
     <ClInclude Include="ComponentScript.h" />
@@ -190,6 +191,7 @@
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleDebug.h" />
     <ClInclude Include="ModuleImporter.h" />
+    <ClInclude Include="ModulePhysics3D.h" />
     <ClInclude Include="ModuleResourcesManager.h" />
     <ClInclude Include="ModuleScripting.h" />
     <ClInclude Include="ModuleShaders.h" />
@@ -203,6 +205,7 @@
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="Parson\parson.h" />
     <ClInclude Include="PCG Random\pcg_basic.h" />
+    <ClInclude Include="PhysBody.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
@@ -248,6 +251,7 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentCanvas.cpp" />
     <ClCompile Include="ComponentCheckBoxUI.cpp" />
+    <ClCompile Include="ComponentColliderCube.cpp" />
     <ClCompile Include="ComponentImageUI.cpp" />
     <ClCompile Include="ComponentRectTransform.cpp" />
     <ClCompile Include="ComponentScript.cpp" />
@@ -307,6 +311,7 @@
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleDebug.cpp" />
     <ClCompile Include="ModuleImporter.cpp" />
+    <ClCompile Include="ModulePhysics3D.cpp" />
     <ClCompile Include="ModuleResourcesManager.cpp" />
     <ClCompile Include="ModuleScripting.cpp" />
     <ClCompile Include="ModuleShaders.cpp" />
@@ -318,6 +323,7 @@
     <ClCompile Include="ModuleWindow.cpp" />
     <ClCompile Include="Parson\parson.c" />
     <ClCompile Include="PCG Random\pcg_basic.c" />
+    <ClCompile Include="PhysBody.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Resource.cpp" />

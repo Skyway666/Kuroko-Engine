@@ -64,35 +64,45 @@ bool ComponentAABB::Update(float dt)
 {
 	if (isActive())
 	{
-		obb->pos = transform->global->getPosition();
-		obb->r = { getParent()->own_half_size.x * transform->global->getScale().x, getParent()->own_half_size.y * transform->global->getScale().y, getParent()->own_half_size.z * transform->global->getScale().z };
-
-		obb->axis[0] = transform->global->Right();
-		obb->axis[1] = transform->global->Up();
-		obb->axis[2] = transform->global->Forward();
-		
-		std::list<GameObject*> children;
-		getParent()->getChildren(children);
-
-		for (auto it = children.begin(); it != children.end(); it++)
+		if (parent->getComponent(MESH) != nullptr)
 		{
-			ComponentAABB* aabbComp = (ComponentAABB*)(*it)->getComponent(C_AABB);
-			
-			if (aabbComp != nullptr) {
-				OBB* child_obb = aabbComp->obb;
+			obb->pos = transform->global->getPosition();
+			obb->r = { getParent()->own_half_size.x * transform->global->getScale().x, getParent()->own_half_size.y * transform->global->getScale().y, getParent()->own_half_size.z * transform->global->getScale().z };
 
+			obb->axis[0] = transform->global->Right();
+			obb->axis[1] = transform->global->Up();
+			obb->axis[2] = transform->global->Forward();
+		
+			std::list<GameObject*> children;
+			getParent()->getChildren(children);
+
+			for (auto it = children.begin(); it != children.end(); it++)
+			{
+				OBB* child_obb = ((ComponentAABB*)(*it)->getComponent(C_AABB))->obb;
 				for (int i = 0; i < 8; i++)
 				{
 					float3 test = child_obb->CornerPoint(i);
 					obb->Enclose(child_obb->CornerPoint(i));
 				}
 			}
+
+			getParent()->centroid = obb->pos;
+			getParent()->half_size = obb->r.Abs();
+
+		}
+		else
+		{
+			obb->pos = transform->global->getPosition();
+			obb->r = { getParent()->own_half_size.x* transform->global->getScale().x,  getParent()->own_half_size.y * transform->global->getScale().y,  getParent()->own_half_size.z * transform->global->getScale().z };/*forgive me pls*/
+
+			obb->axis[0] = transform->global->Right();
+			obb->axis[1] = transform->global->Up();
+			obb->axis[2] = transform->global->Forward();
+			
 		}
 
-		getParent()->centroid = obb->pos;
-		getParent()->half_size = obb->r.Abs();
-
 		*aabb = obb->MinimalEnclosingAABB();
+
 	}
 	return true;
 }
@@ -142,6 +152,7 @@ void ComponentAABB::DrawOBB() const
 }
 
 void ComponentAABB::Save(JSON_Object* config) {
+
 	json_object_set_string(config, "type", "AABB");
 
 }

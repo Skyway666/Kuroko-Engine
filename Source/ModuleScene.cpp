@@ -25,6 +25,8 @@
 #include "ModuleUI.h"
 #include "ModuleResourcesManager.h"
 
+#include "ModulePhysics3D.h"
+
 #include "ModuleImporter.h" // TODO: remove this include and set skybox creation in another module (Importer?, delayed until user input?)
 #include "MathGeoLib\Geometry\LineSegment.h"
 #include "glew-2.1.0\include\GL\glew.h"
@@ -132,6 +134,21 @@ update_status ModuleScene::PostUpdate(float dt)
 // Update
 update_status ModuleScene::Update(float dt)
 {
+
+	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+	{
+		GameObject* obj = new GameObject("TEST");
+
+		obj->own_half_size = float3(0.5, 0.5, 0.5);
+
+		OBB* obb = ((ComponentAABB*)obj->getComponent(C_AABB))->getOBB();
+
+		obb->SetFrom(AABB(float3(-0.5, -0.5, -0.5), float3(0.5, 0.5, 0.5)));
+
+		obj->addComponent(COLLIDER_CUBE);
+
+	}
+
 	if (!ImGui::IsMouseHoveringAnyWindow() && App->input->GetMouseButton(1) == KEY_DOWN && !ImGuizmo::IsOver() && App->camera->selected_camera == App->camera->background_camera)
 	{
 		float x = (((App->input->GetMouseX() / (float)App->window->main_window->width) * 2) - 1);
@@ -164,6 +181,8 @@ update_status ModuleScene::Update(float dt)
 		component->SetSoundID(AK::EVENTS::FOOTSTEPS);
 		component->SetSoundName("Footsteps");
 	}
+
+	//App->physics->UpdatePhysics();
 
 	return UPDATE_CONTINUE;
 }
