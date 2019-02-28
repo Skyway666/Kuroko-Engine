@@ -325,7 +325,9 @@ Component* GameObject::addComponent(Component_type type)
 		if (!getComponent(UI_TEXT))
 		{
 			new_component = new ComponentTextUI(this);
+			components.push_back(new_component);
 		}
+		break;
 	case BONE:
 		new_component = new ComponentBone(this);
 		components.push_back(new_component);

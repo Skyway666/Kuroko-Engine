@@ -231,7 +231,7 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[SCRIPT_EDITOR])
 		DrawScriptEditor();
 
-	if (!App->scene->selected_obj.empty() && !App->scene->selected_obj[0]->is_static && !App->scene->selected_obj[0]->is_UI) // Not draw guizmo if it is static
+	if (!App->scene->selected_obj.empty() && !(*App->scene->selected_obj.begin())->is_static && !(*App->scene->selected_obj.begin())->is_UI) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
 
 	for (auto it = App->camera->game_cameras.begin(); it != App->camera->game_cameras.end(); it++)
@@ -460,11 +460,11 @@ void ModuleUI::DrawHierarchyTab()
 		{
 			GameObject* parent = nullptr;
 			if (!App->scene->selected_obj.empty())
-				parent = App->scene->selected_obj[0];
+				parent = *App->scene->selected_obj.begin();
 			
 			GameObject* go = new GameObject("Empty", parent);
 			if (!App->scene->selected_obj.empty())
-				App->scene->selected_obj[0]->addChild(go);
+				(*App->scene->selected_obj.begin())->addChild(go);
 		}
 		if (ImGui::TreeNode("UI"))
 		{
@@ -472,8 +472,8 @@ void ModuleUI::DrawHierarchyTab()
 			{
 				GameObject* parent = nullptr;
 				if (!App->scene->selected_obj.empty() ) {
-					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj[0];						
+					if ((*App->scene->selected_obj.begin())->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = *(App->scene->selected_obj.begin());						
 					}
 
 				}
@@ -490,8 +490,8 @@ void ModuleUI::DrawHierarchyTab()
 			{
 				GameObject* parent = nullptr;
 				if (!App->scene->selected_obj.empty()) {
-					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj[0];
+					if ((*App->scene->selected_obj.begin())->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = *App->scene->selected_obj.begin();
 					}
 				}
 				else {
@@ -509,8 +509,8 @@ void ModuleUI::DrawHierarchyTab()
 			{
 				GameObject* parent = nullptr;
 				if (!App->scene->selected_obj.empty()) {
-					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj[0];
+					if ((*App->scene->selected_obj.begin())->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = (*App->scene->selected_obj.begin());
 					}
 				}
 				else {
@@ -528,8 +528,8 @@ void ModuleUI::DrawHierarchyTab()
 			{
 				GameObject* parent = nullptr;
 				if (!App->scene->selected_obj.empty()) {
-					if (App->scene->selected_obj[0]->getComponent(RECTTRANSFORM) != nullptr) {
-						parent = App->scene->selected_obj[0];
+					if ((*App->scene->selected_obj.begin())->getComponent(RECTTRANSFORM) != nullptr) {
+						parent = *App->scene->selected_obj.begin();
 					}
 				}
 				else {
@@ -574,7 +574,7 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 	bool item_hovered = ImGui::IsItemHovered();
 
 	
-	if(!App->scene->selected_obj.empty() && App->scene->selected_obj[0] == &game_object)
+	if(!App->scene->selected_obj.empty() && (*App->scene->selected_obj.begin()) == &game_object)
 		selection_mask = (1 << id);
 	else if (App->scene->selected_obj.empty())
 		selection_mask = (1 >> id);
@@ -584,7 +584,12 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 		if (!App->input->GetKey(SDL_SCANCODE_LCTRL)) {
 			App->scene->selected_obj.clear();
 		}
-		App->scene->selected_obj.push_back(&game_object);
+		int lastSize = App->scene->selected_obj.size();// checks if already is selected and diselects it
+		App->scene->selected_obj.remove(&game_object);
+		if(lastSize == App->scene->selected_obj.size())
+		{
+			App->scene->selected_obj.push_back(&game_object);
+		}
 		
 	}
 	else if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
@@ -656,7 +661,7 @@ void ModuleUI::DrawObjectInspectorTab()
 
 	static bool select_script = false;
 	if (App->scene->selected_obj.size() == 1) {
-		GameObject* selected_obj = App->scene->selected_obj[0];
+		GameObject* selected_obj = (*App->scene->selected_obj.begin());
 
 		if (selected_obj)
 		{
@@ -1698,7 +1703,7 @@ void ModuleUI::DrawCameraViewWindow(Camera& camera)
 			x = (((x - window_pos.x) / ImGui::GetItemRectSize().x) * 2)  - 1;
 			y = (((y - window_pos.y) / ImGui::GetItemRectSize().y) * -2) + 1;
 
-			App->scene->selected_obj[0] = App->scene->MousePicking(camera.getParent() ? camera.getParent()->getParent() : nullptr);
+			App->scene->selected_obj.push_back(App->scene->MousePicking(camera.getParent() ? camera.getParent()->getParent() : nullptr));
 		}
 		ImGui::End();
 	}
@@ -2915,7 +2920,7 @@ void ModuleUI::DrawGuizmo()
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-		ComponentTransform* transform = (ComponentTransform*)App->scene->selected_obj[0]->getComponent(TRANSFORM);
+		ComponentTransform* transform = (ComponentTransform*)(*App->scene->selected_obj.begin())->getComponent(TRANSFORM);
 		Transform* trans = transform->global;
 
 		Transform aux_transform;
