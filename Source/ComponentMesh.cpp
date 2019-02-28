@@ -105,8 +105,7 @@ void ComponentMesh::Draw() const
 			if (wireframe || App->scene->global_wireframe)	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			else											glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-			Skining();
-			mesh_from_resource->updateVRAM();
+			//Skining();
 			mesh_from_resource->Draw(mat);
 			//Descoment to use shader render
 			/*ComponentAnimation* animation = nullptr;
@@ -284,6 +283,8 @@ void ComponentMesh::Skining() const
 			mesh->mesh->setMorphedVertices(vertices);
 		else
 			mesh->mesh->setMorphedVertices(nullptr);
+
+		mesh->mesh->updateVRAM();
 	}
 }
 
