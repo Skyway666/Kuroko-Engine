@@ -17,5 +17,5 @@ deploy:
 - provider: GitHub
   description: Project Atlas Engine
   auth_token:
-    secure: QtTBORPKFi7Nuf+725DnjsiqZiiBFjfxM/MV9TcByhwXe16rz3f/F+iWSCQyJUjY
+    secure: HHBApABRFiNVWIvTjafWph2ht0E+lVB6wswwFRiOMinpzsiEFCOIoLYouOKl1ype
   draft: true
