@@ -19,9 +19,6 @@ construct new(){}
 
  focusTag { _focusTag }
  focusTag=(v) { _focusTag = v}
-
- focus { _focus }
- focus=(v) { _focus = v}
  
  offset_x {__offset_x}
  offset_x=(v){__offset_x = v}
@@ -39,10 +36,10 @@ construct new(){}
 
 
  Start() {
- focus = EngineComunicator.FindGameObjectsByTag(focusTag)[0]
+ _focus = EngineComunicator.FindGameObjectsByTag(focusTag)[0]
 
  //Set Pos
- var focuspos = focus.getPos("global")
+ var focuspos = _focus.getPos("global")
  setPos(focuspos.x + offset_x, focuspos.y + offset_y, focuspos.z + offset_z)
 
   lookAt(focuspos.x, focuspos.y, focuspos.z)
@@ -51,11 +48,11 @@ construct new(){}
 
  Update() {
 
- if(focus == null){
+ if(_focus == null){
    EngineComunicator.consoleOutput("Focus not found")
  }
 
- var focuspos = focus.getPos("global")
+ var focuspos = _focus.getPos("global")
  var pos = getPos("global")
 
 
