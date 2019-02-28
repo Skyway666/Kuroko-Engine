@@ -42,6 +42,7 @@
 #include "Skybox.h"
 #include "FileSystem.h"
 
+#include "UI_Element.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -396,6 +397,20 @@ update_status ModuleUI::PostUpdate(float dt) {
 
 	return UPDATE_CONTINUE;
 
+}
+
+void ModuleUI::setActiveUI_Element(UI_Type type, bool active)
+{
+	for (auto it = ui_elements.begin(); it != ui_elements.end(); it++)
+		if (type == (*it)->getType())
+			active ? (*it)->Activate() : (*it)->Deactivate();
+}
+
+UI_Element* ModuleUI::getUI_Element(UI_Type type)
+{
+	for (auto it = ui_elements.begin(); it != ui_elements.end(); it++)
+		if (type == (*it)->getType())
+			return *it;
 }
 
 bool ModuleUI::CleanUp() 

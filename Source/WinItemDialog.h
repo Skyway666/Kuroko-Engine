@@ -4,7 +4,7 @@
 #include <shobjidl.h> 
 #include <string>
 
-std::string openFileWID()
+static std::string openFileWID()
 {
 	std::string ret;
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);

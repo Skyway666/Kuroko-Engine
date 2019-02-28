@@ -73,7 +73,7 @@ public:
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
 
-	void ActivateUI_Element(UI_Type type); // TODO
+	void setActiveUI_Element(UI_Type type, bool active); // TODO
 	UI_Element* getUI_Element(UI_Type type);  // TODO
 
 	void SaveConfig(JSON_Object* config) const;
@@ -98,6 +98,8 @@ private:
 
 	std::string asset_window_path = ASSETS_FOLDER;
 	std::string selected_asset;
+
+	std::list<UI_Element*> ui_elements;
 };
 #endif
 

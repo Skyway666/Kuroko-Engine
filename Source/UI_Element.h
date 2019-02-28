@@ -22,6 +22,9 @@ public:
 	UI_Type getType() { return type; };
 	void setFont(UI_Font font_type) { font = App->gui->ui_fonts[font_type]; };
 
+	void Activate() { active = true; };
+	void Deactivate() { active = false; };
+
 protected:
 	virtual void OpenLayout() {};
 	virtual void UpdateContent() {};
