@@ -13,22 +13,30 @@ InputComunicator
 
 class PlayerController is ObjectLinker{
 
+    SetState = (new_state) {
+        _player_state = new_state   
+    }
+
+    MovingState {__moving_state}
+    IdleState {__idle_state}
+
     construct new(){}
 
     Start() {
         //var punch_var = BasicAttackState.new()
-        var player_state
+        _player_state
 
-        __punch1_state = BasicAttackState.new()
-        __moving_state = MovingState.new()
+        __idle_state = IdleState.new(this)
+        __punch1_state = BasicAttackState.new(this)
+        __moving_state = MovingState.new(this)
 
-        player_state = __punch_att
-        player_state = __moving_state
-        player_state.HandleInput()
+        _player_state = __idle_state
+        _player_state.HandleInput()
     }
 
     Update() {
-
+        _player_state.HandleInput()
+        _player_state.Update()
     }
 }
 
@@ -36,45 +44,62 @@ class State {
     GetTotalDuration {_total_duration}
     GetCurrentTime {_current_time_in}
 
-    construct new() {
-        EngineComunicator.consoleOutput("Soc un putu deu del wren")
-    }
-
     HandleInput() {
-        EngineComunicator.consoleOutput("Estoy handeleando el input que flipas")
+
     }
 
     Update() {
-
+        EngineComunicator.consoleOutput("Base state")
     }
 }
 
 class IdleState is State {
+    construct new() {
+    }
+
+    construct new(player) {
+        _player = player
+    }
+
+    HandleInput() {
+        if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_DOWN)){
+            _player.SetState = _player.MovingState
+        }
+    }
+
+    Update() {
+        EngineComunicator.consoleOutput("Idle state")
+    }
 
 }
 
 class MovingState is State {
-    construct new() {
-
+    construct new(player) {
+        _player = player
     }
 
     HandleInput() {
-        EngineComunicator.consoleOutput("Estoy handeleando el input que flipas como moviemiento que soy")
+        if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_DOWN) == false){
+            _player.SetState = _player.IdleState
+        }
+    }
+    
+    Update() {
+        EngineComunicator.consoleOutput("Moving state")
     }
 }
 
 class AttackState is State {
-    construct new() {
-        super()
-        EngineComunicator.consoleOutput("attack new")
+    construct new(player) {
+        _player = player
     }
 }
 
 class BasicAttackState is AttackState {
-    construct new() {
-        super()
-        EngineComunicator.consoleOutput("battack new")
+    construct new(player) {
+        _player = player
     }
+
     construct Fill(animation) {
         _animation = animation
     }
