@@ -39,6 +39,7 @@
 #include "Quadtree.h"
 #include "ResourceTexture.h"
 #include "Resource3dObject.h"
+#include "ResourceAnimation.h"
 #include "Skybox.h"
 #include "FileSystem.h"
 #include "Include_Wwise.h"
@@ -1657,6 +1658,33 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			//SKELETAL_TODO: missing resource info
 
 			ComponentAnimation* anim = (ComponentAnimation*)&component;
+			ResourceAnimation* R_anim = (ResourceAnimation*)App->resources->getResource(anim->getAnimationResource());
+			ImGui::Text("Resource: %s", (R_anim!=nullptr)? R_anim->asset.c_str() : "None");
+
+			static bool set_animation_menu = false;
+			if (ImGui::Button((R_anim != nullptr)? "Change Animation":"Add Animation")) {
+				set_animation_menu = true;
+			}
+
+			if (set_animation_menu) {
+
+				std::list<resource_deff> anim_res;
+				App->resources->getAnimationResourceList(anim_res);
+
+				ImGui::Begin("Animation selector", &set_animation_menu);
+				for (auto it = anim_res.begin(); it != anim_res.end(); it++) {
+					resource_deff anim_deff = (*it);
+					if (ImGui::MenuItem(anim_deff.asset.c_str())) {
+						App->resources->deasignResource(anim->getAnimationResource());
+						App->resources->assignResource(anim_deff.uuid);
+						anim->setAnimationResource(anim_deff.uuid);
+						set_animation_menu = false;
+						break;
+					}
+				}
+
+				ImGui::End();
+			}
 
 			static bool animation_active;
 			animation_active = anim->isActive();
@@ -1664,14 +1692,21 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 			if (ImGui::Checkbox("Active##active animation", &animation_active))
 				anim->setActive(animation_active);
 
-			//Change/Add animation button
-			//getAnimationResourceList()
-
 			ImGui::Checkbox("Loop", &anim->loop);
 
 			ImGui::PushID("Speed");
 			ImGui::InputFloat("", &anim->speed, 0.0f, 0.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 			ImGui::PopID();
+
+			if (R_anim != nullptr)
+			{
+				ImGui::Text("Animation info:");
+				ImGui::Text(" Duration: %.1f ms", R_anim->getDuration()*1000);
+				ImGui::Text(" Animation Bones: %d", R_anim->numBones);
+			}
+
+			if (ImGui::Button("Remove Component##Remove animation"))
+				ret = false;
 		}
 		break;
 	case BONE:
