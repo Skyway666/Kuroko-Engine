@@ -16,6 +16,20 @@ ComponentCamera::ComponentCamera(GameObject* parent, Camera* camera) : Component
 
 ComponentCamera::ComponentCamera(JSON_Object* deff, GameObject* parent) : Component(parent, CAMERA){
 
+	// Load camera
+	float3 pos(json_object_dotget_number(deff, "camera.pos_x"), json_object_dotget_number(deff, "camera.pos_y"), json_object_dotget_number(deff, "camera.pos_z"));
+	float3 reference(json_object_dotget_number(deff, "camera.ref_x"), json_object_dotget_number(deff, "camera.ref_y"), json_object_dotget_number(deff, "camera.ref_z"));
+	math::FrustumType type = (math::FrustumType)(uint)json_object_dotget_number(deff, "camera.frustum_type");
+	camera = new Camera(pos, reference, type);
+
+	// Load bools
+	camera->active = json_object_dotget_boolean(deff, "camera.active");
+	camera->draw_depth = json_object_dotget_boolean(deff, "camera.draw_depth");
+	camera->draw_frustum = json_object_dotget_boolean(deff, "camera.draw_frustum");
+	camera->draw_in_UI = json_object_dotget_boolean(deff, "camera.draw_in_UI");
+
+	transform = (ComponentTransform*)parent->getComponent(TRANSFORM);
+	camera->attached_to = this;
 }
 
 ComponentCamera::~ComponentCamera()
@@ -53,27 +67,7 @@ void ComponentCamera::Save(JSON_Object* config) {
 
 	json_object_set_string(config, "type", "camera");
 
-	JSON_Value* transform_value = json_value_init_object();
-	transform->Save(json_object(transform_value));
-
-	json_object_set_value(json_object(transform_value), "camera_transform", transform_value);
-
 	JSON_Value* camera_value = json_value_init_object();
-
-	// X
-	json_object_set_number(json_object(camera_value), "Xx", camera->X.x);
-	json_object_set_number(json_object(camera_value), "Xy", camera->X.y);
-	json_object_set_number(json_object(camera_value), "Xz", camera->X.z);
-
-	// Y
-	json_object_set_number(json_object(camera_value), "Yx", camera->Y.x);
-	json_object_set_number(json_object(camera_value), "Yy", camera->Y.y);
-	json_object_set_number(json_object(camera_value), "Yz", camera->Y.z);
-
-	// Z
-	json_object_set_number(json_object(camera_value), "Zx", camera->Z.x);
-	json_object_set_number(json_object(camera_value), "Zy", camera->Z.y);
-	json_object_set_number(json_object(camera_value), "Zz", camera->Z.z);
-
-
+	camera->Save(json_object(camera_value));
+	json_object_set_value(config, "camera", camera_value);
 }
