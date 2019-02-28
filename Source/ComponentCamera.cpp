@@ -14,6 +14,10 @@ ComponentCamera::ComponentCamera(GameObject* parent, Camera* camera) : Component
 	camera->attached_to = this;
 }
 
+ComponentCamera::ComponentCamera(JSON_Object* deff, GameObject* parent) : Component(parent, CAMERA){
+
+}
+
 ComponentCamera::~ComponentCamera()
 {
 	if (camera != App->camera->editor_camera && !camera->IsViewport())
@@ -43,4 +47,33 @@ bool ComponentCamera::Update(float dt)
 	getCamera()->active = getCamera()->draw_in_UI;
 
 	return true;
+}
+
+void ComponentCamera::Save(JSON_Object* config) {
+
+	json_object_set_string(config, "type", "camera");
+
+	JSON_Value* transform_value = json_value_init_object();
+	transform->Save(json_object(transform_value));
+
+	json_object_set_value(json_object(transform_value), "camera_transform", transform_value);
+
+	JSON_Value* camera_value = json_value_init_object();
+
+	// X
+	json_object_set_number(json_object(camera_value), "Xx", camera->X.x);
+	json_object_set_number(json_object(camera_value), "Xy", camera->X.y);
+	json_object_set_number(json_object(camera_value), "Xz", camera->X.z);
+
+	// Y
+	json_object_set_number(json_object(camera_value), "Yx", camera->Y.x);
+	json_object_set_number(json_object(camera_value), "Yy", camera->Y.y);
+	json_object_set_number(json_object(camera_value), "Yz", camera->Y.z);
+
+	// Z
+	json_object_set_number(json_object(camera_value), "Zx", camera->Z.x);
+	json_object_set_number(json_object(camera_value), "Zy", camera->Z.y);
+	json_object_set_number(json_object(camera_value), "Zz", camera->Z.z);
+
+
 }

@@ -54,6 +54,55 @@ attack_current_time=(v) {__attack_current_time = v}
 attacking  {__attacking}
 attacking=(v) {__attacking = v}
 
+setInput(){
+
+var ret = true
+  var z_value = InputComunicator.getAxisNormalized(-1,InputComunicator.L_AXIS_Y)
+  direction.z = -z_value
+
+  var x_value = InputComunicator.getAxisNormalized(-1,InputComunicator.L_AXIS_X)
+  direction.x = -x_value
+
+  if(direction.z < 0.1 && direction.z > -0.1){
+      direction.z = 0.0
+  }
+   
+  if(direction.x < 0.1 && direction.x > -0.1){
+      direction.x = 0.0
+  }
+  
+
+   
+
+
+  if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
+	direction.z = 1
+    move = true
+  }
+		
+  if(InputComunicator.getKey(InputComunicator.DOWN, InputComunicator.KEY_REPEAT)){
+    direction.z = -1
+    move = true
+  }
+
+  if(InputComunicator.getKey(InputComunicator.LEFT, InputComunicator.KEY_REPEAT)){
+	direction.x = 1
+    move = true
+  }
+		
+  if(InputComunicator.getKey(InputComunicator.RIGHT, InputComunicator.KEY_REPEAT)){
+    direction.x = -1
+    move = true
+  }
+
+  if(direction.x == 0.0 && direction.z == 0.0){
+   ret = false
+  }
+
+return ret
+}
+
+
  Start() {
 direction = Vec3.zero()
 dashing = false
@@ -63,49 +112,19 @@ attacking = false
 
  Update() {
 var move = false
+
 //TODO: Update the player's direction with the input and then move him using the speed
 //TODO 2:If the player dashes, deactivate movement and make him dash
 //Needed: A way to use classes effectively. comunication between scripts
 
 if(dashing == false && attacking == false){
 
-        var z_value = InputComunicator.getAxisNormalized(0,InputComunicator.L_AXIS_Y)
-        direction.z = -z_value
-
-        var x_value = InputComunicator.getAxisNormalized(0,InputComunicator.L_AXIS_X)
-        direction.x = -x_value
-
-         if(direction.z != 0 || direction.x != 0){
-         move = true
-         }
-		
-
-
-
-
-if(InputComunicator.getKey(InputComunicator.UP, InputComunicator.KEY_REPEAT)){
-			direction.z = 1
-            move = true
-		}
-		
-		if(InputComunicator.getKey(InputComunicator.DOWN, InputComunicator.KEY_REPEAT)){
-			direction.z = -1
-            move = true
-		}
-
-		if(InputComunicator.getKey(InputComunicator.LEFT, InputComunicator.KEY_REPEAT)){
-			direction.x = 1
-            move = true
-		}
-		
-		if(InputComunicator.getKey(InputComunicator.RIGHT, InputComunicator.KEY_REPEAT)){
-			direction.x = -1
-            move = true
-		}
-
+   move = setInput()   
+	
 }
 
 if(InputComunicator.getButton(0,InputComunicator.C_A, InputComunicator.KEY_DOWN) && dash_available && !attacking){
+
   dashing = true
   dash_current_time = 0.0
   move = false
@@ -117,7 +136,10 @@ if(InputComunicator.getButton(0,InputComunicator.C_X, InputComunicator.KEY_DOWN)
   move = false
 }
 
+EngineComunicator.consoleOutput("%(move)")
+
 if(move){
+
   var movement = Vec3.new(direction.x*speed,0,direction.z*speed)
   modPos(movement.x,movement.y,movement.z)
 
