@@ -100,7 +100,6 @@
     <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTextUI.h" />
     <ClInclude Include="ComponentTransform.h" />
-    <ClInclude Include="FBO.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="FreeType\include\freetype\config\ftheader.h" />
@@ -224,6 +223,7 @@
     <ClInclude Include="UI_ColorPickerWindow.h" />
     <ClInclude Include="UI_EditorPreferencesLeaf.h" />
     <ClInclude Include="UI_Element.h" />
+    <ClInclude Include="UI_GameTab.h" />
     <ClInclude Include="UI_GraphicsLeaf.h" />
     <ClInclude Include="UI_HardwareLeaf.h" />
     <ClInclude Include="UI_HierarchyTab.h" />
@@ -268,13 +268,13 @@
     <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTextUI.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
-    <ClCompile Include="FBO.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="UI_AboutLeaf.cpp" />
     <ClCompile Include="UI_ApplicationLeaf.cpp" />
     <ClCompile Include="UI_EditorPreferencesLeaf.cpp" />
+    <ClCompile Include="UI_GameTab.cpp" />
     <ClCompile Include="UI_GraphicsLeaf.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\ImGuizmo.cpp" />

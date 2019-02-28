@@ -11,7 +11,6 @@
 
 #define MAX_LIGHTS 8
 
-class FBO;
 
 class ModuleRenderer3D : public Module
 {
@@ -21,7 +20,6 @@ public:
 
 	bool Init(const JSON_Object* config);
 	bool Start();
-	void CreateGameTexture();
 	update_status PreUpdate(float dt);
 	update_status PostUpdate(float dt);
 	bool CleanUp();
@@ -41,9 +39,6 @@ public:
 private:
 
 	Light lights[MAX_LIGHTS];
-
-	FBO* sceneFboTex = nullptr;
-	FBO* gameFboTex = nullptr;
 };
 
 #endif

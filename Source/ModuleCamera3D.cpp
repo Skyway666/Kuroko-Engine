@@ -53,6 +53,7 @@ bool ModuleCamera3D::Start()
 
 	editor_camera->frustum->pos = float3(1, 50, -100);
 	editor_camera->LookAt(float3(0, 0, 0));
+	editor_camera->initFrameBuffer();
 
 
 	return true;

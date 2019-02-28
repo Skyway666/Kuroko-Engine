@@ -3046,3 +3046,4 @@ void ModuleUI::InvisibleDockingBegin() {
 void ModuleUI::InvisibleDockingEnd() {
 	ImGui::End();
 }
+

@@ -1,11 +1,10 @@
-#include "UI_SceneTab.h"
+#include "UI_GameTab.h"
 #include "ModuleCamera3D.h"
 #include "Camera.h"
 #include "Material.h"
 #include "ModuleScene.h"
-#include "ModuleUI.h"
 
-void UI_SceneTab::UpdateContent()
+void UI_GameTab::UpdateContent()
 {
 	uint flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
@@ -17,7 +16,7 @@ void UI_SceneTab::UpdateContent()
 	if (lastSize.x != size.x || lastSize.y != size.y)
 	{
 		lastSize.x = size.x; lastSize.y = size.y;
-		
+
 		//App->renderer3D->OnResize(size.x, size.y, true);
 	}
 
@@ -25,7 +24,7 @@ void UI_SceneTab::UpdateContent()
 	FrameBuffer* frame_buffer = App->camera->current_camera->getFrameBuffer();
 	img = (ImTextureID)frame_buffer->tex->gl_id;
 	ImGui::Image(img, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0));
-	App->gui->MouseOnScene(ImGui::IsMouseHoveringWindow());
+	App->gui->MouseOnGame(ImGui::IsMouseHoveringWindow());
 	//App->scene->selected_obj = App->scene->MousePicking(App->camera->current_camera->getParent() ? App->camera->current_camera->getParent()->getParent() : nullptr);
 
 }

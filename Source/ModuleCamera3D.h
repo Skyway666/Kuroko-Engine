@@ -32,6 +32,7 @@ public:
 	Camera* editor_camera				= nullptr;
 	Camera* background_camera			= nullptr;
 	Camera* current_camera				= nullptr;
+	Camera* game_camera					= nullptr;
 	Camera* selected_camera				= nullptr;
 	Camera* override_editor_cam_culling = nullptr;
 	std::list<Camera*> game_cameras;

@@ -552,9 +552,6 @@
     <ClInclude Include="ModuleShaders.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="FBO.h">
-      <Filter>Sources\Tools</Filter>
-    </ClInclude>
     <ClInclude Include="UI_Window.h">
       <Filter>Sources\UI</Filter>
     </ClInclude>
@@ -595,6 +592,9 @@
       <Filter>Sources\UI\Leaves</Filter>
     </ClInclude>
     <ClInclude Include="UI_SceneTab.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_GameTab.h">
       <Filter>Sources\UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -944,9 +944,6 @@
     <ClCompile Include="ModuleShaders.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="FBO.cpp">
-      <Filter>Sources\Tools</Filter>
-    </ClCompile>
     <ClCompile Include="UI_HierarchyTab.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
@@ -978,6 +975,9 @@
       <Filter>Sources\UI\Leaves</Filter>
     </ClCompile>
     <ClCompile Include="UI_SceneTab.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_GameTab.cpp">
       <Filter>Sources\UI</Filter>
     </ClCompile>
   </ItemGroup>

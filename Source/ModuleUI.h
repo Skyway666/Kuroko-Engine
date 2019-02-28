@@ -75,6 +75,11 @@ public:
 	void InvisibleDockingBegin();
 	void InvisibleDockingEnd();
 
+	bool MouseOnScene(bool mouseScene) {mouseOnScene = mouseScene;}; //USED FOR USING MOUSE ON SCENE (MOUSEWHEEL, ETC..)
+	bool MouseOnGame(bool mouseGame) { mouseOnGame = mouseGame; };
+	bool isMouseOnScene() { return mouseOnScene; };
+	bool isMouseOnGame() { return mouseOnGame; };
+
 	void setActiveUI_Element(UI_Type type, bool active); // TODO
 	UI_Element* getUI_Element(UI_Type type);  // TODO
 
@@ -89,6 +94,7 @@ public:
 	TextEditor script_editor;
 	std::string open_script_path;
 
+	
 private:
 	
 	bool docking_background = true;
@@ -104,6 +110,10 @@ private:
 	std::string selected_asset;
 
 	std::list<UI_Element*> ui_elements;
+
+	//bools for checking if mouse on scene or game
+	bool mouseOnScene = false;
+	bool mouseOnGame = false;
 };
 #endif
 

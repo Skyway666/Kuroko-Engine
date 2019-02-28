@@ -9,7 +9,6 @@
 #include "Camera.h"
 #include "ModuleScene.h"
 #include "ModuleShaders.h"
-#include "FBO.h"
 
 #include "glew-2.1.0\include\GL\glew.h"
 #include "SDL\include\SDL_opengl.h"
@@ -60,13 +59,6 @@ bool ModuleRenderer3D::Init(const JSON_Object* config)
 		{
 			ret = false;
 		}
-
-		sceneFboTex = new FBO();
-		gameFboTex = new FBO();
-		int w, h;
-		App->window->GetSize(w, h);
-		sceneFboTex->Create(w, h);
-		gameFboTex->Create(w, h);
 
 		//Initialize Modelview Matrix
 		glMatrixMode(GL_MODELVIEW);
@@ -135,23 +127,6 @@ bool ModuleRenderer3D::Start()
 	return true;
 }
 
-void ModuleRenderer3D::CreateGameTexture() {
-	gameFboTex->BindFBO();
-	/*if (App->scene->mainCamera == nullptr) { return; }
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	ComponentCamera* mainCam = App->scene->mainCamera->GetComponentCamera();
-	glLoadMatrixf(mainCam->GetProjectionMatrix());
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(mainCam->GetViewMatrix());*/
-
-}
-
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
@@ -181,7 +156,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 		App->scene->DrawScene((*cam)->getFrustum()->pos);
 
-		if (*cam != App->camera->background_camera && (*cam)->getFrameBuffer())
+		if ((*cam)->getFrameBuffer())
 		{
 			glReadBuffer(GL_BACK); // Ensure we are reading from the back buffer.
 			if ((*cam)->draw_depth)  
@@ -198,30 +173,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 			}
 		}
 	}
-
-	//sceneFboTex->BindFBO();
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glLoadIdentity();
-
-	//glMatrixMode(GL_PROJECTION);
-	//glLoadIdentity();
-	//glLoadMatrixf(App->camera->editor_camera->GetProjectionMatrix());
-
-	//glMatrixMode(GL_MODELVIEW);
-	////-
-
-	//glLoadMatrixf(App->camera->editor_camera->GetViewMatrix());
-
-	//lights[0].SetPos(App->camera->editor_camera->getFrustum()->pos.x, App->camera->editor_camera->getFrustum()->pos.y, App->camera->editor_camera->getFrustum()->pos.z);
-
-	//for (uint i = 0; i < MAX_LIGHTS; ++i)
-	//	lights[i].Render();
-
-	//bool editor = true;
-	////App->scene->ToggleEditorCam();
-	//App->scene->DrawScene(App->camera->editor_camera->getFrustum()->pos);
-	//sceneFboTex->UnBindFBO();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -248,7 +199,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf((GLfloat*)App->camera->editor_camera->getFrustum()->ProjectionMatrix().v);
+	glLoadMatrixf((GLfloat*)App->camera->editor_camera->GetProjectionMatrix());
 }
 
 //----------------------------------------------------------------------------------------This should be how the OnResize work for the size of each window-------------------------------------------------------

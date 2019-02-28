@@ -8,14 +8,14 @@ class UI_Window : public UI_Element   // used for elements who have their own wi
 protected:
 	UI_Window(const char* _name, UI_Type _type, UI_Font _font_type = REGULAR) : UI_Element(_name, _type, _font_type) {};
 
-	void OpenLayout() 
-	{ if (active) 
-		{ ImGui::Begin(name, &active); ImGui::PushFont(font); UpdateContent(); } 
+	void OpenLayout()
+	{
+		if (active)
+		{ ImGui::Begin(name, &active); ImGui::PushFont(font); UpdateContent(); ImGui::PopFont();}
 	};
 
-	void CloseLayout() 
-	{ if(active)
-		{ImGui::PopFont(); ImGui::End();} 
+	void CloseLayout() {
+	{  ImGui::End();} 
 	};
 
 	void setPosition(int x, int y) { ImGui::SetWindowPos(ImVec2(x, y)); };
