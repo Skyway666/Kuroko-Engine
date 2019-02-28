@@ -9,10 +9,10 @@ configuration:
 build:
   verbosity: minimal
 before_package:
-- ps: Copy-Item C:\projects\Project-Alpha\Project-Alpha\$env:CONFIGURATION\Project-Alpha.exe C:\projects\Project-Alpha\Game\.
+- ps: Copy-Item C:\projects\Project-Atlas\$env:CONFIGURATION\Project-Atlas.exe C:\projects\Project-Atlas\Game\.
 artifacts:
-- path: Project-Alpha\Game
-  name: Project Alpha
+- path: Project-Atlas\Game
+  name: Project Atlas
 deploy:
 - provider: GitHub
   description: Project Atlas Engine
