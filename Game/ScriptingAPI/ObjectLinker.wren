@@ -30,6 +30,23 @@ class Math{
 		}
 		return ret
 	}
+
+	static lerp(a, b, f){
+		return (a + f) * (b - a)
+	}
+
+	static clamp(value, min, max){
+		if (value < min){
+			value = min
+		}
+		if (value > max){
+			value = max
+		}
+
+		return value
+	}
+
+
 }
 
 class Time{
@@ -64,6 +81,14 @@ class Vec3{
 
 	magnitude {Math.C_sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2))}
 	
+	normalized { Vec3.new(x/magnitude, y/magnitude, z/magnitude)}
+
+	normalize(){
+		x = x/magnitude
+		y = y/magnitude
+		x = z/magnitude
+	}
+
 	static add(vec1, vec2){
 		return ret = Vec3.new(vec1.x + vec2.x,vec1.y + vec2.y,vec1.z + vec2.z)
 	}

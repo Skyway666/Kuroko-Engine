@@ -458,7 +458,11 @@ void ModuleUI::DrawHierarchyTab()
 	{
 		if (ImGui::MenuItem("Empty gameobject"))
 		{
-			GameObject* go = new GameObject("Empty", App->scene->selected_obj[0]);
+			GameObject* parent = nullptr;
+			if (!App->scene->selected_obj.empty())
+				parent = App->scene->selected_obj[0];
+			
+			GameObject* go = new GameObject("Empty", parent);
 			if (!App->scene->selected_obj.empty())
 				App->scene->selected_obj[0]->addChild(go);
 		}

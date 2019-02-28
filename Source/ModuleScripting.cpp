@@ -545,6 +545,8 @@ void SetGameObjectPos(WrenVM* vm) {
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
 	c_trans->local->setPosition(float3(x, y, z));
+	c_trans->LocalToGlobal();
+
 }
 
 void ModGameObjectPos(WrenVM* vm) {
@@ -580,7 +582,7 @@ void lookAt(WrenVM* vm) {
 	}
 
 	ComponentTransform* c_trans = (ComponentTransform*)go->getComponent(TRANSFORM);
-	c_trans->local->LookAt(float3(c_trans->global->getPosition().x, target.y, c_trans->global->getPosition().z), target);
+	c_trans->local->LookAt(float3(c_trans->global->getPosition().x, c_trans->global->getPosition().y, c_trans->global->getPosition().z), target);
 }
 
 void getKey(WrenVM* vm) {

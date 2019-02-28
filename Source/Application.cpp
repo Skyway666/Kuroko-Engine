@@ -26,6 +26,7 @@ Application::Application()
 {
 	randomizeSeed();
 
+	// Commit for margelí
 	// Create library directory if it does not exist
 	CreateDirectory("Library", NULL);
 	CreateDirectory("Library\\Meshes", NULL);
@@ -231,7 +232,7 @@ void Application::SaveConfig_Real() {
 		json_object_set_value(json_object(config), (*it)->name.c_str(), module_config);
 	}
 	// Fill file with info
-	json_serialize_to_file(config, custom_config_file_name.c_str());
+	json_serialize_to_file_pretty(config, custom_config_file_name.c_str());
 	json_value_free(config);
 }
 

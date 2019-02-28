@@ -285,7 +285,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 
 	// If meta didn't exist, or existed but the asset was changed, 
 	json_object_set_number(json_object(meta), "timeCreated", file_last_mod);	// Brand new / Updated time modification
-	json_serialize_to_file(meta, full_meta_path.c_str());
+	json_serialize_to_file_pretty(meta, full_meta_path.c_str());
 	json_value_free(meta);
 
 	switch (enum_type) {
