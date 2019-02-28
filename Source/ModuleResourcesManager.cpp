@@ -466,13 +466,24 @@ uint ModuleResourcesManager::getMeshResourceUuid(const char * Parent3dObject, co
 	}
 	return 0;
 }
-
 uint ModuleResourcesManager::getAnimationResourceUuid(const char * Parent3dObject, const char * name)
 {
 	for (auto it = resources.begin(); it != resources.end(); it++) {
 		if ((*it).second->type == R_ANIMATION) {
 			ResourceAnimation* res_anim = (ResourceAnimation*)(*it).second;
 			if (res_anim->Parent3dObject == Parent3dObject && res_anim->asset == name) {
+				return res_anim->uuid;
+			}
+		}
+	}
+	return 0;
+}
+
+uint ModuleResourcesManager::getAnimationResourceUuid(const char * name) {
+	for (auto it = resources.begin(); it != resources.end(); it++) {
+		if ((*it).second->type == R_ANIMATION) {
+			ResourceAnimation* res_anim = (ResourceAnimation*)(*it).second;
+			if (res_anim->asset == name) {
 				return res_anim->uuid;
 			}
 		}
