@@ -15,6 +15,7 @@ artifacts:
   name: Project Atlas
 deploy:
 - provider: GitHub
+- description: Project Atlas Engine
   auth_token:
     secure: 7aSM/QbXb3e6W1ej9uN1xLrQj/a6Ui80XL8E5ssXm5bz9yWEL4CGnQ9Dh5qZus/f
   draft: true
