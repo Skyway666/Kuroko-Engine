@@ -161,6 +161,7 @@ class InputComunicator{
 
 	static KEY_DOWN {1}
 	static KEY_REPEAT {2}
+	static KEY_UP {3}
 
 	foreign static getKey(key, mode)
 
