@@ -186,19 +186,19 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::End();
 	}
 
-	if (open_tabs[HIERARCHY])
+	if (open_tabs[UI_HIERARCHY])
 		DrawHierarchyTab();
 
 	Camera* prev_selected = App->camera->background_camera;
 	App->camera->selected_camera = nullptr;
 
-	if (open_tabs[OBJ_INSPECTOR])
+	if (open_tabs[UI_OBJ_INSPECTOR])
 		DrawObjectInspectorTab();
 
 	if (!App->camera->selected_camera)
 		App->camera->selected_camera = prev_selected;
 
-	if (open_tabs[PRIMITIVE])
+	if (open_tabs[UI_PRIMITIVE])
 		DrawPrimitivesTab();
 
 	if (open_tabs[ABOUT])
@@ -286,9 +286,9 @@ update_status ModuleUI::Update(float dt) {
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
-			ImGui::MenuItem("Hierarchy", NULL, &open_tabs[HIERARCHY]);
-			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[OBJ_INSPECTOR]);
-			ImGui::MenuItem("Primitive", NULL, &open_tabs[PRIMITIVE]);
+			ImGui::MenuItem("Hierarchy", NULL, &open_tabs[UI_HIERARCHY]);
+			ImGui::MenuItem("Object Inspector", NULL, &open_tabs[UI_OBJ_INSPECTOR]);
+			ImGui::MenuItem("Primitive", NULL, &open_tabs[UI_PRIMITIVE]);
 			ImGui::MenuItem("Configuration", NULL, &open_tabs[CONFIGURATION]);
 			ImGui::MenuItem("Log", NULL, &open_tabs[LOG]);
 			ImGui::MenuItem("Time control", NULL, &open_tabs[TIME_CONTROL]);
@@ -451,7 +451,7 @@ void ModuleUI::InitializeScriptEditor()
 
 void ModuleUI::DrawHierarchyTab()
 {
-	ImGui::Begin("Hierarchy Tab", &open_tabs[HIERARCHY]);
+	ImGui::Begin("Hierarchy Tab", &open_tabs[UI_HIERARCHY]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	int id = 0;
@@ -653,7 +653,7 @@ bool ModuleUI::DrawHierarchyNode(GameObject& game_object, int& id)
 
 void ModuleUI::DrawObjectInspectorTab()
 {
-	ImGui::Begin("Object inspector", &open_tabs[OBJ_INSPECTOR]);
+	ImGui::Begin("Object inspector", &open_tabs[UI_OBJ_INSPECTOR]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	static bool select_script = false;
@@ -2248,7 +2248,7 @@ void ModuleUI::DrawResourcesWindow()
 
 void ModuleUI::DrawPrimitivesTab() 
 {
-	ImGui::Begin("Primitives", &open_tabs[PRIMITIVE]);
+	ImGui::Begin("Primitives", &open_tabs[UI_PRIMITIVE]);
 	ImGui::PushFont(ui_fonts[REGULAR]);
 
 	if (ImGui::Button("Add cube")){
@@ -2998,9 +2998,9 @@ void ModuleUI::SaveConfig(JSON_Object* config) const
 void ModuleUI::LoadConfig(const JSON_Object* config) 
 {
 	open_tabs[CONFIGURATION]	= json_object_get_boolean(config, "configuration");
-	open_tabs[HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
-	open_tabs[OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
-	open_tabs[PRIMITIVE]		= json_object_get_boolean(config, "primitive");
+	open_tabs[UI_HIERARCHY]		= json_object_get_boolean(config, "hierarchy");
+	open_tabs[UI_OBJ_INSPECTOR]	= json_object_get_boolean(config, "obj_inspector");
+	open_tabs[UI_PRIMITIVE]		= json_object_get_boolean(config, "primitive");
 	open_tabs[ABOUT]			= json_object_get_boolean(config, "about");
 	open_tabs[LOG]				= json_object_get_boolean(config, "log");
 	open_tabs[TIME_CONTROL]		= json_object_get_boolean(config, "time_control");

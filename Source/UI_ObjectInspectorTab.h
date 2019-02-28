@@ -9,7 +9,7 @@ class GameObject;
 class UI_ObjectInspectorTab : public UI_Tab
 {
 public:
-	UI_ObjectInspectorTab() : UI_Tab("Object inspector", OBJ_INSPECTOR) {};
+	UI_ObjectInspectorTab() : UI_Tab("Object inspector", UI_OBJ_INSPECTOR) {};
 	void UpdateContent();
 
 private:

@@ -7,7 +7,7 @@ class UI_Leaf : public UI_Element  // use Leaf for elements who work as collapsi
 {
 protected:
 
-	UI_Leaf(const char* _name, UI_Type _type, UI_Font _font_type) : UI_Element(_name, _type, REGULAR) {};
+	UI_Leaf(const char* _name, UI_Type _type, UI_Font _font_type = REGULAR) : UI_Element(_name, _type, _font_type) {};
 
 	void OpenLayout() {
 		if (active = ImGui::CollapsingHeader(name))

@@ -18,7 +18,8 @@ class Camera;
 struct Color;
 class UI_Element;
 
-enum UI_Type { UI_UNKNOWN, HIERARCHY, OBJ_INSPECTOR, PRIMITIVE, ABOUT, LOG, TIME_CONTROL, CONFIGURATION, COLOR_PICKER,
+enum UI_Type { UI_UNKNOWN, UI_HIERARCHY, UI_OBJ_INSPECTOR, UI_PRIMITIVE, UI_GRAPHICS, UI_ABOUT, LOG, TIME_CONTROL, CONFIGURATION, COLOR_PICKER, UI_WINDOW_CONFIG,
+				UI_HARDWARE, UI_APPLICATION, 
 				QUADTREE_CONFIG, CAMERA_MENU, VIEWPORT_MENU /*AUDIO,*/, ASSET_WINDOW, RESOURCES_TAB, SKYBOX_MENU, SCRIPT_EDITOR, LAST_UI_TAB };  
 				// LAST is an utility value to store the max num of tabs.
 
@@ -42,18 +43,18 @@ public:
 	bool CleanUp();
 	void InitializeScriptEditor();
 
-	void DrawHierarchyTab();
-	bool DrawHierarchyNode(GameObject& game_object, int& id);
-	void DrawObjectInspectorTab();
-	bool DrawComponent(Component& component, int id);
+	void DrawHierarchyTab();     // renewal done
+	bool DrawHierarchyNode(GameObject& game_object, int& id); // renewal done
+	void DrawObjectInspectorTab(); // renewal done
+	bool DrawComponent(Component& component, int id); // renewal done
 	//void DrawAudioTab();
-	void DrawPrimitivesTab();
-	void DrawGraphicsLeaf() const;
-	void DrawAboutLeaf();
-	void DrawWindowConfigLeaf() const;
-	void DrawHardwareLeaf() const;
-	void DrawApplicationLeaf() const;
-	void DrawEditorPreferencesLeaf() const;
+	void DrawPrimitivesTab(); // renewal done
+	void DrawGraphicsLeaf() const;  // renewal done
+	void DrawAboutLeaf(); // renewal done
+	void DrawWindowConfigLeaf() const; // renewal done
+	void DrawHardwareLeaf() const;  // renewal done
+	void DrawApplicationLeaf() const;  // renewal done
+	void DrawEditorPreferencesLeaf() const;  // renewal done
 	void DrawTimeControlWindow();
 	void DrawCameraViewWindow(Camera& camera);
 	void DrawGizmoMenuTab();

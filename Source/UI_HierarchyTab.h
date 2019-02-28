@@ -6,7 +6,7 @@
 class UI_HierarchyTab : public UI_Tab 
 {
 public:
-	UI_HierarchyTab() : UI_Tab("HierarchyTab", HIERARCHY) {};
+	UI_HierarchyTab() : UI_Tab("Hierarchy", UI_HIERARCHY) {};
 	void UpdateContent();
 
 private:

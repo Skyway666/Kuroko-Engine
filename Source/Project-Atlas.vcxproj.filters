@@ -88,6 +88,9 @@
     <Filter Include="Sources\UI">
       <UniqueIdentifier>{2e54badd-1933-4018-ac99-09ac0cbcb2f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\UI\Leaves">
+      <UniqueIdentifier>{83da2b88-dd30-4ed4-b92f-430fec331f40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -570,6 +573,27 @@
     <ClInclude Include="UI_ColorPickerWindow.h">
       <Filter>Sources\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI_PrimitivesTab.h">
+      <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_AboutLeaf.h">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_GraphicsLeaf.h">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_WindowConfigLeaf.h">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_HardwareLeaf.h">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_ApplicationLeaf.h">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_EditorPreferencesLeaf.h">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -928,6 +952,27 @@
     </ClCompile>
     <ClCompile Include="UI_ColorPickerWindow.cpp">
       <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_PrimitivesTab.cpp">
+      <Filter>Sources\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_AboutLeaf.cpp">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_GraphicsLeaf.cpp">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_WindowConfigLeaf.cpp">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_HardwareLeaf.cpp">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_ApplicationLeaf.cpp">
+      <Filter>Sources\UI\Leaves</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_EditorPreferencesLeaf.cpp">
+      <Filter>Sources\UI\Leaves</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
