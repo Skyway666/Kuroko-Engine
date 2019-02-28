@@ -141,28 +141,31 @@ void ModuleAudio::LoadSoundBank(const char* path)
 
 void ModuleAudio::GetBanksAndEvents()
 {
+	std::vector<std::string> stringBanks;
+	std::vector<std::string> stringEvents;
 	std::string infoFile_path = "Assets/Sounds/SoundbanksInfo.json";
 	JSON_Value* infoFile = json_parse_file(infoFile_path.c_str());
 	if (!infoFile) {
 		app_log->AddLog("Couldn't load %s, no value", infoFile_path);
 		return;
 	}
-	//JSON_Object* asd = json_value_get_object(infoFile);
-	//JSON_Array* banks_array = json_object_get_array(json_object(infoFile), "SoundBanks");
-	//std::vector<std::string> stringBanks;
-	//std::vector<std::string> stringEvents;
+	JSON_Object* infoObject = json_value_get_object(infoFile);
+	JSON_Object* soundBanksInfo = json_object_get_object(infoObject, "SoundBanksInfo");
+	JSON_Array* banks_array = json_object_get_array(soundBanksInfo, "SoundBanks");	// Get array of soundbanks
 
-	//// Load all the SoundBanks
-	//for (int i = 0; i < json_array_get_count(banks_array); i++) {
-	//	JSON_Object* bank_obj = json_array_get_object(banks_array, i);
-	//	stringBanks.push_back(json_object_get_string(bank_obj, "ShortName"));  // Get bank name
+	for (int i = 0; i < json_array_get_count(banks_array); i++) {
+		JSON_Object* bank_obj = json_array_get_object(banks_array, i);
+		stringBanks.push_back(json_object_get_string(bank_obj, "ShortName"));	// Get bank name
 
-	//	//JSON_Array* events_array = json_object_get_array(json_object(infoFile), "IncludedEvents");
+		JSON_Array* events_array = json_object_get_array(bank_obj, "IncludedEvents");	// Get array of events
+		for (int j = 0; j < json_array_get_count(events_array); j++) {
+			JSON_Object* event_obj = json_array_get_object(events_array, j);
+			stringEvents.push_back(json_object_get_string(event_obj, "Name"));	// Get event name
+		}
+	}
 
-	//}
-
-	//soundBanks = stringBanks;
-	//events = stringEvents;
+	soundBanks = stringBanks;
+	events = stringEvents;
 
 	json_value_free(infoFile);
 }

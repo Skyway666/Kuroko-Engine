@@ -41,6 +41,7 @@
 #include "Resource3dObject.h"
 #include "Skybox.h"
 #include "FileSystem.h"
+#include "Include_Wwise.h"
 
 
 #include "Random.h"
@@ -1308,6 +1309,8 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 	case AUDIOSOURCE:
 		if (ImGui::CollapsingHeader("Audio Source"))
 		{
+			static bool select_audio = false;
+			
 			AkUniqueID ID = ((ComponentAudioSource*)&component)->sound_ID;
 			if (ID != 0)
 			{
@@ -1340,11 +1343,29 @@ bool ModuleUI::DrawComponent(Component& component, int id)
 				{
 					App->audio->SetPitch(((ComponentAudioSource*)&component)->pitch, ((ComponentAudioSource*)&component)->sound_go->GetID());
 				}
+				if (ImGui::Button("Change Audio Event")) select_audio = true;
 			}
 			else
 			{
 				ImGui::TextColored({ 1, 0, 0, 1 }, "No Audio Event assigned!");
+				if (ImGui::Button("Set Audio Event")) select_audio = true;
 			}
+
+			if (select_audio)
+			{
+				ImGui::Begin("Select Audio Event", &select_audio);
+				for (auto it = App->audio->events.begin(); it != App->audio->events.end(); it++) {
+					
+					if (ImGui::MenuItem((*it).c_str())) {
+						((ComponentAudioSource*)&component)->SetSoundID(AK::SoundEngine::GetIDFromString((*it).c_str()));
+						((ComponentAudioSource*)&component)->SetSoundName((*it).c_str());
+						select_audio = false;
+						break;
+					}
+				}
+				ImGui::End();
+			}
+
 			if (ImGui::Button("Remove##Remove audioSource"))
 				ret = false;
 		}
