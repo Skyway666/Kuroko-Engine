@@ -17,7 +17,7 @@ class ComponentAnimation{
 	}
 
 	setAnimation(animation){
-		AnimationComunicator.C_SetSound(gameObject, component, animation)
+		AnimationComunicator.C_SetAnimation(gameObject, component, animation)
 	}
 
 	Play(){
