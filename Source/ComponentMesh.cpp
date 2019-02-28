@@ -24,9 +24,6 @@ ComponentMesh::ComponentMesh(JSON_Object * deff, GameObject* parent): Component(
 	// Load mesh from own file format
 	
 	//std::string mesh_name = json_object_get_string(deff, "mesh_name"); // Mesh name not used for now
-	uint newUUID = json_object_get_number(deff, "UUID");
-	if (newUUID != 0)
-		uuid = newUUID;
 	primitive_type = primitiveString2PrimitiveType(json_object_get_string(deff, "primitive_type"));
 
 													 
@@ -289,7 +286,6 @@ void ComponentMesh::Skining() const
 }
 
 void ComponentMesh::Save(JSON_Object* config) {
-	json_object_set_number(config, "UUID", uuid);
 	// Determine the type of the mesh
  	// Component has two strings, one for mesh name, and another for diffuse texture name
 	json_object_set_string(config, "type", "mesh");

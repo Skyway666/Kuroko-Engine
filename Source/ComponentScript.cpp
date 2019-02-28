@@ -16,9 +16,6 @@ ComponentScript::ComponentScript(GameObject* g_obj, uint resource_uuid) : Compon
 }
 
 ComponentScript::ComponentScript(JSON_Object * deff, GameObject * parent): Component(parent, SCRIPT) {
-	uint newUUID = json_object_get_number(deff, "UUID");
-	if (newUUID != 0)
-		uuid = newUUID;
 	script_resource_uuid = App->resources->getResourceUuid(json_object_get_string(deff, "script"));
 
 	assignScriptResource(script_resource_uuid);
@@ -133,7 +130,6 @@ void ComponentScript::CleanUp() {
 }
 
 void ComponentScript::Save(JSON_Object * config) {
-	json_object_set_number(config, "UUID", uuid);
 	json_object_set_string(config, "type", "script");
 
 	ResourceScript* res_script = (ResourceScript*)App->resources->getResource(script_resource_uuid);
