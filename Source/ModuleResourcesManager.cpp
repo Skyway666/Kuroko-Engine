@@ -293,7 +293,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		App->importer->ImportTexture(full_asset_path.c_str(), uuid_str);
 		break;
 	case R_3DOBJECT:
-		App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
+		App->importer->ImportMesh(full_asset_path.c_str(), uuid_str);
 		break;
 	case R_SCRIPT:
 		App->importer->ImportScript(full_asset_path.c_str(), uuid_str);
@@ -302,7 +302,7 @@ resource_deff ModuleResourcesManager::ManageAsset(std::string path, std::string 
 		App->fs.copyFileTo(full_asset_path.c_str(), LIBRARY_PREFABS, PREFAB_EXTENSION, uuid_str.c_str()); // Copy the file to the library
 		break;
 	case R_SCENE:
-		App->fs.copyFileTo(full_asset_path.c_str(), LIBRARY_SCENES, SCENE_EXTENSION, uuid_str.c_str()); // Copy the file to the library
+		App->importer->ImportScene(full_asset_path.c_str(), uuid_str);
 		break;
 	}
 	// Meta generated and file imported, create resource in code
@@ -604,7 +604,7 @@ const char * ModuleResourcesManager::assetExtension2type(const char * _extension
 
 	std::string extension = _extension;
 
-	if (extension == ".FBX" || extension == ".fbx" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
+	if (extension == ".FBX" || extension == ".fbx" || extension == ".DAE" || extension == ".dae" || extension == ".blend" || extension == ".3ds" || extension == ".obj"
 		|| extension == ".gltf" || extension == ".glb" || extension == ".dxf" || extension == ".x")
 		ret = "3dobject";
 	else if (extension == ".bmp" || extension == ".dds" || extension == ".jpg" || extension == ".pcx" || extension == ".png"

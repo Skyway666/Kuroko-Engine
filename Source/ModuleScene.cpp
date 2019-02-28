@@ -108,7 +108,7 @@ update_status ModuleScene::PostUpdate(float dt)
 		//If something is deleted, ask quadtree to reload
 		GameObject* current = (*it);
 		quadtree_reload = true;
-		if (current == selected_obj[0]) 
+		if (current == *selected_obj.begin()) 
 			selected_obj.clear();
 		game_objects.remove(current);
 
@@ -156,8 +156,15 @@ update_status ModuleScene::Update(float dt)
 
 		
 		GameObject* picked = MousePicking();
-		if (picked != nullptr)
+		if (picked != nullptr) {
+			if (!App->input->GetKey(SDL_SCANCODE_LCTRL)) {
+				App->scene->selected_obj.clear();
+			}
 			selected_obj.push_back(picked);
+		}
+		else {
+			App->scene->selected_obj.clear();
+		}
 	}
 
 	for (auto it = game_objects.begin(); it != game_objects.end(); it++)
