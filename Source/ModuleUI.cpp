@@ -131,6 +131,8 @@ bool ModuleUI::Start()
 	//ui_fonts[REGULAR_ITALIC]		= io->Fonts->AddFontFromFileTTF("Fonts/regular_italic.ttf", 18.0f);
 	//ui_fonts[REGULAR_BOLDITALIC]	= io->Fonts->AddFontFromFileTTF("Fonts/regular_bold_italic.ttf", 18.0f);
 	
+	open_tabs[BUILD_MENU] = false;
+
 	io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	//io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io->IniFilename = "Settings\\imgui.ini";
@@ -231,6 +233,9 @@ update_status ModuleUI::Update(float dt) {
 	if (open_tabs[SCRIPT_EDITOR])
 		DrawScriptEditor();
 
+	if (open_tabs[BUILD_MENU])
+		DrawBuildMenu();
+
 	if (!App->scene->selected_obj.empty() && !(*App->scene->selected_obj.begin())->is_static && !(*App->scene->selected_obj.begin())->is_UI) // Not draw guizmo if it is static
 		App->gui->DrawGuizmo();
 
@@ -279,6 +284,11 @@ update_status ModuleUI::Update(float dt) {
 
 			if (ImGui::MenuItem("Clean library (App will shut down)"))
 				App->resources->CleanResources();
+
+			if (ImGui::MenuItem("Make Build"))
+			{
+				open_tabs[BUILD_MENU] = true;
+			}
 
 			ImGui::EndMenu();
 		}
@@ -2489,6 +2499,13 @@ void ModuleUI::DrawScriptEditor()
 
 	script_editor.Render("TextEditor", ui_fonts[IMGUI_DEFAULT], c_keys);
 	ImGui::PopFont();
+	ImGui::End();
+}
+
+void ModuleUI::DrawBuildMenu()
+{
+	ImGui::Begin("Make Build", &open_tabs[BUILD_MENU]);
+
 	ImGui::End();
 }
 

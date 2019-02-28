@@ -255,6 +255,11 @@ bool FileSystem::removePath(std::string& str) {
 	return true;
 }
 
+void FileSystem::makeBuild(const char * buildPath)
+{
+	
+}
+
 void FileSystem::getFileNameFromPath(std::string & str) {
 	removeExtension(str);
 	removePath(str);
