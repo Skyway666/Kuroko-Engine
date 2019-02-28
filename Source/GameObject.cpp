@@ -80,6 +80,9 @@ GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 		else if (type == "animation") {
 			component = new ComponentAnimation(component_deff, this);
 		}
+		else if (type == "camera") {
+			component = new ComponentCamera(component_deff, this);
+		}
 
 		// Set component's parent-child
 		if (!component){

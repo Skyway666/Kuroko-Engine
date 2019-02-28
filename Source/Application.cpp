@@ -26,7 +26,6 @@ Application::Application()
 {
 	randomizeSeed();
 
-	// Commit for margelí
 	// Create library directory if it does not exist
 	CreateDirectory("Library", NULL);
 	CreateDirectory("Library\\Meshes", NULL);
