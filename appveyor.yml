@@ -11,7 +11,7 @@ build:
 before_package:
 - ps: Copy-Item C:\projects\Project-Atlas\$env:CONFIGURATION\Project-Atlas.exe C:\projects\Project-Atlas\Game\.
 artifacts:
-- path: Project-Atlas\Game
+- path: Game
   name: Project Atlas
 deploy:
 - provider: GitHub
