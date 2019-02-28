@@ -70,7 +70,7 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)/Wwise</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/Wwise;$(ProjectDir)\FreeType\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
