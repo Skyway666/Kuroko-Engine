@@ -1,10 +1,10 @@
 
-class AnimatorComunicator{
+class AnimationComunicator{
 	foreign static C_SetAnimation(gameObject, component, sound)
 	foreign static C_Play(gameObject, component)
 	foreign static C_Pause(gameObject, component)
 }
-class AnimatorComponent{
+class ComponentAnimation{
 	gameObject { _gameObject}		// UUID of the linked GO
 	gameObject=(v){ _gameObject = v}
 
@@ -17,14 +17,14 @@ class AnimatorComponent{
 	}
 
 	setAnimation(animation){
-		AnimatorComunicator.C_SetSound(gameObject, component, animation)
+		AnimationComunicator.C_SetSound(gameObject, component, animation)
 	}
 
 	Play(){
-		AnimatorComunicator.C_Play(gameObject, component)
+		AnimationComunicator.C_Play(gameObject, component)
 	}
 	Pause(){
-		AnimatorComunicator.C_Pause(gameObject, component)
+		AnimationComunicator.C_Pause(gameObject, component)
 	}
 
 }

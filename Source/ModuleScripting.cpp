@@ -8,11 +8,11 @@
 #include "ModuleResourcesManager.h"
 #include "ModuleTimeManager.h"
 #include "Include_Wwise.h"
-#include "ComponentAnimation.h"
 // May be better to manage in scene
 #include "GameObject.h"
 #include "ComponentTransform.h"
 #include "ComponentAudioSource.h"
+#include "ComponentAnimation.h"
 #include "Transform.h"
 
 // Engine comunicator
@@ -532,7 +532,7 @@ WrenForeignMethodFn bindForeignMethod(WrenVM* vm, const char* module, const char
 	}
 	// AUDIO
 	if (strcmp(module, "Animation") == 0) {
-		if (strcmp(className, "AnimatorComunicator") == 0) {
+		if (strcmp(className, "AnimationComunicator") == 0) {
 			if (isStatic && strcmp(signature, "C_SetAnimation(_,_,_)") == 0)
 				return SetAnimation;
 			if (isStatic && strcmp(signature, "C_Play(_,_)") == 0)
@@ -1038,9 +1038,43 @@ void SetAnimation(WrenVM* vm) {
 }
 
 void PlayAnimation(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
 
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAnimation* component = (ComponentAnimation*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAnimation with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->Play();
 }
 
 void PauseAnimation(WrenVM* vm) {
+	uint gameObjectUUID = wrenGetSlotDouble(vm, 1);
+	uint componentUUID = wrenGetSlotDouble(vm, 2);
 
+	GameObject* go = App->scene->getGameObject(gameObjectUUID);
+
+	if (!go) {
+		app_log->AddLog("Script asking for none existing gameObject");
+		return;
+	}
+
+	ComponentAnimation* component = (ComponentAnimation*)go->getComponentByUUID(componentUUID);
+
+	if (!component) {
+		app_log->AddLog("Game Object %s has no ComponentAnimation with %i uuid", go->getName().c_str(), componentUUID);
+		return;
+	}
+
+	component->Pause();
 }
