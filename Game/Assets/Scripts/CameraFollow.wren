@@ -72,14 +72,16 @@ construct new(){}
  //dir.y = Math.clamp(dir.y, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
  //dir.z = Math.clamp(dir.z, -maxSpeed * Time.C_GetDeltaTime(), maxSpeed * Time.C_GetDeltaTime())
  
- dir.x = Math.lerp(pos.x, dir.x, maxSpeed * Time.C_GetDeltaTime())
- dir.y = Math.lerp(pos.y, dir.y, maxSpeed * Time.C_GetDeltaTime())
- dir.z = Math.lerp(pos.z, dir.z, maxSpeed * Time.C_GetDeltaTime())
+ var smoothedPos = Vec3.zero()
+
+ smoothedPos.x = Math.lerp(pos.x, dir.x, maxSpeed * Time.C_GetDeltaTime())
+ smoothedPos.y = Math.lerp(pos.y, dir.y, maxSpeed * Time.C_GetDeltaTime())
+ smoothedPos.z = Math.lerp(pos.z, dir.z, maxSpeed * Time.C_GetDeltaTime())
 
  //consoleOutput(dir.x)
  //setPos(newpos.x, newpos.y, newpos.z)
 
- setPos(dir.x ,dir.y , dir.z)
+ setPos(smoothedPos.x ,smoothedPos.y , smoothedPos.z)
 
  }
 }
