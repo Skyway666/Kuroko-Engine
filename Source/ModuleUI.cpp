@@ -44,6 +44,7 @@
 
 #include "UI_Element.h"
 #include "UI_SceneTab.h"
+#include "UI_GameTab.h"
 
 #include "Random.h"
 #include "VRAM.h"
@@ -138,7 +139,7 @@ bool ModuleUI::Start()
 	docking_background = true;
 
 	scene = new UI_SceneTab;
-	
+	game = new UI_GameTab;
 	// HARDCODE
 	//App->scene->AskSceneLoadFile("Assets/Scenes/animation.scene");
 
@@ -379,6 +380,7 @@ update_status ModuleUI::Update(float dt) {
 		ImGui::End();
 	}
 	scene->Update();
+	game->Update();
 
 	if (App->input->GetKey(SDL_SCANCODE_V) == KEY_DOWN && !disable_keyboard_control) {
 		open_tabs[VIEWPORT_MENU] = !open_tabs[VIEWPORT_MENU];

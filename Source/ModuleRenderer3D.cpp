@@ -135,11 +135,12 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 		if (!(*cam)->active)
 		{
-			if(((*cam)->IsViewport() || (*cam) == App->camera->editor_camera) && !(*cam)->draw_in_UI)
+			//if(((*cam)->IsViewport() || (*cam) == App->camera->editor_camera) && !(*cam)->draw_in_UI)
 				continue;
 		}
 
-		App->camera->current_camera = *cam;
+		if ((*cam) != App->camera->game_camera)
+			App->camera->current_camera = *cam;
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glMatrixMode(GL_PROJECTION);

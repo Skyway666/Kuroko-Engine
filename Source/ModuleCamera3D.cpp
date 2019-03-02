@@ -30,8 +30,11 @@ ModuleCamera3D::~ModuleCamera3D()
 bool ModuleCamera3D::Init(const JSON_Object* config)
 {
 	app_log->AddLog("Setting up the camera");
-	background_camera = selected_camera = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
+	background_camera = selected_camera  = editor_camera = new Camera(float3(-2.0, 2.0f, -5.0f), float3::zero);
+	game_camera =  new Camera(float3(0.0, 0.0f, 0.0f), float3::zero);
 	editor_camera->active = true;
+	game_camera->active = true;
+	game_camera->draw_in_UI = true;
 
 	viewports[VP_RIGHT] = new Camera(float3(10.0, 0.0f, 0.0f ), float3::zero);
 	viewports[VP_LEFT]	= new Camera(float3(-10.0, 0.0f, 0.0f), float3::zero);
@@ -52,10 +55,13 @@ bool ModuleCamera3D::Start()
 		viewports[i]->initFrameBuffer();
 
 	editor_camera->frustum->pos = float3(1, 50, -100);
+	game_camera->frustum->pos = float3(1, 0, -100);
 	editor_camera->LookAt(float3(0, 0, 0));
+	game_camera->LookAt(float3(0, 0, 0));
 	editor_camera->initFrameBuffer();
+	game_camera->initFrameBuffer();
 
-
+	current_camera = editor_camera;
 	return true;
 }
 

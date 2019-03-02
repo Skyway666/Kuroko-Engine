@@ -18,6 +18,7 @@ class Camera;
 struct Color;
 class UI_Element;
 class UI_SceneTab;
+class UI_GameTab;
 
 enum UI_Type { UI_UNKNOWN, UI_HIERARCHY, UI_OBJ_INSPECTOR, UI_PRIMITIVE, UI_GRAPHICS, UI_ABOUT, LOG, TIME_CONTROL, CONFIGURATION, COLOR_PICKER, UI_WINDOW_CONFIG,
 				UI_HARDWARE, UI_APPLICATION, UI_SCENE, UI_GAME,
@@ -84,6 +85,7 @@ public:
 	UI_Element* getUI_Element(UI_Type type);  // TODO
 
 	UI_SceneTab* scene; //TO ERASE
+	UI_GameTab* game;
 
 	void SaveConfig(JSON_Object* config) const;
 	void LoadConfig(const JSON_Object* config);

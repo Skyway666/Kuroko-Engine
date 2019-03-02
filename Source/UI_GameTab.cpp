@@ -22,7 +22,7 @@ void UI_GameTab::UpdateContent()
 	}
 
 	/*img = (ImTextureID)App->camera->selected_camera;*/
-	FrameBuffer* frame_buffer = App->camera->current_camera->getFrameBuffer();
+	FrameBuffer* frame_buffer = App->camera->game_camera->getFrameBuffer();
 	img = (ImTextureID)frame_buffer->tex->gl_id;
 	ImGui::Image(img, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0));
 	App->gui->MouseOnGame(ImGui::IsMouseHoveringWindow());
