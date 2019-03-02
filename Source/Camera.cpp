@@ -202,6 +202,11 @@ void  Camera::setPlaneDistance(float n_plane, float f_plane)
 	frustum->nearPlaneDistance = n_plane; frustum->farPlaneDistance = f_plane;
 }
 
+void  Camera::UpdateFOV(float hor_fov, float ver_fov)
+{
+	float aspect_ratio = hor_fov / ver_fov;
+	frustum->horizontalFov = 2.0f * atanf(tanf(frustum->verticalFov * 0.5f) * aspect_ratio);
+}
 
 void Camera::initFrameBuffer()
 {

@@ -56,6 +56,7 @@ public:
 	void setFrustum(Frustum* f) { frustum = f; };
 	void setFov(float hor_fov, float ver_fov);
 	void setPlaneDistance(float n_plane, float f_plane);
+	void UpdateFOV(float hor_fov, float ver_fov);
 	bool frustumCull(const OBB& obb);  // returns true if inside the frustum
 
 	bool IsViewport();

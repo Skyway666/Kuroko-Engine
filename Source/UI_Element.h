@@ -38,6 +38,7 @@ protected:
 	const char* name = nullptr;
 	bool active = true;
 	ImFont* font = nullptr;
+	int flags = 0;
 };
 
 #endif

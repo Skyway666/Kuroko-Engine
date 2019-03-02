@@ -6,12 +6,12 @@
 class UI_Window : public UI_Element   // used for elements who have their own window
 {
 protected:
-	UI_Window(const char* _name, UI_Type _type, UI_Font _font_type = REGULAR) : UI_Element(_name, _type, _font_type) {};
+	UI_Window(const char* _name, UI_Type _type, UI_Font _font_type = REGULAR, int _flags = 0) : UI_Element(_name, _type, _font_type) { flags = _flags; };
 
 	void OpenLayout()
 	{
 		if (active)
-		{ ImGui::Begin(name, &active); ImGui::PushFont(font); UpdateContent(); ImGui::PopFont();}
+		{ ImGui::Begin(name, &active, flags); ImGui::PushFont(font); UpdateContent(); ImGui::PopFont();}
 	};
 
 	void CloseLayout() {

@@ -207,7 +207,7 @@ void ModuleRenderer3D::OnResize(int width, int height)
 void ModuleRenderer3D::OnResize2(const int width, const int height, bool scene)
 {
 	if (scene) {
-		App->camera->editor_camera->setFov((float)width, (float)height);
+		App->camera->editor_camera->UpdateFOV((float)width, (float)height);
 	}
 	else {
 		/*if (App->scene->mainCamera) {
