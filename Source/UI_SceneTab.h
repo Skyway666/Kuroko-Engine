@@ -9,7 +9,7 @@ class GameObject;
 class UI_SceneTab : public UI_Tab
 {
 public:
-	UI_SceneTab() : UI_Tab("Scene", UI_SCENE) {};
+	UI_SceneTab() : UI_Tab("Scene", UI_SCENE) { flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse; };
 	void UpdateContent();
 
 public:
