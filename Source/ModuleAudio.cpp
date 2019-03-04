@@ -6,18 +6,19 @@
 #include "ModuleCamera3D.h"
 #include "ModuleUi.h"
 #include "ModuleImporter.h"
+#include "ModuleResourcesManager.h"
 #include "GameObject.h"
 #include "ComponentCamera.h"
 #include "ComponentTransform.h"
 #include "ComponentAudioListener.h"
 #include "Camera.h"
 #include "Wwise.h"
+#include "Wwise_IDs.h"
 #include "Applog.h"
 
 #include <corecrt_wstring.h>
 
 #include "Wwise/IO/Win32/AkFilePackageLowLevelIOBlocking.h"
-#include "../Game/Assets/Sounds/Wwise_IDs.h"
 
 
 ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -32,22 +33,20 @@ ModuleAudio::~ModuleAudio()
 
 bool ModuleAudio::Init(const JSON_Object* config)
 {
-	App->importer->ImportSounds();
+	//App->importer->ImportSounds();
 
-	app_log->AddLog("Initializing Wwise");
+	GetBanksAndEvents();
 	
-	bool ret = Wwise::InitWwise();
-	
-	LoadSoundBank("Character");
-	
-	return ret;
+	return true;
 }
 
 bool ModuleAudio::Start()
 {
+	bool ret = Wwise::InitWwise();
 	SetVolume(75);
+	LoadSoundBank(std::to_string(App->resources->getAudioResourceUuid("Character")).c_str());
 
-	return true;
+	return ret;
 }
 
 update_status ModuleAudio::PreUpdate(float dt)
@@ -130,16 +129,43 @@ void ModuleAudio::SetPitch(float value, AkGameObjectID id)
 
 void ModuleAudio::LoadSoundBank(const char* path)
 {
-	//SoundBank* new_bank = new SoundBank();
-	std::string bank_path = AUDIO_DIRECTORY;
+	std::string bank_path = AUDIO_FOLDER;
 	bank_path += path;
 	bank_path += AUDIO_EXTENSION;
 
 	Wwise::LoadBank(bank_path.c_str());
+}
 
-	std::string json_file = bank_path.substr(0, bank_path.find_last_of('.')) + ".json"; // Changing .bnk with .json
-	/*GetBankInfo(json_file, new_bank);
-	soundbanks.push_back(new_bank);
-	soundbank = new_bank;
-	return new_bank;*/
+void ModuleAudio::GetBanksAndEvents()
+{
+	if (!App->is_game)
+		App->fs.copyFileTo(SOUNDBANKSINFO, LIBRARY_AUDIO, ".json", "SoundBanksInfo");
+
+	std::vector<std::string> stringBanks;
+	std::vector<std::string> stringEvents;
+	std::string infoFile_path = "Library/Audio/SoundbanksInfo.json";
+	JSON_Value* infoFile = json_parse_file(infoFile_path.c_str());
+	if (!infoFile) {
+		app_log->AddLog("Couldn't load %s, no value", infoFile_path);
+		return;
+	}
+	JSON_Object* infoObject = json_value_get_object(infoFile);
+	JSON_Object* soundBanksInfo = json_object_get_object(infoObject, "SoundBanksInfo");
+	JSON_Array* banks_array = json_object_get_array(soundBanksInfo, "SoundBanks");	// Get array of soundbanks
+
+	for (int i = 0; i < json_array_get_count(banks_array); i++) {
+		JSON_Object* bank_obj = json_array_get_object(banks_array, i);
+		stringBanks.push_back(json_object_get_string(bank_obj, "ShortName"));	// Get bank name
+
+		JSON_Array* events_array = json_object_get_array(bank_obj, "IncludedEvents");	// Get array of events
+		for (int j = 0; j < json_array_get_count(events_array); j++) {
+			JSON_Object* event_obj = json_array_get_object(events_array, j);
+			stringEvents.push_back(json_object_get_string(event_obj, "Name"));	// Get event name
+		}
+	}
+
+	soundBanks = stringBanks;
+	events = stringEvents;
+
+	json_value_free(infoFile);
 }

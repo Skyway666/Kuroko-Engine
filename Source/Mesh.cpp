@@ -67,9 +67,9 @@ Mesh::Mesh(float3* _vertices, Tri* _tris, float3* _normals, float3* _colors, flo
 
 	calculateCentroidandHalfsize();
 	this->centroid = centroid;
-	//LoadDataToVRAM();
+	LoadDataToVRAM();
 	//Descoment to use shader render
-	LoadDataToVRAMShaders();
+	//LoadDataToVRAMShaders();
 }
 
 Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
@@ -85,9 +85,9 @@ Mesh::Mesh(PrimitiveTypes primitive) : id(App->scene->last_mesh_id++)
 	}
 
 	calculateCentroidandHalfsize();
-	//LoadDataToVRAM();
+	LoadDataToVRAM();
 	//Descoment to use shader render
-	LoadDataToVRAMShaders();
+	//LoadDataToVRAMShaders();
 }
 
 
@@ -109,9 +109,17 @@ Mesh::~Mesh()
 	RELEASE(MeshGPU);
 }
 
+void Mesh::setMorphedVertices(float3 * vertices)
+{
+	RELEASE_ARRAY(morphed_vertices);
+	morphed_vertices = vertices;
+}
+
 void Mesh::LoadDataToVRAM()
 {
 	// create VBOs
+	glDeleteBuffers(1, &vboId);
+	glDeleteBuffers(1, &iboId);
 	glGenBuffers(1, &vboId);    // for vertex buffer
 	glGenBuffers(1, &iboId);    // for index buffer
 
@@ -121,7 +129,10 @@ void Mesh::LoadDataToVRAM()
 	// copy vertex attribs data to VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
 	glBufferData(GL_ARRAY_BUFFER, vSize + vSize + vSize + tSize, 0, GL_STATIC_DRAW); // reserve space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices);                  // copy verts at offset 0
+	if (morphed_vertices == nullptr)
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices);                  // copy verts at offset 0
+	else
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, morphed_vertices);
 	glBufferSubData(GL_ARRAY_BUFFER, vSize, vSize, normals);               // copy norms after verts
 	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize, vSize, colors);          // copy cols after norms
 	glBufferSubData(GL_ARRAY_BUFFER, vSize + vSize + vSize, tSize, tex_coords); // copy texs after cols
@@ -167,22 +178,27 @@ void Mesh::LoadDataToVRAMShaders()
 }
 
 
-
 void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 {
-	//Texture* diffuse_tex = mat ? mat->getTexture(DIFFUSE) : nullptr;
 	Texture* diffuse_tex = nullptr;
-	if(mat){
+	if (mat) {
 		uint diffuse_resource_id = mat->getTextureResource(DIFFUSE);
 		if (diffuse_resource_id != 0) {
 			ResourceTexture* diffuse_resource = (ResourceTexture*)App->resources->getResource(diffuse_resource_id);
-			if(diffuse_resource)
+			if (diffuse_resource)
 				diffuse_tex = diffuse_resource->texture;
 		}
 	}
 
-	if (diffuse_tex)								glEnable(GL_TEXTURE_2D);
-	else if(!draw_as_selected && imported_colors)	glEnableClientState(GL_COLOR_ARRAY);
+	Draw(diffuse_tex, draw_as_selected);
+
+}
+
+
+void Mesh::Draw(Texture* tex, bool draw_as_selected)  const
+{
+	if (tex)								glEnable(GL_TEXTURE_2D);
+	else if (!draw_as_selected && imported_colors)	glEnableClientState(GL_COLOR_ARRAY);
 
 	// bind VBOs before drawing
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
@@ -201,7 +217,7 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 	else
 		glColor3f(tint_color.r, tint_color.b, tint_color.g);
 
-	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, diffuse_tex->getGLid());
+	if (tex)		glBindTexture(GL_TEXTURE_2D, tex->getGLid());
 
 	size_t Offset = sizeof(float3) * num_vertices;
 
@@ -212,14 +228,14 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 	glTexCoordPointer(2, GL_FLOAT, 0, (void*)(Offset * 3));
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, NULL);
 
-	if (diffuse_tex)		glBindTexture(GL_TEXTURE_2D, 0);
+	if (tex)		glBindTexture(GL_TEXTURE_2D, 0);
 	else					glDisableClientState(GL_COLOR_ARRAY);
 
 	if (draw_as_selected)
 		glLineWidth(1.0f);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
-	 
+
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -228,9 +244,10 @@ void Mesh::Draw(Material* mat, bool draw_as_selected)  const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	if (diffuse_tex)		glDisable(GL_TEXTURE_2D);
+	if (tex)		glDisable(GL_TEXTURE_2D);
 
 }
+
 
 void Mesh::FillMeshGPU()
 {
@@ -375,6 +392,11 @@ void Mesh::DrawNormals() const
 	}
 
 	glEnd();
+}
+
+void Mesh::updateVRAM()
+{
+	LoadDataToVRAM(); //Load to VRAM each frame due to skinning
 }
 
 void Mesh::BuildCube(float3& size)

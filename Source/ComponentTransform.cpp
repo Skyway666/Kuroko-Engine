@@ -39,11 +39,10 @@ ComponentTransform::ComponentTransform(GameObject* parent, const ComponentTransf
 	global = new Transform(*transform.global);
 }
 
-ComponentTransform::ComponentTransform(JSON_Object* deff, GameObject* parent): Component(parent, TRANSFORM){
-	uuid = json_object_get_number(deff, "UUID");
+ComponentTransform::ComponentTransform(JSON_Object* deff, GameObject* parent) : Component(parent, TRANSFORM) {
 	local = new Transform(json_object_get_object(deff, "local"));
-	global = new Transform(json_object_get_object(deff, "global"));
-	
+	global = new Transform();
+	LocalToGlobal();
 }
 
 ComponentTransform::ComponentTransform(GameObject* parent) : Component(parent, TRANSFORM)
@@ -87,9 +86,8 @@ void ComponentTransform::GlobalToLocal()
 {
 	if (Transform* inh_transform = getInheritedTransform())
 	{
-		local->setPosition(inh_transform->getRotation().Inverted() * (global->getPosition() - (inh_transform->getRotation() * local->getRotation() * float3(getParent()->own_centroid.x *  inh_transform->getScale().x, getParent()->own_centroid.y *  inh_transform->getScale().y, getParent()->own_centroid.z *  inh_transform->getScale().z))) - inh_transform->getPosition());
-		local->setRotation(inh_transform->getRotation().Inverted() * global->getRotation());
-		local->setScale(global->getScale().Div(inh_transform->getScale()));
+		local->mat = inh_transform->getMatrix().Inverted() * global->getMatrix();
+		local->mat.Decompose(local->position, local->rotation, local->scale);
 	}
 	else
 		local->Set(global->getPosition(), global->getRotation(), global->getScale());
@@ -101,9 +99,8 @@ void ComponentTransform::LocalToGlobal()
 {
 	if (Transform* inh_transform = getInheritedTransform())
 	{
-		global->setPosition(inh_transform->getRotation() * local->getPosition() + inh_transform->getPosition() + (inh_transform->getRotation() * local->getRotation() * float3(getParent()->own_centroid.x *  inh_transform->getScale().x, getParent()->own_centroid.y *  inh_transform->getScale().y, getParent()->own_centroid.z *  inh_transform->getScale().z)));
-		global->setRotation(inh_transform->getRotation() * local->getRotation());
-		global->setScale(local->getScale().Mul(inh_transform->getScale()));
+		global->mat = inh_transform->getMatrix()* local->getMatrix();
+		global->mat.Decompose(global->position, global->rotation, global->scale);
 	}
 	else
 		global->Set(local->getPosition(), local->getRotation(), local->getScale());
@@ -118,8 +115,6 @@ void ComponentTransform::Draw() const
 }
 
 void ComponentTransform::Save(JSON_Object* config) {
-	json_object_set_number(config, "UUID", uuid);
-
 	// Component has an object called transform, which has the two transforms as attributes
 	JSON_Value* local_trans = json_value_init_object();
 	JSON_Value* global_trans = json_value_init_object();

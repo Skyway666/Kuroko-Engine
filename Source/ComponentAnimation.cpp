@@ -13,7 +13,11 @@ ComponentAnimation::ComponentAnimation(JSON_Object* deff, GameObject* parent): C
 	speed = json_object_get_number(deff, "speed");
 
 	const char* parent3dobject = json_object_get_string(deff, "Parent3dObject");
-	if (parent3dobject) // Means that is being loaded from a scene
+	if (App->is_game && !App->debug_game)
+	{
+		animation_resource_uuid = App->resources->getResourceUuid(json_object_get_string(deff, "animation_name"), R_ANIMATION);
+	}
+	else if (parent3dobject) // Means that is being loaded from a scene
 		animation_resource_uuid = App->resources->getAnimationResourceUuid(parent3dobject, json_object_get_string(deff, "animation_name"));
 	else // Means it is being loaded from a 3dObject binary
 		animation_resource_uuid = json_object_get_number(deff, "animation_resource_uuid");
@@ -40,7 +44,8 @@ bool ComponentAnimation::Update(float dt)
 		}
 
 		//if (!TestPause)
-		animTime += dt * speed;
+		if (!paused)
+			animTime += dt * speed;
 
 		if (animTime > anim->getDuration() && loop)
 		{
@@ -58,7 +63,7 @@ bool ComponentAnimation::Update(float dt)
 				ComponentTransform* transform = (ComponentTransform*)GO->getComponent(TRANSFORM);
 				if (anim->boneTransformations[i].calcCurrentIndex(animTime*anim->ticksXsecond, false))
 				{
-					anim->boneTransformations[i].calcTransfrom(animTime*anim->ticksXsecond, true);
+					anim->boneTransformations[i].calcTransfrom(animTime*anim->ticksXsecond, false);
 					float4x4 local = anim->boneTransformations[i].lastTransform;
 					float3 pos, scale;
 					Quat rot;
@@ -74,7 +79,9 @@ bool ComponentAnimation::Update(float dt)
 
 void ComponentAnimation::setAnimationResource(uint uuid)
 {
+	App->resources->deasignResource(animation_resource_uuid);
 	animation_resource_uuid = uuid;
+	App->resources->assignResource(animation_resource_uuid);
 	ResourceAnimation* anim = (ResourceAnimation*)App->resources->getResource(uuid);
 	if (anim != nullptr)
 	{

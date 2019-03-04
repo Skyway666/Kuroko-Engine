@@ -14,7 +14,13 @@
 #include "ComponentCheckBoxUI.h"
 #include "ComponentTextUI.h"
 #include "ComponentBone.h"
+#include "ComponentBillboard.h"
+#include "ComponentParticleEmitter.h"
 #include "ComponentAnimation.h"
+#include "ModulePhysics3D.h"
+#include "ComponentAnimationEvent.h"
+#include "ComponentColliderCube.h"
+
 #include "Camera.h"
 #include "Application.h"
 #include "ModuleUI.h"
@@ -22,6 +28,7 @@
 #include "ModuleCamera3D.h"
 #include "Applog.h"
 #include "ModuleRenderer3D.h"
+
 
 
 GameObject::GameObject(const char* name, GameObject* parent, bool UI) : name(name), parent(parent), id(App->scene->last_gobj_id++), uuid(random32bits())
@@ -80,12 +87,29 @@ GameObject::GameObject(JSON_Object* deff): uuid(random32bits()) {
 		else if (type == "animation") {
 			component = new ComponentAnimation(component_deff, this);
 		}
+		else if (type == "camera") {
+			component = new ComponentCamera(component_deff, this);
+		}
+		else if (type == "billboard") {
+			component = new ComponentBillboard(component_deff, this);
+		}
+		else if (type == "particle_emitter") {
+			component = new ComponentParticleEmitter(component_deff, this);
+		}
+		else if (type == "animation_event") {
+			component = new ComponentAnimationEvent(component_deff, this);
+		}
 
+		else if (type == "collider_cube") {
+			component = new ComponentColliderCube(component_deff, this);
+		}
 		// Set component's parent-child
 		if (!component){
 			app_log->AddLog("WARNING! Component of type %s could not be loaded", type.c_str());
 			continue;
 		}
+		component->LoadCompUUID(component_deff);
+
 		addComponent(component);
 	}
 
@@ -121,8 +145,12 @@ void GameObject::Draw() const
 		for (auto it = components.begin(); it != components.end(); it++)
 			(*it)->Draw();
 
-		if (App->scene->selected_obj == this)
-			DrawSelected();
+		for (auto it = App->scene->selected_obj.begin(); it != App->scene->selected_obj.end(); it++) {
+			if (*it == this) {
+				DrawSelected();
+				break;
+			}
+		}
 	}
 }
 
@@ -153,6 +181,40 @@ Component* GameObject::getComponent(Component_type type) const
 	return nullptr;
 }
 
+Component * GameObject::getComponentByUUID(uint uuid) const {
+
+	for (std::list<Component*>::const_iterator it = components.begin(); it != components.end(); it++) {
+		if ((*it)->getUUID() == uuid)
+			return *it;
+	}
+
+	return nullptr;
+}
+
+Component* GameObject::getChildComponent(uint uuid) const
+{
+	Component* component = nullptr;
+	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it)
+	{
+		for (std::list<Component*>::const_iterator it_c = (*it)->components.begin(); it_c != (*it)->components.end(); it_c++)
+		{
+			if ((*it_c)->getUUID() == uuid)
+			{
+				component = (*it_c);
+				break;
+			}
+		}
+		if (component != nullptr)
+			break;
+		else
+		{
+			component = (*it)->getChildComponent(uuid);
+		}
+	}
+
+	return component;
+}
+
 bool GameObject::getComponents(Component_type type, std::list<Component*>& list_to_fill) const
 {
 	for (std::list<Component*>::const_iterator it = components.begin(); it != components.end(); it++)
@@ -164,20 +226,20 @@ bool GameObject::getComponents(Component_type type, std::list<Component*>& list_
 	return !list_to_fill.empty();
 }
 
-GameObject* GameObject::getChild(const char* name) const
+GameObject* GameObject::getChild(const char* name, bool  ignoreAssimpNodes) const
 {
 	GameObject* child = nullptr;
 
 	for (std::list<GameObject*>::const_iterator it = children.begin(); it != children.end(); ++it)
 	{
-		if ((*it)->getName().find(name) != -1)
+		if ((*it)->getName().find(name) != -1 && (!ignoreAssimpNodes || (*it)->getName().find("$AssimpFbx$") == std::string::npos))
 		{
 			child = (*it);
 			break;
 		}
 		else
 		{
-			child = (*it)->getChild(name);
+			child = (*it)->getChild(name, ignoreAssimpNodes);
 			if (child != nullptr)
 				break;
 		}
@@ -195,6 +257,14 @@ void GameObject::getAllDescendants(std::list<GameObject*>& list_to_fill) const
 		(*it)->getAllDescendants(list_to_fill);
 
 	return;
+}
+
+GameObject* GameObject::getAbsoluteParent()
+{
+	if (parent == nullptr)
+		return this;
+	else
+		return parent->getAbsoluteParent();
 }
 
 Component* GameObject::addComponent(Component_type type)
@@ -284,7 +354,9 @@ Component* GameObject::addComponent(Component_type type)
 		if (!getComponent(UI_TEXT))
 		{
 			new_component = new ComponentTextUI(this);
+			components.push_back(new_component);
 		}
+		break;
 	case BONE:
 		new_component = new ComponentBone(this);
 		components.push_back(new_component);
@@ -295,6 +367,25 @@ Component* GameObject::addComponent(Component_type type)
 			new_component = new ComponentAnimation(this);
 			components.push_back(new_component);
 		}
+		break;
+	case COLLIDER_CUBE:
+		if (!getComponent(COLLIDER_CUBE))
+		{
+			new_component = new ComponentColliderCube(this);
+			components.push_back(new_component);
+		}
+		break;
+	case BILLBOARD:
+		new_component = new ComponentBillboard(this);
+		components.push_back(new_component);
+		break;
+	case PARTICLE_EMITTER:
+		new_component = new ComponentParticleEmitter(this);
+		components.push_back(new_component);
+		break;
+	case ANIMATION_EVENT:
+		new_component = new ComponentAnimationEvent(this);
+		components.push_back(new_component);
 		break;
 	default:
 		break;
@@ -310,7 +401,7 @@ void GameObject::addComponent(Component* component)
 
 	switch (component->getType())
 	{
-	case MESH:	
+	case MESH:
 		components.push_back(component);
 		((ComponentAABB*)getComponent(C_AABB))->Reload();
 		break;
@@ -342,6 +433,18 @@ void GameObject::addComponent(Component* component)
 	case ANIMATION:
 		if (!getComponent(ANIMATION))
 			components.push_back(component);
+		break;
+	case BILLBOARD:
+		components.push_back(component);
+		break;
+	case PARTICLE_EMITTER:
+		components.push_back(component);
+		break;
+	case COLLIDER_CUBE:
+		components.push_back(component);
+		break;
+	case ANIMATION_EVENT:
+		components.push_back(component);
 		break;
 	default:
 		break;

@@ -11,7 +11,10 @@ struct WrenVM;
 struct WrenHandle;
 struct ScriptData;
 
-#define OBJECT_LINKER "ScriptingAPI/ObjectLinker.wren"
+#define OBJECT_LINKER_PATH "ScriptingAPI/ObjectLinker.wren"
+#define AUDIO_PATH "ScriptingAPI/Audio.wren"
+#define ANIMATION_PATH "ScriptingAPI/Animation.wren"
+#define PARTICLES_PATH "ScriptingAPI/Particles.wren"
 
 class ModuleScripting : public Module {
 public:
@@ -44,6 +47,9 @@ public:
 	std::list<std::string> tags;
 
 	std::string object_linker_code;
+	std::string audio_code;
+	std::string animation_code;
+	std::string particles_code;
 
 
 	virtual void SaveConfig(JSON_Object* config) const;

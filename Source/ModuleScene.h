@@ -117,7 +117,7 @@ private:
 
 public:
 
-	GameObject* selected_obj	= nullptr;
+	std::list<GameObject*> selected_obj;
 	Skybox* skybox				= nullptr;
 
 	uint last_mat_id			= 0;
@@ -133,5 +133,6 @@ public:
 	int quadtree_ignored_obj	= 0;
 	int quadtree_checks			= 0;
 
+	uint main_scene = 0;
 };
 #endif

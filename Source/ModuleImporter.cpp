@@ -141,23 +141,45 @@ void* ModuleImporter::ImportTexturePointer(const char* file) {
 	//}*/
 }
 
-void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiScene & scene, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, const std::map<std::string, uint>& in_bone_id, uint parent)
+void ModuleImporter::ImportNodeToSceneRecursive(aiNode* node, const aiScene & scene, const char* file_name, JSON_Value * objects_array, const std::vector<material_resource_deff>& in_mat_id, const std::map<std::string, uint>& in_bone_id, uint parent)
 {
-	std::string name = node.mName.C_Str();
+	aiVector3D translation;
+	aiVector3D scaling;
+	aiQuaternion rotation;
 
-	//if (name.find("$Assimp") != std::string::npos)
-	//{
-	//	for (int i = 0; i < node.mNumChildren; i++)
-	//		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, parent);
-	//	return;
-	//}
+	node->mTransformation.Decompose(scaling, rotation, translation);
 
+	float3 pos = { translation.x, translation.y, translation.z };
+	float3 scale = { scaling.x, scaling.y, scaling.z };
+	Quat rot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+	std::string name = (parent == 0) ? file_name : node->mName.C_Str(); //Set file name for the root game object
+	/*static const char* transformNodes[5] = {
+		"$AssimpFbx$_PreRotation", "$AssimpFbx$_Rotation", "$AssimpFbx$_PostRotation",
+		"$AssimpFbx$_Scaling", "$AssimpFbx$_Translation" };
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (name.find(transformNodes[i]) != std::string::npos && node->mNumChildren > 0)
+		{
+			node = node->mChildren[0];
+
+			node->mTransformation.Decompose(scaling, rotation, translation);
+
+			pos += { translation.x, translation.y, translation.z };
+			scale = { scale.x*scaling.x, scale.y*scaling.y, scale.z*scaling.z };
+			rot = rot * Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+			name = node->mName.C_Str();
+			i = -1;
+		}
+	}*/
 
 	JSON_Value* game_object = json_value_init_object();
 	JSON_Value* components = json_value_init_array();
 	uint object_uuid = random32bits();
 
-	json_object_set_string(json_object(game_object), "name", node.mName.C_Str());
+	json_object_set_string(json_object(game_object), "name", name.c_str());
 	json_object_set_string(json_object(game_object), "tag", "undefined");
 	json_object_set_boolean(json_object(game_object), "static", false);
 	json_object_set_number(json_object(game_object), "UUID", object_uuid);
@@ -166,15 +188,11 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	json_object_set_value(json_object(game_object), "Components", components);
 
 
-	// Import and store transform
-	aiVector3D pos = { 0.0f, 0.0f, 0.0f };
-	aiVector3D scl = { 1.0f, 1.0f, 1.0f };
-	aiQuaternion rot;
-	node.mTransformation.Decompose(scl, rot, pos);
+	// Store transform
 	Transform* trans = new Transform();
 	JSON_Value* transform_component = json_value_init_object();
 	JSON_Value* local_transform = json_value_init_object();
-	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.z, rot.w), float3(scl.x, scl.y, scl.z));
+	trans->Set(float3(pos.x, pos.y, pos.z), Quat(rot.x, rot.y, rot.z, rot.w), float3(scale.x, scale.y, scale.z));
 	trans->Save(json_object(local_transform));
 	json_object_set_string(json_object(transform_component), "type", "transform"); // Set type
 	json_object_set_value(json_object(transform_component), "local", local_transform); //Set local transform
@@ -189,9 +207,9 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 
 	std::vector<std::string> mesh_names;
 	int same_name_separator = 1;
-	for (int i = 0; i < node.mNumMeshes; i++) {
+	for (int i = 0; i < node->mNumMeshes; i++) {
 		// Import, store and delete mesh
-		Mesh* mesh = new Mesh(*scene.mMeshes[node.mMeshes[i]], scene, node.mName.C_Str());
+		Mesh* mesh = new Mesh(*scene.mMeshes[node->mMeshes[i]], scene, node->mName.C_Str());
 		JSON_Value* mesh_component = json_value_init_object();	
 		uint uuid_number = random32bits();																// Create mesh component
 		std::string uuid = std::to_string(uuid_number);
@@ -200,7 +218,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "mesh_binary_path", binary_full_path.c_str()); // Set mesh (used for deleting binary file when asset is deleted)
 		json_object_set_number(json_object(mesh_component), "mesh_resource_uuid", uuid_number);				// Set uuid
 
-		std::string mesh_name = node.mName.C_Str();
+		std::string mesh_name = node->mName.C_Str();
 
 		// Look if a mesh with the same name was loaded previously
 		for (auto it = mesh_names.begin(); it != mesh_names.end(); it++) {
@@ -216,8 +234,8 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_string(json_object(mesh_component), "primitive_type", "NONE");
 
 
-		if (scene.mMeshes[node.mMeshes[i]]->mMaterialIndex < in_mat_id.size()) {// If it has a material
-		material_resource_deff deff = in_mat_id.at(scene.mMeshes[node.mMeshes[i]]->mMaterialIndex);
+		if (scene.mMeshes[node->mMeshes[i]]->mMaterialIndex < in_mat_id.size()) {// If it has a material
+		material_resource_deff deff = in_mat_id.at(scene.mMeshes[node->mMeshes[i]]->mMaterialIndex);
 		JSON_Value* material = json_value_init_object();
 		json_object_set_number(json_object(material), "diffuse_resource_uuid", deff.resource_uuid_diffuse);
 		//json_object_set_string(json_object(material), "ambient binary", deff.binary_path_ambient.c_str());
@@ -226,11 +244,23 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 		json_object_set_value(json_object(mesh_component), "material", material);			// Add material to component mesh
 		}
 
+		if (scene.mMeshes[node->mMeshes[i]]->HasBones()) //If it has bones
+		{
+			JSON_Value* bones = json_value_init_array();
+			for (int j = 0; j < scene.mMeshes[node->mMeshes[i]]->mNumBones; ++j)
+			{
+				JSON_Value* bone = json_value_init_object();
+				json_object_set_string(json_object(bone), "bone_name", scene.mMeshes[node->mMeshes[i]]->mBones[j]->mName.C_Str());
+				json_array_append_value(json_array(bones), bone);
+			}
+			json_object_set_value(json_object(mesh_component), "bones", bones);
+		}
+
 		json_array_append_value(json_array(components), mesh_component);			// Add component mesh to components
 		ImportMeshToKR(uuid.c_str(), mesh);				// Import mesh
 		delete mesh;									// TODO: Delete mesh
 
-		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node.mMeshes[i]]->mNumVertices);
+		app_log->AddLog("Imported mesh with %i vertices", scene.mMeshes[node->mMeshes[i]]->mNumVertices);
 	}
 
 	if (in_bone_id.find(name) != in_bone_id.end()) //Exist a bone with this name
@@ -260,7 +290,7 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 			json_object_set_string(json_object(animation_component), "type", "animation");			// Set type
 			json_object_set_string(json_object(animation_component), "animation_binary_path", binary_full_path.c_str()); // (used for deleting binary file when asset is deleted)
 			json_object_set_number(json_object(animation_component), "animation_resource_uuid", uuid_number);
-			json_object_set_string(json_object(animation_component), "animation_name", scene.mAnimations[i]->mName.C_Str());
+			json_object_set_string(json_object(animation_component), "animation_name", file_name);
 			json_object_set_number(json_object(animation_component), "speed", 1);
 			json_object_set_boolean(json_object(animation_component), "loop", true);
 			
@@ -273,8 +303,8 @@ void ModuleImporter::ImportNodeToSceneRecursive(const aiNode & node, const aiSce
 	json_array_append_value(json_array(objects_array), game_object);    // Add gameobject to gameobject array
 
 
-	for (int i = 0; i < node.mNumChildren; i++)
-		ImportNodeToSceneRecursive(*node.mChildren[i], scene, objects_array, in_mat_id, in_bone_id, object_uuid);
+	for (int i = 0; i < node->mNumChildren; i++)
+		ImportNodeToSceneRecursive(node->mChildren[i], scene, file_name, objects_array, in_mat_id, in_bone_id, object_uuid);
 
 }
 
@@ -353,6 +383,8 @@ void ModuleImporter::ImportBonesRecursive(const aiNode& node, const aiScene & sc
 bool ModuleImporter::ImportScene(const char * file_original_name, std::string file_binary_name) {
 
 	const aiScene* imported_scene = aiImportFile(file_original_name, aiProcessPreset_TargetRealtime_MaxQuality);
+	std::string file_name = file_original_name;
+	App->fs.getFileNameFromPath(file_name);
 
 	if (imported_scene) {
 		JSON_Value* scene = json_value_init_object();
@@ -366,11 +398,11 @@ bool ModuleImporter::ImportScene(const char * file_original_name, std::string fi
 		std::map<std::string, uint> out_bone_id;
 		ImportMaterialsFromNode(*imported_scene, out_mat_deff);
 		ImportBonesRecursive(*imported_scene->mRootNode, *imported_scene, out_bone_id);
-		ImportNodeToSceneRecursive(*imported_scene->mRootNode, *imported_scene, objects_array, out_mat_deff, out_bone_id);
+		ImportNodeToSceneRecursive(imported_scene->mRootNode, *imported_scene, file_name.c_str(), objects_array, out_mat_deff, out_bone_id);
 
 		std::string path;
 		App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_3DOBJECTS, JSON_EXTENSION);
-		json_serialize_to_file(scene, path.c_str());
+		json_serialize_to_file_pretty(scene, path.c_str());
 		json_value_free(scene);
 		aiReleaseImport(imported_scene);
 		app_log->AddLog("Success importing file %s (scene)", file_original_name);
@@ -439,7 +471,7 @@ bool ModuleImporter::ImportScript(const char* file_original_name, std::string fi
 	std::string path;
 	App->fs.FormFullPath(path, file_binary_name.c_str(), LIBRARY_SCRIPTS, JSON_EXTENSION);
 
-	json_serialize_to_file(script_json, path.c_str());
+	json_serialize_to_file_pretty(script_json, path.c_str());
 	json_value_free(script_json);
 
 	return true;
@@ -809,7 +841,7 @@ void ModuleImporter::ImportSounds()
 	GetCurrentDirectory(256, folderPath);
 	// Add the assets folder to the path
 	std::string path = folderPath;
-	path += "\\Assets\\Sounds/*";
+	path += "\\Assets\\Audio/*";
 
 	WIN32_FIND_DATA file;
 	HANDLE search_handle = FindFirstFile(path.c_str(), &file);
@@ -821,21 +853,17 @@ void ModuleImporter::ImportSounds()
 			{
 				// Check type of flie
 				std::string name = file.cFileName;
-				std::string extension = "";
-				for (int i = name.size() - 1; i >= 0; i--)
-					if (name[i] == '.' | name[i] == ' ')
-						break;
-					else
-						extension = name[i] + extension;
+				std::string extension = name;
+				App->fs.getExtension(extension);
 
-				if (extension == "bnk")
+				if (extension == AUDIO_EXTENSION)
 				{
 					std::string source = path;
 					source.pop_back();
 					source += name;
 
 					std::string destiny = folderPath;
-					destiny += "\\Library\\Sounds/" + name;
+					destiny += "\\Library\\Audio/" + name;
 
 					std::ifstream  src(source, std::ios::binary);
 					std::ofstream  dst(destiny, std::ios::binary);
